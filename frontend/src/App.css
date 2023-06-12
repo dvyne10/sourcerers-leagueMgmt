@@ -1,0 +1,15 @@
+.card-wrapper {
+  display: flex;
+  width: auto;
+  height: 60vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.center-text {
+  align-self: center;
+}
+
+.sign-in-btn {
+  width: 40%;
+}
