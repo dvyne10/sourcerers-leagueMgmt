@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Button from 'react-bootstrap/Button';
 import ReactDOM from "react-dom/client";
-import Layout from "./Layout";
 
 export default function Leagues() {
   const [message, setMessage] = useState("");
@@ -23,5 +22,4 @@ export default function Leagues() {
   );
 }
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<Layout />);
 root.render(<Leagues />);
