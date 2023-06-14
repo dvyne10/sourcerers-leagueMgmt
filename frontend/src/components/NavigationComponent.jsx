@@ -9,7 +9,7 @@ const NavigationComponent = () => {
   return (
     <Navbar bg="light" expand="lg">
       <Container fluid>
-        <Navbar.Brand href="#">Sports League App</Navbar.Brand>
+        <Navbar.Brand href="/#">Sports League App</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
@@ -17,9 +17,9 @@ const NavigationComponent = () => {
             style={{ maxHeight: "100px" }}
             navbarScroll
           >
-            <Nav.Link href="#action1">Leagues</Nav.Link>
-            <Nav.Link href="#action2">Teams</Nav.Link>
-            <Nav.Link href="#action2">Players</Nav.Link>
+            <Nav.Link href="/leagues">Leagues</Nav.Link>
+            <Nav.Link href="/teams">Teams</Nav.Link>
+            <Nav.Link href="/players">Players</Nav.Link>
             {/* <NavDropdown title="Link" id="navbarScrollingDropdown">
               <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
               <NavDropdown.Item href="#action4">
@@ -43,7 +43,7 @@ const NavigationComponent = () => {
             />
             <Button variant="outline-success">Search</Button>
           </Form>
-          <Button variant="light">Sign in</Button>
+          <Button href="/signin "variant="light">Sign in</Button>
         </Navbar.Collapse>
       </Container>
     </Navbar>
