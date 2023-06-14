@@ -3,13 +3,17 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+
 // import NavDropdown from "react-bootstrap/NavDropdown";
 
 const NavigationComponent = () => {
   return (
     <Navbar bg="light" expand="lg">
       <Container fluid>
-        <Navbar.Brand href="/#">Sports League App</Navbar.Brand>
+        <Navbar.Brand href="/#" style={{ paddingRight: "250px" }}>
+          Sports League App
+        </Navbar.Brand>
+
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
@@ -17,8 +21,10 @@ const NavigationComponent = () => {
             style={{ maxHeight: "100px" }}
             navbarScroll
           >
-            <Nav.Link href="/leagues">Leagues</Nav.Link>
+          <Nav.Link href="/leagues">Leagues</Nav.Link>
+            <span style={{ padding: "0 80px" }}></span>
             <Nav.Link href="/teams">Teams</Nav.Link>
+            <span style={{ padding: "0 80px" }}></span>
             <Nav.Link href="/players">Players</Nav.Link>
             {/* <NavDropdown title="Link" id="navbarScrollingDropdown">
               <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
@@ -43,6 +49,7 @@ const NavigationComponent = () => {
             />
             <Button variant="outline-success">Search</Button>
           </Form>
+          
           <Button href="/signin "variant="light">Sign in</Button>
         </Navbar.Collapse>
       </Container>
