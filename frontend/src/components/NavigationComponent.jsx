@@ -10,7 +10,7 @@ const NavigationComponent = () => {
   return (
     <Navbar bg="light" expand="lg">
       <Container fluid>
-        <Navbar.Brand href="/#" style={{ paddingRight: "250px" }}>
+        <Navbar.Brand href="/#" style={{ paddingRight: "400px" }}>
           Sports League App
         </Navbar.Brand>
 
@@ -22,9 +22,9 @@ const NavigationComponent = () => {
             navbarScroll
           >
           <Nav.Link href="/leagues">Leagues</Nav.Link>
-            <span style={{ padding: "0 80px" }}></span>
+            <span style={{ padding: "0 100px" }}></span>
             <Nav.Link href="/teams">Teams</Nav.Link>
-            <span style={{ padding: "0 80px" }}></span>
+            <span style={{ padding: "0 100px" }}></span>
             <Nav.Link href="/players">Players</Nav.Link>
             {/* <NavDropdown title="Link" id="navbarScrollingDropdown">
               <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
