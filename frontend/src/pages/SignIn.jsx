@@ -14,10 +14,10 @@ const SignIn = () => {
             <input id="name" type="text" className="form-control" />
           </div>
           <div className="mb-3">
-            <label htmlFor="name" className="form-label">
+            <label htmlFor="password" className="form-label">
               Password
             </label>
-            <input id="name" type="text" className="form-control" />
+            <input id="password" type="password" className="form-control" />
           </div>
           <Form.Check
             type={"checkbox"}

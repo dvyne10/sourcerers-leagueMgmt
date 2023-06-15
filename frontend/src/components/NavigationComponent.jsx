@@ -3,6 +3,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import { FaFutbol } from 'react-icons/fa';
 
 // import NavDropdown from "react-bootstrap/NavDropdown";
 
@@ -11,7 +12,8 @@ const NavigationComponent = () => {
     <Navbar bg="light" expand="lg">
       <Container fluid>
         <Navbar.Brand href="/#" style={{ paddingRight: "250px" }}>
-          Sports League App
+        <FaFutbol style={{ marginRight: '5px' }} />
+          PlayPal
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="navbarScroll" />

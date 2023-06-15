@@ -4,8 +4,11 @@ import routes from "./routes";
 import NavigationComponent from "./components/NavigationComponent";
 import FooterComponent from './components/FooterComponent';
 
+
 export default function App() {
+  
   return (
+    
     <>
       <div className="App">
         <NavigationComponent />
