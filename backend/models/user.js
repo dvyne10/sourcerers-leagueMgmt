@@ -12,7 +12,7 @@ const teamSchema = Schema({
         _id: false,
         playerId: { type: Schema.Types.ObjectId, ref: 'user' },
         position: { type: Schema.Types.ObjectId, ref: 'system_parameter' },
-        jerseryNumber: Number,
+        jerseyNumber: Number,
         joinedTimestamp: Date,
     }],
     lookingForPlayers: Boolean,
