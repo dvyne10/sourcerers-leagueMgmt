@@ -658,7 +658,7 @@ async function run() {
     // User 3 is team captain
     await user.updateOne({ _id : regularUser1._id }, { 
       $set: {"teamsCreated.$[n1].players.$[n2].position": bbp01._id,
-      "teamsCreated.$[n1].players.$[n2].jerseryNumber": 1,}
+      "teamsCreated.$[n1].players.$[n2].jerseyNumber": 1,}
     }, {
       arrayFilters: [
         { "n1._id": team1[index1]._id },
