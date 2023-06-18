@@ -55,6 +55,8 @@ const notificationsSchema = Schema({
         actionTimestamp: Date
     },
     notificationDetails: String,
+}, {
+    timestamps: true
 });
 
 const userSchema = Schema({
