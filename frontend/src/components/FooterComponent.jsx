@@ -13,10 +13,10 @@ const FooterComponent = () => {
       <a href="https://www.github.com"><FaGithub size={24} /></a>
     </div>
       <Nav className="mx-auto">
-        <Nav.Link href="#">About&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
+        <Nav.Link href="/about">About&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
         <Nav.Link href="#">Privacy&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
         <Nav.Link href="#">Terms&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
-        <Nav.Link href="#">Contact Us</Nav.Link>
+        <Nav.Link href="/contact">Contact Us</Nav.Link>
       </Nav>
       <div style={{ color: "lightgrey", fontSize: "14px", marginTop: "5px" }}>
         Address | © 2023 Company. All rights reserved
