@@ -112,7 +112,7 @@ const userSchema = Schema({
 });
 
 function isRegular() {
-    return this.userTye == 'USER' ? true : false;
+    return this.userType == 'USER' ? true : false;
 }
 
 module.exports = mongoose.model('user', userSchema);
