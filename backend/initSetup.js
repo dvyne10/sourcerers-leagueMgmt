@@ -42,6 +42,64 @@ async function run() {
       console.log(error);
     });
 
+    adminUser = new user({
+      status: "ACTV",
+      userName: "admin02",
+      email: "cslmadmin2@cslm.com",
+      password:
+        "8c88f2fab9a8406ba595407da37c76dd265fdde1b5079e9bedbccd61f6589a98",
+      salt: "oc/AzwLfxwLo7ibvMDKh4g==",
+      userType: "ADMIN",
+      announcementsCreated: [{ 
+        showInHome: true,
+        announcementMsg: "This is a test message from the admin team.",
+      }],
+      firstName: "Admin CSLM",
+      lastName: " -- 02",
+      successfulLoginDetails: [
+        {
+          sourceIPAddress: "194.120.180.275",
+          timestamp: getTimestamp(0),
+        },
+      ],
+    });
+    await adminUser.save()
+    .then(function () {
+      console.log("Admin user 2 inserted.");
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+    adminUser = new user({
+      status: "ACTV",
+      userName: "admin03",
+      email: "cslmadmin3@cslm.com",
+      password:
+        "cb8824d852b2f49c1fd24029685a5b69ddb0dddccb40f32946475f90f0b582c6",
+      salt: "fP5BALUu0IH5EE1pwUvnZg==",
+      userType: "ADMIN",
+      announcementsCreated: [{ 
+        showInHome: true,
+        announcementMsg: "This is a test message from the admin team.",
+      }],
+      firstName: "Admin CSLM",
+      lastName: " -- 03",
+      successfulLoginDetails: [
+        {
+          sourceIPAddress: "194.120.180.275",
+          timestamp: getTimestamp(0),
+        },
+      ],
+    });
+    await adminUser.save()
+    .then(function () {
+      console.log("Admin user 3 inserted.");
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
     // Add Soccer Parameters
     const soccer = new system_parameter({
       parameterId: "sport",
