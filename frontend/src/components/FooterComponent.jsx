@@ -14,8 +14,8 @@ const FooterComponent = () => {
     </div>
       <Nav className="mx-auto">
         <Nav.Link href="/about">About&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
-        <Nav.Link href="#">Privacy&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
-        <Nav.Link href="#">Terms&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
+        <Nav.Link href="/privacy">Privacy&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
+        <Nav.Link href="/terms">Terms&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
         <Nav.Link href="/contact">Contact Us</Nav.Link>
       </Nav>
       <div style={{ color: "lightgrey", fontSize: "14px", marginTop: "5px" }}>

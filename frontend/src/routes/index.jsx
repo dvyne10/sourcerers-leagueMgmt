@@ -1,5 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Blogs, Home, Layout, Leagues, NoPage, SignIn} from "../pages";
+import About from "../pages/About";
+import Contact from "../pages/Contact"; 
+import Privacy from "../pages/Privacy";
+import Terms from "../pages/Terms"; 
 
 const routes = createBrowserRouter([
   {
@@ -22,13 +26,31 @@ const routes = createBrowserRouter([
     exact: true,
     element: <Leagues/>,
   },
-
   {
     path: "/signin",
     exact: true,
     element: <SignIn/>,
   },
-
+  {
+    path: "/about",
+    exact: true,
+    element: <About/>,
+  },
+  {
+    path: "/contact",
+    exact: true, 
+    element: <Contact/>,
+  },
+  {
+    path: "/privacy",
+    exact: true,
+    element: <Privacy/>,
+  },
+  {
+    path: "/terms",
+    exact: true,
+    element: <Terms/>,
+  },
   {
     path: "*",
     exact: true,
