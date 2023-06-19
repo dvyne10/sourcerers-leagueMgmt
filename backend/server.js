@@ -9,7 +9,6 @@ app.use(express.json());
 
 
 app.get('/leagues', (req,res)=>{
-
     res.send({message: "Welcome to the Leagues page."})
 });
 
