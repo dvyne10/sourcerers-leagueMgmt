@@ -4,6 +4,7 @@ import About from "../pages/About";
 import Contact from "../pages/Contact"; 
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms"; 
+import CreateLeague from '../pages/CreateLeague';
 
 const routes = createBrowserRouter([
   {
@@ -50,6 +51,11 @@ const routes = createBrowserRouter([
     path: "/terms",
     exact: true,
     element: <Terms/>,
+  },
+  {
+    path: "/createLeague",
+    exact: true, 
+    element: <CreateLeague/>,
   },
   {
     path: "*",
