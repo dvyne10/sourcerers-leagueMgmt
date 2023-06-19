@@ -5,7 +5,7 @@ import { FaFacebook, FaInstagram, FaTwitter, FaGithub } from "react-icons/fa";
 
 const FooterComponent = () => {
   return (
-    <Navbar bg="light" expand="lg" style={{ height: "100px", marginTop: "50px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+    <Navbar bg="light" expand="lg" style={{ position: 'absolute', bottom: 0, width: '100%', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
     <div style={{ display: 'flex', gap: '40px' }}>
       <a href="https://www.facebook.com"><FaFacebook size={24} /></a>
       <a href="https://www.instagram.com"><FaInstagram size={24} /></a>

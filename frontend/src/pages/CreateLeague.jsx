@@ -1,7 +1,7 @@
 export default function CreateLeague() {
     return (
         <>
-        <h1>Create League Page</h1>
+        <h1 style={{ textAlign: 'center'}}>Create League Page</h1>
         </>
     );
 }
