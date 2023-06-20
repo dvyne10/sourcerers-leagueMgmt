@@ -6,6 +6,8 @@ import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms"; 
 import CreateLeague from '../pages/CreateLeague';
 import Notification from '../pages/Notification'; 
+import Search from '../pages/Search'; 
+import Players from '../pages/Players'; 
 
 const routes = createBrowserRouter([
   {
@@ -27,6 +29,11 @@ const routes = createBrowserRouter([
     path: "/leagues",
     exact: true,
     element: <Leagues/>,
+  },
+  {
+    path: "/players",
+    exact: true,
+    element: <Players/>,
   },
   {
     path: "/signin",
@@ -62,6 +69,11 @@ const routes = createBrowserRouter([
     path: "/notification",
     exact: true,
     element: <Notification/>,
+  },
+  {
+    path: "/search",
+    exact: true,
+    element: <Search />,
   },
   {
     path: "*",
