@@ -18,23 +18,23 @@ export default function Search() {
       if (filter === "Teams") {
         handleTeamFilter(!teamFilter);
         if (teamFilter === true) {
-            handleTeamButton("primary")
-        } else {
             handleTeamButton("secondary")
+        } else {
+            handleTeamButton("primary")
         }
       } else if (filter === "Players") {
         handlePlayerFilter(!playerFilter);
         if (playerFilter === true) {
-            handlePlayerButton("primary")
-        } else {
             handlePlayerButton("secondary")
+        } else {
+            handlePlayerButton("primary")
         }
       } else {
         handleLeagueFilter(!leagueFilter);
         if (leagueFilter === true) {
-            handleLeagueButton("primary")
-        } else {
             handleLeagueButton("secondary")
+        } else {
+            handleLeagueButton("primary")
         }
       }
     };
