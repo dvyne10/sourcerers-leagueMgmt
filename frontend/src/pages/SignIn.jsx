@@ -1,7 +1,12 @@
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import { useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
+  
+  const navigate = useNavigate(); 
+  const navigateForgotPassword = () => { navigate('/forgotPassword') }
+
   return (
     <div className="card-wrapper">
       <Card style={{ width: "25rem", padding: 20 }}>
@@ -29,13 +34,13 @@ const SignIn = () => {
             <button className="btn btn-primary sign-in-btn" type="button">
               Sign In
             </button>
-            <button type="button" className="btn btn-light">
-              forgot password?
+            <button type="button" className="btn btn-light" onClick={navigateForgotPassword}>
+              Forgot password?
             </button>
           </div>
           <div className="d-flex justify-content-center">
             <button type="button" className="btn btn-link">
-              Not registered? register
+              Not registered? Register
             </button>
           </div>
         </form>

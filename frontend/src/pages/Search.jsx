@@ -1,9 +1,9 @@
 import Button from 'react-bootstrap/Button'; 
 //import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 
-export default function Search() {
+const Search = () => {
 
     const [teamFilter, handleTeamFilter] = useState(false);
     const [playerFilter, handlePlayerFilter] = useState(false);
@@ -64,3 +64,5 @@ export default function Search() {
     </div>
   );
 }
+
+export default Search;

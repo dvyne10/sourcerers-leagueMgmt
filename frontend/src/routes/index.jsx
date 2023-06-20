@@ -8,6 +8,9 @@ import CreateLeague from '../pages/CreateLeague';
 import Notification from '../pages/Notification'; 
 import Search from '../pages/Search'; 
 import Players from '../pages/Players'; 
+import ForgotPassword from '../pages/ForgotPassword'; 
+import InputOTP from '../pages/InputOTP'; 
+import ResetPassword from '../pages/ResetPassword'; 
 
 const routes = createBrowserRouter([
   {
@@ -39,6 +42,21 @@ const routes = createBrowserRouter([
     path: "/signin",
     exact: true,
     element: <SignIn/>,
+  },
+  {
+    path: "/forgotPassword",
+    exact: true,
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/resetPassword",
+    exact: true,
+    element: <ResetPassword />,
+  },
+  {
+    path: "/inputOTP",
+    exact: true,
+    element: <InputOTP />,
   },
   {
     path: "/about",
