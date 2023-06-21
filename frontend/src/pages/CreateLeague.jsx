@@ -5,14 +5,14 @@ const CreateLeague = () => {
   
     const navigate = useNavigate(); 
     const navigateLeagues = () => { navigate('/leagues') }
-    const navigateLeagueDetails = () => { navigate('/leagueDetails') }
+    const navigateLeagueDetails = () => { navigate('/league') }
 
   return (
-    <div className="card-wrapper">
+    <div className="card">
       <Card style={{ width: "80rem", padding: 20 }}>
         <h2 className="mb-4 center-text">CREATE LEAGUE</h2>
         <form action="">
-            < div className="col-sm-4 mb-2">
+            < div className="col-sm-4 mb-4">
                 <label htmlFor="banner" className="form-label">
                     Select Banner
                 </label>
@@ -33,7 +33,7 @@ const CreateLeague = () => {
                 </label>
                 <select id="sports" type="text" className="form-control" />
             </div>
-            < div className="col-sm-4 mb-2">
+            < div className="col-sm-4 mb-4">
                 <label htmlFor="logo" className="form-label">
                     Select Logo
                 </label>

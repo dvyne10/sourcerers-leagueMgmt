@@ -37,7 +37,7 @@ const routes = createBrowserRouter([
     element: <Leagues/>,
   },
   {
-    path: "/leagueDetails",
+    path: "/league",
     exact: true,
     element: <LeagueDetails />,
   },
