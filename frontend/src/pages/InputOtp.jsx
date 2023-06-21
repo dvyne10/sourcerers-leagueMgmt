@@ -18,12 +18,9 @@ const InputOTP = () => {
   return (
     <div className="card-wrapper">
       <Card style={{ width: "25rem", padding: 20 }}>
-        <h2 className="mb-4 center-text">Input OTP</h2>
+        <h2 className="mb-4 center-text">Enter Verification Code</h2>
         <form action="">
           <div className="mb-3">
-            <label htmlFor="otp" className="form-label">
-              Validation code*
-            </label>
             <input id="otp" type="number" min="0" className="form-control" />
           </div>
           <div className="d-flex justify-content-evenly width:100% mb-4">
