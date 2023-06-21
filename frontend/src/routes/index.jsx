@@ -11,6 +11,9 @@ import Players from '../pages/Players';
 import ForgotPassword from '../pages/ForgotPassword'; 
 import InputOTP from '../pages/InputOTP'; 
 import ResetPassword from '../pages/ResetPassword'; 
+import AdminPage from '../pages/AdminPage'; 
+import Registration from '../pages/Registration'; 
+import LeagueDetails from '../pages/LeagueDetails'; 
 
 const routes = createBrowserRouter([
   {
@@ -34,6 +37,11 @@ const routes = createBrowserRouter([
     element: <Leagues/>,
   },
   {
+    path: "/leagueDetails",
+    exact: true,
+    element: <LeagueDetails />,
+  },
+  {
     path: "/players",
     exact: true,
     element: <Players/>,
@@ -42,6 +50,11 @@ const routes = createBrowserRouter([
     path: "/signin",
     exact: true,
     element: <SignIn/>,
+  },
+  {
+    path: "/register",
+    exact: true,
+    element: <Registration/>,
   },
   {
     path: "/forgotPassword",
@@ -92,6 +105,11 @@ const routes = createBrowserRouter([
     path: "/search",
     exact: true,
     element: <Search />,
+  },
+  {
+    path: "/adminPage",
+    exact: true,
+    element: <AdminPage />,
   },
   {
     path: "*",

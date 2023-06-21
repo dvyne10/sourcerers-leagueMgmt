@@ -1,10 +1,19 @@
 import Card from "react-bootstrap/Card";
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
 const InputOTP = () => {
 
+  const location = useLocation();
+  const fromPage = location.state.fromPage;
   const navigate = useNavigate(); 
-  const navigateResetPassword = () => { navigate('/resetPassword') }
+  const navigateResetPassword = () => {
+    if (fromPage === 'Register') {
+      navigate('/')
+    } else {
+      navigate('/resetPassword') 
+    }
+  }
 
   return (
     <div className="card-wrapper">

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const ForgotPassword = () => {
 
   const navigate = useNavigate(); 
-  const navigateInputOTP = () => { navigate('/inputOTP') }
+  const navigateInputOTP = () => { navigate('/inputOTP', { state: {fromPage: 'ForgotPassword'}}) }
 
   return (
     <div className="card-wrapper">

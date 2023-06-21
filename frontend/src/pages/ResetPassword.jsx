@@ -9,7 +9,7 @@ const ResetPassword = () => {
   return (
     <div className="card-wrapper">
       <Card style={{ width: "25rem", padding: 20 }}>
-        <h2 className="mb-4 center-text">Input OTP</h2>
+        <h2 className="mb-4 center-text">Reset Password</h2>
         <form action="">
           <div className="mb-3">
             <label htmlFor="newPassword" className="form-label">

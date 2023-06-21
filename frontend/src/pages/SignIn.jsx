@@ -6,6 +6,14 @@ const SignIn = () => {
   
   const navigate = useNavigate(); 
   const navigateForgotPassword = () => { navigate('/forgotPassword') }
+  const navigateProfile = () => {
+    // if (userName === "admin") {
+      navigate('/adminPage') 
+    // } else {
+    //   navigate('/adminPage') 
+    // }
+  }
+  const navigateRegister = () => { navigate('/register') }
 
   return (
     <div className="card-wrapper">
@@ -31,7 +39,7 @@ const SignIn = () => {
             className="mb-4 "
           />
           <div className="d-flex justify-content-evenly width:100% mb-4">
-            <button className="btn btn-primary sign-in-btn" type="button">
+            <button className="btn btn-primary sign-in-btn" type="button" onClick={navigateProfile}>
               Sign In
             </button>
             <button type="button" className="btn btn-light" onClick={navigateForgotPassword}>
@@ -39,7 +47,7 @@ const SignIn = () => {
             </button>
           </div>
           <div className="d-flex justify-content-center">
-            <button type="button" className="btn btn-link">
+            <button type="button" className="btn btn-link" onClick={navigateRegister}>
               Not registered? Register
             </button>
           </div>
