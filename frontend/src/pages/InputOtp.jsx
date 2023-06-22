@@ -11,7 +11,7 @@ const InputOTP = () => {
     if (fromPage === 'Register') {
       navigate('/')
     } else {
-      navigate('/resetPassword') 
+      navigate('/resetpassword') 
     }
   }
 

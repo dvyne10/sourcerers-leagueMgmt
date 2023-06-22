@@ -1,45 +1,39 @@
 import Card from "react-bootstrap/Card";
 import { useNavigate } from 'react-router-dom';
 
-const CreateLeague = () => {
+const LeagueMaintenance = () => {
   
     const navigate = useNavigate(); 
     const navigateLeagues = () => { navigate('/leagues') }
-    const navigateLeagueDetails = () => { navigate('/league') }
+    const navigateLeagueDetails = () => { navigate('/league/648e9013466c1c995745907c') }    // temp id only  
 
   return (
     <div className="card">
-      <Card style={{ width: "80rem", padding: 20 }}>
+      <Card style={{ width: "90rem", padding: 20 }}>
         <h2 className="mb-4 center-text">CREATE LEAGUE</h2>
         <form action="">
-            < div className="col-sm-4 mb-4">
+            < div className="col-sm-12 mb-4">
                 <label htmlFor="banner" className="form-label">
                     Select Banner
                 </label>
                 <button id="banner" type="button" className="btn btn-secondary" >
                     Select image
                 </button>
-            </div> 
+            </div>
+            <div className="row">
+            <div className="col-8 mb-3"> 
           <div className="row ">
-            <div className="col-sm-4 mb-2">
+            <div className="col-sm-5 mb-2">
                 <label htmlFor="username" className="form-label">
                     Name of League*
                 </label>
                 <input id="username" type="text" className="form-control" />
             </div>
-            <div className="col-sm-4 mb-2">
+            <div className="col-sm-3 mb-2">
                 <label htmlFor="sports" className="form-label">
                     Sport*
                 </label>
                 <select id="sports" type="text" className="form-control" />
-            </div>
-            < div className="col-sm-4 mb-4">
-                <label htmlFor="logo" className="form-label">
-                    Select Logo
-                </label>
-                <button id="logo" type="button" className="btn btn-secondary" >
-                    Select image
-                </button>
             </div>
           </div>
           <div className="col-sm-8 mb-2">
@@ -49,33 +43,37 @@ const CreateLeague = () => {
             <textarea name="description" className="form-control form-control-sm" />
           </div>
           <div className="row">
-            <div className="col-sm-4 mb-2">
+            <div className="col-sm-5 mb-2">
                 <label htmlFor="location" className="form-label">
                     Location*
                 </label>
                 <input id="location" type="text" className="form-control" />
             </div>
-            <div className="col-sm-4 mb-2">
+            <div className="col-sm-3 mb-2">
                 <label htmlFor="division" className="form-label">
                     Division
                 </label>
                 <input id="division" type="text" className="form-control" />
             </div>
           </div>
-          <div className="row">
-            <div className="col-sm-4 mb-2">
-                <label htmlFor="age" className="form-label">
-                    Age*
+          </div>
+          < div className="col-sm-4 mb-2">
+                <label htmlFor="logo" className="form-label">
+                    Select Logo
                 </label>
-                <input id="age" type="text" className="form-control" placeholder="18-35"/>
+                <button id="logo" type="button" className="btn btn-secondary" >
+                    Select image
+                </button>
             </div>
-            <div className="col-sm-4 mb-2">
+            </div>
+          <div className="row">
+            <div className="col-sm-2 mb-2">
                 <label htmlFor="startDate" className="form-label">
                     Start Date*
                 </label>
                 <input id="startDate" type="date" className="form-control" />
             </div>
-            <div className="col-sm-4 mb-2">
+            <div className="col-sm-2 mb-2">
                 <label htmlFor="endDate" className="form-label">
                     End Date*
                 </label>
@@ -83,17 +81,23 @@ const CreateLeague = () => {
             </div>
           </div>
           <div className="row">
-            <div className="col-sm-4 mb-2">
+          <div className="col-sm-1 mb-2">
+                <label htmlFor="age" className="form-label">
+                    Age Group*
+                </label>
+                <input id="age" type="text" className="form-control" placeholder="18-35"/>
+            </div>
+            <div className="col-sm-1 ml-5">
                 <label htmlFor="teams" className="form-label">
                     Number of Teams
                 </label>
                 <input id="teams" type="number" min="3" value="3" className="form-control" />
             </div>
-            <div className="col-sm-4 mb-2">
+            <div className="col-sm-1 ml-5">
                 <label htmlFor="rounds" className="form-label">
                     Number of Rounds
                 </label>
-                <input id="rounds" type="number" min="3" max="10" value="1" className="form-control" />
+                <input id="rounds" type="number" min="1" max="10" value="1" className="form-control" />
             </div>
           </div>
           <div className="d-flex justify-content-evenly width:10% mb-4">
@@ -110,4 +114,4 @@ const CreateLeague = () => {
   );
 };
 
-export default CreateLeague;
+export default LeagueMaintenance;

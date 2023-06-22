@@ -1,10 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Blogs, Home, Layout, Leagues, NoPage, SignIn} from "../pages";
+import { Home, Leagues, NoPage, SignIn} from "../pages";
 import About from "../pages/About";
 import Contact from "../pages/Contact"; 
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms"; 
-import CreateLeague from '../pages/CreateLeague';
+import LeagueMaintenance from '../pages/LeagueMaintenance';
 import Notification from '../pages/Notification'; 
 import Search from '../pages/Search'; 
 import Players from '../pages/Players'; 
@@ -22,24 +22,14 @@ const routes = createBrowserRouter([
     element: <Home/>,
   },
   {
-    path: "/layout",
-    exact: true,
-    element: <Layout/>,
-  },
-  {
-    path: "/blogs",
-    exact: true,
-    element: <Blogs/>,
-  },
-  {
     path: "/leagues",
     exact: true,
     element: <Leagues/>,
   },
   {
-    path: "/league",
+    path: "/league/:leagueid",
     exact: true,
-    element: <LeagueDetails />,
+    element: <LeagueDetails/>,
   },
   {
     path: "/players",
@@ -57,17 +47,17 @@ const routes = createBrowserRouter([
     element: <Registration/>,
   },
   {
-    path: "/forgotPassword",
+    path: "/forgotpassword",
     exact: true,
     element: <ForgotPassword />,
   },
   {
-    path: "/resetPassword",
+    path: "/resetpassword",
     exact: true,
     element: <ResetPassword />,
   },
   {
-    path: "/inputOTP",
+    path: "/inputotp",
     exact: true,
     element: <InputOTP />,
   },
@@ -92,12 +82,17 @@ const routes = createBrowserRouter([
     element: <Terms/>,
   },
   {
-    path: "/createLeague",
+    path: "/createleague",
     exact: true, 
-    element: <CreateLeague/>,
+    element: <LeagueMaintenance/>,
   },
   {
-    path: "/notification",
+    path: "/updateleague/:leagueid",
+    exact: true, 
+    element: <LeagueMaintenance/>,
+  },
+  {
+    path: "/notifications",
     exact: true,
     element: <Notification/>,
   },
@@ -107,7 +102,7 @@ const routes = createBrowserRouter([
     element: <Search />,
   },
   {
-    path: "/adminPage",
+    path: "/adminpage",
     exact: true,
     element: <AdminPage />,
   },

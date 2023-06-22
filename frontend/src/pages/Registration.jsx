@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 const Registration = () => {
   
     const navigate = useNavigate(); 
-    const navigateInputOTP = () => { navigate('/inputOTP', { state: {fromPage: 'Register'}}) }
+    const navigateInputOTP = () => { navigate('/inputotp', { state: {fromPage: 'Register'}}) }
     const navigateSignin = () => { navigate('/signin') }
 
   return (
     <div className="card" >
-      <Card style={{ width: "80rem", padding: 20 }}>
+      <Card style={{ width: "90rem", padding: 20 }}>
         <h2 className="mb-4 center-text">Register</h2>
         <form action="">
         <div className="row">
