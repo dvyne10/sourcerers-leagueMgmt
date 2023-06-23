@@ -12,7 +12,7 @@ import ForgotPassword from '../pages/ForgotPassword';
 import InputOTP from '../pages/InputOTP'; 
 import ResetPassword from '../pages/ResetPassword'; 
 import AdminPage from '../pages/AdminPage'; 
-import Registration from '../pages/Registration'; 
+import AccountMaintenance from '../pages/AccountMaintenance'; 
 import LeagueDetails from '../pages/LeagueDetails'; 
 
 const routes = createBrowserRouter([
@@ -44,7 +44,12 @@ const routes = createBrowserRouter([
   {
     path: "/register",
     exact: true,
-    element: <Registration/>,
+    element: <AccountMaintenance/>,
+  },
+  {
+    path: "/updateaccount/:userid",
+    exact: true,
+    element: <AccountMaintenance/>,
   },
   {
     path: "/forgotpassword",
