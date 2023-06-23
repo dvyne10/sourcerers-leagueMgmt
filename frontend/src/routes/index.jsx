@@ -1,10 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Blogs, Home, Layout, Leagues, NoPage, SignIn} from "../pages";
+import { Home, Leagues, NoPage, SignIn} from "../pages";
 import About from "../pages/About";
 import Contact from "../pages/Contact"; 
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms"; 
-import CreateLeague from '../pages/CreateLeague';
+import LeagueMaintenance from '../pages/LeagueMaintenance';
 import Notification from '../pages/Notification'; 
 import Profile from '../pages/Profile'; 
 import Search from '../pages/Search'; 
@@ -13,7 +13,7 @@ import ForgotPassword from '../pages/ForgotPassword';
 import InputOTP from '../pages/InputOTP'; 
 import ResetPassword from '../pages/ResetPassword'; 
 import AdminPage from '../pages/AdminPage'; 
-import Registration from '../pages/Registration'; 
+import AccountMaintenance from '../pages/AccountMaintenance'; 
 import LeagueDetails from '../pages/LeagueDetails'; 
 
 
@@ -24,24 +24,14 @@ const routes = createBrowserRouter([
     element: <Home/>,
   },
   {
-    path: "/layout",
-    exact: true,
-    element: <Layout/>,
-  },
-  {
-    path: "/blogs",
-    exact: true,
-    element: <Blogs/>,
-  },
-  {
     path: "/leagues",
     exact: true,
     element: <Leagues/>,
   },
   {
-    path: "/league",
+    path: "/league/:leagueid",
     exact: true,
-    element: <LeagueDetails />,
+    element: <LeagueDetails/>,
   },
   {
     path: "/players",
@@ -56,20 +46,25 @@ const routes = createBrowserRouter([
   {
     path: "/register",
     exact: true,
-    element: <Registration/>,
+    element: <AccountMaintenance/>,
   },
   {
-    path: "/forgotPassword",
+    path: "/updateaccount/:userid",
+    exact: true,
+    element: <AccountMaintenance/>,
+  },
+  {
+    path: "/forgotpassword",
     exact: true,
     element: <ForgotPassword />,
   },
   {
-    path: "/resetPassword",
+    path: "/resetpassword",
     exact: true,
     element: <ResetPassword />,
   },
   {
-    path: "/inputOTP",
+    path: "/inputotp",
     exact: true,
     element: <InputOTP />,
   },
@@ -94,12 +89,17 @@ const routes = createBrowserRouter([
     element: <Terms/>,
   },
   {
-    path: "/createLeague",
+    path: "/createleague",
     exact: true, 
-    element: <CreateLeague/>,
+    element: <LeagueMaintenance/>,
   },
   {
-    path: "/notification",
+    path: "/updateleague/:leagueid",
+    exact: true, 
+    element: <LeagueMaintenance/>,
+  },
+  {
+    path: "/notifications",
     exact: true,
     element: <Notification/>,
   },
@@ -115,7 +115,7 @@ const routes = createBrowserRouter([
     element: <Search />,
   },
   {
-    path: "/adminPage",
+    path: "/adminpage",
     exact: true,
     element: <AdminPage />,
   },
