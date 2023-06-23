@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Leagues() {
   const navigate = useNavigate(); 
   const navigateCreateLeague = () => {
-    navigate('/createLeague');
+    navigate('/createleague');
   }
   return (
     <>

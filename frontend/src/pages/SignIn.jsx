@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router-dom';
 const SignIn = () => {
   
   const navigate = useNavigate(); 
-  const navigateForgotPassword = () => { navigate('/forgotPassword') }
+  const navigateForgotPassword = () => { navigate('/forgotpassword') }
   const navigateProfile = () => {
     // if (userName === "admin") {
-      navigate('/adminPage') 
+      navigate('/adminpage') 
     // } else {
-    //   navigate('/adminPage') 
+    //   navigate('/adminpage') 
     // }
   }
   const navigateRegister = () => { navigate('/register') }
