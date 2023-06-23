@@ -21,7 +21,7 @@ const NavigationComponent = () => {
         <Navbar.Toggle aria-controls="navbarScroll" className="navbar-toggle" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
-            className="justify-content-center flex-grow-1 pe-1"
+            className="justify-content-center flex-grow-1 pe-1 middle-bar"
             navbarScroll
           >
           {/* <Nav.Link href="/leagues" style={{paddingRight: "140px"}}>Leagues</Nav.Link> */}
@@ -33,13 +33,13 @@ const NavigationComponent = () => {
             </Nav.Item>
             
 </Nav>
-<Nav className="justify-content-center">
-         <Nav.Item>
-        <a href="/signin" className="nav-links">
-<span className="trialbtn"><FaSearch className="m-auto"/></span></a></Nav.Item>
+<Nav>
+         <Nav.Item className="d-flex justify-content-center">
+         <Nav.Link href="/search" className="nav-links">
+<span className="trialbtn"><FaSearch className="m-auto"/></span></Nav.Link>
 
-<Nav.Item>  <a href="/signin" className="nav-links">
-<span className="trialbtn">Sign in</span></a>
+<Nav.Link href="/signin" className="nav-links">
+<span className="trialbtn"> Sign in</span></Nav.Link>
 </Nav.Item>
 </Nav>
 
