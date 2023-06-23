@@ -13,7 +13,7 @@ const userSchema = Schema(
     userName: { type: String, unique: true, required: true, index: true },
     email: { type: String, unique: true, required: true, index: true },
     password: { type: String, required: true },
-    // salt: { type: String, unique: true, required: true }, // researched a bit and this is not a really good approach we can use bcrypt to achieve this
+    salt: { type: String, unique: true, required: true }, 
     userType: { type: String, enum: ["USER", "ADMIN"], required: true },
     announcementsCreated: [
       {

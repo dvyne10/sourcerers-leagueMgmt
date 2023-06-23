@@ -22,7 +22,7 @@ const AuthContextProvider = ({ children }) => {
   }
 };
 
-AuthContext.Provider = AuthContextProvider;
+AuthContext.ProviderWrapper = AuthContextProvider;
 
 AuthContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
