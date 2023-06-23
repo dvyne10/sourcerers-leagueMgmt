@@ -5,8 +5,11 @@ import NavigationComponent from "./components/NavigationComponent";
 import FooterComponent from "./components/FooterComponent";
 import AuthContext from "./context/authContext";
 
+
 export default function App() {
+  
   return (
+    
     <>
       <AuthContext.Provider>
         <div className="App">

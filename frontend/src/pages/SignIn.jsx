@@ -1,7 +1,20 @@
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import { useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
+  
+  const navigate = useNavigate(); 
+  const navigateForgotPassword = () => { navigate('/forgotpassword') }
+  const navigateProfile = () => {
+    // if (userName === "admin") {
+      navigate('/adminpage') 
+    // } else {
+    //   navigate('/adminpage') 
+    // }
+  }
+  const navigateRegister = () => { navigate('/register') }
+
   return (
     <div className="card-wrapper">
       <Card style={{ width: "25rem", padding: 20 }}>
@@ -14,10 +27,10 @@ const SignIn = () => {
             <input id="name" type="text" className="form-control" />
           </div>
           <div className="mb-3">
-            <label htmlFor="name" className="form-label">
+            <label htmlFor="password" className="form-label">
               Password
             </label>
-            <input id="name" type="text" className="form-control" />
+            <input id="password" type="password" className="form-control" />
           </div>
           <Form.Check
             type={"checkbox"}
@@ -26,16 +39,16 @@ const SignIn = () => {
             className="mb-4 "
           />
           <div className="d-flex justify-content-evenly width:100% mb-4">
-            <button className="btn btn-primary sign-in-btn" type="button">
+            <button className="btn btn-primary sign-in-btn" type="button" onClick={navigateProfile}>
               Sign In
             </button>
-            <button type="button" className="btn btn-light">
-              forgot password?
+            <button type="button" className="btn btn-light" onClick={navigateForgotPassword}>
+              Forgot password?
             </button>
           </div>
           <div className="d-flex justify-content-center">
-            <button type="button" className="btn btn-link">
-              Not registered? register
+            <button type="button" className="btn btn-link" onClick={navigateRegister}>
+              Not registered? Register
             </button>
           </div>
         </form>

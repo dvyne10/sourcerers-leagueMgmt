@@ -1,58 +1,53 @@
-import Button from "react-bootstrap/Button";
+
 import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import { FaFutbol, FaSearch } from 'react-icons/fa';
+import './navigationcomponent.css';
 
 // import NavDropdown from "react-bootstrap/NavDropdown";
 
 const NavigationComponent = () => {
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar className="shadow-sm deneme"  expand="md" bg="dark" data-bs-theme="dark">
+      
       <Container fluid>
-        <Navbar.Brand href="/#" style={{ paddingRight: "250px" }}>
-          Sports League App
+
+        <Navbar.Brand href="/" >
+        <FaFutbol className="m-auto"/>
+          PlayPal
         </Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="navbarScroll" />
+        <Navbar.Toggle aria-controls="navbarScroll" className="navbar-toggle" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
-            className="me-auto my-2 my-lg-0"
-            style={{ maxHeight: "100px" }}
+            className="justify-content-center flex-grow-1 pe-1 middle-bar"
             navbarScroll
           >
-          <Nav.Link href="/leagues" style={{paddingRight: "140px"}}>Leagues</Nav.Link>
-            <Nav.Link href="/teams" style={{paddingRight: "140px"}}>Teams</Nav.Link>
-            <Nav.Link href="/players" style={{paddingRight: "140px"}}>Players</Nav.Link>
-            {/* <NavDropdown title="Link" id="navbarScrollingDropdown">
-              <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-              <NavDropdown.Item href="#action4">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action5">
-                Something else here
-              </NavDropdown.Item>
-            </NavDropdown>
-            <Nav.Link href="#" disabled>
-              Link
-            </Nav.Link> */}
-          </Nav>
-          <Form className="d-flex me-2">
-            <Form.Control
-              type="search"
-              placeholder="Search"
-              className="me-2"
-              aria-label="Search"
-            />
-            <Button variant="outline-success">Search</Button>
-          </Form>
+          {/* <Nav.Link href="/leagues" style={{paddingRight: "140px"}}>Leagues</Nav.Link> */}
+          <Nav.Item className="d-flex justify-content-center">
+          <Nav.Link href="/leagues" className="navbar-underline-animation" >Leagues</Nav.Link>
           
-          <Button href="/signin "variant="light">Sign in</Button>
+            <Nav.Link href="/teams" className="navbar-underline-animation">Teams</Nav.Link>
+            <Nav.Link href="/players" className="navbar-underline-animation">Players</Nav.Link>
+            </Nav.Item>
+            
+</Nav>
+<Nav>
+         <Nav.Item className="d-flex justify-content-center">
+         <Nav.Link href="/search" className="nav-links">
+<span className="trialbtn"><FaSearch className="m-auto"/></span></Nav.Link>
+
+<Nav.Link href="/signin" className="nav-links">
+<span className="trialbtn"> Sign in</span></Nav.Link>
+</Nav.Item>
+</Nav>
+
+
         </Navbar.Collapse>
+        
       </Container>
     </Navbar>
   );
 };
-
 export default NavigationComponent;
