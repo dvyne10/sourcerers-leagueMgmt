@@ -7,6 +7,15 @@ import Terms from "../pages/Terms";
 import CreateLeague from '../pages/CreateLeague';
 import Notification from '../pages/Notification'; 
 import Profile from '../pages/Profile'; 
+import Search from '../pages/Search'; 
+import Players from '../pages/Players'; 
+import ForgotPassword from '../pages/ForgotPassword'; 
+import InputOTP from '../pages/InputOTP'; 
+import ResetPassword from '../pages/ResetPassword'; 
+import AdminPage from '../pages/AdminPage'; 
+import Registration from '../pages/Registration'; 
+import LeagueDetails from '../pages/LeagueDetails'; 
+
 
 const routes = createBrowserRouter([
   {
@@ -30,9 +39,39 @@ const routes = createBrowserRouter([
     element: <Leagues/>,
   },
   {
+    path: "/league",
+    exact: true,
+    element: <LeagueDetails />,
+  },
+  {
+    path: "/players",
+    exact: true,
+    element: <Players/>,
+  },
+  {
     path: "/signin",
     exact: true,
     element: <SignIn/>,
+  },
+  {
+    path: "/register",
+    exact: true,
+    element: <Registration/>,
+  },
+  {
+    path: "/forgotPassword",
+    exact: true,
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/resetPassword",
+    exact: true,
+    element: <ResetPassword />,
+  },
+  {
+    path: "/inputOTP",
+    exact: true,
+    element: <InputOTP />,
   },
   {
     path: "/about",
@@ -65,9 +104,20 @@ const routes = createBrowserRouter([
     element: <Notification/>,
   },
   {
+
     path: "/profile",
     exact: true, 
     element: <Profile/>,
+  },
+  {
+    path: "/search",
+    exact: true,
+    element: <Search />,
+  },
+  {
+    path: "/adminPage",
+    exact: true,
+    element: <AdminPage />,
   },
   {
     path: "*",
