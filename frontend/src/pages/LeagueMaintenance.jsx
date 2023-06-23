@@ -19,7 +19,13 @@ const LeagueMaintenance = () => {
     }, []);
 
     const navigate = useNavigate(); 
-    const navigateLeagues = () => { navigate('/leagues') }
+    const navigateCancel = () => {
+        if (action.type === "Creation") {
+            navigate('/leagues')
+        } else {
+            navigate('/league/648e9013466c1c995745907c')   // temp id only 
+        } 
+    }
     const navigateLeagueDetails = () => { navigate('/league/648e9013466c1c995745907c') }    // temp id only  
 
   return (
@@ -121,7 +127,7 @@ const LeagueMaintenance = () => {
             <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateLeagueDetails}>
               {action.title}
             </button>
-            <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateLeagues}>
+            <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateCancel}>
               Cancel
             </button>
           </div>

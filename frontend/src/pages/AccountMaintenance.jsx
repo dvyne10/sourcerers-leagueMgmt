@@ -10,9 +10,9 @@ const AccountMaintenance = () => {
         const url = location.pathname.substring(1,4).toLowerCase()
         console.log(url)
         if (url === "reg") {
-            handleAction({type: "Register", title: "REGISTER", button: "Create Account"})
+            handleAction({type: "Register", title: "REGISTER", button1: "Create Account", button2: "Login"})
         } else {
-            handleAction({type: "Update", title: "UPDATE ACCOUNT", button: "Update Account", protect: "true"})
+            handleAction({type: "Update", title: "UPDATE ACCOUNT", button1: "Update Account", button2: "Cancel", protect: "true"})
         }
     }, []);
 
@@ -24,7 +24,13 @@ const AccountMaintenance = () => {
         navigate('/')  // TEMP ONLY. Change to user profile once available
       }
     }
-    const navigateSignin = () => { navigate('/signin') }
+    const navigateSigninOrCancel = () => {
+      if (action.type === "Register") {
+        navigate('/signin') 
+      } else {
+        navigate('/')  // TEMP ONLY. Change to user profile once available
+      }
+    }
 
   return (
     <div className="container mt-2" >
@@ -117,10 +123,10 @@ const AccountMaintenance = () => {
           </div>
           <div className="row justify-content-center">
             <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateCreateUpdate}>
-              {action.button}
+              {action.button1}
             </button>
-            <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateSignin}>
-              Login
+            <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateSigninOrCancel}>
+              {action.button2}
             </button>
           </div>
         </form>
