@@ -1,0 +1,6 @@
+PORT=8000
+# NODE_ENV=development
+# NODE_ENV=production
+PROD_DB=mongodb+srv://sourcerers_admin1:$0urc3r3r$@cluster0.p3dghoi.mongodb.net/cluster0?retryWrites=true&w=majority
+DEV_DB=mongodb+srv://sourcerers_admin1:$0urc3r3r$@cluster0.p3dghoi.mongodb.net/development?retryWrites=true&w=majority
+JWT_SECRET=ncphf0[?dke745$5@)1253*&%$

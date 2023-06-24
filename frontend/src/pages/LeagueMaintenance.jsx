@@ -37,7 +37,7 @@ const LeagueMaintenance = () => {
                 <label htmlFor="banner" className="form-label mb-1">
                     Select Banner
                 </label>
-                <img id="banner" className="mw-100" style={{ width: "100rem", height: "10rem"}} src="https://images.unsplash.com/photo-1631614931628-120d9d3078ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1729&q=80" alt="League Banner" />
+                <img id="banner" className="object-fit-cover rounded mw-100" style={{ width: "100rem", height: "10rem"}} src="https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBmb290YmFsbHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80" alt="League Banner" />
                 <button id="banner" type="button" className="btn btn-secondary mt-2" >
                     Select image
                 </button>
