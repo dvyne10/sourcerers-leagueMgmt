@@ -9,6 +9,7 @@ import Notification from '../pages/Notification';
 import Profile from '../pages/Profile'; 
 import Search from '../pages/Search'; 
 import Players from '../pages/Players'; 
+import ChangePassword from '../pages/ChangePassword'; 
 import ForgotPassword from '../pages/ForgotPassword'; 
 import InputOTP from '../pages/InputOTP'; 
 import ResetPassword from '../pages/ResetPassword'; 
@@ -49,9 +50,14 @@ const routes = createBrowserRouter([
     element: <AccountMaintenance/>,
   },
   {
-    path: "/updateaccount/:userid",
+    path: "/updateaccount",
     exact: true,
     element: <AccountMaintenance/>,
+  },
+  {
+    path: "/changepassword",
+    exact: true,
+    element: <ChangePassword />,
   },
   {
     path: "/forgotpassword",

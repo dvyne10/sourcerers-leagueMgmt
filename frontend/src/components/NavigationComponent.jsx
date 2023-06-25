@@ -2,8 +2,9 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { FaFutbol, FaSearch } from 'react-icons/fa';
+import { FaFutbol, FaSearch, FaUserCircle } from 'react-icons/fa';
 import './navigationcomponent.css';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 // import NavDropdown from "react-bootstrap/NavDropdown";
 
@@ -40,6 +41,17 @@ const NavigationComponent = () => {
 
 <Nav.Link href="/signin" className="nav-links">
 <span className="trialbtn"> Sign in</span></Nav.Link>
+
+<Dropdown title="Profile">
+    <Dropdown.Toggle className="trialbtn" variant="success"><FaUserCircle className="m-auto"/></Dropdown.Toggle>
+    <Dropdown.Menu className="dropdown-menu dropdown-menu-end">
+      <Dropdown.Item href="/" className="nav-links " >My Profile</Dropdown.Item>
+      <Dropdown.Item href="/updateaccount" className="nav-links" >Update Profile</Dropdown.Item>
+      <Dropdown.Item href="/changepassword" className="nav-links" >Change Password</Dropdown.Item>
+      <Dropdown.Item href="/" className="nav-links" >Signout</Dropdown.Item>
+    </Dropdown.Menu>
+</Dropdown>
+
 </Nav.Item>
 </Nav>
 

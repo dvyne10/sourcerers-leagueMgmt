@@ -22,7 +22,7 @@ const SignIn = () => {
         <form action="">
           <div className="mb-3">
             <label htmlFor="name" className="form-label">
-              Username/email
+              Username/Email
             </label>
             <input id="name" type="text" className="form-control" />
           </div>
@@ -35,7 +35,7 @@ const SignIn = () => {
           <Form.Check
             type={"checkbox"}
             id={`default-checkbox`}
-            label={`remember me`}
+            label={`Remember me`}
             className="mb-4 "
           />
           <div className="d-flex justify-content-evenly width:100% mb-4">
@@ -48,7 +48,7 @@ const SignIn = () => {
           </div>
           <div className="d-flex justify-content-center">
             <button type="button" className="btn btn-link" onClick={navigateRegister}>
-              Not registered? Register
+              Not registered? Register here
             </button>
           </div>
         </form>
