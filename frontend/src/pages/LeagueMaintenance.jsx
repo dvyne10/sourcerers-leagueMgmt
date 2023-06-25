@@ -7,6 +7,7 @@ const LeagueMaintenance = () => {
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
     const [currValues, setCurrentValues] = useState({leagueName: null, description: null, location: null,
         division: null, startDate: null, endDate: null, ageGroup: null, teamsNo: "3", roundsNo: "1", 
+        // teamsList: []
         teamsList: [ { teamId: null, teamName: null, approvedBy: null, joinedOn: null, action: null } ]
     })
     const [sportSelected, setSportSelected] = useState("")
@@ -17,6 +18,7 @@ const LeagueMaintenance = () => {
     const [selectedBanner, setSelectedBanner] = useState(null);
     const [bannerURL, setBannerURL] = useState(null);
     const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+    const [disableDelete, setDeleteButton] = useState(true)
 
     useEffect(() => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
@@ -41,6 +43,7 @@ const LeagueMaintenance = () => {
             setSelectedLogo("x")
             setBannerURL("https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBmb290YmFsbHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80")
             setSelectedBanner("x")
+            // setDeleteButton(false)
         }
     }, []);
 
@@ -82,6 +85,19 @@ const LeagueMaintenance = () => {
         } 
     }
     const navigateLeagueDetails = () => { navigate('/league/' + routeParams.leagueid) }
+
+    const navigateDelete = () => {
+        let count = (currValues.teamsList === null ? 0 : 1)
+        if (count !== 0) {
+            alert("You cannot delete a league that has team/s or game history.")
+        } else {
+            if (confirm("Please confirm if you want to proceed with league deletion.")) {
+                navigate('/league/' + routeParams.leagueid)
+            } else {
+                console.log("Deletion cancelled")
+            }
+        }
+    }
 
     const navigateSubmitRequest = () => {
         let count = 0;
@@ -223,11 +239,16 @@ const LeagueMaintenance = () => {
             <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateLeagueDetails}>
               {action.title}
             </button>
+            { action.type !== "Creation" && (
+                <button type="button" className="btn btn-danger col-2" disabled={disableDelete} onClick={navigateDelete}>
+                    Delete
+                </button>
+            ) }
             <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateCancel}>
               Cancel
             </button>
           </div>
-            { action.type === "Update" && (
+            { action.type === "Update" && currValues.teamsList.length !== 0 && (
                 <div>
                     <div>
                         <br/><br/>
