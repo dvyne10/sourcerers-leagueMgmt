@@ -8,8 +8,8 @@ const About = () => {
   <div className="App" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "7rem", paddingBottom: "50px"}}>
     <h1 style={{align: "center"}}>ABOUT US</h1>
     </div>  
-    <div className="container  bg-light d-flex justify-content-center" 
-    style={{ alignItems: "center",justifyContent: "center", paddingTop: "5rem", paddingLeft: "10rem"}}>
+    <div className="d-flex justify-content-center" 
+    style={{ alignItems: "center", backgroundColor: '#F8F9FA',paddingTop: "5rem", paddingLeft: "5rem", paddingRight: "5rem"}}>
  <Card style={{ width: '20rem'}}>
         <Card.Img variant="top" src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200" />
         <Card.Body>
