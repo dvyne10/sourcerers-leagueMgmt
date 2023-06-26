@@ -16,6 +16,8 @@ const MatchUpdate = () => {
     const [matchesToUpdate1, setMatchesToUpdate1] = useState([ { playerId: null, username: null, fullName: null, playerStats: [{ statId: null, value: null }] } ])
     const [matchesToUpdate2, setMatchesToUpdate2] = useState([ { playerId: null, username: null, fullName: null, playerStats: [{ statId: null, value: null }] } ])
     const [findUsername, setFindUsername] = useState(["",""])
+    const [oldValues, setOldValues] = useState(null)
+    const [didMatchDetailsChange, setMatchDetailsChanged] = useState(false)
 
     useEffect(() => {
         setStatistics([
@@ -25,7 +27,7 @@ const MatchUpdate = () => {
         ])
         setCurrentValues({ dateOfMatch: "2023-07-01", locationOfMatch: "York Soccer Field",
             teamId1: 1, teamName1: "Vikings", finalScore1: 5, finalScorePending1: null, leaguePoints1: 2, leaguePointsPending1: null, disableInput1: false,
-            teamId2: 2, teamName2: "Dodgers", finalScore2: 2, finalScorePending2: null, leaguePoints2: 0, leaguePointsPending2: null, disableInput2: false,
+            teamId2: 2, teamName2: "Dodgers", finalScore2: 2, finalScorePending2: null, leaguePoints2: 0, leaguePointsPending2: null, disableInput2: true,
         })
         setMatchesToUpdate1([
             { playerId: 1, username: "sMcdowell", fullName: "Scarlet Mcdowell", playerStats: [{ statId: 1, points: 2 }, { statId: 2, points: 1 }, { statId: 3, points: 1 } ] }, 
@@ -37,6 +39,7 @@ const MatchUpdate = () => {
             { playerId: 12, username: "oRandall", fullName: "Oprah Randall", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 0 }, { statId: 3, points: 2 }] },
             { playerId: 13, username: "mCarpenter", fullName: "Mona Carpenter", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 2 }, { statId: 3, points: 0 } ] },
         ])
+        setOldValues({ dateOfMatch: "2023-07-01", locationOfMatch: "York Soccer Field", finalScore1: 5, leaguePoints1: 2, finalScore2: 2, leaguePoints2: 0})
     }, [location.pathname]);
 
     const handleMatchDetails = (e) => {
@@ -49,19 +52,12 @@ const MatchUpdate = () => {
         }
     }
 
-    // const onChangeUsername = (e, playerId, num) => {
+    // const onChangeUsername = (e, playerId) => {
     //     const { name, value } = e.target
-    //     if (num ===1 ) {
     //         const editData = matchesToUpdate1.map((item) =>
     //             item.playerId === playerId && name ? { ...item, [name]: value } : item
     //         )
     //         setMatchesToUpdate1(editData)
-    //     } else {
-    //         const editData = matchesToUpdate2.map((item) =>
-    //             item.playerId === playerId && name ? { ...item, [name]: value } : item
-    //         )
-    //         setMatchesToUpdate2(editData)
-    //     }
     // }
 
     const onChangeStat = (e, playerId, statId, num) => {
@@ -81,6 +77,7 @@ const MatchUpdate = () => {
         } else {
             setMatchesToUpdate2(newList)
         }
+        setMatchDetailsChanged(true)
     }
 
     const handleRemoveRow = (index, num) => {
@@ -94,6 +91,7 @@ const MatchUpdate = () => {
             newList.splice(index, 1)
             setMatchesToUpdate2(newList)
         }
+        setMatchDetailsChanged(true)
     }
 
     const handleAddUsername = (e, num) => {
@@ -121,16 +119,36 @@ const MatchUpdate = () => {
                 setMatchesToUpdate2(newList)
                 setFindUsername([findUsername[0],""])
             }
+            setMatchDetailsChanged(true)
         }
     }
 
     const navigate = useNavigate(); 
     const navigateUpdate = () => {
-        if (confirm("Changes will require the approval of other team's admin.\nPlease click on OK if you wish to proceed.")) {
-            navigate('/match/' + routeParams.matchId )
+        if ( oldValues.dateOfMatch == currValues.dateOfMatch 
+            && oldValues.locationOfMatch == currValues.locationOfMatch 
+            && oldValues.finalScore1 == currValues.finalScore1 
+            && oldValues.leaguePoints1 == currValues.leaguePoints1
+            && oldValues.finalScore2 == currValues.finalScore2
+            && oldValues.leaguePoints2 == currValues.leaguePoints2
+            && didMatchDetailsChange == false
+        ) {
+            alert("NO CHANGES FOUND!")
         } else {
-            console.log("Deletion cancelled")
-        } 
+            if (oldValues.finalScore1 !== currValues.finalScore1
+                || oldValues.leaguePoints1 !== currValues.leaguePoints1
+                || oldValues.finalScore2 !== currValues.finalScore2
+                || oldValues.leaguePoints2 !== currValues.leaguePoints2    
+                ) {
+                    if (confirm("Changes will require the approval of other team's admin.\nPlease click on OK if you wish to proceed.")) {
+                        navigate('/match/' + routeParams.matchId )
+                    } else {
+                        console.log("Update cancelled")
+                    } 
+                } else {
+                    navigate('/match/' + routeParams.matchId )
+                }
+        }    
     }
     const navigateCancel = () => { navigate(-1) }
 

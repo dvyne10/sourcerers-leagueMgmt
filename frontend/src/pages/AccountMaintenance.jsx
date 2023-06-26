@@ -5,15 +5,16 @@ import { MultiSelect } from "react-multi-select-component";
 
 const AccountMaintenance = () => {
   
+  const location = useLocation();
+  const routeParams = useParams();
     const [action, handleAction] = useState({type: "Register", title: "REGISTER"});
     const [currValues, setCurrentValues] = useState({userName: null, password: null, email: null, phone: null,
       firstName: null, lastName: null, country: null, city: null, province: null
     })
     const [sportsSelected, setSportsSelected] = useState([])
-    const location = useLocation();
-    const routeParams = useParams();
     const [selectedImage, setSelectedImage] = useState(null);
     const [imageURL, setImageURL] = useState(null);
+    const [oldValues, setOldValues] = useState(null)
     const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
 
     useEffect(() => {
@@ -22,12 +23,15 @@ const AccountMaintenance = () => {
             handleAction({type: "Register", title: "REGISTER", button1: "Create Account", button2: "Login"})
         } else {
             handleAction({type: "Update", title: "UPDATE ACCOUNT", button1: "Update Account", button2: "Cancel", protect: true})
-            setCurrentValues({userName: "hpotter", password: "**********", email: "hpotter@gmail.com", 
+            setCurrentValues({userName: "hpotter", password: "**********", email: "hpotter@gmail.com", phone: "", 
               firstName: "Harry", lastName: "Potter", country: "United Kingdom", city: "London", province: "N/A"
             })
             setSportsSelected([{label: "Basketball", value: "basketId"}])
             setImageURL("https://images.lifestyleasia.com/wp-content/uploads/sites/3/2022/12/31011513/harry-potter-films.jpeg")
             setSelectedImage("x")
+            setOldValues({ userName: "hpotter", phone: "", firstName: "Harry", lastName: "Potter", country: "United Kingdom", city: "London", province: "N/A",
+              sports: "basketId", image: "x"
+            })
         }
     }, [location.pathname]);
 
@@ -36,20 +40,41 @@ const AccountMaintenance = () => {
       setImageURL(URL.createObjectURL(event.target.files[0]))
     };
 
+    const handleAccountDetails = (e) => {
+      const field = e.target.name
+      setCurrentValues({ ...currValues, [field] : e.target.value })
+  }
+
     const navigate = useNavigate(); 
     const navigateCreateUpdate = () => { 
       if (action.type === "Register") {
         navigate('/inputotp', { state: {fromPage: 'Register'}}) 
       } else {
-        navigate('/')  // TEMP ONLY. Change to user profile once available
-        //navigate('/account/' + routeParams.userid)
+        console.log(oldValues.sports)
+        console.log(sportsSelected)
+        let sportsSelectedValues = ""
+        sportsSelected.map(i => sportsSelectedValues = sportsSelectedValues + i.value)
+          if ( oldValues.userName == currValues.userName 
+            && oldValues.phone == currValues.phone 
+            && oldValues.firstName == currValues.firstName 
+            && oldValues.lastName == currValues.lastName 
+            && oldValues.country == currValues.country
+            && oldValues.city == currValues.city
+            && oldValues.province == currValues.province
+            && oldValues.sports == sportsSelectedValues
+            && oldValues.image == selectedImage
+          ) {
+            alert("NO CHANGES FOUND!")
+          } else {
+            navigate(-1)   // Validate changes. Once all okay, navigate to user's previous page.
+          } 
       }
     }
     const navigateSigninOrCancel = () => {
       if (action.type === "Register") {
         navigate('/signin') 
       } else {
-        navigate(-1) 
+        navigate(-1)  
       }
     }
 
@@ -57,7 +82,7 @@ const AccountMaintenance = () => {
     <div className="d-flex container mt-5 justify-content-center" >
       <Card style={{ width: "60rem", padding: 20 }}>
         <h2 className="mb-4 center-text">{action.title}</h2>
-        <form action="" encType="multipart/form-data">
+        <form action="">
         <div className="row">
             <div className="col-9 mb-3">
           <div className="row ">
@@ -65,13 +90,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="userName" className="form-label">
                     Username*
                 </label>
-                <input id="userName" type="text" className="form-control" defaultValue={currValues.userName} />
+                <input name="userName" type="text" className="form-control" defaultValue={currValues.userName} onChange={handleAccountDetails} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="password" className="form-label" >
                     Password*
                 </label>
-                <input id="password" type="password" className="form-control" defaultValue={currValues.password} disabled={action.protect} />
+                <input name="password" type="password" className="form-control" defaultValue={currValues.password} onChange={handleAccountDetails} disabled={action.protect} />
             </div>
             
           </div>
@@ -80,13 +105,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="email" className="form-label">
                     Email*
                 </label>
-                <input id="email" type="email" className="form-control" defaultValue={currValues.email} disabled={action.protect} />
+                <input name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleAccountDetails} disabled={action.protect} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="sports" className="form-label">
                     Sports of interest*
                 </label>
-                <MultiSelect options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} labelledBy="Sports" className="form-control"/>
+                <MultiSelect options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} labelledBy="sports" className="form-control"/>
             </div>
           </div>
           <div className="row">
@@ -94,13 +119,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="firstName" className="form-label">
                     First Name*
                 </label>
-                <input id="firstName" type="text" className="form-control" defaultValue={currValues.firstName} />
+                <input name="firstName" type="text" className="form-control" defaultValue={currValues.firstName} onChange={handleAccountDetails} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="lastName" className="form-label">
                     Last Name*
                 </label>
-                <input id="lastName" type="text" className="form-control" defaultValue={currValues.lastName} />
+                <input name="lastName" type="text" className="form-control" defaultValue={currValues.lastName} onChange={handleAccountDetails} />
             </div>
           </div>
           <div className="row">
@@ -108,13 +133,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="country" className="form-label">
                     Country*
                 </label>
-                <input id="country" type="text" className="form-control" defaultValue={currValues.country} />
+                <input name="country" type="text" className="form-control" defaultValue={currValues.country} onChange={handleAccountDetails} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="phone" className="form-label">
                     Phone Number
                 </label>
-                <input id="phone" type="number" className="form-control" defaultValue={currValues.phone} />
+                <input name="phone" type="text" className="form-control" defaultValue={currValues.phone} onChange={handleAccountDetails} />
             </div>
           </div>
           <div className="row">
@@ -122,13 +147,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="city" className="form-label">
                     City*
                 </label>
-                <input id="city" type="text" className="form-control" defaultValue={currValues.city} />
+                <input name="city" type="text" className="form-control" defaultValue={currValues.city} onChange={handleAccountDetails} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="province" className="form-label">
                     Province/State*
                 </label>
-                <input id="province" type="text" className="form-control" defaultValue={currValues.province} />
+                <input name="province" type="text" className="form-control" defaultValue={currValues.province} onChange={handleAccountDetails} />
             </div>
           </div>
           </div>
@@ -138,7 +163,6 @@ const AccountMaintenance = () => {
             </label>
             {selectedImage && (
               <div>
-                {/* <img src={imageURL} alt="not found" className="img-thumbnail mb-2"/> */}
                 <img src={imageURL} alt="profile picture" className="rounded mw-100 mb-2 border border-secondary" style={{ width: "100rem", height: "13rem"}}/>
                 <button onClick={() => setSelectedImage(null)} className="btn btn-secondary mb-3" >Remove</button>
               </div>

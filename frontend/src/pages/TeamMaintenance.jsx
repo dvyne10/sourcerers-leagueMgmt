@@ -18,7 +18,7 @@ const TeamMaintenance = () => {
     const [bannerURL, setBannerURL] = useState(null);
     const [disableDelete, setDeleteButton] = useState(true)
     const [oldValues, setOldValues] = useState(null)
-    const [didPlayersChange, setPlayersChange] = useState(false)
+    const [didPlayersChange, setPlayersChanged] = useState(false)
     const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
     const positionOptions = [ {label: "Team Captain", value: "SCP01"}, {label: "Goalkeeper", value: "SCP02"}, {label: "Defender", value: "SCP03"} ]
 
@@ -74,14 +74,14 @@ const TeamMaintenance = () => {
         let newList = [...playersList]
         newList[index].position = event.target.value
         setPlayersList(newList)
-        setPlayersChange(true)
+        setPlayersChanged(true)
     }
 
     const handleJerseyChange = (event, index) => {
         let newList = [...playersList]
         newList[index].jerseyNumber = event.target.value
         setPlayersList(newList)
-        setPlayersChange(true)
+        setPlayersChanged(true)
     }
 
     const handleTeamDetails = (e) => {
@@ -94,7 +94,7 @@ const TeamMaintenance = () => {
         if (confirm(`Remove ${newList[index].playerName} from the team?\nPlease click on OK if you wish to proceed.`)) {
             newList.splice(index, 1)
             setPlayersList(newList)
-            setPlayersChange(true)
+            setPlayersChanged(true)
         } else {
             console.log("Removal cancelled")
         } 
