@@ -4,21 +4,21 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
 const LeagueMaintenance = () => {
   
+    const location = useLocation();
+    const routeParams = useParams();
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
     const [currValues, setCurrentValues] = useState({leagueName: null, description: null, location: null,
         division: null, startDate: null, endDate: null, ageGroup: null, teamsNo: "3", roundsNo: "1", 
-        // teamsList: []
-        teamsList: [ { teamId: null, teamName: null, approvedBy: null, joinedOn: null, action: null } ]
     })
+    const [teamsList, setTeamsList] = useState(null)
     const [sportSelected, setSportSelected] = useState("")
-    const location = useLocation();
-    const routeParams = useParams();
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
     const [bannerURL, setBannerURL] = useState(null);
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
     const [disableDelete, setDeleteButton] = useState(true)
+    const [oldValues, setOldValues] = useState(null)
+    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
 
     useEffect(() => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
@@ -30,20 +30,23 @@ const LeagueMaintenance = () => {
             // cannot amend number of rounds is status is ST/EN.
             setCurrentValues({leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
                 division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", teamsNo: "15", roundsNo: "2",
-                teamsList : [
-                    { teamId: 1, teamName: "Vikings", approvedBy: "Hayes Lawson", joinedOn: "2022-07-01", action: "Remove", toRemove: false },
-                    { teamId: 2, teamName: "Dodgers", approvedBy: "Cain Nunez", joinedOn: "2022-07-02", action: "Remove", toRemove: false  },
-                    { teamId: 3, teamName: "Warriors", approvedBy: "Heidi Trevino", joinedOn: "2022-07-03", action: "Remove", toRemove: false  },
-                    { teamId: 4, teamName: "Tigers", approvedBy: "Timon Kane", joinedOn: "2022-07-04", action: "Remove", toRemove: false  },
-                    { teamId: 5, teamName: "Giants", approvedBy: "Tim Gibson", joinedOn: "2022-07-05", action: "Remove", toRemove: false  },
-                ],
             })
-            setSportSelected("basketId")
+            setTeamsList([
+                { teamId: 1, teamName: "Vikings", approvedBy: "Hayes Lawson", joinedOn: "2022-07-01", action: "Remove", toRemove: false },
+                { teamId: 2, teamName: "Dodgers", approvedBy: "Cain Nunez", joinedOn: "2022-07-02", action: "Remove", toRemove: false  },
+                { teamId: 3, teamName: "Warriors", approvedBy: "Heidi Trevino", joinedOn: "2022-07-03", action: "Remove", toRemove: false  },
+                { teamId: 4, teamName: "Tigers", approvedBy: "Timon Kane", joinedOn: "2022-07-04", action: "Remove", toRemove: false  },
+                { teamId: 5, teamName: "Giants", approvedBy: "Tim Gibson", joinedOn: "2022-07-05", action: "Remove", toRemove: false  },
+            ])
+            setSportSelected("soccerId")
             setLogoURL("https://images.unsplash.com/photo-1685115560482-7ec4fb23414c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=881&q=80")
             setSelectedLogo("x")
             setBannerURL("https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBmb290YmFsbHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80")
             setSelectedBanner("x")
             // setDeleteButton(false)
+            setOldValues({ leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
+                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", teamsNo: "15", roundsNo: "2", 
+                sport: "soccerId", logo: "x", banner: "x" })
         }
     }, []);
 
@@ -61,19 +64,25 @@ const LeagueMaintenance = () => {
         setSportSelected(event.target.value);
     }
 
-    const handleRemoveTeams = (index, e) => {
-        e.preventDefault();
-        let newList = [...currValues.teamsList]
-        if (newList[index].action === "Remove" ) {
-            newList[index].toRemove = true
-            newList[index].action = "Cancel"
-            console.log("1")
+    const handleLeagueDetails = (e) => {
+        const arrOfNumerics = ["noOfTeams", "noOfRounds"]
+        const field = e.target.name
+        if (arrOfNumerics.find(e => e === field) ) {
+            setCurrentValues({ ...currValues, [field] : Number(e.target.value) })
         } else {
-            newList[index].toRemove = false
-            newList[index].action === "Remove"
-            console.log("2")  // executed but value doesn't change
+            setCurrentValues({ ...currValues, [field] : e.target.value })
         }
-        setCurrentValues({ teamsList: newList })
+    }
+
+    const handleRemoveTeams = (index) => {
+        let newList = [...teamsList]
+        newList[index].toRemove = !newList[index].toRemove
+        if (newList[index].toRemove === true ) {
+            newList[index].action = "Cancel"
+        } else {
+            newList[index].action = "Remove"
+        }
+        setCurrentValues({ newList })
     }
 
     const navigate = useNavigate(); 
@@ -84,15 +93,36 @@ const LeagueMaintenance = () => {
             navigate('/league/' + routeParams.leagueid)
         } 
     }
-    const navigateLeagueDetails = () => { navigate('/league/' + routeParams.leagueid) }
+    const navigateLeagueDetails = () => { 
+        if (action.type === "Creation") {
+            navigate('/league/' + "new league id here")
+        } else {
+            if ( oldValues.leagueName == currValues.leagueName 
+                && oldValues.description == currValues.description 
+                && oldValues.location == currValues.location 
+                && oldValues.division == currValues.division
+                && oldValues.startDate == currValues.startDate
+                && oldValues.endDate == currValues.endDate
+                && oldValues.ageGroup == currValues.ageGroup
+                && oldValues.teamsNo == currValues.teamsNo
+                && oldValues.sport == sportSelected
+                && oldValues.logo == selectedLogo
+                && oldValues.banner == selectedBanner
+            ) {
+                alert("NO CHANGES FOUND!")
+            } else {
+                navigate('/league/' + routeParams.leagueid)
+            } 
+        }
+    }
 
     const navigateDelete = () => {
-        let count = (currValues.teamsList === null ? 0 : 1)
+        let count = (teamsList === null ? 0 : 1)
         if (count !== 0) {
             alert("You cannot delete a league that has team/s or game history.")
         } else {
-            if (confirm("Please confirm if you want to proceed with league deletion.")) {
-                navigate('/league/' + routeParams.leagueid)
+            if (confirm("Please confirm if you want to proceed with deletion of this league.")) {
+                navigate('/leagues')
             } else {
                 console.log("Deletion cancelled")
             }
@@ -101,17 +131,17 @@ const LeagueMaintenance = () => {
 
     const navigateSubmitRequest = () => {
         let count = 0;
-        // let newList = [...currValues.teamsList]
-        // newList.map(team => count += (team.toRemove === true ? 1 : 0))
-        // if (count === 0) {
-        //     alert("Nothing to request.")
-        // } else {
+        let newList = [...teamsList]
+        newList.map(team => count += (team.toRemove === true ? 1 : 0))
+        if (count === 0) {
+            alert("Nothing to request.")
+        } else {
             if (confirm("Please confirm if you want to proceed to request removal of the team/s. \nThis request shall need at least half of the team admins' approval.")) {
                 navigate('/league/' + routeParams.leagueid)
             } else {
                 console.log("Request submission cancelled")
             }
-        //}
+        }
     }
 
   return (
@@ -148,13 +178,13 @@ const LeagueMaintenance = () => {
                 <label htmlFor="leagueName" className="form-label">
                     Name of League*
                 </label>
-                <input id="leagueName" type="text" className="form-control" defaultValue={currValues.leagueName} />
+                <input name="leagueName" type="text" className="form-control" defaultValue={currValues.leagueName} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
-                <label htmlFor="sports" className="form-label">
+                <label htmlFor="sport" className="form-label">
                     Sport*
                 </label>
-                <select id="sports" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
+                <select name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
                     {sportsOptions.map((option) => (
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
@@ -165,20 +195,20 @@ const LeagueMaintenance = () => {
                 <label htmlFor="description" className="form-label">
                     Description/Rules
                 </label>
-            <textarea name="description" className="form-control form-control-sm" defaultValue={currValues.description} />
+            <textarea name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleLeagueDetails} />
           </div>
           <div className="row">
             <div className="col-sm-7 mb-3">
                 <label htmlFor="location" className="form-label">
                     Location*
                 </label>
-                <input id="location" type="text" className="form-control" defaultValue={currValues.location} />
+                <input name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="division" className="form-label">
                     Division
                 </label>
-                <input id="division" type="text" className="form-control" defaultValue={currValues.division} />
+                <input name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleLeagueDetails} />
             </div>
           </div>
           <div className="row">
@@ -186,33 +216,33 @@ const LeagueMaintenance = () => {
                 <label htmlFor="startDate" className="form-label">
                     Start Date*
                 </label>
-                <input id="startDate" type="date" className="form-control" defaultValue={currValues.startDate} />
+                <input name="startDate" type="date" className="form-control" defaultValue={currValues.startDate} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
                 <label htmlFor="endDate" className="form-label">
                     End Date*
                 </label>
-                <input id="endDate" type="date" className="form-control" defaultValue={currValues.endDate} />
+                <input name="endDate" type="date" className="form-control" defaultValue={currValues.endDate} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-2 mb-3 mx-4">
                 <label htmlFor="ageGroup" className="form-label">
                     Age Group*
                 </label>
-                <input id="ageGroup" type="text" className="form-control" placeholder="18-35" defaultValue={currValues.ageGroup} />
+                <input name="ageGroup" type="text" className="form-control" placeholder="18-35" defaultValue={currValues.ageGroup} onChange={handleLeagueDetails} />
             </div>
           </div>
           <div className="row">
             <div className="col-sm-3 mb-3">
-                <label htmlFor="teams" className="form-label">
+                <label htmlFor="noOfTeams" className="form-label">
                     Number of Teams
                 </label>
-                <input id="teams" type="number" min="3" className="form-control" defaultValue={currValues.teamsNo} />
+                <input name="noOfTeams" type="number" min="3" className="form-control" defaultValue={currValues.teamsNo} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
-                <label htmlFor="rounds" className="form-label">
+                <label htmlFor="noOfRounds" className="form-label">
                     Number of Rounds
                 </label>
-                <input id="rounds" type="number" min="1" max="10" className="form-control" defaultValue={currValues.roundsNo} disabled={action.protectRounds}/>
+                <input name="noOfRounds" type="number" min="1" max="10" className="form-control" defaultValue={currValues.roundsNo} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
             </div>
           </div>
           </div>
@@ -234,7 +264,7 @@ const LeagueMaintenance = () => {
                 )}
                 <input type="file" id="logo" name="logo" className="form-control" onChange={handleLogoChange} />
             </div>
-        </div>
+          </div>
           <div className="row justify-content-center">
             <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateLeagueDetails}>
               {action.title}
@@ -248,12 +278,13 @@ const LeagueMaintenance = () => {
               Cancel
             </button>
           </div>
-            { action.type === "Update" && currValues.teamsList.length !== 0 && (
+        </form>
+        { action.type === "Update" && teamsList !== null && teamsList.length !== 0 && (
+            <div>
                 <div>
-                    <div>
-                        <br/><br/>
-                        <h5 className="mt-5 text-center"><u>Submit Request to Remove Teams</u></h5>
-                        <table className="table table-hover text-center mt-2">
+                    <br/><br/>
+                    <h5 className="mt-5 text-center"><u>Submit Request to Remove Teams</u></h5>
+                    <table className="table table-hover text-center mt-2">
                         <thead>
                             <tr>
                                 <th>Team Name</th>
@@ -263,28 +294,27 @@ const LeagueMaintenance = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currValues.teamsList.map((team, index) =>       
+                            {teamsList.map((team, index) =>       
                                 <tr key={team.teamId}>
                                     <td>{team.teamName}</td>
                                     <td>{team.approvedBy}</td>
                                     <td>{team.joinedOn}</td>
-                                    <td><button className = "btn btn-danger btn-sm" onClick={(e) => handleRemoveTeams(index, e)}>{team.action}</button></td>
+                                    <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemoveTeams(index)}>{team.action}</button></td>
                                 </tr>) 
                             }
                         </tbody>
-                        </table>
-                    </div>
-                    <div className="row justify-content-center mt-5">
-                        <button className="btn btn-warning col-3 mx-5" type="button" onClick={navigateSubmitRequest}>
-                            Submit Removal Request
-                        </button>
-                        <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateCancel}>
-                            Cancel
-                        </button>
-                    </div>
+                    </table>
                 </div>
+                <div className="row justify-content-center mt-5">
+                    <button className="btn btn-warning col-3 mx-5" type="button" onClick={navigateSubmitRequest}>
+                        Submit Removal Request
+                    </button>
+                    <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateCancel}>
+                        Cancel
+                    </button>
+                </div>
+            </div>
             )}
-        </form>
       </Card>
     </div>
   );
