@@ -142,21 +142,6 @@ const TeamMaintenance = () => {
         }
     }
 
-    // const navigateSubmitRequest = () => {
-    //     let count = 0;
-    //     let newList = [...teamsList]
-    //     newList.map(team => count += (team.toRemove === true ? 1 : 0))
-    //     if (count === 0) {
-    //         alert("Nothing to request.")
-    //     } else {
-    //         if (confirm("Please confirm if you want to proceed to request removal of the team/s. \nThis request shall need at least half of the team admins' approval.")) {
-    //             navigate('/league/' + routeParams.leagueid)
-    //         } else {
-    //             console.log("Request submission cancelled")
-    //         }
-    //     }
-    // }
-
   return (
     <div className="d-flex container mt-2 justify-content-center">
       <Card style={{ width: "60rem", padding: 20 }}>
