@@ -6,13 +6,21 @@ import AdminMatches from "../components/TabComponents/AdminMatches";
 import AdminRequests from "../components/TabComponents/AdminRequests";
 import AdminNotifications from "../components/TabComponents/AdminNotifications";
 import AdminSystemParameters from "../components/TabComponents/AdminSystemParameters";
+import useAuth from "../hooks/auth";
 
 const AdminPage = () => {
 
     const [activeTab, setActiveTab] = useState("tab1");
+    const {isSignedIn, isAdmin} = useAuth()
     
     return (
-        <div >
+      <div>
+      { !isSignedIn || !isAdmin ? (
+          <div>
+            <h1>NOT AUTHORIZED TO ACCESS THIS PAGE !!!</h1>
+          </div>
+        ) : (
+          <div >
           <ul className="nav nav-tabs">
             <li className={activeTab === "tab1" ? "nav-link active" : "nav-link"} onClick={() => setActiveTab("tab1")}>Users</li>
             <li className={activeTab === "tab2" ? "nav-link active" : "nav-link"} onClick={() => setActiveTab("tab2")}>Teams</li>
@@ -33,6 +41,8 @@ const AdminPage = () => {
                 )))))
             }
           </div>
+        </div>
+        )}
         </div>
     );
 };

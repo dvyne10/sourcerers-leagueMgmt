@@ -7,7 +7,7 @@ import useAuth from "../hooks/auth";
 const SignIn = () => {
   
   const navigate = useNavigate(); 
-  const {signIn, signOut} = useAuth()
+  const {signIn, isSignedIn} = useAuth()
 
   const [formValues, setFormValues] = useState({ username: null, password: null })
 
