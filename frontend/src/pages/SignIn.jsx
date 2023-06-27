@@ -9,7 +9,7 @@ const SignIn = () => {
   const navigate = useNavigate(); 
   const {signIn, isSignedIn} = useAuth()
 
-  const [formValues, setFormValues] = useState({ username: null, password: null })
+  const [formValues, setFormValues] = useState({ username: "", password: "" })
 
   const handleFormChange = (e) => {
     const field = e.target.name
