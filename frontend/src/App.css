@@ -6,6 +6,8 @@
   align-items: center;
 }
 
+
+
 .center-text {
   align-self: center;
 }
@@ -25,8 +27,7 @@
 .navbar-underline-animation {
  display: inline-block;
  position: relative;
- color: 
-#0087ca;
+ color: #00ad43;
 }
 
 .navbar-underline-animation:after {
@@ -65,7 +66,6 @@
     border-top-right-radius:10px;
     border-bottom-left-radius:10px;
     transition:all 500ms;
-    margin-right: 10px;
     &:after,&:before{
       content:" ";
       width:0px;
@@ -97,4 +97,27 @@
         border-color:white;
       }
     }
+  }
+
+  /* css for Home.jsx */
+  @keyframes typing {
+    from {width: 0;}
+    to {width: 100%;}
+  }
+
+  .typewriter h1 {
+    overflow: hidden; 
+    border-right: .15em solid orange; 
+    white-space: nowrap;
+    margin: 0 auto;
+    color: white; 
+    letter-spacing: .15em;
+    animation: 
+      typing 3.5s steps(40, end),
+      blink-caret .75s step-end infinite;
+  }
+
+  @keyframes blink-caret {
+    from, to {border-color: transparent}
+    50% {border-color: orange; }
   }

@@ -29,7 +29,7 @@ const LeagueMaintenance = () => {
     const navigateLeagueDetails = () => { navigate('/league/648e9013466c1c995745907c') }    // temp id only  
 
   return (
-    <div className="container mt-2">
+    <div className="d-flex container mt-2 justify-content-center">
       <Card style={{ width: "60rem", padding: 20 }}>
         <h2 className="mb-4 center-text">{action.title.toUpperCase()}</h2>
         <form action="">
