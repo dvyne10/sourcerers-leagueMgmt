@@ -2,10 +2,12 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from 'react-router-dom';
 import { useState }  from 'react';
+import useAuth from "../hooks/auth";
 
 const SignIn = () => {
   
   const navigate = useNavigate(); 
+  const {signIn, signOut} = useAuth()
 
   const [formValues, setFormValues] = useState({ username: null, password: null })
 
@@ -17,8 +19,10 @@ const SignIn = () => {
   const navigateForgotPassword = () => { navigate('/forgotpassword') }
   const navigateProfile = () => {
     if (formValues.username.toLowerCase() === "admin") {    // TEMP ONLY
+      signIn("ADMIN")
       navigate('/adminpage') 
     } else {
+      signIn()
       navigate('/myprofile') 
     }
   }
