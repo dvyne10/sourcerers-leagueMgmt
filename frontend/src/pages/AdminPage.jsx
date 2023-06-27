@@ -21,14 +21,14 @@ const AdminPage = () => {
           </div>
         ) : (
           <div >
-          <ul className="nav nav-tabs">
-            <li className={activeTab === "tab1" ? "nav-link active" : "nav-link"} onClick={() => setActiveTab("tab1")}>Users</li>
-            <li className={activeTab === "tab2" ? "nav-link active" : "nav-link"} onClick={() => setActiveTab("tab2")}>Teams</li>
-            <li className={activeTab === "tab3" ? "nav-link active" : "nav-link"} onClick={() => setActiveTab("tab3")}>Leagues</li>
-            <li className={activeTab === "tab4" ? "nav-link active" : "nav-link"} onClick={() => setActiveTab("tab4")}>Matches</li>
-            <li className={activeTab === "tab5" ? "nav-link active" : "nav-link"} onClick={() => setActiveTab("tab5")}>Requests</li>
-            <li className={activeTab === "tab6" ? "nav-link active" : "nav-link"} onClick={() => setActiveTab("tab6")}>Notifications</li>
-            <li className={activeTab === "tab7" ? "nav-link active" : "nav-link"} onClick={() => setActiveTab("tab7")}>SysParms</li>
+          <ul className="nav nav-tabs mt-2">
+            <li className={activeTab === "tab1" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => setActiveTab("tab1")}>Users</li>
+            <li className={activeTab === "tab2" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => setActiveTab("tab2")}>Teams</li>
+            <li className={activeTab === "tab3" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => setActiveTab("tab3")}>Leagues</li>
+            <li className={activeTab === "tab4" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => setActiveTab("tab4")}>Matches</li>
+            <li className={activeTab === "tab5" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => setActiveTab("tab5")}>Requests</li>
+            <li className={activeTab === "tab6" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => setActiveTab("tab6")}>Notifications</li>
+            <li className={activeTab === "tab7" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => setActiveTab("tab7")}>SysParms</li>
           </ul>
           <div className="outlet">
             {activeTab === "tab1" ? <AdminUsers /> 
