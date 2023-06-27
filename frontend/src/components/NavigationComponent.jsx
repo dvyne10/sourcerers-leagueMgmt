@@ -2,10 +2,12 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { FaFutbol, FaSearch } from 'react-icons/fa';
+import {FaSearch } from 'react-icons/fa';
 import './navigationcomponent.css';
 
 // import NavDropdown from "react-bootstrap/NavDropdown";
+
+
 
 const NavigationComponent = () => {
   return (
@@ -13,10 +15,13 @@ const NavigationComponent = () => {
       
       <Container fluid>
 
-        <Navbar.Brand href="/" >
-        <FaFutbol className="m-auto"/>
-          PlayPal
+        <Navbar.Brand href="/" className="logo-container">
+          {/* <Image src="https://ibb.co/3yZNZfS" rounded className="center-block img-fluid object-fit-cover App-logo" style={{height:"10vh", "margin-top":"10px", width:"auto"}}/> */}
+        
+          <img src="https://i.ibb.co/hDdSXY7/Playpal-lg.png" alt="Playpal-lg" border="0" style={{height:"9vh", width:"auto"}} className="original-image"/>
+          <img src="https://i.ibb.co/6RCPCvD/Playpal-dk.png" alt="Playpal-dk" border="0" style={{height:"9vh", width:"auto"}} className="dark-image"/>
         </Navbar.Brand>
+
 
         <Navbar.Toggle aria-controls="navbarScroll" className="navbar-toggle" />
         <Navbar.Collapse id="navbarScroll">

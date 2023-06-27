@@ -6,10 +6,26 @@
   align-items: center;
 }
 
+.logo-container{
 
+  & img:last-child {
+    display: none;  
 
-.center-text {
-  align-self: center;
+    
+  }
+  &:hover img:last-child {
+    display: block;  
+    border-radius: 15%;
+  }
+  &:hover img:last-child {
+    display: block;  
+    border-radius: 15%;
+    background-color: white;
+    
+  }
+  &:hover img:first-child{
+    display: none;
+  }
 }
 
 
@@ -49,11 +65,6 @@
  transform: scaleX(1);
  transform-origin: bottom middle;
 }
-
-.navbar-logo-animation{
-  
-}
-
 
 
 .trialbtn{
@@ -95,7 +106,7 @@
         
         width:100%;
         height:100%;
-        // border-color:white;
+        /* border-color:white; */
       }
     }
   }

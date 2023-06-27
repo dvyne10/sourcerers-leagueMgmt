@@ -5,6 +5,7 @@ import Contact from "../pages/Contact";
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms"; 
 import LeagueMaintenance from '../pages/LeagueMaintenance';
+import Teams from '../pages/Teams';
 import Notification from '../pages/Notification'; 
 import Profile from '../pages/Profile'; 
 import Search from '../pages/Search'; 
@@ -15,6 +16,7 @@ import ResetPassword from '../pages/ResetPassword';
 import AdminPage from '../pages/AdminPage'; 
 import AccountMaintenance from '../pages/AccountMaintenance'; 
 import LeagueDetails from '../pages/LeagueDetails'; 
+import TeamDetails from "../pages/TeamDetails";
 
 
 const routes = createBrowserRouter([
@@ -32,6 +34,16 @@ const routes = createBrowserRouter([
     path: "/league/:leagueid",
     exact: true,
     element: <LeagueDetails/>,
+  },
+  {
+    path: "/teams",
+    exact: true,
+    element: <Teams/>,
+  },
+  {
+    path: "/teamdetails",
+    exact: true,
+    element: <TeamDetails/>,
   },
   {
     path: "/players",
