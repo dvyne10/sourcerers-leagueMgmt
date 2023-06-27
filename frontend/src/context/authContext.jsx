@@ -4,22 +4,27 @@ import PropTypes from "prop-types";
 const AuthContext = createContext({});
 
 const AuthContextProvider = ({ children }) => {
-  const [value, setvalue] = useState(0);
+
+  const [isSignedIn, setSignedIn] = useState(false);
+  const [isAdmin, setAdmin] = useState(false);
+
   return (
-    <AuthContext.Provider
-      value={{
-        changeValue,
-        value,
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={{signIn, signOut, isSignedIn, isAdmin}}>
+          {children}
     </AuthContext.Provider>
   );
 
-  //this is an example function for using context in the whole app
-  async function changeValue() {
-    setvalue(value + 1);
+  async function signIn(userType) {
+    setSignedIn(true)
+    if (userType === "ADMIN") {
+      setAdmin(true)
+    }
   }
+
+  async function signOut(){
+    setSignedIn(false)
+  }
+
 };
 
 AuthContext.ProviderWrapper = AuthContextProvider;

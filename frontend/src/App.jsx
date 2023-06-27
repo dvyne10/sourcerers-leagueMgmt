@@ -10,7 +10,8 @@ import AuthContext from "./context/authContext";
 export default function App() {
 
   return (
-    <AuthContext.Provider>
+    <>
+    <AuthContext.ProviderWrapper>
       <div className="App">
         <NavigationComponent />
         <RouterProvider router={routes} />
@@ -18,6 +19,7 @@ export default function App() {
         {/* <FooterComponent /> */}
 
       </div>
-    </AuthContext.Provider>
-  );
+    </AuthContext.ProviderWrapper>
+  </>
+  );  
 }
