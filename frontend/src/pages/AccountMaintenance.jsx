@@ -50,8 +50,6 @@ const AccountMaintenance = () => {
       if (action.type === "Register") {
         navigate('/inputotp', { state: {fromPage: 'Register'}}) 
       } else {
-        console.log(oldValues.sports)
-        console.log(sportsSelected)
         let sportsSelectedValues = ""
         sportsSelected.map(i => sportsSelectedValues = sportsSelectedValues + i.value)
           if ( oldValues.userName == currValues.userName 

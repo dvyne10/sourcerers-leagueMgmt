@@ -1,6 +1,7 @@
 import Button from 'react-bootstrap/Button'; 
 //import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import {FaSearch } from 'react-icons/fa';
 
 
 const Search = () => {
@@ -43,25 +44,31 @@ const Search = () => {
     const handleSearchLocation = (input) => {changeLocation(input.target.value)}
 
   return (
-    <div className="App">
-        <div className="row">
-            <div className="col">
-                <input type="text" className="form-control" value = {searchText} onChange={handleSearchText} 
-                    placeholder="Search for teams, players, or leagues"/>
-            </div>
-            <div className="col">
-                <input type="text" className="form-control" value = {searchLocation} onChange={handleSearchLocation} 
-                    placeholder="Search by location"/>
-            </div>
-        </div>
-        <div className="container my-3 bg-light">
-            <div className="col-md-7 text-center">
-                <Button onClick={() => handleFilter('Teams')} variant={teamButton}>Teams</Button>
-                <Button onClick={() => handleFilter('Players')} variant={playerButton}>Players</Button>
-                <Button onClick={() => handleFilter('Leagues')} variant={leagueButton}>Leagues</Button>
-            </div>
+<>
+    <h1 className='center-header'>SEARCH</h1>
+    <div className='bg-light container justify-content-center align-items-center text-center'>
+    
+    <form id="search-form" className="form-inline" role="form" method="get" action="">
+    <div className="input-group">
+        <input type="text" className="w-50 form-control search-form" value = {searchText} onChange={handleSearchText} 
+                    placeholder="Search for teams, players, or leagues" />
+        <button type="submit" className="btn btn-primary me-2 search-btn" style={{"borderTopRightRadius":"50%","borderBottomRightRadius":"50%" }} data-target="#" name="q"><FaSearch className='search-btn' />
+		</button>
+        {/* Location Search Item */}
+        <input type="text" className="w-25 form-control search-form" value = {searchLocation} onChange={handleSearchLocation} 
+                    placeholder="Search by location" /> 
+        <div className="container my-3 bg-light justify-content-center align-items-center">
+      <div className="col-md-7 justify-content-center align-items-center text-center mx-auto justify-content-center align-items-center">
+             <Button className='me-2' onClick={() => handleFilter('Teams')} variant={teamButton}>Teams</Button>
+            <Button className='me-2' onClick={() => handleFilter('Players')} variant={playerButton}>Players</Button>
+           <Button className='me-2' onClick={() => handleFilter('Leagues')} variant={leagueButton}>Leagues</Button>
+       </div>
         </div>
     </div>
+</form>
+</div>
+
+</>
   );
 }
 

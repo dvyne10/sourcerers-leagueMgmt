@@ -18,11 +18,14 @@ const AuthContextProvider = ({ children }) => {
     setSignedIn(true)
     if (userType === "ADMIN") {
       setAdmin(true)
+    } else {
+      setAdmin(false)
     }
   }
 
   async function signOut(){
     setSignedIn(false)
+    setAdmin(false)
   }
 
 };

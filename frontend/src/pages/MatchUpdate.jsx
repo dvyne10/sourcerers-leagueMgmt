@@ -159,13 +159,13 @@ const MatchUpdate = () => {
             <div className="col mb-3 text-center">
                 <div className="row justify-content-center mb-3">
                     <div className="col-4">
-                        <h5 className="text-xl-center text-uppercase fw-bolder">{currValues.teamName1}</h5>
+                        <h4 className="text-xl-center text-uppercase fw-bolder">{currValues.teamName1}</h4>
                     </div>
                     <div className="col-1">
                         <h6 className="text-lg-center fw-bold">VS</h6>
                     </div>
                     <div className="col-4">
-                        <h5 className="text-xl-center text-uppercase fw-bolder">{currValues.teamName2}</h5>
+                        <h4 className="text-xl-center text-uppercase fw-bolder">{currValues.teamName2}</h4>
                     </div>
                 </div>
                 <div className="row justify-content-center mb-2">

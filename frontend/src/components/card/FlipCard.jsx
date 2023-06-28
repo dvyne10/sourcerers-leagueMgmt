@@ -2,7 +2,8 @@ import './flipCard.css';
 import './flipTransition.css';
 import PropTypes from 'prop-types'; 
 
-const FlipCard = ({onClick}) => {
+const FlipCard = ({onClick, imageUrl, cardText}) => {
+    console.log("Flip card being rendered"); 
     return (
         <div className="card" onClick={onClick}>
             <div className="card-back">
@@ -20,8 +21,8 @@ const FlipCard = ({onClick}) => {
                     <a href="https://teamwebsite.com">We Go Together</a>
                 </div>
             </div>
-            <div className="card-front">
-                Toronto Soccer Club
+            <div className="card-front" style={{backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover'}}>
+                {cardText}
             </div>
         </div>
     );
@@ -29,5 +30,7 @@ const FlipCard = ({onClick}) => {
 
 FlipCard.propTypes = {
     onClick: PropTypes.func,
+    imageUrl: PropTypes.string,
+    cardText: PropTypes.string
 }; 
 export default FlipCard; 

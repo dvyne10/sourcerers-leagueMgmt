@@ -82,7 +82,7 @@ const LeagueMaintenance = () => {
         } else {
             newList[index].action = "Remove"
         }
-        setCurrentValues({ newList })
+        setTeamsList(newList)
     }
 
     const navigate = useNavigate(); 

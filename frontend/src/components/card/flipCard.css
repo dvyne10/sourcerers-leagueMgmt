@@ -52,12 +52,11 @@
 .card-front {
     display: flex; 
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: center;
     padding-top: 10px; 
-    background-image: url('../../../soccer_pic1.jpg');
     background-position: center;
     background-repeat: no-repeat; 
-    background-size: cover; 
     border-radius: 25px; 
 }
 
@@ -67,7 +66,8 @@
     justify-content: flex-start; 
     padding-top: 10px; 
     transform: rotateY(180deg); 
-    
+    background-color: #B0E0E6;
+    border-radius: 25px; 
 }
 
 .team-link {
