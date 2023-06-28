@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 const FlipCard = ({onClick, imageUrl, cardText}) => {
     console.log("Flip card being rendered"); 
     return (
-        <div className="card" onClick={onClick}>
+        <div className="card-wrapper" onClick={onClick}>
             <div className="card-back">
                 Teams
                 <div className="team-link">
