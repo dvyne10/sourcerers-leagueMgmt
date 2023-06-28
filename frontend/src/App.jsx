@@ -15,9 +15,7 @@ export default function App() {
       <div className="App" style={{"minHeight":"100%", "paddingBottom":"60px"}}>
         <NavigationComponent />
         <RouterProvider router={routes} />
-
-        {/* <FooterComponent /> */}
-
+        <FooterComponent />
       </div>
     </AuthContext.ProviderWrapper>
   </>
