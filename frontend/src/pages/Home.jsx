@@ -3,6 +3,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick'; 
 import FlippableCard from '../components/card/FlippableCard'; 
 import {useState, useEffect} from 'react'; 
+import { MaterialReactTable } from 'material-react-table'; 
 import '../App.css'; 
 
 const Home = () => {
