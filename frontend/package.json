@@ -12,11 +12,17 @@
   "dependencies": {
     "axios": "^1.4.0",
     "bootstrap": "^5.3.0",
+<<<<<<< HEAD
     "mdbreact": "^5.2.0",
+=======
+    "chunk": "^0.0.3",
+    "material-react-table": "^1.14.0",
+>>>>>>> 736edeec189f769b0de02713b42789c76bb660a2
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.4",
     "react-dom": "^18.2.0",
     "react-icons": "^4.9.0",
+    "react-multi-select-component": "^4.3.4",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.12.0",
     "yarn": "^1.22.19"

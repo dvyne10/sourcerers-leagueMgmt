@@ -4,19 +4,25 @@ import About from "../pages/About";
 import Contact from "../pages/Contact"; 
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms"; 
+import TeamMaintenance from '../pages/TeamMaintenance';
 import LeagueMaintenance from '../pages/LeagueMaintenance';
 import Teams from '../pages/Teams';
 import Notification from '../pages/Notification'; 
 import Profile from '../pages/Profile'; 
 import Search from '../pages/Search'; 
 import Players from '../pages/Players'; 
+import ChangePassword from '../pages/ChangePassword'; 
 import ForgotPassword from '../pages/ForgotPassword'; 
 import InputOTP from '../pages/InputOTP'; 
 import ResetPassword from '../pages/ResetPassword'; 
 import AdminPage from '../pages/AdminPage'; 
 import AccountMaintenance from '../pages/AccountMaintenance'; 
 import LeagueDetails from '../pages/LeagueDetails'; 
+<<<<<<< HEAD
 import TeamDetails from "../pages/TeamDetails";
+=======
+import MatchUpdate from '../pages/MatchUpdate';
+>>>>>>> 736edeec189f769b0de02713b42789c76bb660a2
 
 
 const routes = createBrowserRouter([
@@ -61,9 +67,14 @@ const routes = createBrowserRouter([
     element: <AccountMaintenance/>,
   },
   {
-    path: "/updateaccount/:userid",
+    path: "/updateaccount",
     exact: true,
     element: <AccountMaintenance/>,
+  },
+  {
+    path: "/changepassword",
+    exact: true,
+    element: <ChangePassword />,
   },
   {
     path: "/forgotpassword",
@@ -101,6 +112,16 @@ const routes = createBrowserRouter([
     element: <Terms/>,
   },
   {
+    path: "/createteam",
+    exact: true, 
+    element: <TeamMaintenance/>,
+  },
+  {
+    path: "/updateteam/:teamid",
+    exact: true, 
+    element: <TeamMaintenance/>,
+  },
+  {
     path: "/createleague",
     exact: true, 
     element: <LeagueMaintenance/>,
@@ -109,6 +130,11 @@ const routes = createBrowserRouter([
     path: "/updateleague/:leagueid",
     exact: true, 
     element: <LeagueMaintenance/>,
+  },
+  {
+    path: "/updatematch/:matchid",
+    exact: true, 
+    element: <MatchUpdate/>,
   },
   {
     path: "/notifications",
