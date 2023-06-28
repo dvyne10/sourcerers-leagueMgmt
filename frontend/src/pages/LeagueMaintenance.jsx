@@ -4,7 +4,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
 const LeagueMaintenance = () => {
   
-    const location = useLocation();
+  
     const routeParams = useParams();
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
     const [currValues, setCurrentValues] = useState({leagueName: null, description: null, location: null,
