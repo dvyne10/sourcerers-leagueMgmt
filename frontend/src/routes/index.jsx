@@ -18,11 +18,8 @@ import ResetPassword from '../pages/ResetPassword';
 import AdminPage from '../pages/AdminPage'; 
 import AccountMaintenance from '../pages/AccountMaintenance'; 
 import LeagueDetails from '../pages/LeagueDetails'; 
-<<<<<<< HEAD
 import TeamDetails from "../pages/TeamDetails";
-=======
 import MatchUpdate from '../pages/MatchUpdate';
->>>>>>> 736edeec189f769b0de02713b42789c76bb660a2
 
 
 const routes = createBrowserRouter([
