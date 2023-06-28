@@ -2,11 +2,7 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-<<<<<<< HEAD
-import {FaSearch } from 'react-icons/fa';
-=======
-import { FaFutbol, FaSearch, FaUserCircle } from 'react-icons/fa';
->>>>>>> 736edeec189f769b0de02713b42789c76bb660a2
+import {FaSearch, FaUserCircle } from 'react-icons/fa';
 import './navigationcomponent.css';
 import Dropdown from 'react-bootstrap/Dropdown';
 import useAuth from "../hooks/auth";
@@ -22,17 +18,11 @@ const NavigationComponent = () => {
       
       <Container fluid>
 
-<<<<<<< HEAD
         <Navbar.Brand href="/" className="logo-container">
           {/* <Image src="https://ibb.co/3yZNZfS" rounded className="center-block img-fluid object-fit-cover App-logo" style={{height:"10vh", "margin-top":"10px", width:"auto"}}/> */}
         
           <img src="https://i.ibb.co/hDdSXY7/Playpal-lg.png" alt="Playpal-lg" border="0" style={{height:"9vh", width:"auto"}} className="original-image"/>
           <img src="https://i.ibb.co/6RCPCvD/Playpal-dk.png" alt="Playpal-dk" border="0" style={{height:"9vh", width:"auto"}} className="dark-image"/>
-=======
-        <Navbar.Brand href="/" >
-          <FaFutbol className="m-auto"/>
-          PlayPal
->>>>>>> 736edeec189f769b0de02713b42789c76bb660a2
         </Navbar.Brand>
 
 
