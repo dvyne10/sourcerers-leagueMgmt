@@ -82,9 +82,12 @@ const Home = () => {
       </div>
  
  
-  
+      <div style={{
+        backgroundColor: '#98BC8D',
+        width: '100%'
+      }}>
       <h6 style={{paddingTop: '5%'}}>Top 10 ongoing</h6>
-      <h1>LEAGUES 🔥🔥</h1>
+      <h1>LEAGUES 🔥</h1>
       
       <div style={{paddingLeft: '5%', paddingRight: '5%'}}>
         <Slider {...settings}>
@@ -121,7 +124,7 @@ const Home = () => {
 
         </Slider>
       </div>
-  
+      </div>
 
 
  
