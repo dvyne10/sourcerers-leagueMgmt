@@ -18,7 +18,7 @@ import ResetPassword from '../pages/ResetPassword';
 import AdminPage from '../pages/AdminPage'; 
 import AccountMaintenance from '../pages/AccountMaintenance'; 
 import LeagueDetails from '../pages/LeagueDetails'; 
-import TeamDetails from "../pages/TeamDetails";
+import TeamDetails from '../pages/TeamDetails';
 import MatchUpdate from '../pages/MatchUpdate';
 
 

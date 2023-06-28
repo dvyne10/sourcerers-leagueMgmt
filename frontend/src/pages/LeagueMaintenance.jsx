@@ -153,12 +153,6 @@ const LeagueMaintenance = () => {
                 <label htmlFor="banner" className="form-label mb-1">
                     Select Banner
                 </label>
-<<<<<<< HEAD
-                <img id="banner" className="center-block img-fluid object-fit-cover rounded mw-100" style={{ width: "100rem", height: "10rem"}} src="https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBmb290YmFsbHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80" alt="League Banner" />
-                <button id="banner" type="button" className="btn btn-secondary mt-2" >
-                    Select image
-                </button>
-=======
                 {selectedBanner && (
                     <div>
                         <img src={bannerURL} alt="League Banner" className="object-fit-cover rounded mw-100 mb-2" style={{ width: "100rem", height: "10rem"}}/>
@@ -176,7 +170,6 @@ const LeagueMaintenance = () => {
                         <input type="file" id="banner" name="banner" className="form-control" onChange={handleBannerChange} />
                     </div>
                 </div>
->>>>>>> 736edeec189f769b0de02713b42789c76bb660a2
             </div>
             <div className="row">
             <div className="col-sm-9 mb-3"> 

@@ -1,21 +1,44 @@
-
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
+import {Navbar, Nav, Col, Row} from 'react-bootstrap';
+import { FaFacebookF, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
+import Container from 'react-bootstrap/Container';
 
 const FooterComponent = () => {
   return (
-    <Navbar bg="light" expand="lg" style={{ position: 'absolute', bottom: 0, width: '100%', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+    <Container fluid className='d-flex mx-auto border-primary align-self-center'>
+<Navbar className="fixed-bottom bg-light border-top w-100">
 
-      <Nav className="mx-auto">
-        <Nav.Link href="/about">About&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
-        <Nav.Link href="/privacy">Privacy&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
-        <Nav.Link href="/terms">Terms&nbsp;&nbsp;&nbsp;&nbsp;|</Nav.Link>
-        <Nav.Link href="/contact">Contact Us</Nav.Link>
-      </Nav>
-      <div style={{ color: "lightgrey", fontSize: "14px", marginTop: "5px" }}>
-        Address | © 2023 Company. All rights reserved
-      </div>
-    </Navbar>
+  <Row className='mx-auto border-success w-100 align-items-center '> 
+    <Col className='w-100 justify-content-center align-self-center'>
+        <Nav className="mx-auto my-lg-3 justify-content-center">
+        <Nav.Item className='x-small font-weight-lighter'>2023 PlayPal. All rights reserved.</Nav.Item>
+        </Nav>
+
+        </Col>
+        
+        <Col className='w-100'>
+          <Nav
+            className="mx-auto my-lg-3 justify-content-center"
+            style={{ maxHeight: '100px' }}
+          >
+            <Nav.Link href="#action1">About</Nav.Link>
+            <Nav.Link href="#action2">Privacy</Nav.Link>
+            <Nav.Link href="#action2">Terms</Nav.Link>
+            <Nav.Link href="#action2">Contact Us</Nav.Link>
+            
+            </Nav>
+            </Col>
+            <Col className='w-100'>
+            <Nav className="justify-content-end me-5">
+            <Nav.Link><FaFacebookF /></Nav.Link>
+            <Nav.Link><FaTwitter /></Nav.Link>
+            <Nav.Link ><FaInstagram /></Nav.Link>
+            <Nav.Link><FaLinkedin /></Nav.Link>
+     </Nav>
+     </Col>
+     </Row>
+     </Navbar>
+      </Container>
+
   );
 };
 

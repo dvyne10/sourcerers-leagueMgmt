@@ -6,7 +6,14 @@
   align-items: center;
 }
 
-.logo-container{
+.center-header{
+  text-align: center;
+  font-weight: bolder;
+  padding-bottom: 2%;
+  margin-top: 2%;
+}
+
+/* .logo-container{
 
   & img:last-child {
     display: none;  
@@ -14,25 +21,18 @@
     
   }
   &:hover img:last-child {
-    display: block;  
-    border-radius: 15%;
+    display: flex;  
   }
   &:hover img:last-child {
-    display: block;  
-    border-radius: 15%;
+    display: flex;  
     background-color: white;
     
   }
   &:hover img:first-child{
     display: none;
   }
-}
+}  For testing purposes, please ignore.*/ 
 
-
-.search-btn {
-  border-radius: 0px 30px 30px 0px;
-  cursor:pointer;
-}
 
 .nav-links{
   font-size: 15px;

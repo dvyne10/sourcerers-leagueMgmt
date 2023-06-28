@@ -8,6 +8,11 @@
     transition: 0.3s;
 }
 }
+
+.gap-divider{
+  margin-top: 5%;
+  margin-bottom: 3%;
+}
 .team-upcoming-matches{
     width:20rem;
     padding:1em 2em;
