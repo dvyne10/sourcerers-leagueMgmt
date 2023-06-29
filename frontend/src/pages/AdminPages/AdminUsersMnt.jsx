@@ -2,10 +2,12 @@ import { useState, useEffect }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate } from 'react-router-dom';
 import { MultiSelect } from "react-multi-select-component";
+import useAuth from "../../hooks/auth";
 
-const AdminUsersMnt = (props) => {
+const AdminUsersMnt = () => {
   
-    const [pageLabels, handlePageLabels] = useState("");
+    const {isSignedIn, isAdmin} = useAuth()
+    const [action, handleAction] = useState("");
     const [currValues, setCurrentValues] = useState({userName: null, password: null, role: "USER", email: null, phone: null,
       firstName: null, lastName: null, country: null, city: null, province: null, teamsCreated: [], 
       requestsSent: [], notifications: [], successfulLoginDetails: [], failedLoginDetails: { failedLogins: [] }
@@ -16,10 +18,11 @@ const AdminUsersMnt = (props) => {
     const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
 
     useEffect(() => {
-        if (props.action === "creation") {
-            handlePageLabels({title: "CREATE USER ACCOUNT", button1: "Create Account"})
+        const url = window.location.pathname
+        if (url === "/adminusercreation") {
+            handleAction({type: "Creation", title: "CREATE USER ACCOUNT", button1: "Create Account"})
         } else {
-            handlePageLabels({title: "UPDATE USER ACCOUNT", button1: "Update"})
+            handleAction({type: "Update", title: "UPDATE USER ACCOUNT", button1: "Update"})
             setCurrentValues({status: "ACTV", userName: "hpotter", email: "hpotter@gmail.com", password: "991f120169ac3db7cbd57b9af5f8fb81718a14d19dc79db185160a66ec4dcd09", salt: "buFeA9ckvzI/DXBLL8PhJQ==", 
               role: "USER", adminAnnounce: [], phone: "", firstName: "Harry", lastName: "Potter", country: "United Kingdom", city: "London", province: "N/A",
               teamsCreated: ["648ba154251b78d7946df340", "648ba154251b78d7946df344"], 
@@ -53,17 +56,22 @@ const AdminUsersMnt = (props) => {
     const navigateCreateUpdate = () => { 
         // do validations first then send to server
         // Pass new/update values to parent component 
-        props.onDataChange(currValues)
+        navigate(-1)
     }
 
     const navigateCancel = () => {
-        props.onDataChange()
+        navigate(-1)
     }
 
   return (
     <div className="d-flex container mt-2 justify-content-center" >
+        { !isSignedIn || !isAdmin ? (
+          <div>
+            <h1>NOT AUTHORIZED TO ACCESS THIS PAGE !!!</h1>
+          </div>
+        ) : (
       <Card style={{ width: "70rem", padding: 20 }}>
-        <h2 className="mb-4 center-text">{pageLabels.title}</h2>
+        <h2 className="mb-4 center-text">{action.title}</h2>
         <form action="">
 
             <div className="row">
@@ -100,7 +108,7 @@ const AdminUsersMnt = (props) => {
             </div>
             <div className="row">
 
-                { props.action !== "creation" && (
+                { action !== "creation" && (
                 <>
                     <div className="col-2 text-end"><label htmlFor="teamsCreated" className="form-label" >Teams Created</label></div>
                     <div className="col mb-1">
@@ -136,7 +144,7 @@ const AdminUsersMnt = (props) => {
 
             <div className="row justify-content-center">
                 <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateCreateUpdate}>
-                    {pageLabels.button1}
+                    {action.button1}
                 </button>
                 <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateCancel}>
                     Cancel
@@ -145,6 +153,7 @@ const AdminUsersMnt = (props) => {
 
         </form>
       </Card>
+      )}
     </div>
   );
 };
