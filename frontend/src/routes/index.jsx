@@ -15,7 +15,8 @@ import ChangePassword from '../pages/ChangePassword';
 import ForgotPassword from '../pages/ForgotPassword'; 
 import InputOTP from '../pages/InputOTP'; 
 import ResetPassword from '../pages/ResetPassword'; 
-import AdminPage from '../pages/AdminPage'; 
+import AdminPage from '../pages/AdminPages/AdminMain'; 
+import AdminUsersMnt from '../pages/AdminPages/AdminUsersMnt'; 
 import AccountMaintenance from '../pages/AccountMaintenance'; 
 import LeagueDetails from '../pages/LeagueDetails'; 
 import TeamDetails from '../pages/TeamDetails';
@@ -150,7 +151,47 @@ const routes = createBrowserRouter([
     element: <Search />,
   },
   {
-    path: "/adminpage",
+    path: "/adminusers",
+    exact: true,
+    element: <AdminPage />,
+  },
+  {
+    path: "/adminusercreation",
+    exact: true,
+    element: <AdminUsersMnt />,
+  },
+  {
+    path: "/adminuserupdate/:userid",
+    exact: true,
+    element: <AdminUsersMnt />,
+  },
+  {
+    path: "/adminteams",
+    exact: true,
+    element: <AdminPage />,
+  },
+  {
+    path: "/adminleagues",
+    exact: true,
+    element: <AdminPage />,
+  },
+  {
+    path: "/adminmatches",
+    exact: true,
+    element: <AdminPage />,
+  },
+  {
+    path: "/adminrequests",
+    exact: true,
+    element: <AdminPage />,
+  },
+  {
+    path: "/adminnotifications",
+    exact: true,
+    element: <AdminPage />,
+  },
+  {
+    path: "/adminsystemparameters",
     exact: true,
     element: <AdminPage />,
   },
