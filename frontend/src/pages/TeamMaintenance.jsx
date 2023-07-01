@@ -70,16 +70,24 @@ const TeamMaintenance = () => {
         setSportSelected(event.target.value);
     }
 
-    const handlePositionChange = (event, index) => {
-        let newList = [...playersList]
-        newList[index].position = event.target.value
-        setPlayersList(newList)
-        setPlayersChanged(true)
-    }
+    // const handlePositionChange = (event, index) => {
+    //     let newList = [...playersList]
+    //     newList[index].position = event.target.value
+    //     setPlayersList(newList)
+    //     setPlayersChanged(true)
+    // }
 
-    const handleJerseyChange = (event, index) => {
+    // const handleJerseyChange = (event, index) => {
+    //     let newList = [...playersList]
+    //     newList[index].jerseyNumber = event.target.value
+    //     setPlayersList(newList)
+    //     setPlayersChanged(true)
+    // }
+
+    const handlePLayerChange = (event, index) => {
+        const field = event.target.name
         let newList = [...playersList]
-        newList[index].jerseyNumber = event.target.value
+        newList[index][field] = event.target.value
         setPlayersList(newList)
         setPlayersChanged(true)
     }
@@ -256,14 +264,14 @@ const TeamMaintenance = () => {
                                     <td>{player.playerName}</td>
                                     <td>{player.username}</td>
                                     <td>
-                                        <select name="position" className="form-control" defaultValue={player.position} onChange={(e) => handlePositionChange(e, index)}>
+                                        <select name="position" className="form-control" defaultValue={player.position} onChange={(e) => handlePLayerChange(e, index)}>
                                             {positionOptions.map((option) => (
                                                 <option value={option.value} key={option.value}>{option.label}</option>
                                             ))}
                                         </select>
                                     </td>
                                     <td>
-                                        <input name="jerseyNumber" type="number" defaultValue={player.jerseyNumber} onChange={(e) => handleJerseyChange(e, index)} style={{ width: "4rem"}}/>
+                                        <input name="jerseyNumber" type="number" defaultValue={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
                                     </td>
                                     <td>{player.joinedDate}</td>
                                     <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemovePlayer(index)}>Remove</button></td>

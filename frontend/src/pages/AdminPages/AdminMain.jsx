@@ -54,7 +54,7 @@ const AdminPage = () => {
   }
     
     return (
-      <div>
+      <div className="d-flex container mt-2 justify-content-center">
       { !isSignedIn || !isAdmin ? (
           <div>
             <h1>NOT AUTHORIZED TO ACCESS THIS PAGE !!!</h1>
