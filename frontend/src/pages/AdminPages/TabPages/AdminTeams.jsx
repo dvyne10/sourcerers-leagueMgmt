@@ -9,18 +9,17 @@ const AdminTeams = () => {
 
   useEffect(() => {
     setTeamsList([ 
-      { teamId: "648e224f91a1a82229a6c11f", teamName: "Vikings", createdBy: "648e132ff3d2cb1d615fbd9d", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
-      { teamId: "648e24201b1bedfb32de974c", teamName: "Dodgers", createdBy: "648e145df3d2cb1d615fbd9e", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
-      { teamId: "648e6ddb2b6cc0ba74f41d32", teamName: "Warriors", createdBy: "648e4ff1db2a68344fda3742", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
-      { teamId: "648e7042be708eef6f20f756", teamName: "Tigers", createdBy: "648e4ff1db2a68344fda3752", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
-      { teamId: "648e7195202d60616b612716", teamName: "Giants", createdBy: "648e4ff1db2a68344fda3762", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
-
-      { teamId: "648e80bb453c973512704aea", teamName: "Eagles", createdBy: "648e7e34db2a68344fda38fb", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
-      { teamId: "648e8201e8dd079400e51425", teamName: "Scorpions", createdBy: "648e7e34db2a68344fda3906", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
-      { teamId: "648e82d4840d5022bf9bcd18", teamName: "Bulldogs", createdBy: "648e7e34db2a68344fda3911", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
-      { teamId: "648e83dce8189cfa6d33369c", teamName: "Spartans", createdBy: "648e7e34db2a68344fda391c", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
-      { teamId: "648e8434367885750f1dcd28", teamName: "Wildcats", createdBy: "648e7e34db2a68344fda3927", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
-      { teamId: "648e84813a40bcb73584b67b", teamName: "Hyenas", createdBy: "648e7e34db2a68344fda3932", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
+      { teamId: "648e224f91a1a82229a6c11f", teamName: "Vikings", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
+      { teamId: "648e24201b1bedfb32de974c", teamName: "Dodgers", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
+      { teamId: "648e6ddb2b6cc0ba74f41d32", teamName: "Warriors", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
+      { teamId: "648e7042be708eef6f20f756", teamName: "Tigers", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
+      { teamId: "648e7195202d60616b612716", teamName: "Giants", location: "Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
+      { teamId: "648e80bb453c973512704aea", teamName: "Eagles", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
+      { teamId: "648e8201e8dd079400e51425", teamName: "Scorpions", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
+      { teamId: "648e82d4840d5022bf9bcd18", teamName: "Bulldogs", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
+      { teamId: "648e83dce8189cfa6d33369c", teamName: "Spartans", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
+      { teamId: "648e8434367885750f1dcd28", teamName: "Wildcats", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
+      { teamId: "648e84813a40bcb73584b67b", teamName: "Hyenas", location: "Toronto, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
     ])
   }, [])
 
@@ -57,10 +56,10 @@ const AdminTeams = () => {
         columns={columns} data={teamsList} enableFacetedValues initialState={{ showColumnFilters: true }}
         enableRowActions
         renderRowActionMenuItems={({ row }) => [
-          <MenuItem key="edit" onClick={() => handleGotoMntPage("EDIT",  row.original.userId)}>
+          <MenuItem key="edit" onClick={() => handleGotoMntPage("EDIT",  row.original.teamId)}>
             Edit
           </MenuItem>,
-          <MenuItem key="delete" onClick={() => handleDeleteTeam(row.original.userId)}>
+          <MenuItem key="delete" onClick={() => handleDeleteTeam(row.original.teamId)}>
             Delete
           </MenuItem>,
         ]}

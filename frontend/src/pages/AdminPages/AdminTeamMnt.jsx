@@ -1,14 +1,14 @@
 import { useState, useEffect }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate } from 'react-router-dom';
-import { MultiSelect } from "react-multi-select-component";
 import useAuth from "../../hooks/auth";
+import { FaSearchPlus } from 'react-icons/fa';
 
 const AdminTeamMnt = () => {
   
     const {isSignedIn, isAdmin} = useAuth()
     const [action, handleAction] = useState("");
-    const [currValues, setCurrentValues] = useState({teamName: null, location: null, division: null, teamContactEmail: null, description: null })
+    const [currValues, setCurrentValues] = useState({teamName: null, sport: null, location: null, division: null, email: null, description: null })
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
@@ -22,7 +22,7 @@ const AdminTeamMnt = () => {
             handleAction({type: "Creation", title: "CREATE TEAM", button1: "Create Team"})
         } else {
             handleAction({type: "Update", title: "UPDATE TEAM", button1: "Update"})
-            setCurrentValues({teamName: "Vikings", location: "York, Ontario, CA", division: "mixed", email: "vikingsteam@mail.com", description: "A team of soccer enthusiasts.", sport: "basketId",
+            setCurrentValues({teamName: "Vikings", sport: "basketId", location: "York, Ontario, CA", division: "mixed", email: "vikingsteam@mail.com", description: "A team of soccer enthusiasts.",
               players: [
                     {playerId: "648d3815252cbe610b0970d9", positionId: "648ba153251b78d7946df31e", jerseyNumber: 15, joinedDate: "2023-06-17T09:40:04.233+00:00"}, 
                     {playerId: "648d3815252cbe610b0970da", positionId: "648ba153251b78d7946df31f", jerseyNumber: 87, joinedDate: "2023-06-18T10:20:03.213+00:00"},
@@ -30,8 +30,8 @@ const AdminTeamMnt = () => {
                     {playerId: "648d3815252cbe610b0970dc", positionId: "648ba153251b78d7946df31f", jerseyNumber: 74, joinedDate: "2023-06-11T12:50:01.133+00:00"},
                     {playerId: "648d3815252cbe610b0970dd", positionId: "648ba153251b78d7946df320", jerseyNumber: 69, joinedDate: "2023-06-12T13:10:00.231+00:00"},
                 ],
-                lookingForPlayers: true, lookingForPlayersChgTmst: "2023-06-17T09:40:04.233+00:00", 
-                createdBy: "648e132ff3d2cb1d615fbd9d", createdAt: "2023-06-15T23:40:04.236+00:00", updatedAt: "2023-06-15T23:40:04.875+00:00"
+                lookingForPlayers: true, lookingForPlayersChgTmst: "2023-06-17T09:40:04.233+00:00", addPlayer: "",
+                createdBy: "648e132ff3d2cb1d615fbd9d", createdAt: "2023-06-15T23:40:04.236+00:00", updatedAt: "2023-06-15T23:40:04.875+00:00", newCreator: "", newCreatorId: ""
             })
             setLogoURL("https://images.unsplash.com/photo-1511886929837-354d827aae26?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80")
             setSelectedLogo("x")
@@ -72,6 +72,31 @@ const AdminTeamMnt = () => {
         } 
     }
 
+    const handleSearchUser = (username) => {
+        if (username !== "") {
+            const rand = Math.floor(Math.random() * 10);
+            if (rand >= 5 ) {    // find username first if valid
+                const randomId = "xn2n3824823jx3238o23s8374i8j"
+                setCurrentValues({ ...currValues, newCreatorId : randomId })
+            } else {
+                setCurrentValues({ ...currValues, newCreatorId : "" })
+                alert("USERNAME NOT FOUND!")
+            }
+        }
+    }
+
+    const handleSearchPlayer = (username) => {
+        console.log("handleSearchPlayer")
+        if (username !== "") {
+            const randomId = "83xj2udjm4fu3x2om3r342x"
+            let date = new Date()
+            date.setDate(date.getDate())
+            let newList = [...currValues.players]
+            newList.push({ playerId: randomId, positionId: null, jerseyNumber: null, joinedDate: "2023-07-07T14:03:16.292+00:00" })
+            setCurrentValues({ ...currValues, players : newList, addPlayer : "" })
+        }
+    }
+
     const navigate = useNavigate(); 
     const navigateCreateUpdate = () => { 
         // do validations first then send to server
@@ -96,18 +121,18 @@ const AdminTeamMnt = () => {
 
             <div className="row">
 
-                <div className="col-2 text-end"><label htmlFor="teamName" className="form-label">Team Name*</label></div>
-                <div className="col-4 mb-1"><input name="teamName" type="text" className="form-control" defaultValue={currValues.teamName} onChange={handleTeamDetails} /></div>
-                <div className="col-2 text-end"><label htmlFor="location" className="form-label" >Team Location*</label></div>
-                <div className="col-4 mb-1"><input name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleTeamDetails}/></div>
-                <div className="col-2 text-end"><label htmlFor="division" className="form-label" >Division</label></div>
-                <div className="col-4 mb-1"><input name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleTeamDetails}/></div>
-                <div className="col-2 text-end"><label htmlFor="email" className="form-label">Email*</label></div>
-                <div className="col-4 mb-1"><input name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleTeamDetails} /></div>
-                <div className="col-2 text-end"><label htmlFor="description" className="form-label" >Description</label></div>
-                <div className="col-10 mb-1"><textarea name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleTeamDetails}/></div>
-                <div className="col-2 text-end"><label htmlFor="sport" className="form-label" >Sport*</label></div>
-                <div className="col-4 mb-1">
+                <div className="col-2 text-end mb-2"><label htmlFor="teamName" className="form-label">Team Name*</label></div>
+                <div className="col-4 mb-2"><input name="teamName" type="text" className="form-control" defaultValue={currValues.teamName} onChange={handleTeamDetails} /></div>
+                <div className="col-2 text-end mb-2"><label htmlFor="location" className="form-label" >Team Location*</label></div>
+                <div className="col-4 mb-2"><input name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleTeamDetails}/></div>
+                <div className="col-2 text-end mb-2"><label htmlFor="division" className="form-label" >Division</label></div>
+                <div className="col-4 mb-2"><input name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleTeamDetails}/></div>
+                <div className="col-2 text-end mb-2"><label htmlFor="email" className="form-label">Email*</label></div>
+                <div className="col-4 mb-2"><input name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleTeamDetails} /></div>
+                <div className="col-2 text-end mb-2"><label htmlFor="description" className="form-label" >Description</label></div>
+                <div className="col-10 mb-2"><textarea name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleTeamDetails}/></div>
+                <div className="col-2 text-end mb-2"><label htmlFor="sport" className="form-label" >Sport*</label></div>
+                <div className="col-4 mb-2">
                     <select name="sport" className="form-control" value={currValues.sport} onChange={handleTeamDetails} >
                         {sportsOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
@@ -120,23 +145,31 @@ const AdminTeamMnt = () => {
                 { action.type !== "Creation" && (
                 <>
                     <p />
-                    <div className="col-2 text-end"><label htmlFor="lookingForPlayers" className="form-label">Looking For Players?</label></div>
-                    <div className="col-2 mb-1"><input name="lookingForPlayers" type="checkbox" className="form-check-input" defaultChecked={currValues.lookingForPlayers && "checked"} onChange={handleTeamDetails} /></div>
-                    <div className="col-4 text-end"><label htmlFor="lookingForPlayersChgTmst" className="form-label">Looking For Players Changed Timestamp</label></div>
-                    <div className="col-4 mb-1"><input name="lookingForPlayersChgTmst" type="text" className="form-control" defaultValue={currValues.lookingForPlayersChgTmst} onChange={handleTeamDetails} /></div> 
+                    <div className="col-2 text-end mb-2"><label htmlFor="lookingForPlayers" className="form-label">Looking For Players?</label></div>
+                    <div className="col-1 mb-2"><input name="lookingForPlayers" type="checkbox" className="form-check-input" defaultChecked={currValues.lookingForPlayers && "checked"} onChange={handleTeamDetails} /></div>
+                    <div className="col-2 text-end mb-2"><label htmlFor="lookingForPlayersChgTmst" className="form-label">Change Timestamp</label></div>
+                    <div className="col-4 mb-2"><input name="lookingForPlayersChgTmst" type="text" className="form-control" defaultValue={currValues.lookingForPlayersChgTmst} onChange={handleTeamDetails} /></div> 
                     <div className="row mt-3">
                         <div className="col-3 text-end"><label htmlFor="createdBy" className="form-label">Created By :</label></div>
-                        <div className="col-4 mb-1">
+                        <div className="col-4">
                             <a href={`/adminuserupdate/${currValues.createdBy}`} target="_blank" rel="noreferrer" name="createdBy" className="col-10 mb-1">{currValues.createdBy}</a>
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="col-3 text-end"><label htmlFor="createdAt" className="form-label">Date of Team Creation :</label></div>
-                        <div className="col-4 mb-1"><p className="form-label">{currValues.createdAt}</p></div>
+                    <div className="row mt-2 mb-2">
+                        <div className="col-3 text-end"><label htmlFor="newCreator" className="form-label">Change League Creator :</label></div>
+                        <div className="col-3"><input name="newCreator" type="text" className="form-control" onChange={handleTeamDetails} placeholder="Search by username" /></div>
+                        <FaSearchPlus className="col-1 mt-2" onClick={()=> handleSearchUser(currValues.newCreator)} />
+                        <div className="col-3">
+                            <a href={`/adminuserupdate/${currValues.newCreatorId}`} target="_blank" rel="noreferrer" name="newCreatorId">{currValues.newCreatorId}</a>
+                        </div>
                     </div>
-                    <div className="row">
+                    <div className="row mb-2">
+                        <div className="col-3 text-end"><label htmlFor="createdAt" className="form-label">Date of Team Creation :</label></div>
+                        <div className="col-4"><p className="form-label">{currValues.createdAt}</p></div>
+                    </div>
+                    <div className="row mb-2">
                         <div className="col-3 text-end"><label htmlFor="updatedAt" className="form-label">Team Latest Update Date :</label></div>
-                        <div className="col-4 mb-1"><p className="form-label">{currValues.updatedAt}</p></div>
+                        <div className="col-4"><p className="form-label">{currValues.updatedAt}</p></div>
                     </div>
                 </>
                 ) }
@@ -212,12 +245,21 @@ const AdminTeamMnt = () => {
                                         </select>
                                     </td>
                                     <td>
-                                        <input name="jerseyNumber" type="number" defaultValue={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
+                                        <input name="jerseyNumber" type="number" min="0" defaultValue={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
                                     </td>
                                     <td><input name="joinedDate" type="text" defaultValue={player.joinedDate} onChange={(e) => handlePLayerChange(e, index)}/></td>
                                     <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemovePlayer(index)}>Remove</button></td>
                                 </tr>) 
                             }
+                            <tr>
+                                <td>
+                                    <input name="addPlayer" type="text" value={currValues.addPlayer} onChange={handleTeamDetails} placeholder="Search username"/>
+                                </td>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td><FaSearchPlus className="m-auto" onClick={()=> handleSearchPlayer(currValues.addPlayer)} /></td>  
+                            </tr>
                         </tbody>
                     </table>
                 </div>

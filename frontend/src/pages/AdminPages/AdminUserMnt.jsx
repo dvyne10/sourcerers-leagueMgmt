@@ -98,14 +98,15 @@ const AdminUserMnt = () => {
         <h2 className="mb-4 center-text">{action.title}</h2>
         <form action="">
 
-            <div className="row">
-
+            <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="userName" className="form-label">Username*</label></div>
-                <div className="col-4 mb-1"><input name="userName" type="text" className="form-control" defaultValue={currValues.userName} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input name="userName" type="text" className="form-control" defaultValue={currValues.userName} onChange={handleAccountDetails} /></div>
                 <div className="col-2 text-end"><label htmlFor="password" className="form-label" >Password*</label></div>
-                <div className="col-4 mb-1"><input name="password" type="password" className="form-control" defaultValue={currValues.password} onChange={handleAccountDetails}/></div>
+                <div className="col-4"><input name="password" type="password" className="form-control" defaultValue={currValues.password} onChange={handleAccountDetails}/></div>
+            </div>
+            <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="role" className="form-label" >Role*</label></div>
-                <div className="col-4 mb-1">
+                <div className="col-4">
                     <select name="role" type="text" className="form-control" defaultValue={currValues.role} onChange={handleAccountDetails}>
                         {roleOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
@@ -113,22 +114,29 @@ const AdminUserMnt = () => {
                     </select>
                 </div>
                 <div className="col-2 text-end"><label htmlFor="email" className="form-label">Email*</label></div>
-                <div className="col-4 mb-1"><input name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleAccountDetails} /></div>
+            </div>
+            <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="sports" className="form-label">Sports of interest**</label></div>
-                <div className="col-4 mb-1"><MultiSelect options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} className="form-control"/></div>
+                <div className="col-4"><MultiSelect options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} className="form-control"/></div>
                 <div className="col-2 text-end"><label htmlFor="phone" className="form-label">Phone Number</label></div>
-                <div className="col-4 mb-1"><input name="phone" type="text" className="form-control" defaultValue={currValues.phone} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input name="phone" type="text" className="form-control" defaultValue={currValues.phone} onChange={handleAccountDetails} /></div>
+            </div>
+            <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="firstName" className="form-label">First Name*</label></div>
-                <div className="col-4 mb-1"><input name="firstName" type="text" className="form-control" defaultValue={currValues.firstName} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input name="firstName" type="text" className="form-control" defaultValue={currValues.firstName} onChange={handleAccountDetails} /></div>
                 <div className="col-2 text-end"><label htmlFor="lastName" className="form-label">Last Name*</label></div>
-                <div className="col-4 mb-1"><input name="lastName" type="text" className="form-control" defaultValue={currValues.lastName} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input name="lastName" type="text" className="form-control" defaultValue={currValues.lastName} onChange={handleAccountDetails} /></div>
+            </div>
+            <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="country" className="form-label"> Country**</label></div>
                 <div className="col-4 mb-1"><input name="country" type="text" className="form-control" defaultValue={currValues.country} onChange={handleAccountDetails} /></div>
                 <div className="col-2 text-end"><label htmlFor="city" className="form-label">City**</label></div>
                 <div className="col-4 mb-1"><input name="city" type="text" className="form-control" defaultValue={currValues.city} onChange={handleAccountDetails} /></div>
+            </div>
+            <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="province" className="form-label">Province/State**</label></div>
                 <div className="col-4 mb-1"><input name="province" type="text" className="form-control" defaultValue={currValues.province} onChange={handleAccountDetails} /></div>
-            
             </div>
             <div className="row">
 
@@ -138,7 +146,7 @@ const AdminUserMnt = () => {
                     <div className="col mt-3">
                         {currValues.teamsCreated.map((team) => (
                             <><a href={`/adminteamupdate/${team}`} target="_blank" rel="noreferrer" name="teamsCreated" className="col-10 mb-1" key={team}>{team}</a>
-                            <p className = "col-2"></p></>
+                            <div className = "col-2 mb-1"></div></>
                         ))}
                     </div>
                     <p/>
@@ -146,7 +154,7 @@ const AdminUserMnt = () => {
                     <div className="col mb-1">
                         {currValues.requestsSent.map((req) => (
                             <><a href={`/adminrequestupdate/${req}`} target="_blank" rel="noreferrer" name="requestsSent" className="col-10 mb-1" key={req}>{req}</a>
-                            <p className = "col-2"></p></>
+                            <div className = "col-2 mb-1"></div></>
                         ))}
                     </div>
                     <p/>
@@ -154,10 +162,10 @@ const AdminUserMnt = () => {
                     <div className="col mb-1">
                         {currValues.notifications.map((notif) => (
                             <><a href={`/adminnotificationupdate/${notif}`} target="_blank" rel="noreferrer" name="notifications" className="col-10 mb-1" key={notif}>{notif}</a>
-                            <p className = "col-2"></p></>
+                            <div className = "col-2 mb-1"></div></>
                         ))}
                     </div>
-                    <div className="row mt-2">
+                    <div className="row mt-3">
                         <div className="col-2 text-end"><label htmlFor="successfulLoginDetails" className="form-label" >Successful Logins : </label></div>
                         <div className="col-3 text-center"><label htmlFor="sourceIpAddress" className="form-label" >IP Address</label></div>
                         <div className="col-4 text-center"><label htmlFor="timestamp" className="form-label" >Timestamp</label></div>
@@ -174,21 +182,21 @@ const AdminUserMnt = () => {
                     <div className="row mt-2">
                         <div className="col-2 text-end"><label htmlFor="failedLoginDetails" className="form-label" >Failed Login Details : </label></div>
                     </div>
-                    <div className="row">
+                    <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="numberOfLoginTries" className="form-label">Number of Failed Login Tries Allowed</label></div>
-                        <div className="col-1 mb-1"><input name="numberOfLoginTries" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.numberOfLoginTries} onChange={handlefailedLoginDetails} /></div>
+                        <div className="col-1"><input name="numberOfLoginTries" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.numberOfLoginTries} onChange={handlefailedLoginDetails} /></div>
                     </div>
-                    <div className="row">
+                    <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="numberOfFailedLogins" className="form-label">Number of Failed Logins</label></div>
-                        <div className="col-1 mb-1"><input name="numberOfFailedLogins" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.numberOfFailedLogins} onChange={handlefailedLoginDetails} /></div>
+                        <div className="col-1"><input name="numberOfFailedLogins" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.numberOfFailedLogins} onChange={handlefailedLoginDetails} /></div>
                     </div>
-                    <div className="row">
+                    <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="consecutiveLockedOuts" className="form-label">Consecutive times account was locked-out</label></div>
-                        <div className="col-1 mb-1"><input name="consecutiveLockedOuts" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.consecutiveLockedOuts} onChange={handlefailedLoginDetails} /></div>
+                        <div className="col-1"><input name="consecutiveLockedOuts" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.consecutiveLockedOuts} onChange={handlefailedLoginDetails} /></div>
                     </div>
-                    <div className="row">
+                    <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="lockedOutTimestamp" className="form-label">Timestamp Account is Locked out</label></div>
-                        <div className="col-4 mb-1"><input name="lockedOutTimestamp" type="text" className="form-control" defaultValue={currValues.failedLoginDetails.lockedOutTimestamp} onChange={handlefailedLoginDetails} /></div>
+                        <div className="col-4"><input name="lockedOutTimestamp" type="text" className="form-control" defaultValue={currValues.failedLoginDetails.lockedOutTimestamp} onChange={handlefailedLoginDetails} /></div>
                     </div>
                     <div className="row mt-3">
                         <div className="col-4 text-end"><label htmlFor="failedLogins" className="form-label" >Failed Logins : </label></div>
@@ -207,21 +215,21 @@ const AdminUserMnt = () => {
                     <div className="row">
                         <div className="col-2 text-end"><label htmlFor="detailsOTP" className="form-label" >OTP Details : </label></div>
                     </div>
-                    <div className="row">
+                    <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="detailsOTP" className="form-label">One Time Password</label></div>
-                        <div className="col-2 mb-1"><input name="detailsOTP" type="number" min="0" className="form-control" defaultValue={currValues.detailsOTP} onChange={handleAccountDetails} /></div>
+                        <div className="col-2"><input name="detailsOTP" type="number" min="0" className="form-control" defaultValue={currValues.detailsOTP} onChange={handleAccountDetails} /></div>
                     </div>
-                    <div className="row">
+                    <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="expiryTimeOTP" className="form-label">OTP Expiry Timestamp</label></div>
-                        <div className="col-4 mb-1"><input name="expiryTimeOTP" type="text" className="form-control" defaultValue={currValues.expiryTimeOTP} onChange={handleAccountDetails} /></div>
+                        <div className="col-4"><input name="expiryTimeOTP" type="text" className="form-control" defaultValue={currValues.expiryTimeOTP} onChange={handleAccountDetails} /></div>
                     </div>
                     <div className="row mt-3">
                         <div className="col-3 text-end"><label htmlFor="createdAt" className="form-label">Date of Account Creation :</label></div>
-                        <div className="col-4 mb-1"><p className="form-label">{currValues.createdAt}</p></div>
+                        <div className="col-4"><p className="form-label">{currValues.createdAt}</p></div>
                     </div>
-                    <div className="row">
+                    <div className="row mb-2">
                         <div className="col-3 text-end"><label htmlFor="updatedAt" className="form-label">Account Latest Update Date :</label></div>
-                        <div className="col-4 mb-1"><p className="form-label">{currValues.updatedAt}</p></div>
+                        <div className="col-4"><p className="form-label">{currValues.updatedAt}</p></div>
                     </div>
                     <p/>
                 </>

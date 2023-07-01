@@ -18,6 +18,7 @@ import ResetPassword from '../pages/ResetPassword';
 import AdminPage from '../pages/AdminPages/AdminMain'; 
 import AdminUserMnt from '../pages/AdminPages/AdminUserMnt'; 
 import AdminTeamMnt from '../pages/AdminPages/AdminTeamMnt'; 
+import AdminLeagueMnt from '../pages/AdminPages/AdminLeagueMnt'; 
 import AccountMaintenance from '../pages/AccountMaintenance'; 
 import LeagueDetails from '../pages/LeagueDetails'; 
 import TeamDetails from '../pages/TeamDetails';
@@ -185,6 +186,16 @@ const routes = createBrowserRouter([
     path: "/adminleagues",
     exact: true,
     element: <AdminPage />,
+  },
+  {
+    path: "/adminleaguecreation",
+    exact: true,
+    element: <AdminLeagueMnt />,
+  },
+  {
+    path: "/adminleagueupdate/:leagueid",
+    exact: true,
+    element: <AdminLeagueMnt />,
   },
   {
     path: "/adminmatches",
