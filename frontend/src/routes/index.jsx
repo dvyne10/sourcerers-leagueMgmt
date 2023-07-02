@@ -19,6 +19,10 @@ import AdminPage from '../pages/AdminPages/AdminMain';
 import AdminUserMnt from '../pages/AdminPages/AdminUserMnt'; 
 import AdminTeamMnt from '../pages/AdminPages/AdminTeamMnt'; 
 import AdminLeagueMnt from '../pages/AdminPages/AdminLeagueMnt'; 
+import AdminRequestMnt from '../pages/AdminPages/AdminRequestMnt'; 
+import AdminNotifMnt from '../pages/AdminPages/AdminNotifMnt'; 
+import AdminMatchMnt from '../pages/AdminPages/AdminMatchMnt'; 
+import AdminParmMnt from '../pages/AdminPages/AdminParmMnt'; 
 import AccountMaintenance from '../pages/AccountMaintenance'; 
 import LeagueDetails from '../pages/LeagueDetails'; 
 import TeamDetails from '../pages/TeamDetails';
@@ -203,9 +207,24 @@ const routes = createBrowserRouter([
     element: <AdminPage />,
   },
   {
+    path: "/adminmatchupdate/:matchid",
+    exact: true,
+    element: <AdminMatchMnt />,
+  },
+  {
     path: "/adminrequests",
     exact: true,
     element: <AdminPage />,
+  },
+  {
+    path: "/adminrequestcreation",
+    exact: true,
+    element: <AdminRequestMnt />,
+  },
+  {
+    path: "/adminrequestupdate/:requestid",
+    exact: true,
+    element: <AdminRequestMnt />,
   },
   {
     path: "/adminnotifications",
@@ -213,9 +232,29 @@ const routes = createBrowserRouter([
     element: <AdminPage />,
   },
   {
+    path: "/adminnotifcreation",
+    exact: true,
+    element: <AdminNotifMnt />,
+  },
+  {
+    path: "/adminnotifupdate/:notifid",
+    exact: true,
+    element: <AdminNotifMnt />,
+  },
+  {
     path: "/adminsystemparameters",
     exact: true,
     element: <AdminPage />,
+  },
+  {
+    path: "/adminparmcreation",
+    exact: true,
+    element: <AdminParmMnt />,
+  },
+  {
+    path: "/adminparmupdate/:parmid",
+    exact: true,
+    element: <AdminParmMnt />,
   },
   {
     path: "*",
