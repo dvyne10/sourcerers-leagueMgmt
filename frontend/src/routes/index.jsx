@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Home, Leagues, NoPage, SignIn} from "../pages";
 import About from "../pages/About";
-import Contact from "../pages/Contact"; 
+
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms"; 
 import TeamMaintenance from '../pages/TeamMaintenance';
@@ -27,7 +27,7 @@ import AccountMaintenance from '../pages/AccountMaintenance';
 import LeagueDetails from '../pages/LeagueDetails'; 
 import TeamDetails from '../pages/TeamDetails';
 import MatchUpdate from '../pages/MatchUpdate';
-
+import MatchDetails from '../pages/MatchDetails'; 
 
 const routes = createBrowserRouter([
   {
@@ -100,11 +100,7 @@ const routes = createBrowserRouter([
     exact: true,
     element: <About/>,
   },
-  {
-    path: "/contact",
-    exact: true, 
-    element: <Contact/>,
-  },
+
   {
     path: "/privacy",
     exact: true,
@@ -139,6 +135,11 @@ const routes = createBrowserRouter([
     path: "/updatematch/:matchid",
     exact: true, 
     element: <MatchUpdate/>,
+  },
+  {
+    path: "/matchdetails",
+    exact: true,
+    element: <MatchDetails/>,
   },
   {
     path: "/notifications",
