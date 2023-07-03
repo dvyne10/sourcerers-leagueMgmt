@@ -1,7 +1,7 @@
 import LiveCard from "./LiveCard";
 import PropTypes from "prop-types";
 
-const LeagueCard = ({ name, status, totalTeams, teamsJoined }) => {
+const LeagueCard = ({ name, status, totalTeams, teamsJoined, expanded }) => {
   const active =
     status === "ongoing" || status === "finished" ? "disabled" : "";
   const backgroundColor =
@@ -20,7 +20,7 @@ const LeagueCard = ({ name, status, totalTeams, teamsJoined }) => {
             borderRadius: 5,
             border: "1px solid rgba(0, 0, 0, 0.5)",
             backgroundColor: backgroundColor,
-            margin: 3,
+            margin: 12,
           }}
         ></div>
       }
@@ -58,7 +58,7 @@ const LeagueCard = ({ name, status, totalTeams, teamsJoined }) => {
         </div>
       </div>
       <div
-        className="collapse px-5"
+        className={`collapse${expanded ? ".show" : ""} px-5`}
         id={`leagueCardCollapse-${name.split(" ").join("")}`}
       >
         <div className="card card-body d-flex flex-row overflow-auto">
@@ -92,6 +92,7 @@ LeagueCard.propTypes = {
   status: PropTypes.string,
   teamsJoined: PropTypes.number,
   totalTeams: PropTypes.number,
+  expanded: PropTypes.bool,
 };
 
 export default LeagueCard;
