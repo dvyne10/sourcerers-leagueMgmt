@@ -38,12 +38,12 @@ const Home = () => {
     () => [
       {
         accessorKey: 'title', //access nested data with dot notation
-        header: 'Title',
+        header: 'Who',
         size: 600,
       },
       {
         accessorKey: 'desc',
-        header: 'Description',
+        header: 'Message',
         size: 600,
       },
     
@@ -64,7 +64,7 @@ const Home = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
-    pauseOnHover: false,
+    pauseOnHover: true,
   }; 
 
   return (
@@ -121,7 +121,6 @@ const Home = () => {
           <div>
           <FlippableCard imageUrl="/basketball_pic6.jpg" cardText="Go Dunk"/>
           </div>
-
         </Slider>
       </div>
       </div>
