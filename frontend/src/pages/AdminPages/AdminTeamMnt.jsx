@@ -117,7 +117,7 @@ const AdminTeamMnt = () => {
         ) : (
       <Card style={{ width: "70rem", padding: 20 }}>
         <h2 className="mb-4 center-text">{action.title}</h2>
-        <form action="">
+        <form action="" encType="multipart/form-data">
 
             <div className="row">
 
@@ -193,7 +193,7 @@ const AdminTeamMnt = () => {
                             <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
                         </svg> 
                     )}
-                    <input type="file" id="logo" name="logo" className="form-control" onChange={handleLogoChange} />
+                    <input type="file" id="logo" name="logo" className="form-control" onChange={handleLogoChange} accept="image/*"/>
                 </div>
             </div>
             < div className="col mb-5 text-center">               
@@ -214,7 +214,7 @@ const AdminTeamMnt = () => {
                 )}
                 <div className="row justify-content-center">
                     <div className="col-3">
-                        <input type="file" id="banner" name="banner" className="form-control" onChange={handleBannerChange} />
+                        <input type="file" id="banner" name="banner" className="form-control" onChange={handleBannerChange} accept="image/*"/>
                     </div>
                 </div>
             </div>
@@ -266,7 +266,7 @@ const AdminTeamMnt = () => {
             </div>
         )}
         <div className="row justify-content-center">
-                <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateCreateUpdate}>
+                <button className="btn btn-dark col-2 mx-5" type="submit" onClick={navigateCreateUpdate}>
                     {action.button1}
                 </button>
                 <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateCancel}>
