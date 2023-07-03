@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Home, Leagues, NoPage, SignIn} from "../pages";
 import About from "../pages/About";
-
+import Contact from "../pages/Contact"; 
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms"; 
 import TeamMaintenance from '../pages/TeamMaintenance';
@@ -137,7 +137,7 @@ const routes = createBrowserRouter([
     element: <MatchUpdate/>,
   },
   {
-    path: "/matchdetails",
+    path: "/matchdetails/:matchid",
     exact: true,
     element: <MatchDetails/>,
   },

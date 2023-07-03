@@ -12,7 +12,7 @@ const MatchDetailsSoccer = () => {
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
   const [selectedPlayerData, setSelectedPlayerData] = useState(null);
   const navigate = useNavigate(); 
-  const navigateUpdateMatch = () => { navigate('/matchupdate/648e9013466c1c995745907c') }   // temp id only
+  const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
   const playerListOne = [
     { name: 'Lionel Messi', position: 'MF', goals: 2, assists: 0 },
     { name: 'Cristiano Ronaldo', position: 'FW', goals: 0, assists: 2 },
