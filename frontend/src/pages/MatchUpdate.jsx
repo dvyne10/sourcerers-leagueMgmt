@@ -2,11 +2,13 @@ import { useState, useEffect }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaTrash, FaSearchPlus } from 'react-icons/fa';
+import useAuth from "../hooks/auth";
 
 const MatchUpdate = () => {
   
     const location = useLocation();
     const routeParams = useParams();
+    const {isSignedIn, isAdmin} = useAuth()
 
     const [statistics, setStatistics] = useState([{ statId: null, statDesc: null}])
     const [currValues, setCurrentValues] = useState({matchId: routeParams.matchId, dateOfMatch: null, locationOfMatch: null,
@@ -26,8 +28,8 @@ const MatchUpdate = () => {
             { statId: 3, statDesc: "Shots"},
         ])
         setCurrentValues({ dateOfMatch: "2023-07-01", locationOfMatch: "York Soccer Field",
-            teamId1: 1, teamName1: "Vikings", finalScore1: 5, finalScorePending1: null, leaguePoints1: 2, leaguePointsPending1: null, disableInput1: false,
-            teamId2: 2, teamName2: "Dodgers", finalScore2: 2, finalScorePending2: null, leaguePoints2: 0, leaguePointsPending2: null, disableInput2: true,
+            teamId1: 1, teamName1: "Vikings", finalScore1: 5, finalScorePending1: 6, leaguePoints1: 2, leaguePointsPending1: 2, disableInput1: false,   // false for both if isAdmin
+            teamId2: 2, teamName2: "Dodgers", finalScore2: 2, finalScorePending2: 3, leaguePoints2: 0, leaguePointsPending2: 0, disableInput2: false,
         })
         setMatchesToUpdate1([
             { playerId: 1, username: "sMcdowell", fullName: "Scarlet Mcdowell", playerStats: [{ statId: 1, points: 2 }, { statId: 2, points: 1 }, { statId: 3, points: 1 } ] }, 
@@ -51,14 +53,6 @@ const MatchUpdate = () => {
             setCurrentValues({ ...currValues, [field] : e.target.value })
         }
     }
-
-    // const onChangeUsername = (e, playerId) => {
-    //     const { name, value } = e.target
-    //         const editData = matchesToUpdate1.map((item) =>
-    //             item.playerId === playerId && name ? { ...item, [name]: value } : item
-    //         )
-    //         setMatchesToUpdate1(editData)
-    // }
 
     const onChangeStat = (e, playerId, statId, num) => {
         let i = 0; let j = 0;
@@ -135,10 +129,11 @@ const MatchUpdate = () => {
         ) {
             alert("NO CHANGES FOUND!")
         } else {
-            if (oldValues.finalScore1 !== currValues.finalScore1
-                || oldValues.leaguePoints1 !== currValues.leaguePoints1
-                || oldValues.finalScore2 !== currValues.finalScore2
-                || oldValues.leaguePoints2 !== currValues.leaguePoints2    
+            if (!isAdmin) {
+                if (oldValues.finalScore1 !== currValues.finalScore1
+                    || oldValues.leaguePoints1 !== currValues.leaguePoints1
+                    || oldValues.finalScore2 !== currValues.finalScore2
+                    || oldValues.leaguePoints2 !== currValues.leaguePoints2    
                 ) {
                     if (confirm("Changes will require the approval of other team's admin.\nPlease click on OK if you wish to proceed.")) {
                         navigate('/match/' + routeParams.matchId )
@@ -148,6 +143,10 @@ const MatchUpdate = () => {
                 } else {
                     navigate('/match/' + routeParams.matchId )
                 }
+            } else {
+                // update changes
+                navigate(-1)
+            }
         }    
     }
     const navigateCancel = () => { navigate(-1) }
@@ -179,6 +178,19 @@ const MatchUpdate = () => {
                         <input name="finalScore2" type="number" min="0" className="form-control" defaultValue={currValues.finalScore2} onChange={handleMatchDetails} />
                     </div>
                 </div>
+                { isAdmin && (
+                    <div className="row justify-content-center mb-2">
+                        <div className="col-2">
+                            <input name="finalScorePending1" type="number" min="0" className="form-control" defaultValue={currValues.finalScorePending1} onChange={handleMatchDetails} />
+                        </div>
+                        <div className="col-3">
+                            <p className="text-lg-center fw-bold">Final Score (Pending)</p>
+                        </div>
+                        <div className="col-2">
+                            <input name="finalScorePending2" type="number" min="0" className="form-control" defaultValue={currValues.finalScorePending2} onChange={handleMatchDetails} />
+                        </div>
+                    </div>
+                ) }
                 <div className="row justify-content-center mb-3">
                     <div className="col-2">
                         <input name="leaguePoints1" type="number" min="0" className="form-control" defaultValue={currValues.leaguePoints1} onChange={handleMatchDetails} />
@@ -190,6 +202,19 @@ const MatchUpdate = () => {
                         <input name="leaguePoints2" type="number" min="0" className="form-control" defaultValue={currValues.leaguePoints2} onChange={handleMatchDetails} />
                     </div>
                 </div>
+                { isAdmin && (
+                    <div className="row justify-content-center mb-2">
+                        <div className="col-2">
+                            <input name="leaguePointsPending1" type="number" min="0" className="form-control" defaultValue={currValues.leaguePointsPending1} onChange={handleMatchDetails} />
+                        </div>
+                        <div className="col-3">
+                            <p className="text-lg-center fw-bold">League Points (Pending)</p>
+                        </div>
+                        <div className="col-2">
+                            <input name="leaguePointsPending2" type="number" min="0" className="form-control" defaultValue={currValues.leaguePointsPending2} onChange={handleMatchDetails} />
+                        </div>
+                    </div>
+                ) }
                 <div className="row justify-content-center mt-5 mb-3">
                     <div className="col-7 mb-3 text-start">
                         <label htmlFor="locationOfMatch" className="form-label text-left">

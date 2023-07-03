@@ -9,7 +9,7 @@ import Button from "react-bootstrap/Button";
 const Contact = () =>{
     return (
         <>
-                <div className="App" style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: '#F8F9FA', paddingTop: "1rem", paddingBottom: "3rem"}}>    <h1 style={{align: "center"}}>Reach Our Team</h1></div>
+                <div className="App" style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: '#F8F9FA', paddingTop: "2rem", paddingBottom: "2rem"}}>    <h1 style={{align: "center"}}>Reach Our Team</h1></div>
                 <div style={{height: '30rem',paddingTop: "2rem", paddingBottom: "1rem", textAlign: "center"}}>  
 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2879.9065880064295!2d-79.35086585076594!3d43.795551329859535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d4d3d4f601a36b%3A0x5761022224071df1!2sSeneca%20College%20(Newnham%20Campus)!5e0!3m2!1sen!2sca!4v1579279623387!5m2!1sen!2sca" width="50%" height="400px" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" title="Newnham Campus Google Map"></iframe>
 

@@ -2,14 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { useNavigate } from 'react-router-dom';
 import { Button, MenuItem } from '@mui/material';
-import AdminUsersMnt from './AdminUsersMnt';
 
 const AdminUsers = () => {
 
   const [usersList, setUsersList] = useState([])
-  const [nextPage, setNextPage] = useState("")
-  const [updateUserId, setUserIdToUpdate] = useState("")
-  const [updateData, setUpdateData] = useState({})
 
   useEffect(() => {
     setUsersList([ 
@@ -48,27 +44,14 @@ const AdminUsers = () => {
 
   const handleGotoMntPage = (action, userId) => {
     if (action === "CREATION") {
-      setNextPage("createuser")
+      navigate('/adminusercreation')
     } else {
-      setNextPage("updateuser")
-      setUserIdToUpdate(userId)
-      let newList = [...usersList]
-      let index = newList.findIndex (i => i.userId === userId);
-      setUpdateData(usersList[index])
+      navigate('/adminuserupdate/' + userId)
     }
-  }
-
-  const handleDataChange = () => {
-    alert(`Data has been added/updated or txn has been cancelled.`)
-    setNextPage("")
-    // if (action === "CREATION") {
-      //push new values to userslist. If update, update the specific record
-    //}
   }
 
   return (
     <div>
-      { nextPage === "" && (
       <MaterialReactTable
         columns={columns} data={usersList} enableFacetedValues initialState={{ showColumnFilters: true }}
         enableRowActions
@@ -86,11 +69,6 @@ const AdminUsers = () => {
           </Button>
         )}
       />
-      ) }
-      { nextPage !== "" && ( 
-          
-          nextPage === "createuser" ? <AdminUsersMnt action="creation" onDataChange={handleDataChange}/> : <AdminUsersMnt action="update" userId={updateUserId} updateData={updateData} onDataChange={handleDataChange}/>
-      ) }
     </div>
   );
 }

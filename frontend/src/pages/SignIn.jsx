@@ -20,7 +20,7 @@ const SignIn = () => {
   const navigateProfile = () => {
     if (formValues.username.toLowerCase() === "admin") {    // TEMP ONLY
       signIn("ADMIN")
-      navigate('/adminpage') 
+      navigate('/adminusers') 
     } else {
       signIn()
       navigate('/myprofile') 

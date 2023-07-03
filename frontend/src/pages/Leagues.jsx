@@ -91,6 +91,7 @@ export default function Leagues() {
           status={"ongoing"}
           totalTeams={12}
           teamsJoined={12}
+          expanded={true}
         />
         <LeagueCard
           name={"second league"}
