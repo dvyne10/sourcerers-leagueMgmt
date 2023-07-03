@@ -52,7 +52,6 @@ const MatchUpdate = () => {
         } else {
             setCurrentValues({ ...currValues, [field] : e.target.value })
         }
-        console.log(currValues.dateOfMatch)
     }
 
     const onChangeStat = (e, playerId, statId, num) => {
