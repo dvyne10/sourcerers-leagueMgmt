@@ -27,7 +27,7 @@ const MatchUpdate = () => {
             { statId: 2, statDesc: "Assists"},
             { statId: 3, statDesc: "Shots"},
         ])
-        setCurrentValues({ dateOfMatch: "2023-07-01", locationOfMatch: "York Soccer Field",
+        setCurrentValues({ dateOfMatch: "2023-07-01T14:00", locationOfMatch: "York Soccer Field",
             teamId1: 1, teamName1: "Vikings", finalScore1: 5, finalScorePending1: 6, leaguePoints1: 2, leaguePointsPending1: 2, disableInput1: false,   // false for both if isAdmin
             teamId2: 2, teamName2: "Dodgers", finalScore2: 2, finalScorePending2: 3, leaguePoints2: 0, leaguePointsPending2: 0, disableInput2: false,
         })
@@ -41,7 +41,7 @@ const MatchUpdate = () => {
             { playerId: 12, username: "oRandall", fullName: "Oprah Randall", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 0 }, { statId: 3, points: 2 }] },
             { playerId: 13, username: "mCarpenter", fullName: "Mona Carpenter", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 2 }, { statId: 3, points: 0 } ] },
         ])
-        setOldValues({ dateOfMatch: "2023-07-01", locationOfMatch: "York Soccer Field", finalScore1: 5, leaguePoints1: 2, finalScore2: 2, leaguePoints2: 0})
+        setOldValues({ dateOfMatch: "2023-07-01T14:00", locationOfMatch: "York Soccer Field", finalScore1: 5, leaguePoints1: 2, finalScore2: 2, leaguePoints2: 0})
     }, [location.pathname]);
 
     const handleMatchDetails = (e) => {
@@ -52,6 +52,7 @@ const MatchUpdate = () => {
         } else {
             setCurrentValues({ ...currValues, [field] : e.target.value })
         }
+        console.log(currValues.dateOfMatch)
     }
 
     const onChangeStat = (e, playerId, statId, num) => {
@@ -216,17 +217,17 @@ const MatchUpdate = () => {
                     </div>
                 ) }
                 <div className="row justify-content-center mt-5 mb-3">
-                    <div className="col-7 mb-3 text-start">
+                    <div className="col-6 mb-3 text-start">
                         <label htmlFor="locationOfMatch" className="form-label text-left">
                             Location of Match
                         </label>
                         <input name="locationOfMatch" type="text" className="form-control" defaultValue={currValues.locationOfMatch} onChange={handleMatchDetails} />
                     </div>
-                    <div className="col-2 mb-3 text-start">
+                    <div className="col-3 mb-3 text-start">
                         <label htmlFor="dateOfMatch" className="form-label">
                             Date of Match
                         </label>
-                        <input name="dateOfMatch" type="date" className="form-control" defaultValue={currValues.dateOfMatch} onChange={handleMatchDetails} />
+                        <input name="dateOfMatch" type="datetime-local" className="form-control" defaultValue={currValues.dateOfMatch} onChange={handleMatchDetails} />
                     </div>
                 </div>
             </div>
