@@ -1,85 +1,85 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Home, Leagues, NoPage, SignIn} from "../pages";
+import { Home, Leagues, NoPage, SignIn } from "../pages";
 import About from "../pages/About";
 import Contact from "../pages/Contact"; 
 import Privacy from "../pages/Privacy";
-import Terms from "../pages/Terms"; 
-import TeamMaintenance from '../pages/TeamMaintenance';
-import LeagueMaintenance from '../pages/LeagueMaintenance';
-import Teams from '../pages/Teams';
-import Notification from '../pages/Notification'; 
-import MyProfile from '../pages/MyProfile'; 
-import Search from '../pages/Search'; 
-import Players from '../pages/Players'; 
-import Player from '../pages/Player'; 
-import ChangePassword from '../pages/ChangePassword'; 
-import ForgotPassword from '../pages/ForgotPassword'; 
-import InputOTP from '../pages/InputOTP'; 
-import ResetPassword from '../pages/ResetPassword'; 
-import AdminPage from '../pages/AdminPages/AdminMain'; 
-import AdminUserMnt from '../pages/AdminPages/AdminUserMnt'; 
-import AdminTeamMnt from '../pages/AdminPages/AdminTeamMnt'; 
-import AdminLeagueMnt from '../pages/AdminPages/AdminLeagueMnt'; 
-import AdminRequestMnt from '../pages/AdminPages/AdminRequestMnt'; 
-import AdminNotifMnt from '../pages/AdminPages/AdminNotifMnt'; 
-import AdminMatchMnt from '../pages/AdminPages/AdminMatchMnt'; 
-import AdminParmMnt from '../pages/AdminPages/AdminParmMnt'; 
-import AccountMaintenance from '../pages/AccountMaintenance'; 
-import LeagueDetails from '../pages/LeagueDetails'; 
-import TeamDetails from '../pages/TeamDetails';
-import MatchUpdate from '../pages/MatchUpdate';
-import MatchDetails from '../pages/MatchDetails'; 
+import Terms from "../pages/Terms";
+import TeamMaintenance from "../pages/TeamMaintenance";
+import LeagueMaintenance from "../pages/LeagueMaintenance";
+import Teams from "../pages/Teams";
+import Notification from "../pages/Notification";
+import MyProfile from "../pages/MyProfile";
+import Search from "../pages/Search";
+import Players from "../pages/Players";
+import Player from "../pages/Player";
+import ChangePassword from "../pages/ChangePassword";
+import ForgotPassword from "../pages/ForgotPassword";
+import InputOTP from "../pages/InputOTP";
+import ResetPassword from "../pages/ResetPassword";
+import AdminPage from "../pages/AdminPages/AdminMain";
+import AdminUserMnt from "../pages/AdminPages/AdminUserMnt";
+import AdminTeamMnt from "../pages/AdminPages/AdminTeamMnt";
+import AdminLeagueMnt from "../pages/AdminPages/AdminLeagueMnt";
+import AdminRequestMnt from "../pages/AdminPages/AdminRequestMnt";
+import AdminNotifMnt from "../pages/AdminPages/AdminNotifMnt";
+import AdminMatchMnt from "../pages/AdminPages/AdminMatchMnt";
+import AdminParmMnt from "../pages/AdminPages/AdminParmMnt";
+import AccountMaintenance from "../pages/AccountMaintenance";
+import LeagueDetails from "../pages/LeagueDetails";
+import TeamDetails from "../pages/TeamDetails";
+import MatchUpdate from "../pages/MatchUpdate";
+import MatchDetails from "../pages/MatchDetails";
 
 const routes = createBrowserRouter([
   {
     path: "/",
     exact: true,
-    element: <Home/>,
+    element: <Home />,
   },
   {
     path: "/leagues",
     exact: true,
-    element: <Leagues/>,
+    element: <Leagues />,
   },
   {
     path: "/league/:leagueid",
     exact: true,
-    element: <LeagueDetails/>,
+    element: <LeagueDetails />,
   },
   {
     path: "/teams",
     exact: true,
-    element: <Teams/>,
+    element: <Teams />,
   },
   {
     path: "/team/:teamid",
     exact: true,
-    element: <TeamDetails/>,
+    element: <TeamDetails />,
   },
   {
     path: "/players",
     exact: true,
-    element: <Players/>,
-  }, 
+    element: <Players />,
+  },
   {
     path: "/player/:id",
     exact: true,
-    element: <Player/>,
+    element: <Player />,
   },
   {
     path: "/signin",
     exact: true,
-    element: <SignIn/>,
+    element: <SignIn />,
   },
   {
     path: "/register",
     exact: true,
-    element: <AccountMaintenance/>,
+    element: <AccountMaintenance />,
   },
   {
     path: "/updateaccount",
     exact: true,
-    element: <AccountMaintenance/>,
+    element: <AccountMaintenance />,
   },
   {
     path: "/changepassword",
@@ -104,59 +104,58 @@ const routes = createBrowserRouter([
   {
     path: "/about",
     exact: true,
-    element: <About/>,
+    element: <About />,
   },
 
   {
     path: "/privacy",
     exact: true,
-    element: <Privacy/>,
+    element: <Privacy />,
   },
   {
     path: "/terms",
     exact: true,
-    element: <Terms/>,
+    element: <Terms />,
   },
   {
     path: "/createteam",
-    exact: true, 
-    element: <TeamMaintenance/>,
+    exact: true,
+    element: <TeamMaintenance />,
   },
   {
     path: "/updateteam/:teamid",
-    exact: true, 
-    element: <TeamMaintenance/>,
+    exact: true,
+    element: <TeamMaintenance />,
   },
   {
     path: "/createleague",
-    exact: true, 
-    element: <LeagueMaintenance/>,
+    exact: true,
+    element: <LeagueMaintenance />,
   },
   {
     path: "/updateleague/:leagueid",
-    exact: true, 
-    element: <LeagueMaintenance/>,
+    exact: true,
+    element: <LeagueMaintenance />,
   },
   {
     path: "/updatematch/:matchid",
-    exact: true, 
-    element: <MatchUpdate/>,
+    exact: true,
+    element: <MatchUpdate />,
   },
   {
     path: "/matchdetails/:matchid",
     exact: true,
-    element: <MatchDetails/>,
+    element: <MatchDetails />,
   },
   {
     path: "/notifications",
     exact: true,
-    element: <Notification/>,
+    element: <Notification />,
   },
   {
-
     path: "/myprofile",
-    exact: true, 
-    element: <MyProfile/>,
+    exact: true,
+    element: <MyProfile />,
   },
   {
     path: "/search",
@@ -264,9 +263,13 @@ const routes = createBrowserRouter([
     element: <AdminParmMnt />,
   },
   {
+    path: "/notification",
+    element: <Notification />,
+  },
+  {
     path: "*",
     exact: true,
-    element: <NoPage/>,
+    element: <NoPage />,
   },
 ]);
 

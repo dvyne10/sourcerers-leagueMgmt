@@ -1,7 +1,7 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { FaSearch, FaUserCircle } from "react-icons/fa";
+import { FaSearch, FaUserCircle, FaBell } from "react-icons/fa";
 import { Col, Row } from "react-bootstrap";
 import "./navigationcomponent.css";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -65,7 +65,7 @@ const NavigationComponent = () => {
                   href="/players"
                   className="navbar-underline-animation"
                 >
-                  Players
+                  Player
                 </Nav.Link>
               </Nav>
 
@@ -75,6 +75,14 @@ const NavigationComponent = () => {
                     <FaSearch className="m-auto" />
                   </span>
                 </Nav.Link>
+
+                {isSignedIn === true && (
+                  <Nav.Link href="/notification" className="nav-links">
+                    <span className="trialbtn">
+                      <FaBell className="m-auto" />
+                    </span>
+                  </Nav.Link>
+                )}
 
                 {isSignedIn === false && (
                   <Nav.Link href="/signin" className="nav-links">
