@@ -17,6 +17,8 @@ const AdminUserMnt = () => {
     const [imageURL, setImageURL] = useState(null);
     const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
     const roleOptions = [ {label: "Regular user", value: "USER"}, {label: "System admin", value: "ADMIN"} ]
+    const accountStatus = [ {label: "Active", value: "ACTV"}, {label: "Banned", value: "BAN"},
+        {label: "Suspended", value: "SUSP"}, {label: "Locked", value: "LOCK"}, {label: "Pending", value: "PEND"} ]
 
     useEffect(() => {
         const url = window.location.pathname
@@ -98,6 +100,18 @@ const AdminUserMnt = () => {
         <h2 className="mb-4 center-text">{action.title}</h2>
         <form action="">
 
+            { action.type !== "Creation" && (
+                <div className = "row mb-2">
+                    <div className="col-2 text-end"><label htmlFor="status" className="form-label" >Account status*</label></div>
+                    <div className="col-4">
+                        <select name="status" type="text" className="form-control" value={currValues.status} onChange={handleAccountDetails}>
+                            {accountStatus.map((option) => (
+                                <option value={option.value} key={option.value}>{option.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            )}
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="userName" className="form-label">Username*</label></div>
                 <div className="col-4"><input name="userName" type="text" className="form-control" defaultValue={currValues.userName} onChange={handleAccountDetails} /></div>
@@ -107,7 +121,7 @@ const AdminUserMnt = () => {
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="role" className="form-label" >Role*</label></div>
                 <div className="col-4">
-                    <select name="role" type="text" className="form-control" defaultValue={currValues.role} onChange={handleAccountDetails}>
+                    <select name="role" type="text" className="form-control" value={currValues.role} onChange={handleAccountDetails}>
                         {roleOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
                         ))}

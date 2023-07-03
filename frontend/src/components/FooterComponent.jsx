@@ -4,8 +4,8 @@ import Container from 'react-bootstrap/Container';
 
 const FooterComponent = () => {
   return (
-    <Container fluid className='d-flex mx-auto border-primary align-self-center'>
-<Navbar className="fixed-bottom bg-light border-top w-100">
+    <Container fluid className='d-flex mx-auto border-primary footer'>
+<Navbar className="bg-light border-top w-100">
 
   <Row className='mx-auto border-success w-100 align-items-center '> 
     <Col className='w-100 justify-content-center align-self-center'>

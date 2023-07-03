@@ -12,7 +12,7 @@ export default function App() {
   return (
     <>
     <AuthContext.ProviderWrapper>
-      <div className="App" style={{"minHeight":"100vh", "paddingBottom":"150px"}}>
+      <div className="App">
         <NavigationComponent />
         <RouterProvider router={routes} />
         <FooterComponent />
