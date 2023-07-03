@@ -2,9 +2,12 @@ import './flipCard.css';
 import './flipTransition.css';
 import PropTypes from 'prop-types'; 
 import { useNavigate } from 'react-router-dom';
+
 const FlipCard = ({onClick, imageUrl, cardText}) => {
     const navigate = useNavigate(); 
-    const navigateTeamLinks = () => { navigate('/matchupdate/648e9013466c1c995745907c') } 
+    const navigateTeamLinks = (teamId) => {
+        navigate(`/team/${teamId}`);
+    }
 
     console.log("Flip card being rendered"); 
     return (
@@ -12,16 +15,16 @@ const FlipCard = ({onClick, imageUrl, cardText}) => {
             <div className="card-back">
                 Teams
                 <div className="team-link">
-                    <a href={{navigateTeamLinks}}>Dragon Fire</a>
+                    <a onClick={() => navigateTeamLinks('Dragon Fire')}>Dragon Fire</a>
                 </div>
                 <div className="team-link">
-                    <a href={{navigateTeamLinks}}>Real Madrid</a>
+                    <a onClick={() => navigateTeamLinks('Real Madrid')}>Real Madrid</a>
                 </div>
                 <div className="team-link">
-                    <a href={{navigateTeamLinks}}>Manchester United</a>
+                    <a onClick={() => navigateTeamLinks('Manchester United')}>Manchester United</a>
                 </div>
                 <div className="team-link">
-                    <a href={{navigateTeamLinks}}>We Go Together</a>
+                    <a onClick={() => navigateTeamLinks('We Go Together')}>We Go Together</a>
                 </div>
             </div>
             <div className="card-front" style={{backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover'}}>
@@ -36,4 +39,5 @@ FlipCard.propTypes = {
     imageUrl: PropTypes.string,
     cardText: PropTypes.string
 }; 
+
 export default FlipCard; 
