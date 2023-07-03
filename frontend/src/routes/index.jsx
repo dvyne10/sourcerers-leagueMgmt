@@ -14,7 +14,7 @@ import Players from "../pages/Players";
 import Player from "../pages/Player";
 import ChangePassword from "../pages/ChangePassword";
 import ForgotPassword from "../pages/ForgotPassword";
-import InputOTP from "../pages/InputOTP";
+import InputOTP from "../pages/InputOtp";
 import ResetPassword from "../pages/ResetPassword";
 import AdminPage from "../pages/AdminPages/AdminMain";
 import AdminUserMnt from "../pages/AdminPages/AdminUserMnt";

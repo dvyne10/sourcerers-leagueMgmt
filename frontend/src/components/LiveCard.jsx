@@ -7,7 +7,7 @@ const LiveCard = () => {
           style={{ width: 80, height: 80, borderRadius: 40, marginRight: 20 }}
         >
           <img
-            src="/src/assets/images/manu.png"
+            src="/images/manu.png"
             style={{ objectFit: "cover", width: "100%", height: "100%" }}
             alt=""
           />
@@ -24,7 +24,7 @@ const LiveCard = () => {
           }}
         >
           <img
-            src="/src/assets/images/madrid.png"
+            src="/images/madrid.png"
             style={{
               objectFit: "cover",
               width: "100%",
