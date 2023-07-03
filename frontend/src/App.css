@@ -1,9 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500&display=swap');
+
 .card-wrapper {
   display: flex;
   width: auto;
   height: 60vh;
   justify-content: center;
   align-items: center;
+}
+
+.general-link-no-dec{
+  text-decoration: none;
+  color: black;
+}
+
+aside#sidebar .team-btw-match ul li.vs span {
+	background: transparent !important;
+	display: flex;
+	height: 100%;
+	min-height: 50px;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+
+.zoom-in-style:hover{
+  transform: scale(1.5);
+  transition: 0.3s;
+  border: 2px white;
+  background-color: white;
+  color: black;
+}
+
+.link-over-to-left {
+  color: white;
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+}
+
+.link-over-to-left::before,
+.link-over-to-left::after {
+ content: '';
+  position: absolute;
+  width: 100%;
+  left: 0;
+}
+.link-over-to-left::before {
+  background-color: black;
+  height: 2px;
+  bottom: 0;
+  transform-origin: 100% 50%;
+  transform: scaleX(0);
+  transition: transform .3s ;
+}
+.link-over-to-left::after {
+  content: attr(data-replace);
+  font-size: 25px;
+  font-weight: bold;
+  height: 100%;
+  top: 0;
+  transform-origin: 100% 50%;
+  transform: translate3d(200%, 0, 0);
+  transition: transform .3s ;
+  background-color: rgba(255,255,255,.30);
+  color: black;
+}
+
+.link-over-to-left:hover::before {
+  transform-origin: 0% 100%;
+  transform: scaleX(1);
+}
+.link-over-to-left:hover::after {
+  transform: translate3d(0, 0, 0);
+}
+
+.link-over-to-left span {
+  display: inline-block;
+  transition: transform .3s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.link-over-to-left:hover span {
+  transform: translate3d(-200%, 0, 0);
 }
 
 .center-header {
@@ -13,25 +90,41 @@
   margin-top: 2%;
 }
 
-/* .logo-container{
+.team-list-container
+{
+  background-color: rgba(0,0,0,0.50);
 
-  & img:last-child {
-    display: none;  
+&:hover{
+  background-color: rgba(0,0,0,0.20)
+}
+}
+.player-list-container
+{
+  background-color: rgba(37,38,46,1);
 
-    
-  }
-  &:hover img:last-child {
-    display: flex;  
-  }
-  &:hover img:last-child {
-    display: flex;  
-    background-color: white;
-    
-  }
-  &:hover img:first-child{
-    display: none;
-  }
-}  For testing purposes, please ignore.*/
+&:hover{
+  background-color: rgba(37,38,46,0.8);
+}
+}
+
+
+body {
+  overflow-y: scroll; /* Show scrollbars */
+}
+
+.App {
+  position: relative;
+  margin: 0;
+  padding-bottom: 11rem;
+  min-height: 100vh;
+}
+.footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+}
 
 .center-text {
   align-self: center;
@@ -73,6 +166,7 @@
   transform-origin: bottom middle;
 }
 
+/* Search and Sign in buttons effects */
 .trialbtn {
   cursor: pointer;
   position: relative;
@@ -115,8 +209,7 @@
       height: 100%;
       /* border-color:white; */
     }
-    .navbar-logo-animation {
-    }
+
 
     .trialbtn {
       cursor: pointer;

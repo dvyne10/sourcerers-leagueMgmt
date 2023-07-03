@@ -8,9 +8,10 @@ import TeamMaintenance from '../pages/TeamMaintenance';
 import LeagueMaintenance from '../pages/LeagueMaintenance';
 import Teams from '../pages/Teams';
 import Notification from '../pages/Notification'; 
-import Profile from '../pages/Profile'; 
+import MyProfile from '../pages/MyProfile'; 
 import Search from '../pages/Search'; 
 import Players from '../pages/Players'; 
+import Player from '../pages/Player'; 
 import ChangePassword from '../pages/ChangePassword'; 
 import ForgotPassword from '../pages/ForgotPassword'; 
 import InputOTP from '../pages/InputOTP'; 
@@ -51,7 +52,7 @@ const routes = createBrowserRouter([
     element: <Teams/>,
   },
   {
-    path: "/teamdetails",
+    path: "/team/:teamid",
     exact: true,
     element: <TeamDetails/>,
   },
@@ -59,6 +60,11 @@ const routes = createBrowserRouter([
     path: "/players",
     exact: true,
     element: <Players/>,
+  }, 
+  {
+    path: "/player/:id",
+    exact: true,
+    element: <Player/>,
   },
   {
     path: "/signin",
@@ -148,9 +154,9 @@ const routes = createBrowserRouter([
   },
   {
 
-    path: "/profile",
+    path: "/myprofile",
     exact: true, 
-    element: <Profile/>,
+    element: <MyProfile/>,
   },
   {
     path: "/search",

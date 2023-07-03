@@ -61,10 +61,10 @@ function TeamDetails() {
 
 {teamMembers.map((teamMember)=>{
 return(
-    <div className="row col mt-2 pb-2 mx-auto text-align-center justify-content-center col-md-3" style={{"width":"15em"}} key={teamMember.id} >
-    <Card className='border-0 text-center team-player-information'>
+    <div className="row col mt-2 pb-2 mx-auto text-align-center justify-content-center col-md-3" style={{"width":"15em", minHeight:"15em"}} key={teamMember.id} >
+    <a href={'/player/'+`${teamMember.id}`} className='general-link-no-dec'><Card className='border-0 team-player-information'>
       
-    <Card.Img className='d-none d-sm-block mx-auto border shadow object-fit-cover rounded-circle mt-2 img-thumbnail shadow-md'  style={{ "height": "8em", "width": "8em"}} src={teamMember.imurl} />
+    <Card.Img className='d-none d-sm-block mx-auto border shadow object-fit-cover rounded-circle mt-2 img-thumbnail shadow-md'  style={{ "height": "6em", "width": "6em"}} src={teamMember.imurl} />
             
             <Card.Body>
               <Card.Title>{teamMember.body}</Card.Title>
@@ -74,6 +74,7 @@ return(
             </Card.Body>
 
             </Card>
+            </a>
             </div>
             
 )})
@@ -99,22 +100,31 @@ return(
           <h4 className='center-header'>Upcoming Matches</h4><hr />
     <ul>
       <li className='active-game-hover'>
+      <a href='/matchdetails' className='general-link-no-dec'>
         <span className='active-game'>21st June 2023</span>
         <div className="content">
+        
           <h3>Arsenal</h3>
         </div>
+        </a>
       </li>
+      
       <li className='past-game-hover'>
+      <a href='/matchdetails' className='general-link-no-dec'>
         <span className='past-game'>15th April 2023</span>
         <div className="content">
           <h3>Barcelona</h3>
         </div>
+        </a>
       </li>
+      
       <li className='past-game-hover'>
+      <a href='/matchdetails' className='general-link-no-dec'>
         <span className='past-game'>22nd March 2023</span>
         <div className="content">
           <h3>Real Madrid</h3>
         </div>
+        </a>
       </li>
     </ul>
   </div>
