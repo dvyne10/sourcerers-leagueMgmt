@@ -267,6 +267,10 @@ const routes = createBrowserRouter([
     element: <Notification />,
   },
   {
+    path: "/contact",
+    element: <Contact />,
+  },
+  {
     path: "*",
     exact: true,
     element: <NoPage />,
