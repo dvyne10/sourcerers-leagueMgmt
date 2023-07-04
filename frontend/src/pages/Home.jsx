@@ -133,7 +133,19 @@ const Home = () => {
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2%', paddingBottom: '2%', backgroundColor: '#FEF9C7'}}>
         <h1>ANNOUNCEMENTS</h1>
       
-          <MaterialReactTable columns={columns} data={data}/>
+        <MaterialReactTable
+  columns={columns}
+  data={data}
+  muiTableBodyProps={{
+    sx: {
+      // Highlight the first row
+      '& tr:nth-of-type(1)': {
+        backgroundColor: 'yellow',
+      },
+    },
+  }}
+/>
+
 
      
        </div>
