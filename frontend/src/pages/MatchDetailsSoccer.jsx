@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { BsFillPersonFill } from 'react-icons/bs';
 import soccerField from '/football_field.jpg';
 import soccerBackground from '/football_background.jpg';
-import teamLogo1 from '/logo_1.jpeg'; 
-import teamLogo2 from '/logo_2.png';
+import teamLogo1 from '/madrid.png'; 
+import teamLogo2 from '/barcelona.png';
 import { Button, Image}  from 'react-bootstrap'; 
 import { useNavigate} from 'react-router-dom';
 
@@ -55,15 +55,16 @@ const MatchDetailsSoccer = () => {
         
         <div onClick={() => navigate('/team/:teamid')}
              style={{
-                    backgroundColor: '#fffff7',
+                    backgroundColor: '#9FEDD7',
                     width: '20%',
                     height: '15vh',
                     marginLeft: '10%',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    background: '#fffff7 url(' + teamLogo1 + ') center center no-repeat',
+                    background: '#9FEDD7 url(' + teamLogo1 + ') center center no-repeat',
                     backgroundSize: 'contain',
+                    borderRadius: '10px'
                     }}>
         </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#9FEDD7', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
@@ -78,15 +79,16 @@ const MatchDetailsSoccer = () => {
           </div>
           <div onClick={() => navigate('/team/:teamid')}
                style={{
-                    backgroundColor: '#fffff7',
+                    backgroundColor: '#9FEDD7',
                     width: '20%',
                     height: '15vh',
                     marginRight: '10%',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    background: '#fffff7 url(' + teamLogo2 + ') center center no-repeat',
+                    background: '#9FEDD7 url(' + teamLogo2 + ') center center no-repeat',
                     backgroundSize: 'contain',
+                    borderRadius: '10px'
                     }}>
             </div>
         </div>

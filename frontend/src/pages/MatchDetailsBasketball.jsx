@@ -63,6 +63,9 @@ const MatchDetailsBasketball = () => {
                     alignItems: 'center',
                     background: '#9FEDD7 url(' + teamLogo1 + ') center center no-repeat',
                     backgroundSize: 'contain',
+                    borderTopLeftRadius: '10px',
+                    borderBottomLeftRadius: '10px'
+
                     }}>
         </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#9FEDD7', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
@@ -86,6 +89,8 @@ const MatchDetailsBasketball = () => {
                     alignItems: 'center',
                     background: '#9FEDD7 url(' + teamLogo2 + ') center center no-repeat',
                     backgroundSize: 'contain',
+                    borderTopRightRadius: '10px',
+                    borderBottomRightRadius: '10px'
                     }}>
             </div>
         </div>
