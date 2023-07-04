@@ -69,7 +69,7 @@ const MatchDetailsSoccer = () => {
                     }}>
         </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#9FEDD7', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
-            <div style={{paddingRight: '5%'}}>
+            <div style={{paddingRight: '6%'}}>
               <span>Real Madrid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
               <span style={{ color: '#3b3c4c' }}>2&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
               <span>Barcelona</span> <br/>
