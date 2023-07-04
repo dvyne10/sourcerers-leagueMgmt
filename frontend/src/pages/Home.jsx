@@ -83,7 +83,7 @@ const Home = () => {
  
  
       <div style={{
-        backgroundColor: '#98BC8D',
+        backgroundColor: '#9FEDD7',
         width: '100%'
       }}>
       <h6 style={{paddingTop: '5%'}}>Top 10 ongoing</h6>
@@ -127,16 +127,16 @@ const Home = () => {
 
 
  
-      <br/><br/>
+     
     
        
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2%', paddingBottom: '2%', backgroundColor: '#FEF9C7'}}>
         <h1>ANNOUNCEMENTS</h1>
       
           <MaterialReactTable columns={columns} data={data}/>
 
      
-    </div>
+       </div>
 
 
     </div>
