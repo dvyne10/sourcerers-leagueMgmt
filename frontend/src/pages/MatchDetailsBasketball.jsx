@@ -121,7 +121,7 @@ const MatchDetailsBasketball = () => {
             ))}
           </div>
           <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
-            <div style={{ backgroundImage: `url(${basketballField})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
+            <div style={{ backgroundImage: `url(${basketballField})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '100%', height: '100%'}}>
             <div style={{ display: 'flex', justifyContent: 'center'}}>
           <div style={{ paddingTop: '26%'}}>
             {playerListOne.map((player, index) => (
