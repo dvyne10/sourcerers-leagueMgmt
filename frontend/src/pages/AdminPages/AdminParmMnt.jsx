@@ -8,7 +8,7 @@ const AdminParmMnt = () => {
   
     const {isSignedIn, isAdmin} = useAuth()
     const [action, handleAction] = useState("");
-    const [currValues, setCurrentValues] = useState({})
+    const [currValues, setCurrentValues] = useState({parameterId: "sport"})
     const canBeAddedParms = ["sport", "statistic", "position", "notification_type" ]
     const sportsOptions = [ {label: "Soccer", value: "648ba153251b78d7946df311"}, {label: "Basketball", value: "648ba153251b78d7946df322"} ]
     const notifType = [ {label: "Informational notification only", value: "INFO"}, {label: "For approval only", value: "APRV"}, {label: "For approval or reject", value: "APRVREJ"} ]
