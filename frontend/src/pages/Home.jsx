@@ -83,7 +83,7 @@ const Home = () => {
  
  
       <div style={{
-        backgroundColor: '#9FEDD7',
+       
         width: '100%'
       }}>
       <h6 style={{paddingTop: '5%'}}>Top 10 ongoing</h6>
@@ -130,7 +130,7 @@ const Home = () => {
      
     
        
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2%', paddingBottom: '2%', backgroundColor: '#FEF9C7'}}>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2%', paddingBottom: '2%'}}>
         <h1>ANNOUNCEMENTS</h1>
       
         <MaterialReactTable
@@ -140,7 +140,7 @@ const Home = () => {
     sx: {
       // Highlight the first row
       '& tr:nth-of-type(1)': {
-        backgroundColor: 'yellow',
+        backgroundColor: '#FEF9C7',
       },
     },
   }}
