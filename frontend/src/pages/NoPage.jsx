@@ -6,7 +6,7 @@ const NoPage = () => {
 
     return (<>
 
-    <div className="d-flex align-items-center justify-content-center vh-100" style={{paddingTop: "7rem",}}>
+    <div className="d-flex justify-content-center vh-100" style={{paddingTop: "10rem",}}>
             <div className="text-center">
                 <h1 className="display-1 fw-bold">404</h1>
                 <p className="fs-3"> <span className="text-danger">Opps!</span> Page not found.</p>
