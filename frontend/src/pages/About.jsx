@@ -11,23 +11,25 @@ const About = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: "7rem",
+          paddingTop: "2rem",
           paddingBottom: "50px",
         }}
       >
-        <h1 style={{ align: "center" }}>ABOUT US</h1>
+        <h1 style={{ align: "center"}}>ABOUT US</h1>
       </div>
       <div
         className="d-flex justify-content-center"
         style={{
           alignItems: "center",
-          backgroundColor: "#F8F9FA",
+          backgroundColor: "#D1E8E2",
           paddingTop: "5rem",
           paddingLeft: "5rem",
           paddingRight: "5rem",
+          paddingBottom: "5rem",
         }}
       >
-        <Card style={{ width: "20rem" }}>
+      
+        <Card>
           <Card.Img
             variant="top"
             src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
@@ -39,10 +41,10 @@ const About = () => {
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam.
             </Card.Text>
-            <Button variant="primary">URL</Button>
+            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
           </Card.Body>
         </Card>
-        <Card style={{ width: "20rem" }}>
+        <Card>
           <Card.Img
             variant="top"
             src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
@@ -54,10 +56,10 @@ const About = () => {
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam.
             </Card.Text>
-            <Button variant="primary">URL</Button>
+            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
           </Card.Body>
         </Card>
-        <Card style={{ width: "20rem" }}>
+        <Card>
           <Card.Img
             variant="top"
             src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
@@ -69,10 +71,10 @@ const About = () => {
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam.
             </Card.Text>
-            <Button variant="primary">URL</Button>
+            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
           </Card.Body>
         </Card>
-        <Card style={{ width: "20rem" }}>
+        <Card>
           <Card.Img
             variant="top"
             src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
@@ -84,10 +86,10 @@ const About = () => {
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam.
             </Card.Text>
-            <Button variant="primary">URL</Button>
+            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
           </Card.Body>
         </Card>
-        <Card style={{ width: "20rem" }}>
+        <Card>
           <Card.Img
             variant="top"
             src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
@@ -99,9 +101,10 @@ const About = () => {
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
               enim ad minim veniam.
             </Card.Text>
-            <Button variant="primary">URL</Button>
+            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
           </Card.Body>
         </Card>
+  
       </div>
     </>
   );
