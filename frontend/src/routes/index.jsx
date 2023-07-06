@@ -263,10 +263,6 @@ const routes = createBrowserRouter([
     element: <AdminParmMnt />,
   },
   {
-    path: "/notification",
-    element: <Notification />,
-  },
-  {
     path: "/contact",
     element: <Contact />,
   },

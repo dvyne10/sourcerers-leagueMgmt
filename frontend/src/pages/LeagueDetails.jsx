@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Container,Row,Col, Button, Stack, Card, Image} from 'react-bootstrap';
+import {Container,Row,Col, Button, Card, Image} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './teamdetails.css'
+import { BsGearFill } from "react-icons/bs";
 
 const LeagueDetails = () => {
 
@@ -13,12 +14,16 @@ const LeagueDetails = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [join, setJoin] = useState(false);
 
   return (
+    <>
+     <div className='d-flex w-100 position-absolute w-75 justify-content-end p-5' style={{zIndex:"99999"}}><a href="/updateleague/1" className="btn btn-outline-success"><BsGearFill className="m-auto" /></a></div>
+        
     <div className="App" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "50px"}}>
       
       <h1>LEAGUE DETAILS PAGE</h1>
-      <Button onClick={navigateUpdateLeague} variant="primary">Update League</Button>
+      
       
       
       
@@ -28,15 +33,17 @@ const LeagueDetails = () => {
 
       <div className='bg-light container justify-content-center text-center'>
         {/* Here is the team header, with background and info */}
+        
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white"
   style={{"backgroundImage": "url('https://www.pixel4k.com/wp-content/uploads/2018/10/nike-black-play-football_1538786713.jpg.webp')", backgroundPosition:"center", backgroundSize:"cover"}} >
         <Container style={{background:'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg'}}>
       <Row >
         <Col><h1>League Name</h1>
         <p className='mt-5'>League description here.</p></Col>
+        
       </Row>
       <Row>
-        <Col className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>Join</Button></Col>
+        <Col className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>{join===false ? "Join" : "Unjoin"}</Button></Col>
 
       </Row>
     </Container>
@@ -197,7 +204,7 @@ const LeagueDetails = () => {
       </Modal>
     </div>
 
-
+    <Button onClick={navigateUpdateLeague} variant="primary" className='mt-5'>Update League</Button>
 {/* Modal opening up after clicking Join */}
 <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -210,7 +217,7 @@ const LeagueDetails = () => {
               className="mb-3"
               controlId="exampleForm.ControlTextarea1"
             >
-              <Form.Label>Explain shortly why you want to join to this league.</Form.Label>
+              <Form.Label>Explain shortly why you want to {join===false ? "join to" : "unjoin from"} this league.</Form.Label>
               <Form.Control as="textarea" rows={3} />
             </Form.Group>
           </Form>
@@ -219,12 +226,13 @@ const LeagueDetails = () => {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="success" onClick={handleClose}>
-            Send Request
+          <Button variant={join===false ? "success" : "danger"} onClick={ () => {handleClose && setJoin(!join)}}>
+          {join===false ? "Send Request" : "Leave"}
           </Button>
         </Modal.Footer>
       </Modal>
     </div>
+    </>
   );
 }
 
