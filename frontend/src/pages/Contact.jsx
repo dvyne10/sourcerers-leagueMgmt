@@ -96,7 +96,7 @@ const Contact = () => {
           </Form>
           <Form.Group as={Row} className="mb-3 text-center">
             <Col>
-              <Button type="submit">Submit</Button>
+              <Button style={{backgroundColor: '#116466'}} type="submit">Submit</Button>
             </Col>
           </Form.Group>
         </Card>

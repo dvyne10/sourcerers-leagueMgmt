@@ -1,27 +1,28 @@
 import { useState } from 'react';
 import { BsFillPersonFill } from 'react-icons/bs';
-import soccerField from '/football_field.jpg';
-import soccerBackground from '/football_background.jpg';
-import teamLogo1 from '/logo_1.jpeg'; 
-import teamLogo2 from '/logo_2.png';
+import basketballField from '/basketball_court.jpeg';
+import basketballBackground from '/basketball_background.jpeg';
+import teamLogo1 from '/lakers.png'; 
+import teamLogo2 from '/golden.png';
 import { Button, Image}  from 'react-bootstrap'; 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 
-const MatchDetailsSoccer = () => {
+const MatchDetailsBasketball = () => {
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
   const [selectedPlayerData, setSelectedPlayerData] = useState(null);
   const navigate = useNavigate(); 
   const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
+
   const playerListOne = [
-    { name: 'Lionel Messi', position: 'MF', goals: 2, assists: 0 },
-    { name: 'Cristiano Ronaldo', position: 'FW', goals: 0, assists: 2 },
-    { name: 'Virgil van Dijk', position: 'DF', goals: 0, assists: 0 },
+    { name: 'Max Christle', position: 'G', points: 10, assists: 2},
+    { name: 'Anthony Davis', position: 'PF', points: 23, assists: 5},
+    { name: 'LeBron James', position: 'SF', points: 33, assists: 10},
   ];
   const playerListTwo = [
-    { name: 'Kevin De Bruyne', position: 'MF', goals: 10, assists: 7 },
-    { name: 'Sergio Ramos', position: 'DF', goals: 3, assists: 12 },
-    { name: 'Neymar Jr', position: 'FW', goals: 2, assists: 4 },
+    { name: 'Stephen Curry', position: 'PG', points: 15, assists: 7},
+    { name: 'JaMychal Green', position: 'C', points: 8, assists: 3},
+    { name: 'Draymond Green', position: 'PF', points: 15, assists: 4 },
   ];
 
   const handleClickPlayerLeft = (player) => {
@@ -36,49 +37,60 @@ const MatchDetailsSoccer = () => {
 
   return (
     <>
-      <div
-        style={{
-          backgroundImage: `url(${soccerBackground})`,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-
-        }}
-      >
+       <div style={{
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundImage: `url(${basketballBackground})`,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    opacity: 0.6,  // adjust the opacity as needed
+    zIndex: -1
+  }}/>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '2%' }}>
         
-        <div style={{
-                    backgroundColor: '#fffff7',
+        <div onClick={() => navigate('/team/:teamid')}
+             style={{
+                    backgroundColor: '#9FEDD7',
                     width: '20%',
                     height: '15vh',
                     marginLeft: '10%',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    background: '#fffff7 url(' + teamLogo1 + ') center center no-repeat',
+                    background: '#9FEDD7 url(' + teamLogo1 + ') center center no-repeat',
                     backgroundSize: 'contain',
+                    borderTopLeftRadius: '10px',
+                    borderBottomLeftRadius: '10px'
+
                     }}>
         </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#9FEDD7', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
             <div style={{paddingRight: '5%'}}>
-              <span>Real Madrid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <span>LA Lakers &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
               <span style={{ color: '#3b3c4c' }}>2&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <span>Barcelona</span> <br/>
+              <span>Warriors</span> <br/>
             </div>
             <div style={{fontSize: '15px', color: '#026670'}}>22 July 2023</div>
             <div style={{fontSize: '15px', color: '#026670'}}>09:00 PM</div>
 
           </div>
-          <div style={{
-                    backgroundColor: '#fffff7',
+          <div onClick={() => navigate('/team/:teamid')}
+               style={{
+                    backgroundColor: '#9FEDD7',
                     width: '20%',
                     height: '15vh',
                     marginRight: '10%',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    background: '#fffff7 url(' + teamLogo2 + ') center center no-repeat',
+                    background: '#9FEDD7 url(' + teamLogo2 + ') center center no-repeat',
                     backgroundSize: 'contain',
+                    borderTopRightRadius: '10px',
+                    borderBottomRightRadius: '10px'
                     }}>
             </div>
         </div>
@@ -109,7 +121,7 @@ const MatchDetailsSoccer = () => {
             ))}
           </div>
           <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
-            <div style={{ backgroundImage: `url(${soccerField})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
+            <div style={{ backgroundImage: `url(${basketballField})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '100%', height: '100%'}}>
             <div style={{ display: 'flex', justifyContent: 'center'}}>
           <div style={{ paddingTop: '26%'}}>
             {playerListOne.map((player, index) => (
@@ -130,7 +142,7 @@ const MatchDetailsSoccer = () => {
                       textAlign: 'center',
                     }}
                   >
-                    <p>Goals: {player.goals}</p>
+                    <p>Points: {player.points}</p>
                     <p>Assists: {player.assists}</p>
                   </div>
                 )}
@@ -221,10 +233,10 @@ const MatchDetailsSoccer = () => {
    
     </div>
  
-      </div>
+      
     </>
   );
 };
 
-export default MatchDetailsSoccer;
+export default MatchDetailsBasketball;
 

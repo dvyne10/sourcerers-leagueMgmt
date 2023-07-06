@@ -15,14 +15,14 @@ const Terms = () => {
           paddingBottom: "2rem",
         }}
       >
-        {" "}
+       
         <h1 style={{ align: "center" }}>Terms And Conditions</h1>
       </div>
       <div className="App" style={{ paddingTop: "4rem" }}>
-        <Container style={{ width: "60rem" }}>
-          <Accordion defaultActiveKey="0">
+        <Container >
+          <Accordion >
             <Accordion.Item eventKey="0">
-              <Accordion.Header>CONDITIONS OF PARTICIPATIONS</Accordion.Header>
+              <Accordion.Header style={{color:'#D1E8E2',backgroundColor: '#D1E8E2'}}>CONDITIONS OF PARTICIPATIONS</Accordion.Header>
               <Accordion.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
@@ -34,7 +34,7 @@ const Terms = () => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey="1">
-              <Accordion.Header>
+            <Accordion.Header style={{color:'#D1E8E2',backgroundColor: '#D1E8E2'}}>
                 WEATHER FORECAST AND MATCH CANCELLATIONS
               </Accordion.Header>
               <Accordion.Body>
@@ -48,7 +48,7 @@ const Terms = () => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey="2">
-              <Accordion.Header>MOBILE APPLICATIONS</Accordion.Header>
+            <Accordion.Header style={{color:'#D1E8E2',backgroundColor: '#D1E8E2'}}>MOBILE APPLICATIONS</Accordion.Header>
               <Accordion.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
@@ -60,7 +60,7 @@ const Terms = () => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey="3">
-              <Accordion.Header>LIABILITY</Accordion.Header>
+            <Accordion.Header style={{color:'#D1E8E2',backgroundColor: '#D1E8E2'}}>LIABILITY</Accordion.Header>
               <Accordion.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
@@ -72,7 +72,7 @@ const Terms = () => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey="4">
-              <Accordion.Header>DISCLAIMER</Accordion.Header>
+            <Accordion.Header style={{color:'#D1E8E2',backgroundColor: '#D1E8E2'}}>DISCLAIMER</Accordion.Header>
               <Accordion.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
