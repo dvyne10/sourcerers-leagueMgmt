@@ -12,7 +12,11 @@ function TeamDetails() {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const [showInvite, setShowInvite] = useState(false);
+    const handleCloseInvite = () => setShowInvite(false);
+    const handleShowInvite = () => setShowInvite(true);
     const [join, setJoin] = useState(false);
+    const [invite, setInvite] = useState(false);
 
 // Array of team members here
     const teamMembers = [
@@ -52,7 +56,8 @@ function TeamDetails() {
         <p className='mt-5'>Team description here.</p></Col>
       </Row>
       <Row>
-        <Col lg="2" className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>{join===false ? "Join" : "Unjoin"}</Button></Col>
+        <Col lg="2" className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>{join===false ? "Join" : "Unjoin"}</Button>
+        <Button className='mt-2 ms-2 mb-2 btn-success rounded-pill' onClick={handleShowInvite}>{invite===false ? "Invite to League" : "Uninvite to League"}</Button></Col>
 
       </Row>
     </Container>
@@ -258,9 +263,36 @@ return(
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
-    </>
-    );
+
+    {/* Modal opening up after clicking Invite */}
+    <Modal show={showInvite} onHide={handleCloseInvite}>
+    <Modal.Header closeButton>
+        <Modal.Title>Message</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          
+          <Form.Group
+            className="mb-3"
+            controlId="exampleForm.ControlTextarea1"
+          >
+            <Form.Label>Explain shortly why you want to {invite===false ? "invite" : "uninvite"} this league.</Form.Label>
+            <Form.Control as="textarea" rows={3} />
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleCloseInvite}>
+          Cancel
+        </Button>
+        <Button variant={invite===false ? "success" : "danger"} onClick={ () => {handleCloseInvite && setInvite(!invite)}}>
+        {invite===false ? "Invite Team" : "Uninvite Team"}
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  </div>
+  </>
+  );
   }
   
   export default TeamDetails  ;

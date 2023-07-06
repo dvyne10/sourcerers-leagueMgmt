@@ -125,7 +125,7 @@ export default function Players() {
                       style={{ backgroundColor: "#1c1b22" }}
                     >
                       <a
-                        href={"/team/" + `${player.footballTeamId}`}
+                        href={"/player/" + `${player.id}`}
                         className="link-general-style"
                       >
                         {" "}
