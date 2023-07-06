@@ -90,7 +90,7 @@ const Player = () => {
               <h2 className="text-center">Past Matches</h2>
                    {/* Past Matches Here */}
                    <ListGroup>
-            <ListGroup.Item action variant="danger" href="/matchdetails/1"  className='mt-2'>
+            <ListGroup.Item action variant="danger" href="/matchdetailsoccer/1"  className='mt-2'>
               <Row className='text-center'>
               <Col>
               20.06.23
@@ -106,7 +106,7 @@ const Player = () => {
               </Col>
               </Row>
             </ListGroup.Item>
-            <ListGroup.Item action variant="success" href="/matchdetails/1" className='mt-2'>      
+            <ListGroup.Item action variant="success" href="/matchdetailsoccer/1" className='mt-2'>      
             <Row className='text-center'>
               <Col>
               20.06.23

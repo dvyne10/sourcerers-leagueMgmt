@@ -139,7 +139,7 @@ const LeagueDetails = () => {
           <h4 className='center-header'>Upcoming Matches</h4><hr />
     <ul>
       <li className='active-game-hover'>
-      <a href='/matchdetails' className='general-link-no-dec'>
+      <a href='/matchdetailsoccer/1' className='general-link-no-dec'>
         <span className='active-game'>21st June 2023</span>
         <div className="content">
         
@@ -149,7 +149,7 @@ const LeagueDetails = () => {
       </li>
       
       <li className='past-game-hover'>
-      <a href='/matchdetails' className='general-link-no-dec'>
+      <a href='/matchdetailsoccer/2' className='general-link-no-dec'>
         <span className='past-game'>15th April 2023</span>
         <div className="content">
           <h3>Barcelona</h3>
@@ -158,7 +158,7 @@ const LeagueDetails = () => {
       </li>
       
       <li className='past-game-hover'>
-      <a href='/matchdetails' className='general-link-no-dec'>
+      <a href='/matchdetailsoccer/3' className='general-link-no-dec'>
         <span className='past-game'>22nd March 2023</span>
         <div className="content">
           <h3>Real Madrid</h3>
