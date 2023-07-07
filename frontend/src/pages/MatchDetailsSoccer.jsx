@@ -74,7 +74,8 @@ const MatchDetailsSoccer = () => {
               <span style={{ color: '#3b3c4c' }}>2&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
               <span>Barcelona</span> <br/>
             </div>
-            <div style={{fontSize: '15px', color: '#026670'}}>22 July 2023</div>
+  
+            <div style={{fontSize: '15px', color: '#026670'}}>Toronto Stadium, 22 July 2023</div>
             <div style={{fontSize: '15px', color: '#026670'}}>09:00 PM</div>
 
           </div>

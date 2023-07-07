@@ -226,9 +226,9 @@ const MatchDetailsBasketball = () => {
           <span>2022-02-15</span>
           <span style={{ marginLeft: '33%' }}>2022-05-14</span>
         </div>
-        <Button onClick={navigateUpdateMatch} variant="primary" style={{marginTop: '5%'}} >
-        Update Match
-      </Button>
+        <Button onClick={navigateUpdateMatch} variant="primary" style={{marginTop: '5%', backgroundColor: 'black'}} >
+            Update Match
+        </Button>
       </div>
    
     </div>
