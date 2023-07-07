@@ -148,7 +148,7 @@ const LeagueMaintenance = () => {
     <div className="d-flex container mt-2 justify-content-center">
       <Card style={{ width: "60rem", padding: 20 }}>
         <h2 className="mb-4 center-text">{action.title.toUpperCase()}</h2>
-        <form action="">
+        <form action="" encType="multipart/form-data">
             < div className="col mb-5 text-center">               
                 <label htmlFor="banner" className="form-label mb-1">
                     Select Banner
@@ -167,7 +167,7 @@ const LeagueMaintenance = () => {
                 )}
                 <div className="row justify-content-center">
                     <div className="col-3">
-                        <input type="file" id="banner" name="banner" className="form-control" onChange={handleBannerChange} />
+                        <input type="file" id="banner" name="banner" className="form-control" onChange={handleBannerChange} accept="image/*"/>
                     </div>
                 </div>
             </div>
@@ -262,11 +262,11 @@ const LeagueMaintenance = () => {
                         <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
                   </svg> 
                 )}
-                <input type="file" id="logo" name="logo" className="form-control" onChange={handleLogoChange} />
+                <input type="file" id="logo" name="logo" className="form-control" onChange={handleLogoChange} accept="image/*"/>
             </div>
           </div>
           <div className="row justify-content-center">
-            <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateLeagueDetails}>
+            <button className="btn btn-dark col-2 mx-5" type="submit" onClick={navigateLeagueDetails}>
               {action.title}
             </button>
             { action.type !== "Creation" && (

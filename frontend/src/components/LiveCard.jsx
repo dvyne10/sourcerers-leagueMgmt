@@ -1,10 +1,11 @@
-
-const LiveCard = () => {
+import PropTypes from "prop-types";
+const LiveCard = ({ onClickTeamIcon }) => {
   return (
     <div className="card card-body m-2">
       <div className="d-flex justify-content-between">
         <div
           style={{ width: 80, height: 80, borderRadius: 40, marginRight: 20 }}
+          onClick={onClickTeamIcon}
         >
           <img
             src="/images/manu.png"
@@ -22,6 +23,7 @@ const LiveCard = () => {
             borderRadius: 40,
             marginLeft: 20,
           }}
+          onClick={onClickTeamIcon}
         >
           <img
             src="/images/madrid.png"
@@ -51,6 +53,10 @@ const LiveCard = () => {
       </div>
     </div>
   );
+};
+
+LiveCard.propTypes = {
+  onClickTeamIcon: PropTypes.func,
 };
 
 export default LiveCard;

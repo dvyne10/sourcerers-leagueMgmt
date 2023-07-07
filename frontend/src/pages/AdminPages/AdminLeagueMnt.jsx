@@ -112,7 +112,7 @@ const AdminLeagueMnt = () => {
         ) : (
       <Card style={{ width: "70rem", padding: 20 }}>
         <h2 className="mb-4 center-text">{action.title}</h2>
-        <form action="">
+        <form action="" encType="multipart/form-data">
 
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="leagueName" className="form-label">League Name*</label></div>
@@ -229,7 +229,7 @@ const AdminLeagueMnt = () => {
                             <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
                         </svg> 
                     )}
-                    <input type="file" id="logo" name="logo" className="form-control" onChange={handleLogoChange} />
+                    <input type="file" id="logo" name="logo" className="form-control" onChange={handleLogoChange} accept="image/*"/>
                 </div>
             </div>
             < div className="col mb-5 text-center">               
@@ -250,7 +250,7 @@ const AdminLeagueMnt = () => {
                 )}
                 <div className="row justify-content-center">
                     <div className="col-3">
-                        <input type="file" id="banner" name="banner" className="form-control" onChange={handleBannerChange} />
+                        <input type="file" id="banner" name="banner" className="form-control" onChange={handleBannerChange} accept="image/*"/>
                     </div>
                 </div>
             </div>

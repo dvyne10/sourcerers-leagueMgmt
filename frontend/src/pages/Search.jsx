@@ -14,6 +14,7 @@ const Search = () => {
     const [leagueButton, handleLeagueButton] = useState("secondary");
     const [searchText, changeText] = useState("");
     const [searchLocation, changeLocation] = useState("");
+    const [searchActive, setSearchActive] = useState();
 
     const handleFilter = (filter) => {
       if (filter === "Teams") {
@@ -42,6 +43,43 @@ const Search = () => {
 
     const handleSearchText = (input) => {changeText(input.target.value)}
     const handleSearchLocation = (input) => {changeLocation(input.target.value)}
+    const Teams = [{
+      id:1,
+      name: "Real Madrid",
+      numberOfPlayers: 23,
+      location: "Toronto",
+      sportsType : "Soccer"
+      
+    },{
+      id:2,
+      name: "Barcelona",
+      numberOfPlayers: 23,
+      location: "Toronto",
+      sportsType : "Soccer"
+      
+    },{
+      id:3,
+      name: "Lakers",
+      numberOfPlayers: 11,
+      location: "Toronto",
+      sportsType : "Basketball"
+      
+    },{
+      id:4,
+      name: "Bulls",
+      numberOfPlayers: 123,
+      location: "Toronto",
+      sportsType : "Basketball"
+      
+    },{
+      id:5,
+      name: "No Name Team",
+      numberOfPlayers: 15,
+      location: "Toronto",
+      sportsType : "Soccer"
+      
+    },];
+
 
   return (
 <>
@@ -52,7 +90,8 @@ const Search = () => {
     <div className="input-group">
         <input type="text" className="w-50 form-control search-form" value = {searchText} onChange={handleSearchText} 
                     placeholder="Search for teams, players, or leagues" />
-        <button type="submit" className="btn btn-primary me-2 search-btn" style={{"borderTopRightRadius":"50%","borderBottomRightRadius":"50%" }} data-target="#" name="q"><FaSearch className='search-btn' />
+        <button className="btn btn-primary me-2 search-btn" onClick={ () => setSearchActive(true) } style={{"borderTopRightRadius":"50%","borderBottomRightRadius":"50%" }} ><FaSearch className='search-btn'
+        />
 		</button>
         {/* Location Search Item */}
         <input type="text" className="w-25 form-control search-form" value = {searchLocation} onChange={handleSearchLocation} 
@@ -66,6 +105,16 @@ const Search = () => {
         </div>
     </div>
 </form>
+<div>
+{ searchActive === true &&
+            <div>
+          <ul className='teamUl'>
+          {Teams.map(f => <li key={Teams.id}><a href="#">{f.name}</a></li>)}
+          </ul>
+        </div>
+}
+
+</div>
 </div>
 
 </>

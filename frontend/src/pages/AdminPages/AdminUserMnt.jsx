@@ -98,7 +98,7 @@ const AdminUserMnt = () => {
         ) : (
       <Card style={{ width: "70rem", padding: 20 }}>
         <h2 className="mb-4 center-text">{action.title}</h2>
-        <form action="">
+        <form action="" encType="multipart/form-data">
 
             { action.type !== "Creation" && (
                 <div className = "row mb-2">
@@ -266,12 +266,12 @@ const AdminUserMnt = () => {
                                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
                             </svg> 
                         )}
-                    <input type="file" id="upload" name="upload" className="form-control" onChange={handlePhotoChange} />
+                    <input type="file" id="upload" name="upload" className="form-control" onChange={handlePhotoChange} accept="image/*"/>
                 </div>
             </div>
 
             <div className="row justify-content-center">
-                <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateCreateUpdate}>
+                <button className="btn btn-dark col-2 mx-5" type="submit" onClick={navigateCreateUpdate}>
                     {action.button1}
                 </button>
                 <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateCancel}>

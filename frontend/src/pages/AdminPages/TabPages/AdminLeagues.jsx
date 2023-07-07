@@ -57,7 +57,7 @@ const AdminLeagues = () => {
         ]}
         renderTopToolbarCustomActions={({ table }) => (
           <Button color="success" onClick={() => handleGotoMntPage("CREATION",  "")} variant="contained" size="sm" >
-            CREATE TEAM
+            CREATE LEAGUE
           </Button>
         )}
       />

@@ -6,9 +6,12 @@ import { Col, Row } from "react-bootstrap";
 import "./navigationcomponent.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import useAuth from "../hooks/auth";
+import { Badge } from "@mui/material";
+import useNotification from "../hooks/notification";
 
 const NavigationComponent = () => {
   const { isSignedIn, signOut } = useAuth();
+  const { notificationCount } = useNotification();
 
   return (
     <Navbar
@@ -40,32 +43,32 @@ const NavigationComponent = () => {
               />
             </Navbar.Brand>
 
-            <Navbar.Toggle
+
+          </Col>
+          <Navbar.Toggle
               aria-controls="navbarScroll"
               className="navbar-toggle"
             />
-          </Col>
-
-          <Col className="col-11 w-80 justify-content-center align-self-center">
+          <Col className="col-11 ">
             <Navbar.Collapse id="navbarScroll">
               <Nav
-                className="justify-content-center flex-grow-1 pe-1 middle-bar"
+                className="mx-auto"
                 navbarScroll
               >
                 <Nav.Link
                   href="/leagues"
-                  className="navbar-underline-animation"
+                  className="mx-5 navbar-underline-animation"
                 >
                   Leagues
                 </Nav.Link>
-                <Nav.Link href="/teams" className="navbar-underline-animation">
+                <Nav.Link href="/teams" className="mx-5 navbar-underline-animation">
                   Teams
                 </Nav.Link>
                 <Nav.Link
                   href="/players"
-                  className="navbar-underline-animation"
+                  className="mx-5 navbar-underline-animation"
                 >
-                  Player
+                  Players
                 </Nav.Link>
               </Nav>
 
@@ -77,9 +80,16 @@ const NavigationComponent = () => {
                 </Nav.Link>
 
                 {isSignedIn === true && (
-                  <Nav.Link href="/notification" className="nav-links">
+                  <Nav.Link href="/notifications" className="nav-links">
                     <span className="trialbtn">
-                      <FaBell className="m-auto" />
+                      <Badge
+                        badgeContent={notificationCount}
+                        style={{ width: 20, height: 20, fontSize: 26 }}
+                        color="primary"
+                        max={100}
+                      >
+                        <FaBell className="m-auto" />
+                      </Badge>
                     </span>
                   </Nav.Link>
                 )}
@@ -96,7 +106,7 @@ const NavigationComponent = () => {
                       <FaUserCircle className="m-auto" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu className="dropdown-menu dropdown-menu-end">
-                      <Dropdown.Item href="/" className="nav-links ">
+                      <Dropdown.Item href="/myprofile" className="nav-links ">
                         My Profile
                       </Dropdown.Item>
                       <Dropdown.Item

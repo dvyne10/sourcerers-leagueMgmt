@@ -92,18 +92,27 @@ export default function Leagues() {
           totalTeams={12}
           teamsJoined={12}
           expanded={true}
+          onClick={() => {
+            navigate("/league/123");
+          }}
         />
         <LeagueCard
           name={"second league"}
           status={"finished"}
           totalTeams={12}
           teamsJoined={6}
+          onClick={() => {
+            navigate("/league/123");
+          }}
         />
         <LeagueCard
           name={"third league"}
           status={"open"}
           totalTeams={12}
           teamsJoined={9}
+          onClick={() => {
+            navigate("/league/123");
+          }}
         />
       </div>
     </>

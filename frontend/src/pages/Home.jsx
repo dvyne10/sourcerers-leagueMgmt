@@ -38,12 +38,12 @@ const Home = () => {
     () => [
       {
         accessorKey: 'title', //access nested data with dot notation
-        header: 'Title',
+        header: 'Who',
         size: 600,
       },
       {
         accessorKey: 'desc',
-        header: 'Description',
+        header: 'Message',
         size: 600,
       },
     
@@ -64,7 +64,7 @@ const Home = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
-    pauseOnHover: false,
+    pauseOnHover: true,
   }; 
 
   return (
@@ -83,7 +83,7 @@ const Home = () => {
  
  
       <div style={{
-        backgroundColor: '#98BC8D',
+       
         width: '100%'
       }}>
       <h6 style={{paddingTop: '5%'}}>Top 10 ongoing</h6>
@@ -121,23 +121,34 @@ const Home = () => {
           <div>
           <FlippableCard imageUrl="/basketball_pic6.jpg" cardText="Go Dunk"/>
           </div>
-
         </Slider>
       </div>
       </div>
 
 
  
-      <br/><br/>
+     
     
        
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2%', paddingBottom: '2%'}}>
         <h1>ANNOUNCEMENTS</h1>
       
-          <MaterialReactTable columns={columns} data={data}/>
+        <MaterialReactTable
+  columns={columns}
+  data={data}
+  muiTableBodyProps={{
+    sx: {
+      // Highlight the first row
+      '& tr:nth-of-type(1)': {
+        backgroundColor: '#FEF9C7',
+      },
+    },
+  }}
+/>
+
 
      
-    </div>
+       </div>
 
 
     </div>

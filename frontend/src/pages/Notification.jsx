@@ -1,58 +1,30 @@
-import { Button, Col, Container, Row } from "react-bootstrap";
-import { FaFilter } from "react-icons/fa";
+import { Col, Container, Row } from "react-bootstrap";
 import { MaterialReactTable } from "material-react-table";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
-  Delete as DeleteIcon,
   Email as EmailIcon,
   DraftsOutlined as OpenEmailIcon,
 } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
-
-const notifications = [
-  {
-    read: true,
-    title: "notification",
-    content: "this is is a new notification",
-  },
-  {
-    read: false,
-    title: "notification",
-    content: "this is is a new notification",
-  },
-  {
-    read: true,
-    title: "notification",
-    content: "this is is a new notification",
-  },
-  {
-    read: false,
-    title: "notification",
-    content: "this is is a new notification",
-  },
-  {
-    read: false,
-    title: "notification",
-    content: "this is is a new notification",
-  },
-];
+import useNotification from "../hooks/notification";
 
 const Notification = () => {
-  const [notificationData, setNotificationData] = useState(notifications);
+  const { notifications, setNotifications } = useNotification();
+
   const columns = useMemo(
     () => [
-      {
-        header: "Title",
-        accessorKey: "title",
-      },
+      // {
+      //   header: "Title",
+      //   accessorKey: "title",
+      // },
       {
         header: "Content",
         accessorKey: "content",
       },
-      {
-        header: "Status",
-        accessorKey: "status",
-      },
+      // {
+      //   header: "Status",
+      //   accessorKey: "status",
+      // },
     ],
     []
   );
@@ -68,52 +40,67 @@ const Notification = () => {
       >
         <Container>
           <Row className="align-items-end">
-            <Col className="text-start">
-              <Button size="sm" variant="outline-secondary">
-                <FaFilter></FaFilter>Filter
-              </Button>
-            </Col>
+            <Col></Col>
             <Col>
               <h1 className="center-header">NOTIFICATION</h1>
             </Col>
             <Col></Col>
           </Row>
         </Container>
-        <div style={{ width: "100%", justifyContent: "center" }}>
+        <div
+          style={{
+            marginInline: "20%",
+          }}
+        >
           <MaterialReactTable
-            data={notificationData}
+            data={notifications}
+            // muiTableContainerProps={{ sx: { maxHeight: "450px",width:"800px"} }}
+            // muiTableProps={{}}
             columns={columns}
-            // enableRowSelection
+            enableExpanding
+            // onExpandedChange={()=>{
+            //   // console.log(e)
+            //   // setExpandedObject({})
+            // }}
+            expandRowsFn={() => {
+              console.log("kkkll");
+            }}
             enableColumnOrdering
             enableRowActions
-            renderRowActions={({ row, table }) => (
+            renderRowActions={({ row }) => (
               <Box>
-                <IconButton
-                  color="error"
-                  onClick={() => {
-                    notificationData.splice(row.index, 1);
-                    setNotificationData([...notificationData]);
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
                 <IconButton
                   color="primary"
                   onClick={() => {
-                    notificationData.map(() => {
-                      notificationData[row.index].read =
-                        !notificationData[row.index].read;
-                      setNotificationData([...notificationData]);
+                    notifications.map(() => {
+                      notifications[row.index].read =
+                        !notifications[row.index].read;
+                      setNotifications([...notifications]);
                     });
                   }}
                 >
-                  {notificationData[row.index].read ? (
+                  {notifications[row.index].read ? (
                     <OpenEmailIcon />
                   ) : (
                     <EmailIcon />
                   )}
                 </IconButton>
               </Box>
+            )}
+            renderDetailPanel={() => (
+              <div
+                style={{
+                  display: "flex",
+                  padding: 0,
+                  margin: 0,
+                }}
+              >
+                <div style={{ width: "21%" }}></div>
+                <div style={{ width: "25%" }}></div>
+                <div style={{ width: "50%" }}>
+                  this is a continuation of the notification
+                </div>
+              </div>
             )}
           />
         </div>
