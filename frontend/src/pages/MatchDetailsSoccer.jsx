@@ -6,7 +6,7 @@ import teamLogo1 from '/madrid.png';
 import teamLogo2 from '/barcelona.png';
 import { Button, Image}  from 'react-bootstrap'; 
 import { useNavigate} from 'react-router-dom';
-
+import { FaPlus } from "react-icons/fa";
 const MatchDetailsSoccer = () => {
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
@@ -37,7 +37,7 @@ const MatchDetailsSoccer = () => {
 
   return (
     <>
-       <div style={{
+  <div style={{
     position: 'absolute',
     top: 0,
     bottom: 0,
@@ -49,7 +49,9 @@ const MatchDetailsSoccer = () => {
     opacity: 0.6,  // adjust the opacity as needed
     zIndex: -1
   }}/>
+ 
 
+            <Button style={{marginLeft: '83.3%', transform: 'translateY(30px)'}}size='sm' variant="outline-secondary" onClick={navigateUpdateMatch}><FaPlus></FaPlus> Update Match</Button>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '2%' }}>
         
