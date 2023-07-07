@@ -51,7 +51,7 @@ const MatchDetailsSoccer = () => {
   }}/>
  
 
-            <Button style={{marginLeft: '83.3%', transform: 'translateY(30px)'}}size='sm' variant="outline-secondary" onClick={navigateUpdateMatch}><FaPlus></FaPlus> Update Match</Button>
+            <Button style={{marginLeft: '82.4%', transform: 'translateY(30px)'}}size='sm' variant="outline-secondary" onClick={navigateUpdateMatch}><FaPlus></FaPlus> Update Match</Button>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '2%' }}>
         
