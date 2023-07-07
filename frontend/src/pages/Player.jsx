@@ -167,7 +167,7 @@ const Player = () => {
               <Row>
         <Col sm={12} >
           <ListGroup>
-            <ListGroup.Item action href="/leaguedetails/1"  className='mt-2'>
+            <ListGroup.Item action href="/league/1"  className='mt-2'>
               <Row className='text-center'>
               <Col md={2}>
                 Do or Do not
