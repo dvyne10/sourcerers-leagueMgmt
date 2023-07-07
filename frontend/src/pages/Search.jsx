@@ -14,7 +14,7 @@ const Search = () => {
     const [leagueButton, handleLeagueButton] = useState("secondary");
     const [searchText, changeText] = useState("");
     const [searchLocation, changeLocation] = useState("");
-    const [searchActive, setSearchActive] = useState(false);
+    const [searchActive, setSearchActive] = useState();
 
     const handleFilter = (filter) => {
       if (filter === "Teams") {
@@ -90,8 +90,8 @@ const Search = () => {
     <div className="input-group">
         <input type="text" className="w-50 form-control search-form" value = {searchText} onChange={handleSearchText} 
                     placeholder="Search for teams, players, or leagues" />
-        <button className="btn btn-primary me-2 search-btn" style={{"borderTopRightRadius":"50%","borderBottomRightRadius":"50%" }} ><FaSearch className='search-btn'
-        onClick={ () => setSearchActive(true) }/>
+        <button className="btn btn-primary me-2 search-btn" onClick={ () => setSearchActive(true) } style={{"borderTopRightRadius":"50%","borderBottomRightRadius":"50%" }} ><FaSearch className='search-btn'
+        />
 		</button>
         {/* Location Search Item */}
         <input type="text" className="w-25 form-control search-form" value = {searchLocation} onChange={handleSearchLocation} 

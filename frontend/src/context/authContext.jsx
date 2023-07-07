@@ -29,6 +29,7 @@ const AuthContextProvider = ({ children }) => {
       await localStorage.setItem("login", JSON.stringify(adminObject)); // temporarily persisting the user when loged in
     } else {
       setAdmin(false);
+      await localStorage.setItem("login", JSON.stringify("user"));
     }
   }
 

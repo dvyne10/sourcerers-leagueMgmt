@@ -106,7 +106,7 @@ const NavigationComponent = () => {
                       <FaUserCircle className="m-auto" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu className="dropdown-menu dropdown-menu-end">
-                      <Dropdown.Item href="/" className="nav-links ">
+                      <Dropdown.Item href="/myprofile" className="nav-links ">
                         My Profile
                       </Dropdown.Item>
                       <Dropdown.Item

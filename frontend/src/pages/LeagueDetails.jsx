@@ -18,7 +18,7 @@ const LeagueDetails = () => {
 
   return (
     <>
-     <div className='d-flex w-100 position-absolute w-75 justify-content-end p-5' style={{zIndex:"99999"}}><a href="/updateleague/1" className="btn btn-outline-success"><BsGearFill className="m-auto" /></a></div>
+     <div className='d-flex w-100 position-absolute w-75 justify-content-end p-5' style={{zIndex:"99999"}}><Button onClick={navigateUpdateLeague} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
         
     <div className="App" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "50px"}}>
       
@@ -204,7 +204,7 @@ const LeagueDetails = () => {
       </Modal>
     </div>
 
-    <Button onClick={navigateUpdateLeague} variant="primary" className='mt-5'>Update League</Button>
+
 {/* Modal opening up after clicking Join */}
 <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>

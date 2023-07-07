@@ -1,5 +1,6 @@
 import {Container,Row,Col, Image, Button, CardGroup, Card} from 'react-bootstrap';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -8,7 +9,8 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 
 function TeamDetails() {
-
+    const navigate = useNavigate(); 
+    const navigateUpdateTeam = () => { navigate('/updateleague/648e9013466c1c995745907c') }
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -40,7 +42,7 @@ function TeamDetails() {
 
     return (
       <>
-      <div className='d-flex w-100 position-absolute justify-content-end p-4'><a href="/updateteam/1" className="btn btn-outline-success"><BsGearFill className="m-auto" /></a></div>
+      <div className='d-flex w-100 position-absolute justify-content-end p-4'><Button variant='transparent' onClick={navigateUpdateTeam} className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
         <div className='bg-light container justify-content-center text-center'>
         {/* Here is the team header, with background and info */}
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white"
