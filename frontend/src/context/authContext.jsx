@@ -45,6 +45,7 @@ const AuthContextProvider = ({ children }) => {
   async function signOut() {
     setSignedIn(false);
     setAdmin(false);
+    await localStorage.clear()
   }
 };
 
