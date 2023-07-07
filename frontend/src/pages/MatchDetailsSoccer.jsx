@@ -4,15 +4,15 @@ import soccerField from '/football_field.jpg';
 import soccerBackground from '/football_background.jpg';
 import teamLogo1 from '/madrid.png'; 
 import teamLogo2 from '/barcelona.png';
-import { Button, Image}  from 'react-bootstrap'; 
+import {  Image}  from 'react-bootstrap'; 
 import { useNavigate} from 'react-router-dom';
-import { FaPlus } from "react-icons/fa";
+import { BsGearFill } from "react-icons/bs";
 const MatchDetailsSoccer = () => {
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
   const [selectedPlayerData, setSelectedPlayerData] = useState(null);
   const navigate = useNavigate(); 
-  const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
+
 
   const playerListOne = [
     { name: 'Lionel Messi', position: 'MF', goals: 2, assists: 0 },
@@ -51,7 +51,7 @@ const MatchDetailsSoccer = () => {
   }}/>
  
 
-            <Button style={{marginLeft: '82.4%', transform: 'translateY(30px)'}}size='sm' variant="outline-secondary" onClick={navigateUpdateMatch}><FaPlus></FaPlus> Update Match</Button>
+ <div style={{marginLeft: '87%',  transform: 'translateY(15px)'}}><a href="/updatematch/1" className="btn btn-outline-success"><BsGearFill className="m-auto" /></a></div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '2%' }}>
         
@@ -229,9 +229,7 @@ const MatchDetailsSoccer = () => {
           <span>2022-02-15</span>
           <span style={{ marginLeft: '33%' }}>2022-05-14</span>
         </div>
-        <Button onClick={navigateUpdateMatch} variant="primary" style={{marginTop: '5%'}} >
-        Update Match
-      </Button>
+  
       </div>
    
     </div>
