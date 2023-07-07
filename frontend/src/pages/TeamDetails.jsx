@@ -8,6 +8,8 @@ import './teamdetails.css'
 import ListGroup from 'react-bootstrap/ListGroup';
 
 
+
+
 function TeamDetails() {
     const navigate = useNavigate(); 
     const navigateUpdateTeam = () => { navigate('/updateleague/648e9013466c1c995745907c') }
@@ -38,7 +40,17 @@ function TeamDetails() {
         { id: 11, imurl: 'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg', body: "Carla Dovermner" },
         { id: 12, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Goalkeeper"  }
     ];
+    function changeJoinShow(){
+    
+      setJoin(!join);
+      setShow(!show);
+  }
 
+  function changeInviteShow(){
+    
+    setInvite(!invite);
+    setShowInvite(false);
+}
 
     return (
       <>
@@ -260,7 +272,7 @@ return(
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant={join===false ? "success" : "danger"} onClick={ () => {handleClose && setJoin(!join)}}>
+          <Button variant={join===false ? "success" : "danger"} onClick={changeJoinShow}>
           {join===false ? "Send Request" : "Leave"}
           </Button>
         </Modal.Footer>
@@ -287,7 +299,7 @@ return(
         <Button variant="secondary" onClick={handleCloseInvite}>
           Cancel
         </Button>
-        <Button variant={invite===false ? "success" : "danger"} onClick={ () => {handleCloseInvite && setInvite(!invite)}}>
+        <Button variant={invite===false ? "success" : "danger"} onClick={changeInviteShow}>
         {invite===false ? "Invite Team" : "Uninvite Team"}
         </Button>
       </Modal.Footer>

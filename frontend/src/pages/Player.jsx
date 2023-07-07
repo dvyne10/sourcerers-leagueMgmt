@@ -1,13 +1,24 @@
 import { Container, Row, Col, Card, Button, Stack } from "react-bootstrap";
 import FlippableCard from '../components/card/FlippableCard'; 
 import ListGroup from 'react-bootstrap/ListGroup';
-
+import Modal from 'react-bootstrap/Modal';
+import { useState } from 'react';
+import Form from 'react-bootstrap/Form';
 
 
 const Player = () => {
 
-  
+  const [showInvite, setShowInvite] = useState(false);
+    const handleClose = () => setShowInvite(false);
+    const handleShow = () => setShowInvite(true);
+    const [invite, setInvite] = useState(false);
 
+
+    function changeInviteShow(){
+    
+      setInvite(!invite);
+      setShowInvite(false);
+  }
     return (
         <>
         <Container className="mt-5" >
@@ -28,7 +39,7 @@ const Player = () => {
                     United Kingdom, London
                   </p>
                   
-                  <Button variant="btn btn-outline-success">Invite</Button>{" "}
+                  <Button variant={invite === false ? "btn btn-outline-success" : "btn btn-outline-danger"} onClick={handleShow}>{invite === false ? "Invite" : "Uninvite"}</Button>{" "}
                 </div>
               </div>
             </Card.Body>
@@ -202,6 +213,35 @@ const Player = () => {
         
       </Row>
     </Container>
+
+
+
+{/* Modal opening up after clicking Join */}
+<Modal show={showInvite} onHide={handleClose}>
+      <Modal.Header closeButton>
+          <Modal.Title>Message</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            
+            <Form.Group
+              className="mb-3"
+              controlId="exampleForm.ControlTextarea1"
+            >
+              <Form.Label>Explain shortly why you want to {invite===false ? "invite" : "uninvite"} this player to your team.</Form.Label>
+              <Form.Control as="textarea" rows={3} />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant={invite===false ? "success" : "danger"} onClick={changeInviteShow}>
+          {invite===false ? "Invite" : "Uninvite"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
         </>
     )
