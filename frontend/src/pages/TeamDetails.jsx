@@ -12,7 +12,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 function TeamDetails() {
     const navigate = useNavigate(); 
-    const navigateUpdateTeam = () => { navigate('/updateleague/648e9013466c1c995745907c') }
+    const navigateUpdateTeam = () => { navigate('/updateteam/648e9013466c1c995745907c') }
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
