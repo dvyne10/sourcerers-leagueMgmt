@@ -6,9 +6,12 @@ import { Col, Row } from "react-bootstrap";
 import "./navigationcomponent.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import useAuth from "../hooks/auth";
+import { Badge } from "@mui/material";
+import useNotification from "../hooks/notification";
 
 const NavigationComponent = () => {
   const { isSignedIn, signOut } = useAuth();
+  const { notificationCount } = useNotification();
 
   return (
     <Navbar
@@ -79,7 +82,14 @@ const NavigationComponent = () => {
                 {isSignedIn === true && (
                   <Nav.Link href="/notifications" className="nav-links">
                     <span className="trialbtn">
-                      <FaBell className="m-auto" />
+                      <Badge
+                        badgeContent={notificationCount}
+                        style={{ width: 20, height: 20, fontSize: 26 }}
+                        color="primary"
+                        max={100}
+                      >
+                        <FaBell className="m-auto" />
+                      </Badge>
                     </span>
                   </Nav.Link>
                 )}
