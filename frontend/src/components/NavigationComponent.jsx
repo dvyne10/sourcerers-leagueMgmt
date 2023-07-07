@@ -40,32 +40,32 @@ const NavigationComponent = () => {
               />
             </Navbar.Brand>
 
-            <Navbar.Toggle
+
+          </Col>
+          <Navbar.Toggle
               aria-controls="navbarScroll"
               className="navbar-toggle"
             />
-          </Col>
-
-          <Col className="col-11 w-80 justify-content-center align-self-center">
+          <Col className="col-11 ">
             <Navbar.Collapse id="navbarScroll">
               <Nav
-                className="justify-content-center flex-grow-1 pe-1 middle-bar"
+                className="mx-auto"
                 navbarScroll
               >
                 <Nav.Link
                   href="/leagues"
-                  className="navbar-underline-animation"
+                  className="mx-5 navbar-underline-animation"
                 >
                   Leagues
                 </Nav.Link>
-                <Nav.Link href="/teams" className="navbar-underline-animation">
+                <Nav.Link href="/teams" className="mx-5 navbar-underline-animation">
                   Teams
                 </Nav.Link>
                 <Nav.Link
                   href="/players"
-                  className="navbar-underline-animation"
+                  className="mx-5 navbar-underline-animation"
                 >
-                  Player
+                  Players
                 </Nav.Link>
               </Nav>
 
@@ -77,7 +77,7 @@ const NavigationComponent = () => {
                 </Nav.Link>
 
                 {isSignedIn === true && (
-                  <Nav.Link href="/notification" className="nav-links">
+                  <Nav.Link href="/notifications" className="nav-links">
                     <span className="trialbtn">
                       <FaBell className="m-auto" />
                     </span>

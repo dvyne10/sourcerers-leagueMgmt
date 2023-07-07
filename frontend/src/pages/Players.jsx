@@ -8,62 +8,62 @@ export default function Players() {
       wins: 5,
       footballTeamId: 1,
       basketballTeamId: 6,
-      logoImgFootballUrl:
+      profilePicture:
         "https://1000logos.net/wp-content/uploads/2021/02/Tennessee-Titans-FC-Logo.png",
-      logoImgBasketballUrl:
-        "https://img.freepik.com/free-vector/gradient-basketball-logo_52683-84313.jpg?w=2000",
       nameOfFootballTeam: "Real Madrid",
       nameOfBasketballTeam: "Raptors",
-      footballPosition: "Forward",
-      basketballPosition: "Center",
+      activeTeams: [{name:"Arsenal",id:82}],
+      location: "Toronto",
+      SportsOfInterest : "Basketball"
     },
     {
       id: 2,
       wins: 3,
       footballTeamId: 2,
       basketballTeamId: 7,
-      logoImgFootballUrl:
+      profilePicture:
         "https://logodownload.org/wp-content/uploads/2021/10/canada-soccer-team-logo-0.png",
-      logoImgBasketballUrl:
-        "https://wp.usatodaysports.com/wp-content/uploads/sites/90/2016/05/logo-golden-state-warriors1.png",
       nameOfFootballTeam: "Barcelona",
       nameOfBasketballTeam: "Chicago",
-      footballPosition: "Right Wing",
-      basketballPosition: "Point Guard",
+      activeTeams: [{name:"Real Madrid", id:55}],
+      location: "Toronto",
+      SportsOfInterest : "Basketball, Soccer"
     },
     {
       id: 3,
       wins: 6,
       footballTeamId: 3,
       basketballTeamId: 8,
-      logoImgFootballUrl:
+      profilePicture:
         "https://images-platform.99static.com//1rfZxacWCr7-UWhvoY4p8MsPA4A=/363x355:1437x1429/fit-in/590x590/99designs-contests-attachments/108/108786/attachment_108786598",
-      logoImgBasketballUrl:
-        "https://ftw.usatoday.com/wp-content/uploads/sites/90/2020/03/1920px-los_angeles_lakers_logo.svg_.png?w=1000",
       nameOfFootballTeam: "Arsenal",
       nameOfBasketballTeam: "Lakers",
-      footballPosition: "Forward",
-      basketballPosition: "Center",
+      activeTeams: [{name:"Real Madrid",id:75}],
+      location: "Toronto",
+      SportsOfInterest : "Basketball"
     },
     {
       id: 4,
       wins: 15,
       basketballTeamId: 4,
-      logoBasketballUrl:
+      profilePicture:
         "https://content.sportslogos.net/logos/31/661/full/drake_bulldogs_logo_secondary_20118658.png",
       nameOfFootballTeam: "Arsenal",
-      footballPosition: "Forward",
-      basketballPosition: "Center",
+      activeTeams: [{name:"Barcelona", id:2}],
+      location: "Toronto",
+      SportsOfInterest : "Basketball"
     },
     {
       id: 5,
       wins: 111,
       footballTeamId: 9,
-      logoImgFootballUrl:
+      basketballTeamId : 11,
+      profilePicture:
         "https://ftw.usatoday.com/wp-content/uploads/sites/90/2020/03/1920px-los_angeles_lakers_logo.svg_.png?w=1000",
       nameOfFootballTeam: "Arsenal",
-      footballPosition: "Forward",
-      basketballPosition: "Center",
+      activeTeams: [{name:"Real Madrid ",id:15},{name:"Lakers",id:88}],
+      location: "Vancouver",
+      SportsOfInterest : "Football, Basketball"
     },
   ];
 
@@ -91,24 +91,24 @@ export default function Players() {
           <Row className="text-center align-items-end border-bottom">
             <Col lg="1" className="text-center">
               {" "}
-              <h6>Football Team</h6>
-            </Col>
-            <Col lg="1" className="text-center">
-              {" "}
-              <h6>Basketball Team</h6>
+              <h6>Profile</h6>
             </Col>
             <Col lg="2" className="text-center">
               {" "}
               <h6>Name</h6>
             </Col>
             <Col lg="3" className="text-center">
-              <h6>Football Position</h6>
+              <h6>Active Teams</h6>
             </Col>
             <Col lg="3" className="text-center">
-              <h6>Basketball Position</h6>
+              <h6>Location</h6>
             </Col>
             <Col lg="2">
               <h6>Wins</h6>
+            </Col>
+            <Col lg="1" className="text-center">
+             
+              <h6>Sports  </h6>
             </Col>
           </Row>
         </Container>
@@ -125,30 +125,12 @@ export default function Players() {
                       style={{ backgroundColor: "#1c1b22" }}
                     >
                       <a
-                        href={"/team/" + `${player.footballTeamId}`}
+                        href={"/player/" + `${player.id}`}
                         className="link-general-style"
                       >
                         {" "}
                         <Image
-                          src={player.logoImgFootballUrl}
-                          className="border border-white object-fit-cover ml-auto zoom-in-style"
-                          roundedCircle
-                          fluid
-                          style={{ width: "4em", height: "4em" }}
-                        />
-                      </a>
-                    </Col>
-                    <Col
-                      lg="1"
-                      className="text-center p-2"
-                      style={{ backgroundColor: "#1c1b22" }}
-                    >
-                      <a
-                        href={"/team/" + `${player.basketballTeamId}`}
-                        className="link-general-style"
-                      >
-                        <Image
-                          src={player.logoImgBasketballUrl}
+                          src={player.profilePicture}
                           className="border border-white object-fit-cover ml-auto zoom-in-style"
                           roundedCircle
                           fluid
@@ -165,14 +147,18 @@ export default function Players() {
                     </Col>
                     <Col lg="3" className="text-center">
                       <h1></h1>
-                      <h6>{player.footballPosition}</h6>
+                      <h6>{player.activeTeams.map((teams) => {
+          return (<a className="general-link-no-dec text-white" href={`/team/`+teams.id} key={teams.id}>{teams.name}</a>)})}</h6>
                     </Col>
                     <Col lg="3" className="text-center">
                       <h1></h1>
-                      <h6>{player.basketballPosition}</h6>
+                      <h6>{player.location}</h6>
                     </Col>
                     <Col lg="2">
                       <h6>{player.wins}</h6>
+                    </Col>
+                    <Col lg="1">
+                      <h6>{player.SportsOfInterest}</h6>
                     </Col>
                   </Row>
                 </div>

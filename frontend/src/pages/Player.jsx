@@ -1,5 +1,6 @@
-import { Container, Row, Col, Card, Button, Image, Stack } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Stack } from "react-bootstrap";
 import FlippableCard from '../components/card/FlippableCard'; 
+import ListGroup from 'react-bootstrap/ListGroup';
 
 
 
@@ -74,7 +75,54 @@ const Player = () => {
                   </h6>
                   <span className="text-secondary">Active</span>
                 </li>
+                <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                  <h6 className="mb-0">
+                    
+                    Location
+                  </h6>
+                  <span className="text-secondary">Toronto</span>
+                </li>
               </ul>
+            </Card.Body>
+          </Card>
+          <Card className="mt-3">
+            <Card.Body>
+              <h2 className="text-center">Past Matches</h2>
+                   {/* Past Matches Here */}
+                   <ListGroup>
+            <ListGroup.Item action variant="danger" href="/matchdetailsoccer/1"  className='mt-2'>
+              <Row className='text-center'>
+              <Col>
+              20.06.23
+              </Col>
+              <Col>
+              Real Madrid
+              </Col>
+              <Col md>
+              1-4
+              </Col>
+              <Col>
+              Toronto
+              </Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item action variant="success" href="/matchdetailsoccer/1" className='mt-2'>      
+            <Row className='text-center'>
+              <Col>
+              20.06.23
+              </Col>
+              <Col>
+              Real Madrid
+              </Col>
+              <Col md>
+              4-1
+              </Col>
+              <Col>
+              Toronto
+              </Col>
+              </Row>          
+          </ListGroup.Item>
+          </ListGroup>
             </Card.Body>
           </Card>
         </Col>
@@ -90,6 +138,14 @@ const Player = () => {
       <div className="p-2"><h5 className="border-top border-bottom">Wins</h5></div>
       <div className="p-2 ms-5"><h1 style={{fontSize:"10rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>5</h1></div>
       <div className="p-2"><h5 className="border-top border-bottom">Championships</h5></div>
+      
+    </Stack>
+    <Stack direction="horizontal" gap={2}>
+      <div className="p-2"><h1 style={{fontSize:"10rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>1.7</h1></div>
+      <div className="p-2"><h5 className="border-top border-bottom">Averge goals per game</h5></div>
+      <div className="p-2 ms-5"><h1 style={{fontSize:"10rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>182</h1></div>
+      <div className="p-2"><h5 className="border-top border-bottom">Games played</h5></div>
+      
     </Stack>
     </div>
         </Card>
@@ -106,20 +162,37 @@ const Player = () => {
           <hr />      
 </Row>
 
-              <h4 className="center-header">Active Teams</h4>
+              <h4 className="center-header">Past Leagues</h4>
               <Row className="justify-content-center">
-
+              <Row>
+        <Col sm={12} >
+          <ListGroup>
+            <ListGroup.Item action href="/leaguedetails/1"  className='mt-2'>
+              <Row className='text-center'>
+              <Col md={2}>
+                Do or Do not
+              </Col>
+              <Col md={2}>
+              20.06.23
+              </Col>
+              <Col md={3}>
+              2nd Place
+              </Col>
+              <Col md={3}>
+              6 Wins
+              </Col>
+              <Col md={2}>
+              Toronto
+              </Col>
+              </Row>
+            </ListGroup.Item>
+            </ListGroup>
+            </Col>
+            </Row>
+            
 
                 
-              <Col md={2  }> <a className="general-link-no-dec" href={'/team/1'} > 
-                <Image src="https://content.sportslogos.net/logos/31/661/full/drake_bulldogs_logo_secondary_20118658.png"  
-                className='border border-info justify-self-center shadow object-fit-cover zoom-in-style' 
-                roundedCircle style={{ width: "5em", height: "5em"}}/><h5 className="mt-2">Real Madrid</h5></a></Col>    
-                
-                <Col md={2  } className='justify-self-center'> <a className="general-link-no-dec" href={'/team/1'} > 
-                <Image src="https://content.sportslogos.net/logos/31/661/full/drake_bulldogs_logo_secondary_20118658.png"  
-                className='border border-info justify-self-center shadow object-fit-cover zoom-in-style' 
-                roundedCircle fluid style={{ width: "5em", height: "5em"}}/><h5 className="mt-2">Real Madrid</h5></a></Col>   
+            
                 
               </Row>
              
