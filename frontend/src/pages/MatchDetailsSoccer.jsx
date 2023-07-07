@@ -227,7 +227,7 @@ const MatchDetailsSoccer = () => {
         </div>
         <div style={{ fontSize: '24px', marginTop: '1%' }}>
           <span>2022-02-15</span>
-          <span style={{ marginLeft: '33%' }}>2022-05-14</span>
+          <span style={{ marginLeft: '38%' }}>2022-05-14</span>
         </div>
   
       </div>

@@ -9,7 +9,6 @@ const LeagueCard = ({
   teamsJoined,
   expanded,
   onClick,
-
 }) => {
   const active =
     status === "ongoing" || status === "finished" ? "disabled" : "";
@@ -41,7 +40,11 @@ const LeagueCard = ({
     <div>
       <hr />
       <div className="d-flex justify-content-between px-5 py-2">
-        <div className="d-flex align-items-center">
+        <div
+          className="d-flex align-items-center"
+          onClick={onClick}
+          style={{ cursor: "pointer" }}
+        >
           {statusIcon()}
           {`${name}(${teamsJoined} / ${totalTeams})`}
         </div>
@@ -89,9 +92,21 @@ const LeagueCard = ({
             </div>
           </div>
           <div className="d-flex">
-            <LiveCard onClickTeamIcon={()=>{navigate('/team/1')}}/>
-            <LiveCard onClickTeamIcon={()=>{navigate('/team/2')}}/>
-            <LiveCard onClickTeamIcon={()=>{navigate('/team/3')}}/>
+            <LiveCard
+              onClickTeamIcon={() => {
+                navigate("/team/1");
+              }}
+            />
+            <LiveCard
+              onClickTeamIcon={() => {
+                navigate("/team/2");
+              }}
+            />
+            <LiveCard
+              onClickTeamIcon={() => {
+                navigate("/team/3");
+              }}
+            />
           </div>
         </div>
       </div>
