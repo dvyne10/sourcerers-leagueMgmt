@@ -7,24 +7,38 @@ const AccountMaintenance = () => {
   
   const location = useLocation();
   const routeParams = useParams();
-    const [action, handleAction] = useState({type: "Register", title: "REGISTER"});
-    const [currValues, setCurrentValues] = useState({userName: null, password: null, email: null, phone: null,
-      firstName: null, lastName: null, country: null, city: null, province: null
-    })
-    const [sportsSelected, setSportsSelected] = useState([])
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [imageURL, setImageURL] = useState(null);
-    const [oldValues, setOldValues] = useState(null)
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+  const [action, handleAction] = useState({type: "Register", title: "REGISTER"});
+  const [currValues, setCurrentValues] = useState({userName: null, password: null, email: null, phone: null,
+    firstName: null, lastName: null, country: "", province: "", city: ""
+  })
+  const [sportsSelected, setSportsSelected] = useState([])
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageURL, setImageURL] = useState(null);
+  const [oldValues, setOldValues] = useState(null)
+  const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+  const [countries, setCountries] = useState([ {name: null, states: []} ])
+  const [states, setStates] = useState([])
+  const [cities, setCities] = useState([])
+  const [prevCountry, setPrevCountry] = useState("")
+  const [prevState, setPrevState] = useState("")
 
     useEffect(() => {
         const url = location.pathname.substring(1,4).toLowerCase()
         if (url === "reg") {
             handleAction({type: "Register", title: "REGISTER", button1: "Create Account", button2: "Login"})
+            getCountries()
+            .then((data) => {
+              setCurrentValues({ ...currValues, country : data[0].name, province: data[0].states[0].name})
+            })
         } else {
             handleAction({type: "Update", title: "UPDATE ACCOUNT", button1: "Update Account", button2: "Cancel", protect: true})
-            setCurrentValues({userName: "hpotter", password: "**********", email: "hpotter@gmail.com", phone: "", 
-              firstName: "Harry", lastName: "Potter", country: "United Kingdom", city: "London", province: "N/A"
+            getCountries()
+            .then((data) => {
+              setPrevCountry("United Kingdom")
+              setPrevState("City of London")
+              setCurrentValues({userName: "hpotter", password: "**********", email: "hpotter@gmail.com", phone: "", 
+                firstName: "Harry", lastName: "Potter", country: "United Kingdom", province: "City of London", city: "N/A", 
+              })
             })
             setSportsSelected([{label: "Basketball", value: "basketId"}])
             setImageURL("https://images.lifestyleasia.com/wp-content/uploads/sites/3/2022/12/31011513/harry-potter-films.jpeg")
@@ -35,6 +49,14 @@ const AccountMaintenance = () => {
         }
     }, [location.pathname]);
 
+    useEffect(()=> {
+      getStates(currValues.country)
+    }, [currValues.country])
+
+    useEffect(()=> {
+      getCities(currValues.country, currValues.province)
+    }, [currValues.province])
+
     const handlePhotoChange = event => {
       setSelectedImage(event.target.files[0])
       setImageURL(URL.createObjectURL(event.target.files[0]))
@@ -43,7 +65,63 @@ const AccountMaintenance = () => {
     const handleAccountDetails = (e) => {
       const field = e.target.name
       setCurrentValues({ ...currValues, [field] : e.target.value })
-  }
+    }
+
+    function getCountries() {
+      const url = 'https://countriesnow.space/api/v0.1/countries/states';
+      return new Promise(function (resolve, reject) {
+        fetch(url)
+        .then(response => response.json())
+        .then(responseData => {
+          setCountries(responseData.data)
+          resolve(responseData.data)
+        })
+      })
+    }
+
+    const getStates = (country) => {
+      let newList = [...countries]
+      let index = newList.findIndex(i => i.name === country);
+      let statesFetched = []
+      if (index != -1) {
+        statesFetched = [...newList[index].states]
+      }
+      statesFetched.push({name: "N/A"})
+      setStates(statesFetched)
+      if (country !== prevCountry) {
+        setCurrentValues({ ...currValues, province : statesFetched[0].name})
+        setPrevCountry(country)
+      }
+    }
+
+    const getCities = (country, state) => {
+      if (country !== "" && state !== "") {
+        let url = `https://countriesnow.space/api/v0.1/countries/state/cities/q?country=${country}&state=${state}`;
+        if (state === "N/A") {
+          url = `https://countriesnow.space/api/v0.1/countries/cities/q?country=${country}`;
+        }
+        try {
+          fetch(url)
+          .then(response => response.json())
+          .then(responseData => {
+            let citiesFetched = [...responseData.data]
+            citiesFetched.push("N/A")
+            setCities(citiesFetched)
+            if (state !== prevState) {
+              setCurrentValues({ ...currValues, city : citiesFetched[0]})
+              setPrevState(state)
+            }
+          })
+          .catch(()=> {
+            setCities(["N/A"])
+            setCurrentValues({ ...currValues, city : "N/A"})
+            setPrevState(state)
+          })
+        } catch(error) {
+          console.log(error);
+        }
+      }
+    }
 
     const navigate = useNavigate(); 
     const navigateCreateUpdate = () => { 
@@ -131,7 +209,11 @@ const AccountMaintenance = () => {
                 <label htmlFor="country" className="form-label">
                     Country*
                 </label>
-                <input name="country" type="text" className="form-control" defaultValue={currValues.country} onChange={handleAccountDetails} />
+                <select name="country" className="form-control" value={currValues.country} onChange={handleAccountDetails}>
+                    {countries.map((country) => (
+                        <option value={country.name} key={country.iso3}>{country.name}</option>
+                    ))}
+                </select>
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="phone" className="form-label">
@@ -142,16 +224,24 @@ const AccountMaintenance = () => {
           </div>
           <div className="row">
             <div className="col-5 mb-3">
-                <label htmlFor="city" className="form-label">
-                    City*
-                </label>
-                <input name="city" type="text" className="form-control" defaultValue={currValues.city} onChange={handleAccountDetails} />
-            </div>
-            <div className="col-5 mb-3">
                 <label htmlFor="province" className="form-label">
                     Province/State*
                 </label>
-                <input name="province" type="text" className="form-control" defaultValue={currValues.province} onChange={handleAccountDetails} />
+                <select name="province" className="form-control" value={currValues.province} onChange={handleAccountDetails}>
+                    {states.map((state) => (
+                        <option value={state.name} key={state.name}>{state.name}</option>
+                    ))}
+                </select>
+            </div>
+            <div className="col-5 mb-3">
+                <label htmlFor="city" className="form-label">
+                    City*
+                </label>
+                <select name="city" className="form-control" value={currValues.city} onChange={handleAccountDetails}>
+                    {cities.map((city) => (
+                        <option value={city} key={city}>{city}</option>
+                    ))}
+                </select>
             </div>
           </div>
           </div>

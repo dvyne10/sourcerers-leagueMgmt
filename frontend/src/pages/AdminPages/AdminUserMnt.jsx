@@ -9,7 +9,7 @@ const AdminUserMnt = () => {
     const {isSignedIn, isAdmin} = useAuth()
     const [action, handleAction] = useState("");
     const [currValues, setCurrentValues] = useState({userName: null, password: null, role: "USER", email: null, phone: null,
-      firstName: null, lastName: null, country: null, city: null, province: null, teamsCreated: [], 
+      firstName: null, lastName: null, country: "", province: "", city: "", teamsCreated: [], 
       requestsSent: [], notifications: [], successfulLoginDetails: [], failedLoginDetails: { failedLogins: [] }
     })
     const [sportsSelected, setSportsSelected] = useState([])
@@ -19,29 +19,51 @@ const AdminUserMnt = () => {
     const roleOptions = [ {label: "Regular user", value: "USER"}, {label: "System admin", value: "ADMIN"} ]
     const accountStatus = [ {label: "Active", value: "ACTV"}, {label: "Banned", value: "BAN"},
         {label: "Suspended", value: "SUSP"}, {label: "Locked", value: "LOCK"}, {label: "Pending", value: "PEND"} ]
+    const [countries, setCountries] = useState([ {name: null, states: []} ])
+    const [states, setStates] = useState([])
+    const [cities, setCities] = useState([])
+    const [prevCountry, setPrevCountry] = useState("")
+    const [prevState, setPrevState] = useState("")
 
     useEffect(() => {
         const url = window.location.pathname
         if (url === "/adminusercreation") {
             handleAction({type: "Creation", title: "CREATE USER ACCOUNT", button1: "Create Account"})
+            getCountries()
+            .then((data) => {
+              setCurrentValues({ ...currValues, country : data[0].name, province: data[0].states[0].name})
+            })
         } else {
             handleAction({type: "Update", title: "UPDATE USER ACCOUNT", button1: "Update"})
-            setCurrentValues({status: "ACTV", userName: "hpotter", email: "hpotter@gmail.com", password: "991f120169ac3db7cbd57b9af5f8fb81718a14d19dc79db185160a66ec4dcd09", salt: "buFeA9ckvzI/DXBLL8PhJQ==", 
-              role: "USER", adminAnnounce: [], phone: "", firstName: "Harry", lastName: "Potter", country: "United Kingdom", city: "London", province: "N/A",
-              teamsCreated: ["648ba154251b78d7946df340", "648ba154251b78d7946df344"], 
-              requestsSent: ["648ba154251b78d7946df34a", "648ba154251b78d7946df335"], 
-              notifications: ["648ba154251b78d7946df34b", "648ba154251b78d7946df335" ], 
-              successfulLoginDetails: [{sourceIpAddress: "194.120.180.275", timestamp: "2023-06-15T23:40:04.233+00:00"}, {sourceIpAddress: "194.120.180.275", timestamp: "2023-06-18T12:35:19.123+00:00"}], 
-              failedLoginDetails: { numberOfLoginTries: 8, numberOfFailedLogins: 2, 
-                failedLogins: [{sourceIpAddress: "194.120.180.275", timestamp: "2023-07-01T23:40:04.233+00:00"}, {sourceIpAddress: "194.120.180.275", timestamp: "2023-07-01T23:42:19.123+00:00"}],
-                consecutiveLockedOuts: null, lockedOutTimestamp: null },
-              detailsOTP: null, expiryTimeOTP: "" , createdAt: "2023-06-15T23:40:04.236+00:00", updatedAt: "2023-06-15T23:40:04.875+00:00"
+            getCountries()
+            .then((data) => {
+              setPrevCountry("United Kingdom")
+              setPrevState("City of London")
+              setCurrentValues({status: "ACTV", userName: "hpotter", email: "hpotter@gmail.com", password: "991f120169ac3db7cbd57b9af5f8fb81718a14d19dc79db185160a66ec4dcd09", salt: "buFeA9ckvzI/DXBLL8PhJQ==", 
+                role: "USER", adminAnnounce: [], phone: "", firstName: "Harry", lastName: "Potter", country: "United Kingdom", province: "City of London", city: "N/A",
+                teamsCreated: ["648ba154251b78d7946df340", "648ba154251b78d7946df344"], 
+                requestsSent: ["648ba154251b78d7946df34a", "648ba154251b78d7946df335"], 
+                notifications: ["648ba154251b78d7946df34b", "648ba154251b78d7946df335" ], 
+                successfulLoginDetails: [{sourceIpAddress: "194.120.180.275", timestamp: "2023-06-15T23:40:04.233+00:00"}, {sourceIpAddress: "194.120.180.275", timestamp: "2023-06-18T12:35:19.123+00:00"}], 
+                failedLoginDetails: { numberOfLoginTries: 8, numberOfFailedLogins: 2, 
+                    failedLogins: [{sourceIpAddress: "194.120.180.275", timestamp: "2023-07-01T23:40:04.233+00:00"}, {sourceIpAddress: "194.120.180.275", timestamp: "2023-07-01T23:42:19.123+00:00"}],
+                    consecutiveLockedOuts: null, lockedOutTimestamp: null },
+                detailsOTP: null, expiryTimeOTP: "" , createdAt: "2023-06-15T23:40:04.236+00:00", updatedAt: "2023-06-15T23:40:04.875+00:00"
+              })
             })
             setSportsSelected([{label: "Basketball", value: "basketId"}])
             setImageURL("https://images.lifestyleasia.com/wp-content/uploads/sites/3/2022/12/31011513/harry-potter-films.jpeg")
             setSelectedImage("x")
         }
     }, []);
+
+    useEffect(()=> {
+        getStates(currValues.country)
+    }, [currValues.country])
+  
+    useEffect(()=> {
+        getCities(currValues.country, currValues.province)
+    }, [currValues.province])
 
     const handlePhotoChange = event => {
       setSelectedImage(event.target.files[0])
@@ -77,6 +99,62 @@ const AdminUserMnt = () => {
       const field = e.target.name
       setCurrentValues({ ...currValues, [field] : e.target.value })
     }
+
+    function getCountries() {
+        const url = 'https://countriesnow.space/api/v0.1/countries/states';
+        return new Promise(function (resolve, reject) {
+          fetch(url)
+          .then(response => response.json())
+          .then(responseData => {
+            setCountries(responseData.data)
+            resolve(responseData.data)
+          })
+        })
+      }
+  
+      const getStates = (country) => {
+        let newList = [...countries]
+        let index = newList.findIndex(i => i.name === country);
+        let statesFetched = []
+        if (index != -1) {
+          statesFetched = [...newList[index].states]
+        }
+        statesFetched.push({name: "N/A"})
+        setStates(statesFetched)
+        if (country !== prevCountry) {
+          setCurrentValues({ ...currValues, province : statesFetched[0].name})
+          setPrevCountry(country)
+        }
+      }
+  
+      const getCities = (country, state) => {
+        if (country !== "" && state !== "") {
+          let url = `https://countriesnow.space/api/v0.1/countries/state/cities/q?country=${country}&state=${state}`;
+          if (state === "N/A") {
+            url = `https://countriesnow.space/api/v0.1/countries/cities/q?country=${country}`;
+          }
+          try {
+            fetch(url)
+            .then(response => response.json())
+            .then(responseData => {
+              let citiesFetched = [...responseData.data]
+              citiesFetched.push("N/A")
+              setCities(citiesFetched)
+              if (state !== prevState) {
+                setCurrentValues({ ...currValues, city : citiesFetched[0]})
+                setPrevState(state)
+              }
+            })
+            .catch(()=> {
+              setCities(["N/A"])
+              setCurrentValues({ ...currValues, city : "N/A"})
+              setPrevState(state)
+            })
+          } catch(error) {
+            console.log(error);
+          }
+        }
+      }
 
     const navigate = useNavigate(); 
     const navigateCreateUpdate = () => { 
@@ -143,14 +221,32 @@ const AdminUserMnt = () => {
                 <div className="col-4"><input name="lastName" type="text" className="form-control" defaultValue={currValues.lastName} onChange={handleAccountDetails} /></div>
             </div>
             <div className = "row mb-2">
-                <div className="col-2 text-end"><label htmlFor="country" className="form-label"> Country**</label></div>
-                <div className="col-4 mb-1"><input name="country" type="text" className="form-control" defaultValue={currValues.country} onChange={handleAccountDetails} /></div>
-                <div className="col-2 text-end"><label htmlFor="city" className="form-label">City**</label></div>
-                <div className="col-4 mb-1"><input name="city" type="text" className="form-control" defaultValue={currValues.city} onChange={handleAccountDetails} /></div>
+                <div className="col-2 text-end"><label htmlFor="country" className="form-label">Country**</label></div>
+                <div className="col-4 mb-1">
+                    <select name="country" className="form-control" value={currValues.country} onChange={handleAccountDetails}>
+                        {countries.map((country) => (
+                            <option value={country.name} key={country.iso3}>{country.name}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className="col-2 text-end"><label htmlFor="province" className="form-label">Province/State**</label></div>
+                <div className="col-4 mb-1">
+                    <select name="province" className="form-control" value={currValues.province} onChange={handleAccountDetails}>
+                        {states.map((state) => (
+                            <option value={state.name} key={state.name}>{state.name}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
             <div className = "row mb-2">
-                <div className="col-2 text-end"><label htmlFor="province" className="form-label">Province/State**</label></div>
-                <div className="col-4 mb-1"><input name="province" type="text" className="form-control" defaultValue={currValues.province} onChange={handleAccountDetails} /></div>
+                <div className="col-2 text-end"><label htmlFor="city" className="form-label">City**</label></div>
+                <div className="col-4 mb-1">
+                    <select name="city" className="form-control" value={currValues.city} onChange={handleAccountDetails}>
+                        {cities.map((city) => (
+                            <option value={city} key={city}>{city}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
             <div className="row">
 
