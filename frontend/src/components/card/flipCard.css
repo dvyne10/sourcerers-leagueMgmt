@@ -29,7 +29,7 @@
     width: 100%;
     height: 100%; 
 
-    
+
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
 
@@ -66,12 +66,58 @@
     justify-content: flex-start; 
     padding-top: 10px; 
     transform: rotateY(180deg); 
-    background-color: #B0E0E6;
+    background-color: #FFCB9A;
     border-radius: 25px; 
 }
 
 .team-link {
     text-decoration: none;
+    text-shadow: none;
     font-size: 14px;
-    color: black;
+    color: #2C3531;
 }
+
+.team-link:hover {
+    color: #116466;
+}
+
+.logo-container {
+    width: 25px; /* adjust as needed */
+    height: 25px; /* adjust as needed */
+    margin-right: 25px;
+}
+
+.team-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+}
+
+.team-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.card-text {
+    color: white; /* Initial color */
+    text-decoration: none;
+}
+
+.card-text:hover {
+    color: #D1E8E2; /* Change to your preferred hover color */
+}
+
+.overlay {
+    position: absolute;
+    top: 5%;
+    color: white;    
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card-front:hover .overlay {
+    opacity: 1;
+}
+
