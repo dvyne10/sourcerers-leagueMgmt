@@ -1,4 +1,4 @@
-import { useState, useEffect }  from 'react';
+import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
@@ -6,6 +6,8 @@ const LeagueMaintenance = () => {
   
   
     const routeParams = useParams();
+    const inputFileBanner = useRef(null);
+    const inputFileLogo = useRef(null);
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
     const [currValues, setCurrentValues] = useState({leagueName: null, description: null, location: null,
         division: null, startDate: null, endDate: null, ageGroup: null, teamsNo: "3", roundsNo: "1", 
@@ -51,13 +53,17 @@ const LeagueMaintenance = () => {
     }, []);
 
     const handleLogoChange = event => {
-        setSelectedLogo(event.target.files[0])
-        setLogoURL(URL.createObjectURL(event.target.files[0]))
+        if (event.target.files.length > 0) {
+            setSelectedLogo(event.target.files[0])
+            setLogoURL(URL.createObjectURL(event.target.files[0]))
+        }
     };
 
     const handleBannerChange = event => {
-        setSelectedBanner(event.target.files[0])
-        setBannerURL(URL.createObjectURL(event.target.files[0]))
+        if (event.target.files.length > 0) {
+            setSelectedBanner(event.target.files[0])
+            setBannerURL(URL.createObjectURL(event.target.files[0]))
+        }
     };
 
     const handleSportChange= event => {
@@ -155,19 +161,23 @@ const LeagueMaintenance = () => {
                 </label>
                 {selectedBanner && (
                     <div>
-                        <img src={bannerURL} alt="League Banner" className="object-fit-cover rounded mw-100 mb-2" style={{ width: "100rem", height: "10rem"}}/>
-                        <button onClick={() => setSelectedBanner(null)} className="btn btn-secondary mb-3" >Remove</button>
+                        <img src={bannerURL} alt="League Banner" className="object-fit-cover rounded mw-100 mb-2" style={{ width: "100rem", height: "20rem"}}/>
+                        <button onClick={() => setSelectedBanner(null)} className="btn btn-secondary mb-3 mx-1 btn-sm" >Remove</button>
+                        <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileBanner.current.click()}>Replace</button>
                     </div>
                 ) }
                 {!selectedBanner && (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "10rem"}} viewBox="-12 -12 40 40">
-                        <path d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
-                        <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
-                  </svg> 
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "20rem"}} viewBox="-12 -12 40 40">
+                            <path d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
+                            <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                        </svg>
+                        <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileBanner.current.click()}>Upload</button>
+                    </div> 
                 )}
                 <div className="row justify-content-center">
                     <div className="col-3">
-                        <input type="file" id="banner" name="banner" className="form-control" onChange={handleBannerChange} accept="image/*"/>
+                        <input type="file" id="banner" name="banner" className="d-none" onChange={handleBannerChange} accept="image/*" ref={inputFileBanner}/>
                     </div>
                 </div>
             </div>
@@ -178,13 +188,13 @@ const LeagueMaintenance = () => {
                 <label htmlFor="leagueName" className="form-label">
                     Name of League*
                 </label>
-                <input name="leagueName" type="text" className="form-control" defaultValue={currValues.leagueName} onChange={handleLeagueDetails} />
+                <input id="leagueName" name="leagueName" type="text" className="form-control" defaultValue={currValues.leagueName} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="sport" className="form-label">
                     Sport*
                 </label>
-                <select name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
+                <select id="sport" name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
                     {sportsOptions.map((option) => (
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
@@ -195,20 +205,20 @@ const LeagueMaintenance = () => {
                 <label htmlFor="description" className="form-label">
                     Description/Rules
                 </label>
-            <textarea name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleLeagueDetails} />
+            <textarea id="description" name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleLeagueDetails} />
           </div>
           <div className="row">
             <div className="col-sm-7 mb-3">
                 <label htmlFor="location" className="form-label">
                     Location*
                 </label>
-                <input name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleLeagueDetails} />
+                <input id="location" name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="division" className="form-label">
                     Division
                 </label>
-                <input name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleLeagueDetails} />
+                <input id="division" name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleLeagueDetails} />
             </div>
           </div>
           <div className="row">
@@ -216,19 +226,19 @@ const LeagueMaintenance = () => {
                 <label htmlFor="startDate" className="form-label">
                     Start Date*
                 </label>
-                <input name="startDate" type="date" className="form-control" defaultValue={currValues.startDate} onChange={handleLeagueDetails} />
+                <input id="startDate" name="startDate" type="date" className="form-control" defaultValue={currValues.startDate} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
                 <label htmlFor="endDate" className="form-label">
                     End Date*
                 </label>
-                <input name="endDate" type="date" className="form-control" defaultValue={currValues.endDate} onChange={handleLeagueDetails} />
+                <input id="endDate" name="endDate" type="date" className="form-control" defaultValue={currValues.endDate} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-2 mb-3 mx-4">
                 <label htmlFor="ageGroup" className="form-label">
                     Age Group*
                 </label>
-                <input name="ageGroup" type="text" className="form-control" placeholder="18-35" defaultValue={currValues.ageGroup} onChange={handleLeagueDetails} />
+                <input id="ageGroup" name="ageGroup" type="text" className="form-control" placeholder="18-35" defaultValue={currValues.ageGroup} onChange={handleLeagueDetails} />
             </div>
           </div>
           <div className="row">
@@ -236,13 +246,13 @@ const LeagueMaintenance = () => {
                 <label htmlFor="noOfTeams" className="form-label">
                     Number of Teams
                 </label>
-                <input name="noOfTeams" type="number" min="3" className="form-control" defaultValue={currValues.teamsNo} onChange={handleLeagueDetails} />
+                <input id="noOfTeams" name="noOfTeams" type="number" min="3" className="form-control" defaultValue={currValues.teamsNo} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
                 <label htmlFor="noOfRounds" className="form-label">
                     Number of Rounds
                 </label>
-                <input name="noOfRounds" type="number" min="1" max="10" className="form-control" defaultValue={currValues.roundsNo} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
+                <input id="noOfRounds" name="noOfRounds" type="number" min="1" max="10" className="form-control" defaultValue={currValues.roundsNo} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
             </div>
           </div>
           </div>
@@ -253,16 +263,20 @@ const LeagueMaintenance = () => {
                 {selectedLogo && (
                     <div>
                         <img src={logoURL} alt="not found" className="rounded mw-100 mb-2 border border-secondary" style={{ width: "100rem", height: "13rem"}}/>
-                        <button onClick={() => setSelectedLogo(null)} className="btn btn-secondary mb-3" >Remove</button>
+                        <button onClick={() => setSelectedLogo(null)} className="btn btn-secondary mb-3 mx-1 btn-sm" >Remove</button>
+                        <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileLogo.current.click()}>Replace</button>
                     </div>
                 ) }
                 {!selectedLogo && (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "13rem"}} viewBox="-12 -12 40 40">
-                        <path d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
-                        <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
-                  </svg> 
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "13rem"}} viewBox="-12 -12 40 40">
+                            <path d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
+                            <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                        </svg>
+                        <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileLogo.current.click()}>Upload</button> 
+                    </div>
                 )}
-                <input type="file" id="logo" name="logo" className="form-control" onChange={handleLogoChange} accept="image/*"/>
+                <input type="file" id="logo" name="logo" className="d-none" onChange={handleLogoChange} accept="image/*" ref={inputFileLogo}/>
             </div>
           </div>
           <div className="row justify-content-center">

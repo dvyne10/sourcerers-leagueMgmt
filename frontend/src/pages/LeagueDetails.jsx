@@ -15,15 +15,18 @@ const LeagueDetails = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [join, setJoin] = useState(false);
-
+function changeJoinShow(){
+    
+    setJoin(!join);
+    setShow(!show);
+}
   return (
     <>
      <div className='d-flex w-100 position-absolute w-75 justify-content-end p-5' style={{zIndex:"99999"}}><Button onClick={navigateUpdateLeague} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
         
-    <div className="App" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "50px"}}>
+    <div className="App" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
       
-      <h1>LEAGUE DETAILS PAGE</h1>
-      
+  
       
       
       
@@ -226,7 +229,7 @@ const LeagueDetails = () => {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant={join===false ? "success" : "danger"} onClick={ () => {handleClose && setJoin(!join)}}>
+          <Button variant={join===false ? "success" : "danger"} onClick={changeJoinShow}>
           {join===false ? "Send Request" : "Leave"}
           </Button>
         </Modal.Footer>
