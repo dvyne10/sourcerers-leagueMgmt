@@ -122,18 +122,18 @@ const AdminTeamMnt = () => {
             <div className="row">
 
                 <div className="col-2 text-end mb-2"><label htmlFor="teamName" className="form-label">Team Name*</label></div>
-                <div className="col-4 mb-2"><input name="teamName" type="text" className="form-control" defaultValue={currValues.teamName} onChange={handleTeamDetails} /></div>
+                <div className="col-4 mb-2"><input id="teamName" name="teamName" type="text" className="form-control" defaultValue={currValues.teamName} onChange={handleTeamDetails} /></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="location" className="form-label" >Team Location*</label></div>
-                <div className="col-4 mb-2"><input name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleTeamDetails}/></div>
+                <div className="col-4 mb-2"><input id="location" name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleTeamDetails}/></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="division" className="form-label" >Division</label></div>
-                <div className="col-4 mb-2"><input name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleTeamDetails}/></div>
+                <div className="col-4 mb-2"><input id="division" name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleTeamDetails}/></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="email" className="form-label">Email*</label></div>
-                <div className="col-4 mb-2"><input name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleTeamDetails} /></div>
+                <div className="col-4 mb-2"><input id="email" name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleTeamDetails} /></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="description" className="form-label" >Description</label></div>
-                <div className="col-10 mb-2"><textarea name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleTeamDetails}/></div>
+                <div className="col-10 mb-2"><textarea id="description" name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleTeamDetails}/></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="sport" className="form-label" >Sport*</label></div>
                 <div className="col-4 mb-2">
-                    <select name="sport" className="form-control" value={currValues.sport} onChange={handleTeamDetails} >
+                    <select id="sport" name="sport" className="form-control" value={currValues.sport} onChange={handleTeamDetails} >
                         {sportsOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
                         ))}
@@ -146,9 +146,9 @@ const AdminTeamMnt = () => {
                 <>
                     <p />
                     <div className="col-2 text-end mb-2"><label htmlFor="lookingForPlayers" className="form-label">Looking For Players?</label></div>
-                    <div className="col-1 mb-2"><input name="lookingForPlayers" type="checkbox" className="form-check-input" defaultChecked={currValues.lookingForPlayers && "checked"} onChange={handleTeamDetails} /></div>
+                    <div className="col-1 mb-2"><input id="lookingForPlayers" name="lookingForPlayers" type="checkbox" className="form-check-input" defaultChecked={currValues.lookingForPlayers && "checked"} onChange={handleTeamDetails} /></div>
                     <div className="col-2 text-end mb-2"><label htmlFor="lookingForPlayersChgTmst" className="form-label">Change Timestamp</label></div>
-                    <div className="col-4 mb-2"><input name="lookingForPlayersChgTmst" type="text" className="form-control" defaultValue={currValues.lookingForPlayersChgTmst} onChange={handleTeamDetails} /></div> 
+                    <div className="col-4 mb-2"><input id="lookingForPlayersChgTmst" name="lookingForPlayersChgTmst" type="text" className="form-control" defaultValue={currValues.lookingForPlayersChgTmst} onChange={handleTeamDetails} /></div> 
                     <div className="row mt-3">
                         <div className="col-3 text-end"><label htmlFor="createdBy" className="form-label">Created By :</label></div>
                         <div className="col-4">
@@ -157,7 +157,7 @@ const AdminTeamMnt = () => {
                     </div>
                     <div className="row mt-2 mb-2">
                         <div className="col-3 text-end"><label htmlFor="newCreator" className="form-label">Change League Creator :</label></div>
-                        <div className="col-3"><input name="newCreator" type="text" className="form-control" onChange={handleTeamDetails} placeholder="Search by username" /></div>
+                        <div className="col-3"><input id="newCreator" name="newCreator" type="text" className="form-control" onChange={handleTeamDetails} placeholder="Search by username" /></div>
                         <FaSearchPlus className="col-1 mt-2" onClick={()=> handleSearchUser(currValues.newCreator)} />
                         <div className="col-3">
                             <a href={`/adminuserupdate/${currValues.newCreatorId}`} target="_blank" rel="noreferrer" name="newCreatorId">{currValues.newCreatorId}</a>

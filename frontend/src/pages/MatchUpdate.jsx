@@ -220,13 +220,13 @@ const MatchUpdate = () => {
                         <label htmlFor="locationOfMatch" className="form-label text-left">
                             Location of Match
                         </label>
-                        <input name="locationOfMatch" type="text" className="form-control" defaultValue={currValues.locationOfMatch} onChange={handleMatchDetails} />
+                        <input id="locationOfMatch" name="locationOfMatch" type="text" className="form-control" defaultValue={currValues.locationOfMatch} onChange={handleMatchDetails} />
                     </div>
                     <div className="col-3 mb-3 text-start">
                         <label htmlFor="dateOfMatch" className="form-label">
-                            Date of Match
+                            Date and Time of Match
                         </label>
-                        <input name="dateOfMatch" type="datetime-local" className="form-control" defaultValue={currValues.dateOfMatch} onChange={handleMatchDetails} />
+                        <input id="dateOfMatch" name="dateOfMatch" type="datetime-local" className="form-control" defaultValue={currValues.dateOfMatch} onChange={handleMatchDetails} />
                     </div>
                 </div>
             </div>

@@ -166,13 +166,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="userName" className="form-label">
                     Username*
                 </label>
-                <input name="userName" type="text" className="form-control" defaultValue={currValues.userName} onChange={handleAccountDetails} />
+                <input id="userName" name="userName" type="text" className="form-control" defaultValue={currValues.userName} onChange={handleAccountDetails} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="password" className="form-label" >
                     Password*
                 </label>
-                <input name="password" type="password" className="form-control" defaultValue={currValues.password} onChange={handleAccountDetails} disabled={action.protect} />
+                <input id="password" name="password" type="password" className="form-control" defaultValue={currValues.password} onChange={handleAccountDetails} disabled={action.protect} />
             </div>
             
           </div>
@@ -181,13 +181,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="email" className="form-label">
                     Email*
                 </label>
-                <input name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleAccountDetails} disabled={action.protect} />
+                <input id="email" name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleAccountDetails} disabled={action.protect} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="sports" className="form-label">
                     Sports of interest*
                 </label>
-                <MultiSelect options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} labelledBy="sports" className="form-control"/>
+                <MultiSelect id="sports" name="sports" options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} labelledBy="sports" className="form-control"/>
             </div>
           </div>
           <div className="row">
@@ -195,13 +195,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="firstName" className="form-label">
                     First Name*
                 </label>
-                <input name="firstName" type="text" className="form-control" defaultValue={currValues.firstName} onChange={handleAccountDetails} />
+                <input id="firstName" name="firstName" type="text" className="form-control" defaultValue={currValues.firstName} onChange={handleAccountDetails} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="lastName" className="form-label">
                     Last Name*
                 </label>
-                <input name="lastName" type="text" className="form-control" defaultValue={currValues.lastName} onChange={handleAccountDetails} />
+                <input id="lastName" name="lastName" type="text" className="form-control" defaultValue={currValues.lastName} onChange={handleAccountDetails} />
             </div>
           </div>
           <div className="row">
@@ -209,7 +209,7 @@ const AccountMaintenance = () => {
                 <label htmlFor="country" className="form-label">
                     Country*
                 </label>
-                <select name="country" className="form-control" value={currValues.country} onChange={handleAccountDetails}>
+                <select id="country" name="country" className="form-control" value={currValues.country} onChange={handleAccountDetails}>
                     {countries.map((country) => (
                         <option value={country.name} key={country.iso3}>{country.name}</option>
                     ))}
@@ -219,7 +219,7 @@ const AccountMaintenance = () => {
                 <label htmlFor="phone" className="form-label">
                     Phone Number
                 </label>
-                <input name="phone" type="text" className="form-control" defaultValue={currValues.phone} onChange={handleAccountDetails} />
+                <input id="phone" name="phone" type="text" className="form-control" defaultValue={currValues.phone} onChange={handleAccountDetails} />
             </div>
           </div>
           <div className="row">
@@ -227,7 +227,7 @@ const AccountMaintenance = () => {
                 <label htmlFor="province" className="form-label">
                     Province/State*
                 </label>
-                <select name="province" className="form-control" value={currValues.province} onChange={handleAccountDetails}>
+                <select id="province" name="province" className="form-control" value={currValues.province} onChange={handleAccountDetails}>
                     {states.map((state) => (
                         <option value={state.name} key={state.name}>{state.name}</option>
                     ))}
@@ -237,7 +237,7 @@ const AccountMaintenance = () => {
                 <label htmlFor="city" className="form-label">
                     City*
                 </label>
-                <select name="city" className="form-control" value={currValues.city} onChange={handleAccountDetails}>
+                <select id="city" name="city" className="form-control" value={currValues.city} onChange={handleAccountDetails}>
                     {cities.map((city) => (
                         <option value={city} key={city}>{city}</option>
                     ))}

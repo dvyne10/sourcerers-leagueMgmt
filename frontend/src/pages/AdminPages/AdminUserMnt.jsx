@@ -182,7 +182,7 @@ const AdminUserMnt = () => {
                 <div className = "row mb-2">
                     <div className="col-2 text-end"><label htmlFor="status" className="form-label" >Account status*</label></div>
                     <div className="col-4">
-                        <select name="status" type="text" className="form-control" value={currValues.status} onChange={handleAccountDetails}>
+                        <select id="status" name="status" type="text" className="form-control" value={currValues.status} onChange={handleAccountDetails}>
                             {accountStatus.map((option) => (
                                 <option value={option.value} key={option.value}>{option.label}</option>
                             ))}
@@ -192,38 +192,38 @@ const AdminUserMnt = () => {
             )}
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="userName" className="form-label">Username*</label></div>
-                <div className="col-4"><input name="userName" type="text" className="form-control" defaultValue={currValues.userName} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input id="userName" name="userName" type="text" className="form-control" defaultValue={currValues.userName} onChange={handleAccountDetails} /></div>
                 <div className="col-2 text-end"><label htmlFor="password" className="form-label" >Password*</label></div>
-                <div className="col-4"><input name="password" type="password" className="form-control" defaultValue={currValues.password} onChange={handleAccountDetails}/></div>
+                <div className="col-4"><input id="password" name="password" type="password" className="form-control" defaultValue={currValues.password} onChange={handleAccountDetails}/></div>
             </div>
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="role" className="form-label" >Role*</label></div>
                 <div className="col-4">
-                    <select name="role" type="text" className="form-control" value={currValues.role} onChange={handleAccountDetails}>
+                    <select id="role" name="role" type="text" className="form-control" value={currValues.role} onChange={handleAccountDetails}>
                         {roleOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
                         ))}
                     </select>
                 </div>
                 <div className="col-2 text-end"><label htmlFor="email" className="form-label">Email*</label></div>
-                <div className="col-4"><input name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input id="email" name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleAccountDetails} /></div>
             </div>
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="sports" className="form-label">Sports of interest**</label></div>
                 <div className="col-4"><MultiSelect options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} className="form-control"/></div>
                 <div className="col-2 text-end"><label htmlFor="phone" className="form-label">Phone Number</label></div>
-                <div className="col-4"><input name="phone" type="text" className="form-control" defaultValue={currValues.phone} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input id="phone" name="phone" type="text" className="form-control" defaultValue={currValues.phone} onChange={handleAccountDetails} /></div>
             </div>
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="firstName" className="form-label">First Name*</label></div>
-                <div className="col-4"><input name="firstName" type="text" className="form-control" defaultValue={currValues.firstName} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input id="firstName" name="firstName" type="text" className="form-control" defaultValue={currValues.firstName} onChange={handleAccountDetails} /></div>
                 <div className="col-2 text-end"><label htmlFor="lastName" className="form-label">Last Name*</label></div>
-                <div className="col-4"><input name="lastName" type="text" className="form-control" defaultValue={currValues.lastName} onChange={handleAccountDetails} /></div>
+                <div className="col-4"><input id="lastName" name="lastName" type="text" className="form-control" defaultValue={currValues.lastName} onChange={handleAccountDetails} /></div>
             </div>
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="country" className="form-label">Country**</label></div>
                 <div className="col-4 mb-1">
-                    <select name="country" className="form-control" value={currValues.country} onChange={handleAccountDetails}>
+                    <select id="country" name="country" className="form-control" value={currValues.country} onChange={handleAccountDetails}>
                         {countries.map((country) => (
                             <option value={country.name} key={country.iso3}>{country.name}</option>
                         ))}
@@ -231,7 +231,7 @@ const AdminUserMnt = () => {
                 </div>
                 <div className="col-2 text-end"><label htmlFor="province" className="form-label">Province/State**</label></div>
                 <div className="col-4 mb-1">
-                    <select name="province" className="form-control" value={currValues.province} onChange={handleAccountDetails}>
+                    <select id="province" name="province" className="form-control" value={currValues.province} onChange={handleAccountDetails}>
                         {states.map((state) => (
                             <option value={state.name} key={state.name}>{state.name}</option>
                         ))}
@@ -241,7 +241,7 @@ const AdminUserMnt = () => {
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="city" className="form-label">City**</label></div>
                 <div className="col-4 mb-1">
-                    <select name="city" className="form-control" value={currValues.city} onChange={handleAccountDetails}>
+                    <select id="city" name="city" className="form-control" value={currValues.city} onChange={handleAccountDetails}>
                         {cities.map((city) => (
                             <option value={city} key={city}>{city}</option>
                         ))}
@@ -294,19 +294,19 @@ const AdminUserMnt = () => {
                     </div>
                     <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="numberOfLoginTries" className="form-label">Number of Failed Login Tries Allowed</label></div>
-                        <div className="col-1"><input name="numberOfLoginTries" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.numberOfLoginTries} onChange={handlefailedLoginDetails} /></div>
+                        <div className="col-1"><input id="numberOfLoginTries" name="numberOfLoginTries" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.numberOfLoginTries} onChange={handlefailedLoginDetails} /></div>
                     </div>
                     <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="numberOfFailedLogins" className="form-label">Number of Failed Logins</label></div>
-                        <div className="col-1"><input name="numberOfFailedLogins" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.numberOfFailedLogins} onChange={handlefailedLoginDetails} /></div>
+                        <div className="col-1"><input id="numberOfFailedLogins" name="numberOfFailedLogins" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.numberOfFailedLogins} onChange={handlefailedLoginDetails} /></div>
                     </div>
                     <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="consecutiveLockedOuts" className="form-label">Consecutive times account was locked-out</label></div>
-                        <div className="col-1"><input name="consecutiveLockedOuts" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.consecutiveLockedOuts} onChange={handlefailedLoginDetails} /></div>
+                        <div className="col-1"><input id="consecutiveLockedOuts" name="consecutiveLockedOuts" type="number" min="0" className="form-control" defaultValue={currValues.failedLoginDetails.consecutiveLockedOuts} onChange={handlefailedLoginDetails} /></div>
                     </div>
                     <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="lockedOutTimestamp" className="form-label">Timestamp Account is Locked out</label></div>
-                        <div className="col-4"><input name="lockedOutTimestamp" type="text" className="form-control" defaultValue={currValues.failedLoginDetails.lockedOutTimestamp} onChange={handlefailedLoginDetails} /></div>
+                        <div className="col-4"><input id="lockedOutTimestamp" name="lockedOutTimestamp" type="text" className="form-control" defaultValue={currValues.failedLoginDetails.lockedOutTimestamp} onChange={handlefailedLoginDetails} /></div>
                     </div>
                     <div className="row mt-3">
                         <div className="col-4 text-end"><label htmlFor="failedLogins" className="form-label" >Failed Logins : </label></div>
@@ -327,11 +327,11 @@ const AdminUserMnt = () => {
                     </div>
                     <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="detailsOTP" className="form-label">One Time Password</label></div>
-                        <div className="col-2"><input name="detailsOTP" type="number" min="0" className="form-control" defaultValue={currValues.detailsOTP} onChange={handleAccountDetails} /></div>
+                        <div className="col-2"><input id="detailsOTP" name="detailsOTP" type="number" min="0" className="form-control" defaultValue={currValues.detailsOTP} onChange={handleAccountDetails} /></div>
                     </div>
                     <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="expiryTimeOTP" className="form-label">OTP Expiry Timestamp</label></div>
-                        <div className="col-4"><input name="expiryTimeOTP" type="text" className="form-control" defaultValue={currValues.expiryTimeOTP} onChange={handleAccountDetails} /></div>
+                        <div className="col-4"><input id="expiryTimeOTP" name="expiryTimeOTP" type="text" className="form-control" defaultValue={currValues.expiryTimeOTP} onChange={handleAccountDetails} /></div>
                     </div>
                     <div className="row mt-3">
                         <div className="col-3 text-end"><label htmlFor="createdAt" className="form-label">Date of Account Creation :</label></div>

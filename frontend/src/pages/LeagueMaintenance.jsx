@@ -178,13 +178,13 @@ const LeagueMaintenance = () => {
                 <label htmlFor="leagueName" className="form-label">
                     Name of League*
                 </label>
-                <input name="leagueName" type="text" className="form-control" defaultValue={currValues.leagueName} onChange={handleLeagueDetails} />
+                <input id="leagueName" name="leagueName" type="text" className="form-control" defaultValue={currValues.leagueName} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="sport" className="form-label">
                     Sport*
                 </label>
-                <select name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
+                <select id="sport" name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
                     {sportsOptions.map((option) => (
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
@@ -195,20 +195,20 @@ const LeagueMaintenance = () => {
                 <label htmlFor="description" className="form-label">
                     Description/Rules
                 </label>
-            <textarea name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleLeagueDetails} />
+            <textarea id="description" name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleLeagueDetails} />
           </div>
           <div className="row">
             <div className="col-sm-7 mb-3">
                 <label htmlFor="location" className="form-label">
                     Location*
                 </label>
-                <input name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleLeagueDetails} />
+                <input id="location" name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="division" className="form-label">
                     Division
                 </label>
-                <input name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleLeagueDetails} />
+                <input id="division" name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleLeagueDetails} />
             </div>
           </div>
           <div className="row">
@@ -216,19 +216,19 @@ const LeagueMaintenance = () => {
                 <label htmlFor="startDate" className="form-label">
                     Start Date*
                 </label>
-                <input name="startDate" type="date" className="form-control" defaultValue={currValues.startDate} onChange={handleLeagueDetails} />
+                <input id="startDate" name="startDate" type="date" className="form-control" defaultValue={currValues.startDate} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
                 <label htmlFor="endDate" className="form-label">
                     End Date*
                 </label>
-                <input name="endDate" type="date" className="form-control" defaultValue={currValues.endDate} onChange={handleLeagueDetails} />
+                <input id="endDate" name="endDate" type="date" className="form-control" defaultValue={currValues.endDate} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-2 mb-3 mx-4">
                 <label htmlFor="ageGroup" className="form-label">
                     Age Group*
                 </label>
-                <input name="ageGroup" type="text" className="form-control" placeholder="18-35" defaultValue={currValues.ageGroup} onChange={handleLeagueDetails} />
+                <input id="ageGroup" name="ageGroup" type="text" className="form-control" placeholder="18-35" defaultValue={currValues.ageGroup} onChange={handleLeagueDetails} />
             </div>
           </div>
           <div className="row">
@@ -236,13 +236,13 @@ const LeagueMaintenance = () => {
                 <label htmlFor="noOfTeams" className="form-label">
                     Number of Teams
                 </label>
-                <input name="noOfTeams" type="number" min="3" className="form-control" defaultValue={currValues.teamsNo} onChange={handleLeagueDetails} />
+                <input id="noOfTeams" name="noOfTeams" type="number" min="3" className="form-control" defaultValue={currValues.teamsNo} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
                 <label htmlFor="noOfRounds" className="form-label">
                     Number of Rounds
                 </label>
-                <input name="noOfRounds" type="number" min="1" max="10" className="form-control" defaultValue={currValues.roundsNo} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
+                <input id="noOfRounds" name="noOfRounds" type="number" min="1" max="10" className="form-control" defaultValue={currValues.roundsNo} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
             </div>
           </div>
           </div>

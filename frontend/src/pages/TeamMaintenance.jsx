@@ -70,20 +70,6 @@ const TeamMaintenance = () => {
         setSportSelected(event.target.value);
     }
 
-    // const handlePositionChange = (event, index) => {
-    //     let newList = [...playersList]
-    //     newList[index].position = event.target.value
-    //     setPlayersList(newList)
-    //     setPlayersChanged(true)
-    // }
-
-    // const handleJerseyChange = (event, index) => {
-    //     let newList = [...playersList]
-    //     newList[index].jerseyNumber = event.target.value
-    //     setPlayersList(newList)
-    //     setPlayersChanged(true)
-    // }
-
     const handlePLayerChange = (event, index) => {
         const field = event.target.name
         let newList = [...playersList]
@@ -184,13 +170,13 @@ const TeamMaintenance = () => {
                 <label htmlFor="teamName" className="form-label">
                     Team Name*
                 </label>
-                <input name="teamName" type="text" className="form-control" defaultValue={currValues.teamName} onChange={handleTeamDetails} />
+                <input id="teamName" name="teamName" type="text" className="form-control" defaultValue={currValues.teamName} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="sport" className="form-label">
                     Sport*
                 </label>
-                <select name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
+                <select id="sport" name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
                     {sportsOptions.map((option) => (
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
@@ -201,26 +187,26 @@ const TeamMaintenance = () => {
                 <label htmlFor="description" className="form-label">
                     Description
                 </label>
-            <textarea name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleTeamDetails} />
+            <textarea id="description" name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleTeamDetails} />
           </div>
           <div className="row">
             <div className="col-sm-5 mb-3">
                 <label htmlFor="location" className="form-label">
                     Location*
                 </label>
-                <input name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleTeamDetails} />
+                <input id="location" name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-3 mb-3">
                 <label htmlFor="division" className="form-label">
                     Division
                 </label>
-                <input name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleTeamDetails} />
+                <input id="division" name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="email" className="form-label">
                     Email*
                 </label>
-                <input name="email" type="text" className="form-control" defaultValue={currValues.email} onChange={handleTeamDetails} />
+                <input id="email" name="email" type="text" className="form-control" defaultValue={currValues.email} onChange={handleTeamDetails} />
             </div>
           </div>
           </div>
