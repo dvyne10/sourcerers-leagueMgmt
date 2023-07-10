@@ -1,15 +1,11 @@
 import './flipCard.css';
 import './flipTransition.css';
 import PropTypes from 'prop-types'; 
-import { Link, useNavigate} from 'react-router-dom';
-import Button from 'react-bootstrap/Button'; 
+import { Link} from 'react-router-dom';
+
 
 const FlipCard = ({onClick, imageUrl, cardText}) => {
-    const navigate = useNavigate();
 
-    const handleLeagueDetails = () => {
-      navigate('/league/123'); 
-    };
 
     const teams = [
         {id: '1', name: 'Dragon Fire', logo: '/dragon.jpg'},
@@ -36,11 +32,11 @@ const FlipCard = ({onClick, imageUrl, cardText}) => {
                         ))}
                     </tbody>
                 </table>
-                <Button onClick={handleLeagueDetails} style={{marginTop: '50%', backgroundColor: '#D1E8E2', color: '#2C3531', borderColor: '#2C3531'}} className="league-detail-btn">League Details</Button>
+            
             </div>
     
             <div className="card-front" style={{backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover'}}>
-                {cardText}
+                <Link className="card-text" to={`/league/123`}>{cardText}</Link>
                 <div className="overlay">
                     Click to flip!
                 </div>

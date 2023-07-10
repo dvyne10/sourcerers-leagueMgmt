@@ -121,3 +121,11 @@
     opacity: 1;
 }
 
+.card-text {
+    color: white; 
+    text-decoration: none;
+}
+
+.card-text:hover {
+    color: #D9B08C;
+}
