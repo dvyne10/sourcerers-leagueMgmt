@@ -1,4 +1,4 @@
-import { useState, useEffect }  from 'react';
+import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate } from 'react-router-dom';
 import { MultiSelect } from "react-multi-select-component";
@@ -7,6 +7,7 @@ import useAuth from "../../hooks/auth";
 const AdminUserMnt = () => {
   
     const {isSignedIn, isAdmin} = useAuth()
+    const inputFile = useRef(null);
     const [action, handleAction] = useState("");
     const [currValues, setCurrentValues] = useState({userName: null, password: null, role: "USER", email: null, phone: null,
       firstName: null, lastName: null, country: "", province: "", city: "", teamsCreated: [], 
@@ -66,8 +67,10 @@ const AdminUserMnt = () => {
     }, [currValues.province])
 
     const handlePhotoChange = event => {
-      setSelectedImage(event.target.files[0])
-      setImageURL(URL.createObjectURL(event.target.files[0]))
+        if (event.target.files.length > 0) {
+            setSelectedImage(event.target.files[0])
+            setImageURL(URL.createObjectURL(event.target.files[0]))
+        }
     };
 
     const handleSuccLoginChange = (event, index) => {
@@ -209,7 +212,7 @@ const AdminUserMnt = () => {
                 <div className="col-4"><input id="email" name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleAccountDetails} /></div>
             </div>
             <div className = "row mb-2">
-                <div className="col-2 text-end"><label htmlFor="sports" className="form-label">Sports of interest**</label></div>
+                <div className="col-2 text-end"><label htmlFor="sports" className="form-label">Sports of Interest**</label></div>
                 <div className="col-4"><MultiSelect options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} className="form-control"/></div>
                 <div className="col-2 text-end"><label htmlFor="phone" className="form-label">Phone Number</label></div>
                 <div className="col-4"><input id="phone" name="phone" type="text" className="form-control" defaultValue={currValues.phone} onChange={handleAccountDetails} /></div>
@@ -348,21 +351,25 @@ const AdminUserMnt = () => {
             </div>
 
             <div className="row justify-content-center mt-3">
-                < div className="col-sm-3 mb-3 text-center">
-                    <label htmlFor="upload" className="form-label ">Profile picture</label>
+                < div className="col-3 mb-3 text-center">
+                    <label htmlFor="upload" className="form-label ">Profile Picture</label>
                         {selectedImage && (
                             <div>
-                                <img src={imageURL} alt="profile picture" className="rounded mw-100 mb-2 border border-secondary" style={{ width: "13rem", height: "13rem"}} />
-                                <button onClick={() => setSelectedImage(null)} className="btn btn-secondary mb-3" >Remove</button>
+                                <img src={imageURL} alt="profile picture" className="rounded mw-100 mb-2 border border-secondary" style={{ width: "100rem", height: "13rem"}} />
+                                <button onClick={() => setSelectedImage(null)} className="btn btn-secondary mb-3 mx-1 btn-sm" >Remove</button>
+                                <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFile.current.click()}>Replace</button>
                             </div>
                         ) }
                         {!selectedImage && (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "13rem"}} viewBox="0 0 16 16">
-                                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
-                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                            </svg> 
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "13rem"}} viewBox="0 0 16 16">
+                                    <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                </svg>
+                                <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFile.current.click()}>Upload</button>
+                            </div> 
                         )}
-                    <input type="file" id="upload" name="upload" className="form-control" onChange={handlePhotoChange} accept="image/*"/>
+                    <input type="file" id="upload" name="upload" className="d-none" onChange={handlePhotoChange} accept="image/*" ref={inputFile}/>
                 </div>
             </div>
 

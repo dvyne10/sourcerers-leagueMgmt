@@ -10,7 +10,7 @@ import { Badge } from "@mui/material";
 import useNotification from "../hooks/notification";
 
 const NavigationComponent = () => {
-  const { isSignedIn, signOut } = useAuth();
+  const { isSignedIn, signOut, isAdmin } = useAuth();
   const { notificationCount } = useNotification();
 
   return (
@@ -106,6 +106,8 @@ const NavigationComponent = () => {
                       <FaUserCircle className="m-auto" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu className="dropdown-menu dropdown-menu-end">
+                      {!isAdmin && (
+                        <>
                       <Dropdown.Item href="/myprofile" className="nav-links ">
                         My Profile
                       </Dropdown.Item>
@@ -115,6 +117,15 @@ const NavigationComponent = () => {
                       >
                         Update Profile
                       </Dropdown.Item>
+                      </>
+                      )}
+                      {isAdmin === true && (
+                        <>
+                      <Dropdown.Item href="/adminusers" className="nav-links ">
+                        Admin Dashboard
+                      </Dropdown.Item>
+                      </>
+                      )}
                       <Dropdown.Item
                         href="/changepassword"
                         className="nav-links"
