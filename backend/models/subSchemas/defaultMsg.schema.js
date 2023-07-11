@@ -8,6 +8,10 @@ const defaultMsgSchema = Schema({
     required: validateSchemaProperty(this, "notification_type"),
     index: validateSchemaProperty(this, "notification_type"),
   },
+  notifDesc: {
+    type: String,
+    required: validateSchemaProperty(this, "notification_type"),
+  },
   infoOrApproval: {
     type: String,
     enum: ["INFO", "APRV", "APRVREJ"],
