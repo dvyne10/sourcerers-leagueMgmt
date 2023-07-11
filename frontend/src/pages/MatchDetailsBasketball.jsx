@@ -6,7 +6,7 @@ import teamLogo1 from '/lakers.png';
 import teamLogo2 from '/golden.png';
 import { Button, Image}  from 'react-bootstrap'; 
 import { useNavigate} from 'react-router-dom';
-
+import { BsGearFill } from "react-icons/bs";
 const MatchDetailsBasketball = () => {
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
@@ -49,7 +49,7 @@ const MatchDetailsBasketball = () => {
     opacity: 0.6,  // adjust the opacity as needed
     zIndex: -1
   }}/>
-
+         <div style={{marginLeft: '87%',  transform: 'translateY(15px)'}}><a href="/updatematch/1" className="btn btn-outline-success"><BsGearFill className="m-auto" /></a></div>
         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '2%' }}>
         
         <div onClick={() => navigate('/team/:teamid')}
