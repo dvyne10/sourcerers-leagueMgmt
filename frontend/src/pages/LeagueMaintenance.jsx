@@ -9,7 +9,7 @@ const LeagueMaintenance = () => {
     const inputFileLogo = useRef(null);
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
     const [currValues, setCurrentValues] = useState({leagueName: "", description: "", location: "",
-        division: "", startDate: null, endDate: null, ageGroup: "", teamsNo: "3", roundsNo: "1", 
+        division: "", startDate: null, endDate: null, ageGroup: "", noOfTeams: "3", noOfRounds: "1", 
     })
     const [teamsList, setTeamsList] = useState(null)
     const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
@@ -31,7 +31,7 @@ const LeagueMaintenance = () => {
             // cannot amend sport if it has team/s
             // cannot amend number of rounds is status is ST/EN.
             setCurrentValues({leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
-                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", teamsNo: "15", roundsNo: "2",
+                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", noOfTeams: "15", noOfRounds: "2",
             })
             setTeamsList([
                 { teamId: 1, teamName: "Vikings", approvedBy: "Hayes Lawson", joinedOn: "2022-07-01", action: "Remove", toRemove: false },
@@ -132,11 +132,11 @@ const LeagueMaintenance = () => {
         let errResp = false
         let errMsgs = []
         let focusON = false
+        let ageGroupChars = /[0-9]-[0-9]/
         if (currValues.leagueName.trim() === "") {
             errMsgs.push('League name is required.');
             document.getElementById("leagueName").focus()
             focusON = true
-            errResp = true
         }
         if (sportSelected === "") {
             errMsgs.push('Sport is required.');
@@ -144,15 +144,13 @@ const LeagueMaintenance = () => {
                 document.getElementById("sport").focus()
                 focusON = true
             }
-            errResp = true
         }
         if (currValues.location.trim() === "") {
-            errMsgs.push('League location is required.');
+            errMsgs.push('Location is required.');
             if (!focusON) {
                 document.getElementById("location").focus()
                 focusON = true
             }
-            errResp = true
         }
         if (currValues.ageGroup.trim() === "") {
             errMsgs.push('Age group is required.');
@@ -160,9 +158,67 @@ const LeagueMaintenance = () => {
                 document.getElementById("ageGroup").focus()
                 focusON = true
             }
-            errResp = true
+        } else if (!ageGroupChars.test(currValues.ageGroup.trim())){
+            errMsgs.push('Age group format is invalid.');
+            if (!focusON) {
+                document.getElementById("ageGroup").focus()
+                focusON = true
+            }
+        } else {
+            let dash = currValues.ageGroup.trim().indexOf("-")
+            let num1 = currValues.ageGroup.trim().substring(0,dash)
+            let num2 = currValues.ageGroup.trim().substring(dash+1)
+            if (num1 > num2) {
+                errMsgs.push('Age group format is invalid.');
+                if (!focusON) {
+                    document.getElementById("ageGroup").focus()
+                    focusON = true
+                }
+            }
+        }
+        if (currValues.startDate === null) {
+            errMsgs.push('Start date is required.');
+            if (!focusON) {
+                document.getElementById("startDate").focus()
+                focusON = true
+            }
+        } else {
+            let dateInput = Date.parse(currValues.startDate)
+            if (isNaN(dateInput)) {
+                errMsgs.push('Start date is invalid.');
+                if (!focusON) {
+                    document.getElementById("startDate").focus()
+                    focusON = true
+                }
+            }
+        }
+        if (currValues.endDate === null) {
+            errMsgs.push('End date is required.');
+            if (!focusON) {
+                document.getElementById("endDate").focus()
+                focusON = true
+            }
+        } else {
+            let dateInput = Date.parse(currValues.endDate)
+            if (isNaN(dateInput)) {
+                errMsgs.push('End date is invalid.');
+                if (!focusON) {
+                    document.getElementById("endDate").focus()
+                    focusON = true
+                }
+            }
+        }
+        if (currValues.endDate < currValues.startDate) {
+            errMsgs.push('End date cannot be less than start date.');
+            if (!focusON) {
+                document.getElementById("endDate").focus()
+                focusON = true
+            }
         }
         setErrorMessage(errMsgs)
+        if (errMsgs.length > 0) {
+            errResp = true
+        }
         return errResp
     }
 
@@ -239,7 +295,7 @@ const LeagueMaintenance = () => {
                 <label htmlFor="leagueName" className="form-label">
                     Name of League*
                 </label>
-                <input id="leagueName" name="leagueName" type="text" className="form-control" defaultValue={currValues.leagueName} onChange={handleLeagueDetails} />
+                <input id="leagueName" name="leagueName" type="text" className="form-control" value={currValues.leagueName} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="sport" className="form-label">
@@ -256,20 +312,20 @@ const LeagueMaintenance = () => {
                 <label htmlFor="description" className="form-label">
                     Description/Rules
                 </label>
-            <textarea id="description" name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleLeagueDetails} />
+            <textarea id="description" name="description" className="form-control form-control-sm" value={currValues.description} onChange={handleLeagueDetails} />
           </div>
           <div className="row">
             <div className="col-sm-7 mb-3">
                 <label htmlFor="location" className="form-label">
                     Location*
                 </label>
-                <input id="location" name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleLeagueDetails} />
+                <input id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="division" className="form-label">
                     Division
                 </label>
-                <input id="division" name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleLeagueDetails} />
+                <input id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleLeagueDetails} />
             </div>
           </div>
           <div className="row">
@@ -277,19 +333,19 @@ const LeagueMaintenance = () => {
                 <label htmlFor="startDate" className="form-label">
                     Start Date*
                 </label>
-                <input id="startDate" name="startDate" type="date" className="form-control" defaultValue={currValues.startDate} onChange={handleLeagueDetails} />
+                <input id="startDate" name="startDate" type="date" className="form-control" value={currValues.startDate} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
                 <label htmlFor="endDate" className="form-label">
                     End Date*
                 </label>
-                <input id="endDate" name="endDate" type="date" className="form-control" defaultValue={currValues.endDate} onChange={handleLeagueDetails} />
+                <input id="endDate" name="endDate" type="date" className="form-control" value={currValues.endDate} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-2 mb-3 mx-4">
                 <label htmlFor="ageGroup" className="form-label">
                     Age Group*
                 </label>
-                <input id="ageGroup" name="ageGroup" type="text" className="form-control" placeholder="18-35" defaultValue={currValues.ageGroup} onChange={handleLeagueDetails} />
+                <input id="ageGroup" name="ageGroup" type="text" className="form-control" placeholder="18-35" value={currValues.ageGroup} onChange={handleLeagueDetails} />
             </div>
           </div>
           <div className="row">
@@ -297,13 +353,13 @@ const LeagueMaintenance = () => {
                 <label htmlFor="noOfTeams" className="form-label">
                     Number of Teams
                 </label>
-                <input id="noOfTeams" name="noOfTeams" type="number" min="3" className="form-control" defaultValue={currValues.teamsNo} onChange={handleLeagueDetails} />
+                <input id="noOfTeams" name="noOfTeams" type="number" min="3" className="form-control" value={currValues.noOfTeams} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
                 <label htmlFor="noOfRounds" className="form-label">
                     Number of Rounds
                 </label>
-                <input id="noOfRounds" name="noOfRounds" type="number" min="1" max="10" className="form-control" defaultValue={currValues.roundsNo} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
+                <input id="noOfRounds" name="noOfRounds" type="number" min="1" max="10" className="form-control" value={currValues.noOfRounds} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
             </div>
           </div>
           </div>

@@ -135,7 +135,7 @@ const AdminNotifMnt = () => {
 
             <div className = "row mb-2">
                 <div className="col-3 text-end"><label htmlFor="receiver" className="form-label">Receiver's Username*</label></div>
-                <div className="col-3"><input id="receiver" name="receiver" type="text" className="form-control" defaultValue={currValues.receiver} onChange={handleNotifDetails} /></div>
+                <div className="col-3"><input id="receiver" name="receiver" type="text" className="form-control" value={currValues.receiver} onChange={handleNotifDetails} /></div>
                 <div className="col-1"><FaSearchPlus className="m-auto" onClick={()=> handleSearchUser(currValues.receiver, "receiverId")} /></div>
                 <div className="col-2 text-end"><label htmlFor="receiverId" className="form-label" >Receiver's User Id</label></div>
                 <div className="col-3">
@@ -158,14 +158,14 @@ const AdminNotifMnt = () => {
             </div>
             <div className="row mt-3">
                 <div className="col-3 text-end"><label htmlFor="notifDetails" className="form-label" >Notification Details</label></div>
-                <div className="col-9"><textarea id="notifDetails" name="notifDetails" className="form-control form-control-sm" defaultValue={currValues.notifDetails} onChange={handleNotifDetails}/></div>
+                <div className="col-9"><textarea id="notifDetails" name="notifDetails" className="form-control form-control-sm" value={currValues.notifDetails} onChange={handleNotifDetails}/></div>
             </div>
             <div className="row mt-5">
                 <div className="col-4 text-end"><p>FOR APPROVAL OR REJECT NOTIFICATIONS :</p></div>
             </div>
             <div className = "row mb-2">
                 <div className="col-3 text-end"><label htmlFor="actionRequestId" className="form-label">Request Id</label></div>
-                <div className="col-4"><input id="actionRequestId" name="actionRequestId" type="text" className="form-control" defaultValue={currValues.actionRequestId} onChange={handleNotifDetails} disabled={currValues.disableAction}/></div>
+                <div className="col-4"><input id="actionRequestId" name="actionRequestId" type="text" className="form-control" value={currValues.actionRequestId} onChange={handleNotifDetails} disabled={currValues.disableAction}/></div>
                 <div className="col-4">
                     <a href={`/adminrequestupdate/${currValues.actionRequestId}`} target="_blank" rel="noreferrer" name="actionRequestId">{currValues.actionRequestId}</a>
                 </div>
@@ -182,14 +182,14 @@ const AdminNotifMnt = () => {
             </div>
             <div className = "row mb-2">
                 <div className="col-3 text-end"><label htmlFor="actionTmst" className="form-label">Action Timestamp</label></div>
-                <div className="col-4"><input id="actionTmst" name="actionTmst" type="text" className="form-control" defaultValue={currValues.actionTmst} onChange={handleNotifDetails}  disabled={currValues.disableAction}/></div>
+                <div className="col-4"><input id="actionTmst" name="actionTmst" type="text" className="form-control" value={currValues.actionTmst} onChange={handleNotifDetails}  disabled={currValues.disableAction}/></div>
             </div>
             <div className="row mt-5">
                 <div className="col-3 text-end"><p>SENDER :</p></div>
             </div>
             <div className="row mt-2">
                 <div className="col-3 text-end"><label htmlFor="senderUsername" className="form-label">User</label></div>
-                <div className="col-3"><input id="senderUsername" name="senderUsername" type="text" className="form-control" defaultValue={currValues.senderUsername} onChange={handleNotifDetails} placeholder="Search by username" /></div>
+                <div className="col-3"><input id="senderUsername" name="senderUsername" type="text" className="form-control" value={currValues.senderUsername} onChange={handleNotifDetails} placeholder="Search by username" /></div>
                 <div className="col-1"><FaSearchPlus className="m-auto" onClick={()=> handleSearchUser(currValues.senderUsername, "senderUserId")} /></div>
                 <div className="col-3">
                     <a href={`/adminuserupdate/${currValues.senderUserId}`} target="_blank" rel="noreferrer" name="senderUserId">{currValues.senderUserId}</a>
@@ -197,7 +197,7 @@ const AdminNotifMnt = () => {
             </div>
             <div className="row mt-2">
                 <div className="col-3 text-end"><label htmlFor="senderTeamName" className="form-label">Team</label></div>
-                <div className="col-3"><input id="senderTeamName" name="senderTeamName" type="text" className="form-control" defaultValue={currValues.senderTeamName} onChange={handleNotifDetails} placeholder="Search by team name" /></div>
+                <div className="col-3"><input id="senderTeamName" name="senderTeamName" type="text" className="form-control" value={currValues.senderTeamName} onChange={handleNotifDetails} placeholder="Search by team name" /></div>
                 <div className="col-1"><FaSearchPlus className="m-auto" onClick={()=> handleSearchTeam(currValues.senderTeamName)} /></div>
                 <div className="col-3">
                     <a href={`/adminuserupdate/${currValues.senderTeamId}`} target="_blank" rel="noreferrer" name="senderTeamId">{currValues.senderTeamId}</a>
@@ -205,7 +205,7 @@ const AdminNotifMnt = () => {
             </div>
             <div className="row mt-2">
                 <div className="col-3 text-end"><label htmlFor="senderLeagueName" className="form-label">League</label></div>
-                <div className="col-3"><input id="senderLeagueName" name="senderLeagueName" type="text" className="form-control" defaultValue={currValues.senderLeagueName} onChange={handleNotifDetails} placeholder="Search by league name" /></div>
+                <div className="col-3"><input id="senderLeagueName" name="senderLeagueName" type="text" className="form-control" value={currValues.senderLeagueName} onChange={handleNotifDetails} placeholder="Search by league name" /></div>
                 <div className="col-1"><FaSearchPlus className="m-auto" onClick={()=> handleSearchLeague(currValues.senderLeagueName)} /></div>
                 <div className="col-3">
                     <a href={`/adminuserupdate/${currValues.senderLeagueId}`} target="_blank" rel="noreferrer" name="senderLeagueId">{currValues.senderLeagueId}</a>

@@ -168,7 +168,7 @@ const TeamMaintenance = () => {
                     <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileBanner.current.click()}>Upload</button>
                     </div> 
                 )}
-                <div className="row justify-content-center">
+                <div className="row justify-content-center">value
                     <div className="col-3">
                         <input type="file" id="banner" name="banner" className="d-none" onChange={handleBannerChange} accept="image/*" ref={inputFileBanner}/>
                     </div>
@@ -181,7 +181,7 @@ const TeamMaintenance = () => {
                 <label htmlFor="teamName" className="form-label">
                     Team Name*
                 </label>
-                <input id="teamName" name="teamName" type="text" className="form-control" defaultValue={currValues.teamName} onChange={handleTeamDetails} />
+                <input id="teamName" name="teamName" type="text" className="form-control" value={currValues.teamName} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="sport" className="form-label">
@@ -198,26 +198,26 @@ const TeamMaintenance = () => {
                 <label htmlFor="description" className="form-label">
                     Description
                 </label>
-            <textarea id="description" name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleTeamDetails} />
+            <textarea id="description" name="description" className="form-control form-control-sm" value={currValues.description} onChange={handleTeamDetails} />
           </div>
           <div className="row">
             <div className="col-sm-5 mb-3">
                 <label htmlFor="location" className="form-label">
                     Location*
                 </label>
-                <input id="location" name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleTeamDetails} />
+                <input id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-3 mb-3">
                 <label htmlFor="division" className="form-label">
                     Division
                 </label>
-                <input id="division" name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleTeamDetails} />
+                <input id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="email" className="form-label">
                     Email*
                 </label>
-                <input id="email" name="email" type="text" className="form-control" defaultValue={currValues.email} onChange={handleTeamDetails} />
+                <input id="email" name="email" type="text" className="form-control" value={currValues.email} onChange={handleTeamDetails} />
             </div>
           </div>
           </div>
@@ -265,14 +265,14 @@ const TeamMaintenance = () => {
                                     <td>{player.playerName}</td>
                                     <td>{player.username}</td>
                                     <td>
-                                        <select name="position" className="form-control" defaultValue={player.position} onChange={(e) => handlePLayerChange(e, index)}>
+                                        <select name="position" className="form-control" value={player.position} onChange={(e) => handlePLayerChange(e, index)}>
                                             {positionOptions.map((option) => (
                                                 <option value={option.value} key={option.value}>{option.label}</option>
                                             ))}
                                         </select>
                                     </td>
                                     <td>
-                                        <input name="jerseyNumber" type="number" defaultValue={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
+                                        <input name="jerseyNumber" type="number" value={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
                                     </td>
                                     <td>{player.joinedDate}</td>
                                     <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemovePlayer(index)}>Remove</button></td>

@@ -169,13 +169,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="userName" className="form-label">
                     Username*
                 </label>
-                <input id="userName" name="userName" type="text" className="form-control" defaultValue={currValues.userName} onChange={handleAccountDetails} />
+                <input id="userName" name="userName" type="text" className="form-control" value={currValues.userName} onChange={handleAccountDetails} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="password" className="form-label" >
                     Password*
                 </label>
-                <input id="password" name="password" type="password" className="form-control" defaultValue={currValues.password} onChange={handleAccountDetails} disabled={action.protect} />
+                <input id="password" name="password" type="password" className="form-control" value={currValues.password} onChange={handleAccountDetails} disabled={action.protect} />
             </div>
             
           </div>
@@ -184,7 +184,7 @@ const AccountMaintenance = () => {
                 <label htmlFor="email" className="form-label">
                     Email*
                 </label>
-                <input id="email" name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleAccountDetails} disabled={action.protect} />
+                <input id="email" name="email" type="email" className="form-control" value={currValues.email} onChange={handleAccountDetails} disabled={action.protect} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="sports" className="form-label">
@@ -198,13 +198,13 @@ const AccountMaintenance = () => {
                 <label htmlFor="firstName" className="form-label">
                     First Name*
                 </label>
-                <input id="firstName" name="firstName" type="text" className="form-control" defaultValue={currValues.firstName} onChange={handleAccountDetails} />
+                <input id="firstName" name="firstName" type="text" className="form-control" value={currValues.firstName} onChange={handleAccountDetails} />
             </div>
             <div className="col-5 mb-3">
                 <label htmlFor="lastName" className="form-label">
                     Last Name*
                 </label>
-                <input id="lastName" name="lastName" type="text" className="form-control" defaultValue={currValues.lastName} onChange={handleAccountDetails} />
+                <input id="lastName" name="lastName" type="text" className="form-control" value={currValues.lastName} onChange={handleAccountDetails} />
             </div>
           </div>
           <div className="row">
@@ -222,7 +222,7 @@ const AccountMaintenance = () => {
                 <label htmlFor="phone" className="form-label">
                     Phone Number
                 </label>
-                <input id="phone" name="phone" type="text" className="form-control" defaultValue={currValues.phone} onChange={handleAccountDetails} />
+                <input id="phone" name="phone" type="text" className="form-control" value={currValues.phone} onChange={handleAccountDetails} />
             </div>
           </div>
           <div className="row">

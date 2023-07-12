@@ -169,49 +169,49 @@ const MatchUpdate = () => {
                 </div>
                 <div className="row justify-content-center mb-2">
                     <div className="col-2">
-                        <input name="finalScore1" type="number" min="0" className="form-control" defaultValue={currValues.finalScore1} onChange={handleMatchDetails} />
+                        <input name="finalScore1" type="number" min="0" className="form-control" value={currValues.finalScore1} onChange={handleMatchDetails} />
                     </div>
                     <div className="col-3">
                         <p className="text-lg-center fw-bold">Final Score</p>
                     </div>
                     <div className="col-2">
-                        <input name="finalScore2" type="number" min="0" className="form-control" defaultValue={currValues.finalScore2} onChange={handleMatchDetails} />
+                        <input name="finalScore2" type="number" min="0" className="form-control" value={currValues.finalScore2} onChange={handleMatchDetails} />
                     </div>
                 </div>
-                { isAdmin && (
+                { isAdmin && location.pathname.substring(1,6).toLowerCase() === "admin" && (
                     <div className="row justify-content-center mb-2">
                         <div className="col-2">
-                            <input name="finalScorePending1" type="number" min="0" className="form-control" defaultValue={currValues.finalScorePending1} onChange={handleMatchDetails} />
+                            <input name="finalScorePending1" type="number" min="0" className="form-control" value={currValues.finalScorePending1} onChange={handleMatchDetails} />
                         </div>
                         <div className="col-3">
                             <p className="text-lg-center fw-bold">Final Score (Pending)</p>
                         </div>
                         <div className="col-2">
-                            <input name="finalScorePending2" type="number" min="0" className="form-control" defaultValue={currValues.finalScorePending2} onChange={handleMatchDetails} />
+                            <input name="finalScorePending2" type="number" min="0" className="form-control" value={currValues.finalScorePending2} onChange={handleMatchDetails} />
                         </div>
                     </div>
                 ) }
                 <div className="row justify-content-center mb-3">
                     <div className="col-2">
-                        <input name="leaguePoints1" type="number" min="0" className="form-control" defaultValue={currValues.leaguePoints1} onChange={handleMatchDetails} />
+                        <input name="leaguePoints1" type="number" min="0" className="form-control" value={currValues.leaguePoints1} onChange={handleMatchDetails} />
                     </div>
                     <div className="col-3">
                         <p className="text-lg-center fw-bold">League Points</p>
                     </div>
                     <div className="col-2">
-                        <input name="leaguePoints2" type="number" min="0" className="form-control" defaultValue={currValues.leaguePoints2} onChange={handleMatchDetails} />
+                        <input name="leaguePoints2" type="number" min="0" className="form-control" value={currValues.leaguePoints2} onChange={handleMatchDetails} />
                     </div>
                 </div>
-                { isAdmin && (
+                { isAdmin && location.pathname.substring(1,6).toLowerCase() === "admin" && (
                     <div className="row justify-content-center mb-2">
                         <div className="col-2">
-                            <input name="leaguePointsPending1" type="number" min="0" className="form-control" defaultValue={currValues.leaguePointsPending1} onChange={handleMatchDetails} />
+                            <input name="leaguePointsPending1" type="number" min="0" className="form-control" value={currValues.leaguePointsPending1} onChange={handleMatchDetails} />
                         </div>
                         <div className="col-3">
                             <p className="text-lg-center fw-bold">League Points (Pending)</p>
                         </div>
                         <div className="col-2">
-                            <input name="leaguePointsPending2" type="number" min="0" className="form-control" defaultValue={currValues.leaguePointsPending2} onChange={handleMatchDetails} />
+                            <input name="leaguePointsPending2" type="number" min="0" className="form-control" value={currValues.leaguePointsPending2} onChange={handleMatchDetails} />
                         </div>
                     </div>
                 ) }
@@ -220,13 +220,13 @@ const MatchUpdate = () => {
                         <label htmlFor="locationOfMatch" className="form-label text-left">
                             Location of Match
                         </label>
-                        <input id="locationOfMatch" name="locationOfMatch" type="text" className="form-control" defaultValue={currValues.locationOfMatch} onChange={handleMatchDetails} />
+                        <input id="locationOfMatch" name="locationOfMatch" type="text" className="form-control" value={currValues.locationOfMatch} onChange={handleMatchDetails} />
                     </div>
                     <div className="col-3 mb-3 text-start">
                         <label htmlFor="dateOfMatch" className="form-label">
                             Date and Time of Match
                         </label>
-                        <input id="dateOfMatch" name="dateOfMatch" type="datetime-local" className="form-control" defaultValue={currValues.dateOfMatch} onChange={handleMatchDetails} />
+                        <input id="dateOfMatch" name="dateOfMatch" type="datetime-local" className="form-control" value={currValues.dateOfMatch} onChange={handleMatchDetails} />
                     </div>
                 </div>
             </div>
@@ -253,7 +253,7 @@ const MatchUpdate = () => {
                                 <td style={{ width: "15rem"}}>{player.fullName}</td>
                                 {player.playerStats.map((stat) =>
                                     <td key={stat.statId} >
-                                        <input name="stat" defaultValue={stat.points} type="number" min="0" onChange={(e) => onChangeStat(e, player.playerId, stat.statId, 1)} style={{ width: "3rem"}} disabled={currValues.disableInput1}/>
+                                        <input name="stat" value={stat.points} type="number" min="0" onChange={(e) => onChangeStat(e, player.playerId, stat.statId, 1)} style={{ width: "3rem"}} disabled={currValues.disableInput1}/>
                                     </td>
                                 )}
                                 <td><FaTrash className="m-auto" onClick={() => handleRemoveRow(index, 1)} disabled={currValues.disableInput1}/></td>
@@ -295,7 +295,7 @@ const MatchUpdate = () => {
                                 <td style={{ width: "15rem"}}>{player.fullName}</td>
                                 {player.playerStats.map((stat) =>
                                     <td key={stat.statId} >
-                                        <input style={{ width: "3rem"}} name="stat" defaultValue={stat.points} type="number" min="0" onChange={(e) => onChangeStat(e, player.playerId, stat.statId, 2)} disabled={currValues.disableInput2}/>
+                                        <input style={{ width: "3rem"}} name="stat" value={stat.points} type="number" min="0" onChange={(e) => onChangeStat(e, player.playerId, stat.statId, 2)} disabled={currValues.disableInput2}/>
                                     </td>
                                 )}
                                 <td><FaTrash className="m-auto" onClick={() => handleRemoveRow(index, 2)} disabled={currValues.disableInput2}/></td>
