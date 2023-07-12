@@ -13,7 +13,8 @@ const TeamMaintenance = () => {
         division: null, email: null 
     })
     const [playersList, setPlayersList] = useState(null)
-    const [sportSelected, setSportSelected] = useState("")
+    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+    const [sportSelected, setSportSelected] = useState(sportsOptions[0].value)
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
@@ -21,7 +22,7 @@ const TeamMaintenance = () => {
     const [disableDelete, setDeleteButton] = useState(true)
     const [oldValues, setOldValues] = useState(null)
     const [didPlayersChange, setPlayersChanged] = useState(false)
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+    
     const positionOptions = [ {label: "Team Captain", value: "SCP01"}, {label: "Goalkeeper", value: "SCP02"}, {label: "Defender", value: "SCP03"} ]
 
     useEffect(() => {

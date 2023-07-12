@@ -12,14 +12,14 @@ const LeagueMaintenance = () => {
         division: "", startDate: null, endDate: null, ageGroup: "", teamsNo: "3", roundsNo: "1", 
     })
     const [teamsList, setTeamsList] = useState(null)
-    const [sportSelected, setSportSelected] = useState("")
+    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+    const [sportSelected, setSportSelected] = useState(sportsOptions[0].value)
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
     const [bannerURL, setBannerURL] = useState(null);
     const [disableDelete, setDeleteButton] = useState(true)
     const [oldValues, setOldValues] = useState(null)
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
     const [errorMessage, setErrorMessage] = useState([]);
 
     useEffect(() => {
@@ -142,6 +142,7 @@ const LeagueMaintenance = () => {
             errMsgs.push('Sport is required.');
             if (!focusON) {
                 document.getElementById("sport").focus()
+                focusON = true
             }
             errResp = true
         }
@@ -149,6 +150,15 @@ const LeagueMaintenance = () => {
             errMsgs.push('League location is required.');
             if (!focusON) {
                 document.getElementById("location").focus()
+                focusON = true
+            }
+            errResp = true
+        }
+        if (currValues.ageGroup.trim() === "") {
+            errMsgs.push('Age group is required.');
+            if (!focusON) {
+                document.getElementById("ageGroup").focus()
+                focusON = true
             }
             errResp = true
         }
