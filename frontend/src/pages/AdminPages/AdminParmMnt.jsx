@@ -22,7 +22,7 @@ const AdminParmMnt = () => {
             //setCurrentValues({parameterId: "sport", sportsTypeId: "SOCCER", sportsName: "Soccer"})
             //setCurrentValues({parameterId: "statistic", statisticsId: "SC01", statShortDesc: "Goals", statLongDesc: "Goals", sportsType: "648ba153251b78d7946df311"})
             //setCurrentValues({parameterId: "position", positionId: "SCP01", positionDesc: "Team Captain", sportsType: "648ba153251b78d7946df311"})
-            //setCurrentValues({parameterId: "notification_type", notifId: "APMDU", infoOrApproval: "APRVREJ", 
+            //setCurrentValues({parameterId: "notification_type", notifId: "APMDU", notifDesc: "Approval request for match details update", infoOrApproval: "APRVREJ", 
             //    message: "&teamName has updated score for &teamName1 vs &teamName2 <a href='/match/${matchId}'>match</a>:\\nFinal score : &score1 - &score2\\nLeague points : &points1 - &points2"})
             setCurrentValues({parameterId: "login", numberOfLoginDtlsToKeep: 10, defaultLoginTries: 5, maxAdditionalLoginTries: 5, lockedAccountTiming: 30, 
                 otpExpiry: 3, minPasswordLength: 8, capitalLetterIsRequired: true, capitalLettersList: "ABCDEFGHIJKLMNOPQRSTUVWXYZ", specialCharacterIsRequired: true, 
@@ -144,6 +144,10 @@ const AdminParmMnt = () => {
                     <div className = "row mb-3">
                         <div className="col-3 text-end"><label htmlFor="notifId" className="form-label">Notification Id*</label></div>
                         <div className="col-4"><input id="notifId" name="notifId" type="text" className="form-control" defaultValue={currValues.notifId} onChange={handleParameterDetails} /></div>
+                    </div>
+                    <div className = "row mb-3">
+                        <div className="col-3 text-end"><label htmlFor="notifDesc" className="form-label">Notification Description*</label></div>
+                        <div className="col-8"><input id="notifDesc" name="notifDesc" type="text" className="form-control" defaultValue={currValues.notifDesc} onChange={handleParameterDetails} /></div>
                     </div>
                     <div className = "row mb-3">
                         <div className="col-3 text-end"><label htmlFor="infoOrApproval" className="form-label" >Notification Type*</label></div>

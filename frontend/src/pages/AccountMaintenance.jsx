@@ -272,7 +272,7 @@ const AccountMaintenance = () => {
           </div>
         </div>
         <div className="row justify-content-center">
-          <button className="btn btn-dark col-2 mx-5" type="submit" onClick={navigateCreateUpdate}>
+          <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateCreateUpdate}>
             {action.button1}
           </button>
           <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateSigninOrCancel}>

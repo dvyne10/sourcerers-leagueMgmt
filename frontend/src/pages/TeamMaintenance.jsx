@@ -283,7 +283,7 @@ const TeamMaintenance = () => {
             </div>
         )}
                 <div className="row justify-content-center mt-5">
-                    <button className="btn btn-dark col-2 mx-5" type="submit" onClick={navigateTeamDetails}>
+                    <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateTeamDetails}>
                         {action.title}
                     </button>
                     { action.type !== "Creation" && (

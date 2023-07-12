@@ -4,13 +4,12 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
 const LeagueMaintenance = () => {
   
-  
     const routeParams = useParams();
     const inputFileBanner = useRef(null);
     const inputFileLogo = useRef(null);
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
-    const [currValues, setCurrentValues] = useState({leagueName: null, description: null, location: null,
-        division: null, startDate: null, endDate: null, ageGroup: null, teamsNo: "3", roundsNo: "1", 
+    const [currValues, setCurrentValues] = useState({leagueName: "", description: "", location: "",
+        division: "", startDate: null, endDate: null, ageGroup: "", teamsNo: "3", roundsNo: "1", 
     })
     const [teamsList, setTeamsList] = useState(null)
     const [sportSelected, setSportSelected] = useState("")
@@ -21,6 +20,7 @@ const LeagueMaintenance = () => {
     const [disableDelete, setDeleteButton] = useState(true)
     const [oldValues, setOldValues] = useState(null)
     const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+    const [errorMessage, setErrorMessage] = useState([]);
 
     useEffect(() => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
@@ -99,27 +99,61 @@ const LeagueMaintenance = () => {
             navigate('/league/' + routeParams.leagueid)
         } 
     }
-    const navigateLeagueDetails = () => { 
-        if (action.type === "Creation") {
-            navigate('/league/' + "new league id here")
-        } else {
-            if ( oldValues.leagueName == currValues.leagueName 
-                && oldValues.description == currValues.description 
-                && oldValues.location == currValues.location 
-                && oldValues.division == currValues.division
-                && oldValues.startDate == currValues.startDate
-                && oldValues.endDate == currValues.endDate
-                && oldValues.ageGroup == currValues.ageGroup
-                && oldValues.teamsNo == currValues.teamsNo
-                && oldValues.sport == sportSelected
-                && oldValues.logo == selectedLogo
-                && oldValues.banner == selectedBanner
-            ) {
-                alert("NO CHANGES FOUND!")
+    
+    const navigateLeagueDetails = () => {
+        let error = false
+        error = validateInput()
+        if (!error) {
+            if (action.type === "Creation") {
+                // send to server to validate and create record if no error was found.
+                navigate('/league/' + "new league id here")
             } else {
-                navigate('/league/' + routeParams.leagueid)
-            } 
+                if ( oldValues.leagueName == currValues.leagueName 
+                    && oldValues.description == currValues.description 
+                    && oldValues.location == currValues.location 
+                    && oldValues.division == currValues.division
+                    && oldValues.startDate == currValues.startDate
+                    && oldValues.endDate == currValues.endDate
+                    && oldValues.ageGroup == currValues.ageGroup
+                    && oldValues.teamsNo == currValues.teamsNo
+                    && oldValues.sport == sportSelected
+                    && oldValues.logo == selectedLogo
+                    && oldValues.banner == selectedBanner
+                ) {
+                    alert("NO CHANGES FOUND!")
+                } else {
+                    navigate('/league/' + routeParams.leagueid)
+                } 
+            }
         }
+    }
+
+    const validateInput = () => {
+        let errResp = false
+        let errMsgs = []
+        let focusON = false
+        if (currValues.leagueName.trim() === "") {
+            errMsgs.push('League name is required.');
+            document.getElementById("leagueName").focus()
+            focusON = true
+            errResp = true
+        }
+        if (sportSelected === "") {
+            errMsgs.push('Sport is required.');
+            if (!focusON) {
+                document.getElementById("sport").focus()
+            }
+            errResp = true
+        }
+        if (currValues.location.trim() === "") {
+            errMsgs.push('League location is required.');
+            if (!focusON) {
+                document.getElementById("location").focus()
+            }
+            errResp = true
+        }
+        setErrorMessage(errMsgs)
+        return errResp
     }
 
     const navigateDelete = () => {
@@ -153,6 +187,13 @@ const LeagueMaintenance = () => {
   return (
     <div className="d-flex container mt-2 justify-content-center">
       <Card style={{ width: "60rem", padding: 20 }}>
+        {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+        )}
         <h2 className="mb-4 center-text">{action.title.toUpperCase()}</h2>
         <form action="" encType="multipart/form-data">
             < div className="col mb-5 text-center">               
@@ -280,7 +321,7 @@ const LeagueMaintenance = () => {
             </div>
           </div>
           <div className="row justify-content-center">
-            <button className="btn btn-dark col-2 mx-5" type="submit" onClick={navigateLeagueDetails}>
+            <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateLeagueDetails}>
               {action.title}
             </button>
             { action.type !== "Creation" && (
