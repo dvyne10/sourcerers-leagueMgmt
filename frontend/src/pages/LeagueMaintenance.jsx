@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import useAuth from "../hooks/auth";
 
 const LeagueMaintenance = () => {
   
+    const {isSignedIn} = useAuth()
     const routeParams = useParams();
     const inputFileBanner = useRef(null);
     const inputFileLogo = useRef(null);
@@ -105,8 +107,18 @@ const LeagueMaintenance = () => {
         error = validateInput()
         if (!error) {
             if (action.type === "Creation") {
-                // send to server to validate and create record if no error was found.
-                navigate('/league/' + "new league id here")
+                // fetch("http://localhost:8080", {
+                //     method: "POST",
+                //     body: JSON.stringify(data),
+                //     headers: {
+                //         "Content-Type": "Application/JSON"
+                //     }
+                // }).then(res=>res.json()).then(data=>{
+                //     console.log(data);
+                    navigate('/league/' + "new league id here")
+                //}).catch((error) => {
+                    //console.log(error)
+                //})
             } else {
                 if ( oldValues.leagueName == currValues.leagueName 
                     && oldValues.description == currValues.description 
@@ -269,7 +281,12 @@ const LeagueMaintenance = () => {
 
   return (
     <div className="d-flex container mt-2 justify-content-center">
-      <Card style={{ width: "60rem", padding: 20 }}>
+        { !isSignedIn ? (
+            <div>
+                {navigate('/signin')}
+            </div>
+        ) : (
+        <Card style={{ width: "60rem", padding: 20 }}>
         {errorMessage.length > 0 && (
             <div className="alert alert-danger mb-3 p-1">
                 {errorMessage.map((err, index) => (
@@ -462,6 +479,7 @@ const LeagueMaintenance = () => {
             </div>
             )}
       </Card>
+        )}
     </div>
   );
 };
