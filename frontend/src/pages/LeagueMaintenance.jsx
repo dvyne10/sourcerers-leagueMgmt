@@ -9,7 +9,7 @@ const LeagueMaintenance = () => {
     const inputFileLogo = useRef(null);
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
     const [currValues, setCurrentValues] = useState({leagueName: "", description: "", location: "",
-        division: "", startDate: null, endDate: null, ageGroup: "", noOfTeams: "3", noOfRounds: "1", 
+        division: "", startDate: null, endDate: null, ageGroup: "", noOfTeams: "3", noOfRounds: "1", leagueStatus: "EN"
     })
     const [teamsList, setTeamsList] = useState(null)
     const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
@@ -31,7 +31,7 @@ const LeagueMaintenance = () => {
             // cannot amend sport if it has team/s
             // cannot amend number of rounds is status is ST/EN.
             setCurrentValues({leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
-                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", noOfTeams: "15", noOfRounds: "2",
+                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", noOfTeams: "15", noOfRounds: "2", leagueStatus: "ST"
             })
             setTeamsList([
                 { teamId: 1, teamName: "Vikings", approvedBy: "Hayes Lawson", joinedOn: "2022-07-01", action: "Remove", toRemove: false },
@@ -47,7 +47,7 @@ const LeagueMaintenance = () => {
             setSelectedBanner("x")
             // setDeleteButton(false)
             setOldValues({ leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
-                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", teamsNo: "15", roundsNo: "2", 
+                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", noOfTeams: "15", noOfRounds: "2", 
                 sport: "soccerId", logo: "x", banner: "x" })
         }
     }, []);
@@ -115,7 +115,8 @@ const LeagueMaintenance = () => {
                     && oldValues.startDate == currValues.startDate
                     && oldValues.endDate == currValues.endDate
                     && oldValues.ageGroup == currValues.ageGroup
-                    && oldValues.teamsNo == currValues.teamsNo
+                    && oldValues.noOfTeams == currValues.noOfTeams
+                    && oldValues.noOfRounds == currValues.noOfRounds
                     && oldValues.sport == sportSelected
                     && oldValues.logo == selectedLogo
                     && oldValues.banner == selectedBanner
@@ -150,30 +151,6 @@ const LeagueMaintenance = () => {
             if (!focusON) {
                 document.getElementById("location").focus()
                 focusON = true
-            }
-        }
-        if (currValues.ageGroup.trim() === "") {
-            errMsgs.push('Age group is required.');
-            if (!focusON) {
-                document.getElementById("ageGroup").focus()
-                focusON = true
-            }
-        } else if (!ageGroupChars.test(currValues.ageGroup.trim())){
-            errMsgs.push('Age group format is invalid.');
-            if (!focusON) {
-                document.getElementById("ageGroup").focus()
-                focusON = true
-            }
-        } else {
-            let dash = currValues.ageGroup.trim().indexOf("-")
-            let num1 = currValues.ageGroup.trim().substring(0,dash)
-            let num2 = currValues.ageGroup.trim().substring(dash+1)
-            if (num1 > num2) {
-                errMsgs.push('Age group format is invalid.');
-                if (!focusON) {
-                    document.getElementById("ageGroup").focus()
-                    focusON = true
-                }
             }
         }
         if (currValues.startDate === null) {
@@ -215,6 +192,44 @@ const LeagueMaintenance = () => {
                 focusON = true
             }
         }
+        if (currValues.ageGroup.trim() === "") {
+            errMsgs.push('Age group is required.');
+            if (!focusON) {
+                document.getElementById("ageGroup").focus()
+                focusON = true
+            }
+        } else if (!ageGroupChars.test(currValues.ageGroup.trim())){
+            errMsgs.push('Age group format is invalid.');
+            if (!focusON) {
+                document.getElementById("ageGroup").focus()
+                focusON = true
+            }
+        } else {
+            let dash = currValues.ageGroup.trim().indexOf("-")
+            let num1 = currValues.ageGroup.trim().substring(0,dash)
+            let num2 = currValues.ageGroup.trim().substring(dash+1)
+            if (num1 > num2) {
+                errMsgs.push('Age group format is invalid.');
+                if (!focusON) {
+                    document.getElementById("ageGroup").focus()
+                    focusON = true
+                }
+            }
+        }
+        if (currValues.noOfTeams === 0) {
+            errMsgs.push('Number of teams cannot be zero.');
+            if (!focusON) {
+                document.getElementById("noOfTeams").focus()
+                focusON = true
+            }
+        }
+        if (currValues.noOfRounds === 0) {
+            errMsgs.push('Number of rounds cannot be zero.');
+            if (!focusON) {
+                document.getElementById("noOfRounds").focus()
+                focusON = true
+            }
+        }
         setErrorMessage(errMsgs)
         if (errMsgs.length > 0) {
             errResp = true
@@ -236,16 +251,18 @@ const LeagueMaintenance = () => {
     }
 
     const navigateSubmitRequest = () => {
-        let count = 0;
-        let newList = [...teamsList]
-        newList.map(team => count += (team.toRemove === true ? 1 : 0))
-        if (count === 0) {
-            alert("Nothing to request.")
-        } else {
-            if (confirm("Please confirm if you want to proceed to request removal of the team/s. \nThis request shall need at least half of the team admins' approval.")) {
-                navigate('/league/' + routeParams.leagueid)
+        if (currValues.leagueStatus === "NS") {
+            let count = 0;
+            let newList = [...teamsList]
+            newList.map(team => count += (team.toRemove === true ? 1 : 0))
+            if (count === 0) {
+                alert("Nothing to request.")
             } else {
-                console.log("Request submission cancelled")
+                if (confirm("Please confirm if you want to proceed to request removal of the team/s. \nThis request shall need at least half of the team admins' approval.")) {
+                    navigate('/league/' + routeParams.leagueid)
+                } else {
+                    console.log("Request submission cancelled")
+                }
             }
         }
     }
@@ -387,7 +404,7 @@ const LeagueMaintenance = () => {
             </div>
           </div>
           <div className="row justify-content-center">
-            <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateLeagueDetails}>
+            <button className="btn btn-dark col-2" type="button" onClick={navigateLeagueDetails}>
               {action.title}
             </button>
             { action.type !== "Creation" && (
@@ -404,14 +421,18 @@ const LeagueMaintenance = () => {
             <div>
                 <div>
                     <br/><br/>
-                    <h5 className="mt-5 text-center"><u>Submit Request to Remove Teams</u></h5>
+                    {currValues.leagueStatus === "NS" && (
+                        <h5 className="mt-5 text-center"><u>Submit Request to Remove Teams</u></h5>
+                    )}
                     <table className="table table-hover text-center mt-2">
                         <thead>
                             <tr>
                                 <th>Team Name</th>
                                 <th>Approved By</th>
                                 <th>Date Joined</th>
-                                <th>Action</th>
+                                {currValues.leagueStatus === "NS" && (
+                                    <th>Action</th>
+                                )}
                             </tr>
                         </thead>
                         <tbody>
@@ -420,12 +441,15 @@ const LeagueMaintenance = () => {
                                     <td>{team.teamName}</td>
                                     <td>{team.approvedBy}</td>
                                     <td>{team.joinedOn}</td>
-                                    <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemoveTeams(index)}>{team.action}</button></td>
+                                    {currValues.leagueStatus === "NS" && (
+                                        <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemoveTeams(index)}>{team.action}</button></td>
+                                    )}
                                 </tr>) 
                             }
                         </tbody>
                     </table>
                 </div>
+                {currValues.leagueStatus === "NS" && (
                 <div className="row justify-content-center mt-5">
                     <button className="btn btn-warning col-3 mx-5" type="button" onClick={navigateSubmitRequest}>
                         Submit Removal Request
@@ -434,6 +458,7 @@ const LeagueMaintenance = () => {
                         Cancel
                     </button>
                 </div>
+                )}
             </div>
             )}
       </Card>
