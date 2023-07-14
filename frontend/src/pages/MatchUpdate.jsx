@@ -181,6 +181,10 @@ const MatchUpdate = () => {
         let minutes = ('0' + now.getMinutes()).slice(-2);
         let formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
         let totalScore1 = 0;
+        let totalScore2 = 0;
+        let dateStr = currValues.dateOfMatch; // Your date string
+        let dateObj = new Date(dateStr);
+
         matchesToUpdate1.forEach(match => {
             match.playerStats.forEach(stat => {
                 if (stat.statId === 1) {
@@ -189,7 +193,7 @@ const MatchUpdate = () => {
             });
         });
 
-        let totalScore2 = 0;
+
         matchesToUpdate2.forEach(match => {
             match.playerStats.forEach(stat => {
                 if (stat.statId === 1) {
@@ -200,6 +204,7 @@ const MatchUpdate = () => {
         if (currValues.locationOfMatch.trim() === "") {
             errMsgs.push("Location of match is required.");
             if (!focusON) {
+                window.scrollTo(0, 0);
                 document.getElementById("locationOfMatch").focus();
                 focusON = true; 
             }
@@ -207,14 +212,31 @@ const MatchUpdate = () => {
         if (currValues.dateOfMatch === null) {
             errMsgs.push('Date of match is required.');
             if (!focusON) {
+                window.scrollTo(0, 0);
                 document.getElementById("dateOfMatch").focus();
                 focusON = true; 
             }
         } 
-        if (currValues.dateOfMatch > formattedDateTime) {
-            errMsgs.push("Date of match is invalid."); 
+        if (isNaN(dateObj)) {
+            errMsgs.push('Date of match is invalid');
             if (!focusON) {
+                window.scrollTo(0, 0);
                 document.getElementById("dateOfMatch").focus();
+                focusON = true; 
+            }
+        }
+        if (currValues.dateOfMatch > formattedDateTime) {
+            errMsgs.push("Date of match cannot be later than the current date."); 
+            if (!focusON) {
+                window.scrollTo(0, 0);
+                document.getElementById("dateOfMatch").focus();
+                focusON = true; 
+            }
+        }
+        if (matchesToUpdate1.length === 0 || matchesToUpdate2.length === 0) {
+            errMsgs.push("Player list cannot be empty.");
+            if (!focusON) {
+                window.scrollTo(0, 0);
                 focusON = true; 
             }
         }
