@@ -257,7 +257,7 @@ const MatchUpdate = () => {
     <div className="d-flex container mt-3 justify-content-center" >
       <Card style={{ width: "60rem", padding: 20 }}>
       {errorMessage.length > 0 && (
-            <div id="myAlert" tabIndex="-1" className="alert alert-danger mb-3 p-1">
+            <div className="alert alert-danger mb-3 p-1">
                 {errorMessage.map((err, index) => (
                     <p className="mb-0" key={index}>{err}</p>
                 ))}
