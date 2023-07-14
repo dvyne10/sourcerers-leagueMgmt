@@ -3,6 +3,8 @@ import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import useAuth from "../hooks/auth";
 
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://playpal.netlify.app";
+
 const LeagueMaintenance = () => {
   
     const {isSignedIn} = useAuth()
@@ -10,12 +12,12 @@ const LeagueMaintenance = () => {
     const inputFileBanner = useRef(null);
     const inputFileLogo = useRef(null);
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
-    const [currValues, setCurrentValues] = useState({leagueName: "", description: "", location: "",
-        division: "", startDate: null, endDate: null, ageGroup: "", noOfTeams: "3", noOfRounds: "1", leagueStatus: "EN"
+    const sportsOptions = [ {label: "Soccer", value: "648ba153251b78d7946df311"}, {label: "Basketball", value: "648ba153251b78d7946df322"} ]
+    const [currValues, setCurrentValues] = useState({leagueName: "", sportsTypeId: sportsOptions[0].value, description: "", location: "",
+        division: "", startDate: null, endDate: null, ageGroup: "", numberOfTeams: "3", numberOfRounds: "1"
     })
     const [teamsList, setTeamsList] = useState(null)
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
-    const [sportSelected, setSportSelected] = useState(sportsOptions[0].value)
+    //const [sportSelected, setSportSelected] = useState(sportsOptions[0].value)
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
@@ -32,8 +34,8 @@ const LeagueMaintenance = () => {
             handleAction({type: "Update", title: "Update League", protectSport: true, protectRounds: true})
             // cannot amend sport if it has team/s
             // cannot amend number of rounds is status is ST/EN.
-            setCurrentValues({leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
-                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", noOfTeams: "15", noOfRounds: "2", leagueStatus: "ST"
+            setCurrentValues({leagueName: "York League 2023", sportsTypeId: sportsOptions[0].value, description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
+                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", numberOfTeams: "15", numberOfRounds: "2", leagueStatus: "ST"
             })
             setTeamsList([
                 { teamId: 1, teamName: "Vikings", approvedBy: "Hayes Lawson", joinedOn: "2022-07-01", action: "Remove", toRemove: false },
@@ -42,15 +44,15 @@ const LeagueMaintenance = () => {
                 { teamId: 4, teamName: "Tigers", approvedBy: "Timon Kane", joinedOn: "2022-07-04", action: "Remove", toRemove: false  },
                 { teamId: 5, teamName: "Giants", approvedBy: "Tim Gibson", joinedOn: "2022-07-05", action: "Remove", toRemove: false  },
             ])
-            setSportSelected("soccerId")
+            //setSportSelected("soccerId")
             setLogoURL("https://images.unsplash.com/photo-1685115560482-7ec4fb23414c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=881&q=80")
             setSelectedLogo("x")
             setBannerURL("https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBmb290YmFsbHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80")
             setSelectedBanner("x")
             // setDeleteButton(false)
             setOldValues({ leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
-                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", noOfTeams: "15", noOfRounds: "2", 
-                sport: "soccerId", logo: "x", banner: "x" })
+                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", numberOfTeams: "15", numberOfRounds: "2", 
+                sportsTypeId: "soccerId", logo: "x", banner: "x" })
         }
     }, []);
 
@@ -68,12 +70,12 @@ const LeagueMaintenance = () => {
         }
     };
 
-    const handleSportChange= event => {
-        setSportSelected(event.target.value);
-    }
+    // const handleSportChange= event => {
+    //     setSportSelected(event.target.value);
+    // }
 
     const handleLeagueDetails = (e) => {
-        const arrOfNumerics = ["noOfTeams", "noOfRounds"]
+        const arrOfNumerics = ["numberOfTeams", "numberOfRounds"]
         const field = e.target.name
         if (arrOfNumerics.find(e => e === field) ) {
             setCurrentValues({ ...currValues, [field] : Number(e.target.value) })
@@ -103,22 +105,33 @@ const LeagueMaintenance = () => {
     }
     
     const navigateLeagueDetails = () => {
+        let data = {}
         let error = false
         error = validateInput()
         if (!error) {
             if (action.type === "Creation") {
-                // fetch("http://localhost:8080", {
-                //     method: "POST",
-                //     body: JSON.stringify(data),
-                //     headers: {
-                //         "Content-Type": "Application/JSON"
-                //     }
-                // }).then(res=>res.json()).then(data=>{
-                //     console.log(data);
-                    navigate('/league/' + "new league id here")
-                //}).catch((error) => {
-                    //console.log(error)
-                //})
+                data = {...currValues}
+                //data.sportsTypeId = sportSelected
+                fetch(`${backend}/createleague`, {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    headers: {
+                        "Content-Type": "Application/JSON"
+                    }
+                })
+                .then(response => response.json())
+                .then(data=>{
+                    if (data.requestStatus === 'RJCT') {
+                        setErrorMessage([data.errMsg])
+                        if (data.errField !== "") {
+                            document.getElementById(data.errField).focus()
+                        }
+                    } else {
+                        navigate('/league/' + data.league._id)
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
             } else {
                 if ( oldValues.leagueName == currValues.leagueName 
                     && oldValues.description == currValues.description 
@@ -127,9 +140,9 @@ const LeagueMaintenance = () => {
                     && oldValues.startDate == currValues.startDate
                     && oldValues.endDate == currValues.endDate
                     && oldValues.ageGroup == currValues.ageGroup
-                    && oldValues.noOfTeams == currValues.noOfTeams
-                    && oldValues.noOfRounds == currValues.noOfRounds
-                    && oldValues.sport == sportSelected
+                    && oldValues.numberOfTeams == currValues.numberOfTeams
+                    && oldValues.numberOfRounds == currValues.numberOfRounds
+                    && oldValues.sportsTypeId == currValues.sportsTypeId
                     && oldValues.logo == selectedLogo
                     && oldValues.banner == selectedBanner
                 ) {
@@ -151,10 +164,10 @@ const LeagueMaintenance = () => {
             document.getElementById("leagueName").focus()
             focusON = true
         }
-        if (sportSelected === "") {
+        if (currValues.sportsTypeId === "") {
             errMsgs.push('Sport is required.');
             if (!focusON) {
-                document.getElementById("sport").focus()
+                document.getElementById("sportsTypeId").focus()
                 focusON = true
             }
         }
@@ -218,8 +231,8 @@ const LeagueMaintenance = () => {
             }
         } else {
             let dash = currValues.ageGroup.trim().indexOf("-")
-            let num1 = currValues.ageGroup.trim().substring(0,dash)
-            let num2 = currValues.ageGroup.trim().substring(dash+1)
+            let num1 = Number(currValues.ageGroup.trim().substring(0,dash))
+            let num2 = Number(currValues.ageGroup.trim().substring(dash+1))
             if (num1 > num2) {
                 errMsgs.push('Age group format is invalid.');
                 if (!focusON) {
@@ -228,17 +241,17 @@ const LeagueMaintenance = () => {
                 }
             }
         }
-        if (currValues.noOfTeams === 0) {
+        if (currValues.numberOfTeams === 0) {
             errMsgs.push('Number of teams cannot be zero.');
             if (!focusON) {
-                document.getElementById("noOfTeams").focus()
+                document.getElementById("numberOfTeams").focus()
                 focusON = true
             }
         }
-        if (currValues.noOfRounds === 0) {
+        if (currValues.numberOfRounds === 0) {
             errMsgs.push('Number of rounds cannot be zero.');
             if (!focusON) {
-                document.getElementById("noOfRounds").focus()
+                document.getElementById("numberOfRounds").focus()
                 focusON = true
             }
         }
@@ -332,10 +345,10 @@ const LeagueMaintenance = () => {
                 <input id="leagueName" name="leagueName" type="text" className="form-control" value={currValues.leagueName} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
-                <label htmlFor="sport" className="form-label">
+                <label htmlFor="sportsTypeId" className="form-label">
                     Sport*
                 </label>
-                <select id="sport" name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
+                <select id="sportsTypeId" name="sportsTypeId" className="form-control" value={currValues.sportsTypeId} onChange={handleLeagueDetails} disabled={action.protectSport}>
                     {sportsOptions.map((option) => (
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
@@ -384,16 +397,16 @@ const LeagueMaintenance = () => {
           </div>
           <div className="row">
             <div className="col-sm-3 mb-3">
-                <label htmlFor="noOfTeams" className="form-label">
+                <label htmlFor="numberOfTeams" className="form-label">
                     Number of Teams
                 </label>
-                <input id="noOfTeams" name="noOfTeams" type="number" min="3" className="form-control" value={currValues.noOfTeams} onChange={handleLeagueDetails} />
+                <input id="numberOfTeams" name="numberOfTeams" type="number" min="3" className="form-control" value={currValues.numberOfTeams} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
-                <label htmlFor="noOfRounds" className="form-label">
+                <label htmlFor="numberOfRounds" className="form-label">
                     Number of Rounds
                 </label>
-                <input id="noOfRounds" name="noOfRounds" type="number" min="1" max="10" className="form-control" value={currValues.noOfRounds} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
+                <input id="numberOfRounds" name="numberOfRounds" type="number" min="1" max="10" className="form-control" value={currValues.numberOfRounds} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
             </div>
           </div>
           </div>

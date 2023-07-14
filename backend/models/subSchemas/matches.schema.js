@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import matchDetailsSchema from "./matchDetails.schema";
+import matchDetailsSchema from "./matchDetails.schema.js";
 
 const matchesSchema = Schema(
   {

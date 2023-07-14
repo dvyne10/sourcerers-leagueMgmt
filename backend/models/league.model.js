@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import matchesSchema from "./subSchemas/matches.schema";
+import matchesSchema from "./subSchemas/matches.schema.js";
 
 const leagueSchema = Schema(
   {
