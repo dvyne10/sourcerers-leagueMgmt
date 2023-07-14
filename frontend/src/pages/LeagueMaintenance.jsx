@@ -158,6 +158,7 @@ const LeagueMaintenance = () => {
         let errResp = false
         let errMsgs = []
         let focusON = false
+        let dateErr = false
         let ageGroupChars = /[0-9]-[0-9]/
         if (currValues.leagueName.trim() === "") {
             errMsgs.push('League name is required.');
@@ -183,7 +184,7 @@ const LeagueMaintenance = () => {
             if (!focusON) {
                 document.getElementById("startDate").focus()
                 focusON = true
-            } 
+            }
         } else {
             let dateInput = Date.parse(currValues.startDate)
             if (isNaN(dateInput)) {
@@ -192,6 +193,7 @@ const LeagueMaintenance = () => {
                     document.getElementById("startDate").focus()
                     focusON = true
                 }
+                dateErr = true
             }
         }
         if (currValues.endDate === null) {
@@ -200,6 +202,7 @@ const LeagueMaintenance = () => {
                 document.getElementById("endDate").focus()
                 focusON = true
             }
+            dateErr = true
         } else {
             let dateInput = Date.parse(currValues.endDate)
             if (isNaN(dateInput)) {
@@ -208,9 +211,10 @@ const LeagueMaintenance = () => {
                     document.getElementById("endDate").focus()
                     focusON = true
                 }
+                dateErr = true
             }
         }
-        if (currValues.endDate < currValues.startDate) {
+        if (currValues.endDate < currValues.startDate && dateErr === false) {
             errMsgs.push('End date cannot be less than start date.');
             if (!focusON) {
                 document.getElementById("endDate").focus()
