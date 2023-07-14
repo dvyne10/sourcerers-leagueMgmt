@@ -36,6 +36,13 @@ const AdminMatches = () => {
     navigate('/adminmatchupdate/' + matchId)
   }
 
+  const validateInput = () => {
+      let errResp = false; 
+      let errMsgs = []; 
+      let focusON = false;
+      
+      return errResp; 
+  }
   return (
     <div>
       <MaterialReactTable
