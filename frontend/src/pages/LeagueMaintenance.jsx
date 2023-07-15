@@ -44,12 +44,13 @@ const LeagueMaintenance = () => {
                 { teamId: 4, teamName: "Tigers", approvedBy: "Timon Kane", joinedOn: "2022-07-04", action: "Remove", toRemove: false  },
                 { teamId: 5, teamName: "Giants", approvedBy: "Tim Gibson", joinedOn: "2022-07-05", action: "Remove", toRemove: false  },
             ])
-            //setSportSelected("soccerId")
             setLogoURL("https://images.unsplash.com/photo-1685115560482-7ec4fb23414c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=881&q=80")
             setSelectedLogo("x")
             setBannerURL("https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBmb290YmFsbHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80")
             setSelectedBanner("x")
-            // setDeleteButton(false)
+            // if (currValues.leagueStatus !== 'EN' && currValues.teamsList == null) {
+            //     setDeleteButton(false)
+            // }
             setOldValues({ leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
                 division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", numberOfTeams: "15", numberOfRounds: "2", 
                 sportsTypeId: "648ba153251b78d7946df311", logo: "x", banner: "x" })

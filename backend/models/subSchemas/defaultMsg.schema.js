@@ -1,47 +1,26 @@
 import { Schema } from "mongoose";
-
-// const defaultMsgSchema = Schema({
-//   _id: false,
-//   notifId: {
-//     type: String,
-//     unique: validateSchemaProperty(this, "notification_type"),
-//     required: validateSchemaProperty(this, "notification_type"),
-//     index: validateSchemaProperty(this, "notification_type"),
-//   },
-//   notifDesc: {
-//     type: String,
-//     required: validateSchemaProperty(this, "notification_type"),
-//   },
-//   infoOrApproval: {
-//     type: String,
-//     enum: ["INFO", "APRV", "APRVREJ"],
-//     required: validateSchemaProperty(this, "notification_type"),
-//   },
-//   message: {
-//     type: String,
-//     required: validateSchemaProperty(this, "notification_type"),
-//   },
-// });
+import { validateSchemaProperty } from "../../utils/schema.js";
 
 const defaultMsgSchema = Schema({
   _id: false,
   notifId: {
     type: String,
-    unique: true,
-    required: true,
+    unique: validateSchemaProperty(this, "notification_type"),
+    required: validateSchemaProperty(this, "notification_type"),
+    index: validateSchemaProperty(this, "notification_type"),
   },
   notifDesc: {
     type: String,
-    required: true,
+    required: validateSchemaProperty(this, "notification_type"),
   },
   infoOrApproval: {
     type: String,
     enum: ["INFO", "APRV", "APRVREJ"],
-    required: true,
+    required: validateSchemaProperty(this, "notification_type"),
   },
   message: {
     type: String,
-    required: true,
+    required: validateSchemaProperty(this, "notification_type"),
   },
 });
 

@@ -1,47 +1,26 @@
 import { Schema } from "mongoose";
-
-// const statSchema = Schema({
-//   _id: false,
-//   statisticsId: {
-//     type: String,
-//     unique: validateSchemaProperty(this, "statistic"),
-//     required: validateSchemaProperty(this, "statistic"),
-//     index: validateSchemaProperty(this, "sport"),
-//   },
-//   statShortDesc: {
-//     type: String,
-//     required: validateSchemaProperty(this, "statistic"),
-//   },
-//   statLongDesc: {
-//     type: String,
-//     required: validateSchemaProperty(this, "statistic"),
-//   },
-//   sportsType: {
-//     type: Schema.Types.ObjectId,
-//     ref: "system_parameter",
-//     required: validateSchemaProperty(this, "statistic"),
-//   },
-// });
+import { validateSchemaProperty } from "../../utils/schema.js";
 
 const statSchema = Schema({
   _id: false,
   statisticsId: {
     type: String,
-    unique: true,
-    required: true,
+    unique: validateSchemaProperty(this, "statistic"),
+    required: validateSchemaProperty(this, "statistic"),
+    index: validateSchemaProperty(this, "sport"),
   },
   statShortDesc: {
     type: String,
-    required: true,
+    required: validateSchemaProperty(this, "statistic"),
   },
   statLongDesc: {
     type: String,
-    required: true,
+    required: validateSchemaProperty(this, "statistic"),
   },
   sportsType: {
     type: Schema.Types.ObjectId,
     ref: "system_parameter",
-    required: true,
+    required: validateSchemaProperty(this, "statistic"),
   },
 });
 
