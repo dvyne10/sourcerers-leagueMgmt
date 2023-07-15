@@ -1,8 +1,10 @@
 import { FaFilter, FaPlus } from "react-icons/fa";
 import { Container, Row, Col, Image, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/auth";
 
 export default function Teams() {
+  const {isSignedIn} = useAuth();
   const navigate = useNavigate();
   const navigateCreateTeam = () => {
     navigate("/createTeam");
@@ -68,13 +70,14 @@ export default function Teams() {
               <h1 className="center-header">TEAMS</h1>
             </Col>
             <Col className="text-end">
-              <Button
+              {isSignedIn ?<Button
                 size="sm"
                 variant="outline-secondary"
                 onClick={navigateCreateTeam}
               >
                 <FaPlus></FaPlus> Create Team
-              </Button>
+              </Button> : ""}
+              
             </Col>
           </Row>
         </Container>
@@ -98,22 +101,23 @@ export default function Teams() {
                     >
                       <p className="mt-3">Team description here.</p>
 
-                      <Button className="mt-2 mb-2 ms-2 btn-success rounded-pill">
-                        Open
+                      <div className="mt-2 mb-2 w-50 h-100 justify-self-center text-center mx-auto rounded-pill" style={{"backgroundColor":"#116466"}}>
+                      <p className="user-select-none">Open
                         {team.sportsType == "Basketball" ? (
                           <img
                             src="https://i.imgur.com/7Qa798a.png"
-                            style={{ width: "2em" }}
-                            className="text-center opacity-50 position-relative"
+                            style={{ width: "2em", }}
+                            className="text-center opacity-75 mt-1 mb-1 position-relative"
                           />
                         ) : (
                           <img
                             src="https://i.imgur.com/w14EKbv.png"
                             style={{ width: "2em" }}
-                            className="text-center opacity-50 position-relative"
+                            className="text-center opacity-75 mt-1 mb-1 position-relative"
                           />
                         )}
-                      </Button>
+                        </p> 
+                      </div>
                     </Col>
                     <Col lg="8">
                       <a

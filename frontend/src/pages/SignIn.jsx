@@ -11,10 +11,50 @@ const SignIn = () => {
 
   const [formValues, setFormValues] = useState({ username: "", password: "" })
 
-  const handleFormChange = (e) => {
-    const field = e.target.name
-    setFormValues({ ...formValues, [field] : e.target.value })
+  const [input, setInput] = useState({
+    username: '',
+    password: ''
+   
+  });
+
+  const [error, setError] = useState({
+    username: '',
+    password: ''
+  })
+
+  const onInputChange = e => {
+    const { name, value } = e.target;
+    setInput(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    validateInput(e);
   }
+
+
+  
+  const validateInput = e => {
+    let { name, value } = e.target;
+    setError(prev => {
+      const stateObj = { ...prev, [name]: "" };
+      switch (name) {
+        case "username":
+          if (!value) {
+            stateObj[name] = "Username/Email is required.";
+          }          
+          break;
+        case "password":
+          if (!value) {
+            stateObj[name] = "Password is required.";
+          }  
+          break;
+        default:
+          break;
+      }
+      return stateObj;
+    });
+  }
+
 
   const navigateForgotPassword = () => { navigate('/forgotpassword') }
   const navigateProfile = () => {
@@ -37,13 +77,15 @@ const SignIn = () => {
             <label htmlFor="username" className="form-label">
               Username/Email
             </label>
-            <input id="username" name="username" type="text" className="form-control" onChange={handleFormChange} />
+            <input id="username" name="username" type="text" className="form-control" value={input.username} onChange={onInputChange} onBlur={validateInput}/>
+            {error.username && <span className='err'>{error.username}</span>}
           </div>
           <div className="mb-3">
             <label htmlFor="password" className="form-label">
               Password
             </label>
-            <input id="password" name="password" type="password" className="form-control" />
+            <input id="password" name="password" type="password" className="form-control" value={input.password} onChange={onInputChange} onBlur={validateInput}/>
+            {error.password && <span className='err'>{error.password}</span>}
           </div>
           <Form.Check
             type={"checkbox"}

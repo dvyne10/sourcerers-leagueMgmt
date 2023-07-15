@@ -13,6 +13,20 @@
   color: black;
 }
 
+.passive-active-column{
+
+  background-color: white;
+  &:hover{
+    background-color: #e5e6e7;
+  }
+}
+
+.team-jersey-list-number{
+  font-family:"Saira Extra Condensed";
+  color:white;
+  text-decoration: none;
+}
+
 aside#sidebar .team-btw-match ul li.vs span {
 	background: transparent !important;
 	display: flex;

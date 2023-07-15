@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {Container,Row,Col, Button, Card, Image} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -9,7 +9,8 @@ import { BsGearFill } from "react-icons/bs";
 const LeagueDetails = () => {
 
   const navigate = useNavigate(); 
-  const navigateUpdateLeague = () => { navigate('/updateleague/648e9013466c1c995745907c') }   // temp id only
+  const routeParams = useParams();
+  const navigateUpdateLeague = () => { navigate(`/updateleague/${routeParams.leagueid}`) }   // temp id only
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
