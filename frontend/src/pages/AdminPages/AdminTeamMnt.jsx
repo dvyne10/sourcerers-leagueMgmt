@@ -128,15 +128,15 @@ const AdminTeamMnt = () => {
             <div className="row">
 
                 <div className="col-2 text-end mb-2"><label htmlFor="teamName" className="form-label">Team Name*</label></div>
-                <div className="col-4 mb-2"><input id="teamName" name="teamName" type="text" className="form-control" defaultValue={currValues.teamName} onChange={handleTeamDetails} /></div>
+                <div className="col-4 mb-2"><input id="teamName" name="teamName" type="text" className="form-control" value={currValues.teamName} onChange={handleTeamDetails} /></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="location" className="form-label" >Team Location*</label></div>
-                <div className="col-4 mb-2"><input id="location" name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleTeamDetails}/></div>
+                <div className="col-4 mb-2"><input id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleTeamDetails}/></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="division" className="form-label" >Division</label></div>
-                <div className="col-4 mb-2"><input id="division" name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleTeamDetails}/></div>
+                <div className="col-4 mb-2"><input id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleTeamDetails}/></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="email" className="form-label">Email*</label></div>
-                <div className="col-4 mb-2"><input id="email" name="email" type="email" className="form-control" defaultValue={currValues.email} onChange={handleTeamDetails} /></div>
+                <div className="col-4 mb-2"><input id="email" name="email" type="email" className="form-control" value={currValues.email} onChange={handleTeamDetails} /></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="description" className="form-label" >Description</label></div>
-                <div className="col-10 mb-2"><textarea id="description" name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleTeamDetails}/></div>
+                <div className="col-10 mb-2"><textarea id="description" name="description" className="form-control form-control-sm" value={currValues.description} onChange={handleTeamDetails}/></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="sport" className="form-label" >Sport*</label></div>
                 <div className="col-4 mb-2">
                     <select id="sport" name="sport" className="form-control" value={currValues.sport} onChange={handleTeamDetails} >
@@ -154,7 +154,7 @@ const AdminTeamMnt = () => {
                     <div className="col-2 text-end mb-2"><label htmlFor="lookingForPlayers" className="form-label">Looking For Players?</label></div>
                     <div className="col-1 mb-2"><input id="lookingForPlayers" name="lookingForPlayers" type="checkbox" className="form-check-input" defaultChecked={currValues.lookingForPlayers && "checked"} onChange={handleTeamDetails} /></div>
                     <div className="col-2 text-end mb-2"><label htmlFor="lookingForPlayersChgTmst" className="form-label">Change Timestamp</label></div>
-                    <div className="col-4 mb-2"><input id="lookingForPlayersChgTmst" name="lookingForPlayersChgTmst" type="text" className="form-control" defaultValue={currValues.lookingForPlayersChgTmst} onChange={handleTeamDetails} /></div> 
+                    <div className="col-4 mb-2"><input id="lookingForPlayersChgTmst" name="lookingForPlayersChgTmst" type="text" className="form-control" value={currValues.lookingForPlayersChgTmst} onChange={handleTeamDetails} /></div> 
                     <div className="row mt-3">
                         <div className="col-3 text-end"><label htmlFor="createdBy" className="form-label">Created By :</label></div>
                         <div className="col-4">
@@ -252,16 +252,16 @@ const AdminTeamMnt = () => {
                                 <tr key={player.playerId}>
                                     <td><a href={`/adminuserupdate/${player.playerId}`} target="_blank" rel="noreferrer" name="players" className="col-10 mb-1" key={player.playerId}>{player.playerId}</a></td>
                                     <td>
-                                        <select name="position" className="form-control" defaultValue={player.positionId} onChange={(e) => handlePLayerChange(e, index)}>
+                                        <select name="position" className="form-control" value={player.positionId} onChange={(e) => handlePLayerChange(e, index)}>
                                             {positionOptions.map((option) => (
                                                 <option value={option.value} key={option.value}>{option.label}</option>
                                             ))}
                                         </select>
                                     </td>
                                     <td>
-                                        <input name="jerseyNumber" type="number" min="0" defaultValue={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
+                                        <input name="jerseyNumber" type="number" min="0" value={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
                                     </td>
-                                    <td><input name="joinedDate" type="text" defaultValue={player.joinedDate} onChange={(e) => handlePLayerChange(e, index)}/></td>
+                                    <td><input name="joinedDate" type="text" value={player.joinedDate} onChange={(e) => handlePLayerChange(e, index)}/></td>
                                     <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemovePlayer(index)}>Remove</button></td>
                                 </tr>) 
                             }

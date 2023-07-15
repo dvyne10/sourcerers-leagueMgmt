@@ -122,7 +122,7 @@ const AdminLeagueMnt = () => {
 
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="leagueName" className="form-label">League Name*</label></div>
-                <div className="col-4"><input id="leagueName" name="leagueName" type="text" className="form-control" defaultValue={currValues.leagueName} onChange={handleLeagueDetails} /></div>
+                <div className="col-4"><input id="leagueName" name="leagueName" type="text" className="form-control" value={currValues.leagueName} onChange={handleLeagueDetails} /></div>
                 <div className="col-2 text-end"><label htmlFor="sport" className="form-label" >Sport*</label></div>
                 <div className="col-2">
                     <select id="sport" name="sport" className="form-control" value={currValues.sport} onChange={handleLeagueDetails} >
@@ -134,27 +134,27 @@ const AdminLeagueMnt = () => {
             </div> 
             <div className="row mb-2">
                 <div className="col-2 text-end"><label htmlFor="description" className="form-label" >Description</label></div>
-                <div className="col-10"><textarea id="description" name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleLeagueDetails}/></div>
+                <div className="col-10"><textarea id="description" name="description" className="form-control form-control-sm" value={currValues.description} onChange={handleLeagueDetails}/></div>
             </div>
             <div className="row mb-2">
                 <div className="col-2 text-end"><label htmlFor="location" className="form-label" >League Location*</label></div>
-                <div className="col-4"><input id="location" name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleLeagueDetails}/></div>
+                <div className="col-4"><input id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleLeagueDetails}/></div>
                 <div className="col-2 text-end"><label htmlFor="division" className="form-label" >Division</label></div>
-                <div className="col-4"><input id="division" name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleLeagueDetails}/></div>
+                <div className="col-4"><input id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleLeagueDetails}/></div>
             </div>
             <div className="row mb-2">
                 <div className="col-2 text-end"><label htmlFor="startDate" className="form-label">Start Date*</label></div>
-                <div className="col-2"><input id="startDate" name="startDate" type="date" className="form-control" defaultValue={currValues.startDate} onChange={handleLeagueDetails} /></div>
+                <div className="col-2"><input id="startDate" name="startDate" type="date" className="form-control" value={currValues.startDate} onChange={handleLeagueDetails} /></div>
                 <div className="col-2 text-end"><label htmlFor="endDate" className="form-label">End Date*</label></div>
-                <div className="col-2"><input id="endDate" name="endDate" type="date" className="form-control" defaultValue={currValues.endDate} onChange={handleLeagueDetails} /></div>
+                <div className="col-2"><input id="endDate" name="endDate" type="date" className="form-control" value={currValues.endDate} onChange={handleLeagueDetails} /></div>
                 <div className="col-2 text-end"><label htmlFor="ageGroup" className="form-label">Age Group*</label></div>
-                <div className="col-2"><input id="ageGroup" name="ageGroup" type="text" className="form-control" defaultValue={currValues.ageGroup} onChange={handleLeagueDetails} /></div>
+                <div className="col-2"><input id="ageGroup" name="ageGroup" type="text" className="form-control" value={currValues.ageGroup} onChange={handleLeagueDetails} /></div>
             </div>
             <div className="row mb-2">
                 <div className="col-2 text-end"><label htmlFor="numberOfTeams" className="form-label">Number of Teams*</label></div>
-                <div className="col-2"><input id="numberOfTeams" name="numberOfTeams" type="number" min="3" className="form-control" defaultValue={currValues.numberOfTeams} onChange={handleLeagueDetails} /></div>
+                <div className="col-2"><input id="numberOfTeams" name="numberOfTeams" type="number" min="3" className="form-control" value={currValues.numberOfTeams} onChange={handleLeagueDetails} /></div>
                 <div className="col-2 text-end"><label htmlFor="numberOfRounds" className="form-label">Number of Rounds*</label></div>
-                <div className="col-2"><input id="numberOfRounds" name="numberOfRounds" type="number" min="1" className="form-control" defaultValue={currValues.numberOfRounds} onChange={handleLeagueDetails} /></div>
+                <div className="col-2"><input id="numberOfRounds" name="numberOfRounds" type="number" min="1" className="form-control" value={currValues.numberOfRounds} onChange={handleLeagueDetails} /></div>
             </div>           
             
             <div className="row">
@@ -181,7 +181,7 @@ const AdminLeagueMnt = () => {
                     </div>
                     <div className="row mt-2" >
                         <div className="col-6 text-end"><label htmlFor="lookingForTeamsChgTmst" className="form-label">Change Timestamp</label></div>
-                        <div className="col-4 mb-1"><input id="lookingForTeamsChgTmst" name="lookingForTeamsChgTmst" type="text" className="form-control" defaultValue={currValues.lookingForTeamsChgTmst} onChange={handleLeagueDetails} /></div> 
+                        <div className="col-4 mb-1"><input id="lookingForTeamsChgTmst" name="lookingForTeamsChgTmst" type="text" className="form-control" value={currValues.lookingForTeamsChgTmst} onChange={handleLeagueDetails} /></div> 
                     </div>
                     <div className="col-2 text-end mt-3"><label htmlFor="matches" className="form-label" >Matches</label></div>
                     <div className="col mt-3">

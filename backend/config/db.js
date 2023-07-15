@@ -1,10 +1,13 @@
+import dotenv from "dotenv";
 import mongoose from "mongoose";
+
+dotenv.config();
 
 const database =
   process.env.NODE_ENV === "production"
     ? process.env.PROD_DB
     : process.env.DEV_DB;
-
+    
 const connectDB = async () => {
   try {
     const connection = await mongoose.connect(database);

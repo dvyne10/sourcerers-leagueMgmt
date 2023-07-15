@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
-import notificationsSchema from "./subSchemas/notification.schema";
-import requestsSentSchema from "./subSchemas/request.schema";
-import teamschema from "./subSchemas/team.schema"
+import notificationsSchema from "./subSchemas/notification.schema.js";
+import requestsSentSchema from "./subSchemas/request.schema.js";
+import teamschema from "./subSchemas/team.schema.js"
 
 const userSchema = Schema(
   {
