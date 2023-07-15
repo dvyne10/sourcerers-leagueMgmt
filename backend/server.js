@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
   res.send({ message: "server is working perfectly fine from the home route" });
 });
 
+
 app.post("/createleague", (req, res) => {
   createleague(req.body)
   .then((data)=>{
