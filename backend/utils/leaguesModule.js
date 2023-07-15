@@ -2,12 +2,13 @@ import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
+import { getSysParm } from "./sysParmModule.js";
 
 let ObjectId = mongoose.Types.ObjectId;
 
 export const createLeague = async function(data) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    let userId = new ObjectId("648ba153251b78d7946df01d")   // temp
+    let userId = new ObjectId("648ba154251b78d7946df338")   // temp
 
     let validate = leagueValidation(data, "NEW", userId)
 
@@ -33,7 +34,7 @@ export const createLeague = async function(data) {
 
 export const updateLeague = async function(leagueId, data){
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    let userId = new ObjectId("648ba153251b78d7946df311")   // temp
+    let userId = new ObjectId("648e0a6ff1915e7c19e2303a")   // temp
 
     data.leagueId = leagueId
     let validate = leagueValidation(data, "CHG", userId)
@@ -71,7 +72,7 @@ export const updateLeague = async function(leagueId, data){
 export const leagueValidation = (data, requestType, userId) => {
     let response = {requestStatus: "", errField: "", errMsg: ""}
     let ageGroupChars = /[0-9]-[0-9]/
-    let canCreate = false;
+    let canCreate = true; //temp :should be init to false
     if (requestType === "NEW") {
         canUserCreateNewLeague(userId)
         .then(resp => {
@@ -150,13 +151,24 @@ export const updateLeagueTeams = async function(data) {
 
 export const canUserCreateNewLeague = async function(userId) {
     let parms = await SysParmModel.findOne({ parameterId: "maxParms"}, {maxParms: 1}).exec();
-    //let maxLeaguesAllowed = parms.maxParms.maxActiveLeaguesCreated
-    let maxLeaguesAllowed = 20 //temp
+    let maxLeaguesAllowed = parms.maxParms.maxActiveLeaguesCreated
     let activeLeaguesCreated = await LeagueModel.countDocuments({ createdBy : new ObjectId(userId) })
     if (activeLeaguesCreated < maxLeaguesAllowed) {
         return true
+    } else {
+        return false
     }
-    return false
+    // let parms
+    // getSysParm("maxParms")
+    // .then(async function(parm) {
+    //     let maxLeaguesAllowed = parm.data.maxParms.maxActiveLeaguesCreated
+    //     let activeLeaguesCreated = await LeagueModel.countDocuments({ createdBy : new ObjectId(userId) })
+    //     if (activeLeaguesCreated < maxLeaguesAllowed) {
+    //         return true
+    //     } else {
+    //         return false
+    //     }   
+    // })     
 }
 
 export const isLeagueAdmin = async function(userId, leagueId) {

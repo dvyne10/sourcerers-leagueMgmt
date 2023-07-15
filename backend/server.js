@@ -30,8 +30,8 @@ app.get("/", (req, res) => {
 });
 
 app.post("/admin", (req, res) => {
-  req.body.userId = "648ba153251b78d7946df311"  // Temp only
-  // req.body.userId = "648ba154251b78d7946df338" // TEMP HARRY
+  req.body.userId = "648e0a6ff1915e7c19e2303a"  // Temp only league creator
+  //req.body.userId = "648e132ff3d2cb1d615fbd9d" // TEMP team Creator
   let leagueId = req.query.league;
   let teamId = req.query.team;
   let matchId = req.query.match;
