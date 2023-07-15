@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import useAuth from "../hooks/auth";
+import {Form} from 'react-bootstrap/';
+
 
 const TeamMaintenance = () => {
-  
+    const [validated, setValidated] = useState(false);
+    const {isSignedIn} = useAuth()
     const location = useLocation();
     const routeParams = useParams();
     const inputFileBanner = useRef(null);
@@ -22,8 +26,10 @@ const TeamMaintenance = () => {
     const [disableDelete, setDeleteButton] = useState(true)
     const [oldValues, setOldValues] = useState(null)
     const [didPlayersChange, setPlayersChanged] = useState(false)
+    const [errorMessage, setErrorMessage] = useState([]);
     
     const positionOptions = [ {label: "Team Captain", value: "SCP01"}, {label: "Goalkeeper", value: "SCP02"}, {label: "Defender", value: "SCP03"} ]
+
 
     useEffect(() => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
@@ -109,7 +115,16 @@ const TeamMaintenance = () => {
             navigate('/team/' + routeParams.teamid)
         } 
     }
-    const navigateTeamDetails = () => { 
+    const navigateTeamDetails = (event) => { 
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        setValidated(true);
+        let error = false
+        error = validateInput()
+        if (!error) {
         if (action.type === "Creation") {
             navigate('/team/' + "new team id here")
         } else {
@@ -129,6 +144,38 @@ const TeamMaintenance = () => {
             } 
         }
     }
+}
+
+const validateInput = () => {
+    let errResp = false
+    let errMsgs = []
+    let focusON = false
+    if (currValues.teamName.trim() === "") {
+        errMsgs.push('Team name is required.');
+        document.getElementById("teamName").focus()
+        focusON = true
+    }
+    if (currValues.location === "") {
+        errMsgs.push('Location is required.');
+        if (!focusON) {
+            document.getElementById("location").focus()
+            focusON = true
+        }
+    }
+    if (currValues.email.trim() === "") {
+        errMsgs.push('Email is required.');
+        if (!focusON) {
+            document.getElementById("email").focus()
+            focusON = true
+        }
+    }
+
+    setErrorMessage(errMsgs)
+    if (errMsgs.length > 0) {
+        errResp = true
+    }
+    return errResp
+}
 
     const navigateDelete = () => {
         let count = (playersList === null ? 0 : 1)
@@ -145,13 +192,25 @@ const TeamMaintenance = () => {
 
   return (
     <div className="d-flex container mt-2 justify-content-center">
-      <Card style={{ width: "60rem", padding: 20 }}>
+        { !isSignedIn ? (
+            <div>
+                {navigate('/signin')}
+            </div>
+        ) : (
+        <Card style={{ width: "60rem", padding: 20 }}>
+        {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+        )}
         <h2 className="mb-4 center-text">{action.title.toUpperCase()}</h2>
-        <form action="" encType="multipart/form-data">
-            < div className="col mb-5 text-center">               
-                <label htmlFor="banner" className="form-label mb-1">
+        <Form noValidate validated={validated} action="" encType="multipart/form-data">
+            < div className="col mb-5 text-center">           
+                <Form.Label htmlFor="banner" className="form-label mb-1">
                     Select Banner
-                </label>
+                </Form.Label>
                 {selectedBanner && (
                     <div>
                         <img src={bannerURL} alt="Team Banner" className="object-fit-cover rounded mw-100 mb-2" style={{ width: "100rem", height: "20rem"}}/>
@@ -168,7 +227,7 @@ const TeamMaintenance = () => {
                     <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileBanner.current.click()}>Upload</button>
                     </div> 
                 )}
-                <div className="row justify-content-center">value
+                <div className="row justify-content-center">
                     <div className="col-3">
                         <input type="file" id="banner" name="banner" className="d-none" onChange={handleBannerChange} accept="image/*" ref={inputFileBanner}/>
                     </div>
@@ -178,46 +237,64 @@ const TeamMaintenance = () => {
             <div className="col-sm-9 mb-3"> 
           <div className="row">
             <div className="col-sm-7 mb-3">
-                <label htmlFor="teamName" className="form-label">
+                <Form.Label htmlFor="teamName"  className="form-label">
                     Team Name*
-                </label>
-                <input id="teamName" name="teamName" type="text" className="form-control" value={currValues.teamName} onChange={handleTeamDetails} />
+                </Form.Label>
+                <Form.Control
+            required
+            pattern="^\S.*$"
+            // pattern="^(?!.*\s)[^']*$" --this is for avoiding ' as well.
+            type="text"
+            placeholder="Last name"
+            defaultValue="Otto" id="teamName" name="teamName" className="form-control" value={currValues.teamName} onChange={handleTeamDetails} />
+            
+            <Form.Control.Feedback type="invalid">
+            Please provide a valid team name.
+          </Form.Control.Feedback>
+          
+            {/* <Form.Group controlId="validationCustom03">
+          <Form.Label>City</Form.Label>
+          <Form.Control type="text" placeholder="City" required />
+          <Form.Control.Feedback type="invalid">
+            Please provide a valid city.
+          </Form.Control.Feedback>
+        </Form.Group> */}
             </div>
             <div className="col-sm-4 mb-3">
-                <label htmlFor="sport" className="form-label">
+                <Form.Label htmlFor="sport" className="form-label">
                     Sport*
-                </label>
-                <select id="sport" name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
+                </Form.Label>
+                <Form.Select id="sport" name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
                     {sportsOptions.map((option) => (
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
-                </select>
+                </Form.Select>
             </div>
           </div>
           <div className="col-sm-11 mb-3">
-                <label htmlFor="description" className="form-label">
+                <Form.Label htmlFor="description" className="form-label" required>
                     Description
-                </label>
+                </Form.Label>
             <textarea id="description" name="description" className="form-control form-control-sm" value={currValues.description} onChange={handleTeamDetails} />
           </div>
           <div className="row">
             <div className="col-sm-5 mb-3">
-                <label htmlFor="location" className="form-label">
+                <Form.Label htmlFor="location" className="form-label">
                     Location*
-                </label>
-                <input id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleTeamDetails} />
+                </Form.Label>
+                <Form.Control required pattern="^\S.*$" id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-3 mb-3">
-                <label htmlFor="division" className="form-label">
+                <Form.Label htmlFor="division" className="form-label">
                     Division
-                </label>
+                </Form.Label>
                 <input id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="email" className="form-label">
                     Email*
                 </label>
-                <input id="email" name="email" type="text" className="form-control" value={currValues.email} onChange={handleTeamDetails} />
+                <Form.Control required id="email" name="email" type="email" className="form-control" value={currValues.email} onChange={handleTeamDetails} />
             </div>
           </div>
           </div>
@@ -244,7 +321,7 @@ const TeamMaintenance = () => {
                 <input type="file" id="logo" name="logo" className="d-none" onChange={handleLogoChange} accept="image/*" ref={inputFileLogo}/>
             </div>
           </div>
-        </form>
+        </Form>
         { action.type === "Update" && playersList !== null && playersList.length !== 0 && (
             <div>
                 <div>
@@ -298,6 +375,7 @@ const TeamMaintenance = () => {
                 </div>
 
       </Card>
+      )}
     </div>
   );
 };
