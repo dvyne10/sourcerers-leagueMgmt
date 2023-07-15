@@ -1,4 +1,4 @@
-import {Container,Row,Col, Image, Button, CardGroup, Card} from 'react-bootstrap';
+import {Container,Row,Col, Image, Button} from 'react-bootstrap';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
@@ -26,18 +26,18 @@ function TeamDetails() {
     const teamMembers = [
         { id: 1, imurl: 'https://images.squarespace-cdn.com/content/v1/590814dc1e5b6c7f60b5e133/1495591011988-I2E7W449RQFRP9M50CTT/teens_008.jpg?format=2500w', body: "Carla Dovermner", position: "Forward" },
         { id: 2, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Back"},
-        { id: 3, imurl: 'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg', body: "Carla Dovermnersdsdsdsdsdsd", position: "Back" },
+        { id: 3, body: "Carla Dovermnersd", position: "Back" },
         { id: 4, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Left Wing" },
-        { id: 5, imurl: 'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg', body: "Carla Dovermner" },
+        { id: 5, body: "Carla Dovermner" },
         { id: 6, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Right Wing"  },
         { id: 15, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Forward"  },
-        { id: 17, imurl: 'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg', body: "Carla Dovermner" },
+        { id: 17, body: "Carla Dovermner" },
         { id: 18, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Goalkeeper"  },
         { id: 7, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Left Wing" },
-        { id: 8, imurl: 'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg', body: "Carla Dovermner" },
+        { id: 8, body: "Carla Dovermner" },
         { id: 9, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Right Wing"  },
         { id: 10, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Forward"  },
-        { id: 11, imurl: 'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg', body: "Carla Dovermner" },
+        { id: 11, body: "Carla Dovermner" },
         { id: 12, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Goalkeeper"  }
     ];
     function changeJoinShow(){
@@ -81,29 +81,45 @@ function TeamDetails() {
 {/* Here is the team players and listing */}
 
 <h1 className='gap-divider'>Team Members</h1>
-<CardGroup className='text-center border'>
 
+<div className='align-items-center border justify-content-center'>
+<Row className='gap-3 justify-content-center mb-2 '> 
 {teamMembers.map((teamMember)=>{
 return(
-    <div className="row col mt-2 pb-2 mx-auto text-align-center justify-content-center col-md-3" style={{"width":"15em", minHeight:"15em"}} key={teamMember.id} >
-    <a href={'/player/'+`${teamMember.id}`} className='general-link-no-dec'><Card className='border-0 team-player-information'>
+  
+ 
+    <Col sm={3} className='border mt-2 rounded passive-active-column' key={teamMember.id}>
+      <Row className='align-items-center'>
       
-    <Card.Img className='d-none d-sm-block mx-auto border shadow object-fit-cover rounded-circle mt-2 img-thumbnail shadow-md'  style={{ "height": "6em", "width": "6em"}} src={teamMember.imurl} />
-            
-            <Card.Body>
-              <Card.Title>{teamMember.body}</Card.Title>
-              <Card.Text>
-              {(!teamMember.position) ? 'Not Alloted' : teamMember.position}
-              </Card.Text>
-            </Card.Body>
 
-            </Card>
-            </a>
-            </div>
+
+      <Col sm={3} href="www.google.com" className='text-center rounded-start '  style={{backgroundColor:"#C7DDCC"}}>
+      <a href={`/player/${teamMember.id}`} className='team-jersey-list-number' >
+      <Image
+                          src={teamMember.imurl ===undefined ? `https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg` : teamMember.imurl}
+                          className="mt-2 mb-2 shadow object-fit-cover border"
+                          rounded
+                          fluid
+                          style={{  width: "4em", height: "4em" }}
+                        />
+                      {console.log(teamMember.imurl)}
+                      <h5 >No : 23</h5>
+      </a>
+      </Col>
+      <Col md="auto" className='mx-auto mt-2'>
+        <h6>{teamMember.body}</h6>
+        <p>{teamMember.position == undefined ? "Not Assigned" : teamMember.position}</p>
+        <h6>23</h6>
+      </Col>
+      </Row>
+    </Col>
+    
+    
             
 )})
 }
-    </CardGroup>
+</Row>
+</div>
     
 
 
@@ -114,16 +130,16 @@ return(
         <div className='team-past-matches'>
           <h2 className='center-header gap-divider'>Past Matches</h2>
           <Row className='text-center mx-1'>
-              <Col md={1}>
+              <Col md={2}>
               <h6 className='border-bottom border-secondary'>Date</h6>
               </Col>
-              <Col md={5}>
+              <Col md={4}>
               <h6 className='border-bottom border-secondary'>Opponent</h6>
               </Col>
-              <Col md={5}>
-              <h6 className='border-bottom border-secondary'>Score (Home/Opponent)</h6>
+              <Col md={4}>
+              <h6 className='border-bottom border-secondary'>Score</h6>
               </Col>
-              <Col md={1}>
+              <Col md={2}>
               <h6 className='border-bottom border-secondary'>Location</h6>
               </Col>
               </Row>
@@ -132,64 +148,64 @@ return(
           <ListGroup>
             <ListGroup.Item action variant="danger" href="/match/soccer/1"  className='mt-2'>
               <Row className='text-center'>
-              <Col md={1}>
+              <Col md={2}>
               20.06.23
               </Col>
-              <Col md={5}>
+              <Col md={4}>
               Real Madrid
               </Col>
-              <Col md={5}>
+              <Col md={4}>
               1-4
               </Col>
-              <Col md={1}>
+              <Col md={2}>
               Toronto
               </Col>
               </Row>
             </ListGroup.Item>
             <ListGroup.Item action variant="success" href="/match/soccer/1" className='mt-2'>
             <Row className='text-center'>
-              <Col md={1}>
+              <Col md={2}>
               20.06.23
               </Col>
-              <Col md={5}>
+              <Col md={4}>
               Real Madrid
               </Col>
-              <Col md={5}>
+              <Col md={4}>
               4-1
               </Col>
-              <Col md={1}>
+              <Col md={2}>
               Toronto
               </Col>
               </Row>
             </ListGroup.Item>
             <ListGroup.Item action variant="success" href="/match/soccer/1" className='mt-2'>
             <Row className='text-center'>
-              <Col md={1}>
+              <Col md={2}>
               20.06.23
               </Col>
-              <Col md={5}>
+              <Col md={4}>
               Real Madrid
               </Col>
-              <Col md={5}>
+              <Col md={4}>
               3-1
               </Col>
-              <Col md={1}>
+              <Col md={2}>
               Toronto
               </Col>
               </Row>
             </ListGroup.Item>
             <ListGroup.Item action variant="success" href="/match/soccer/1" className='mt-2'>
             <Row className='text-center'>
-              <Col md={1}>
+              <Col md={2}>
               20.06.23
               </Col>
-              <Col md={5}>
+              <Col md={4}>
               Real Madrid
               </Col>
-              <Col md={5}>
+              <Col md={4}>
               2-1
               </Col>
-              <Col md={1}>
+              <Col md={2}>
               Toronto
               </Col>
               </Row>
