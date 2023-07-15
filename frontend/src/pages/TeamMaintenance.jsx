@@ -53,6 +53,7 @@ const TeamMaintenance = () => {
                 { playerId: 9, username: "oBurt", playerName: "Olivia Burt", position: "SCP03", jerseyNumber: 27, joinedDate: "2022-07-09" },
                 { playerId: 10, username: "kJustice", playerName: "Katelyn Justice", position: "SCP02", jerseyNumber: 36, joinedDate: "2022-07-10" },
             ])
+            
             setSportSelected("soccerId")
             setLogoURL("https://images.unsplash.com/photo-1511886929837-354d827aae26?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80")
             setSelectedLogo("x")
@@ -155,7 +156,7 @@ const validateInput = () => {
         document.getElementById("teamName").focus()
         focusON = true
     }
-    if (currValues.location === "") {
+    if (currValues.location.trim() === "") {
         errMsgs.push('Location is required.');
         if (!focusON) {
             document.getElementById("location").focus()
@@ -169,6 +170,7 @@ const validateInput = () => {
             focusON = true
         }
     }
+    
 
     setErrorMessage(errMsgs)
     if (errMsgs.length > 0) {
@@ -229,7 +231,7 @@ const validateInput = () => {
                 )}
                 <div className="row justify-content-center">
                     <div className="col-3">
-                        <input type="file" id="banner" name="banner" className="d-none" onChange={handleBannerChange} accept="image/*" ref={inputFileBanner}/>
+                        <Form.Control type="file" id="banner" name="banner" className="d-none" onChange={handleBannerChange} accept="image/*" ref={inputFileBanner}/>
                     </div>
                 </div>
             </div>
@@ -248,7 +250,7 @@ const validateInput = () => {
             placeholder="Last name"
             defaultValue="Otto" id="teamName" name="teamName" className="form-control" value={currValues.teamName} onChange={handleTeamDetails} />
             
-            <Form.Control.Feedback type="invalid">
+            <Form.Control.Feedback htmlFor="teamName" type="invalid">
             Please provide a valid team name.
           </Form.Control.Feedback>
           
@@ -269,6 +271,9 @@ const validateInput = () => {
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
                 </Form.Select>
+                <Form.Control.Feedback htmlFor="sport" type="invalid">
+            Please select a sport.
+          </Form.Control.Feedback>
             </div>
           </div>
           <div className="col-sm-11 mb-3">
@@ -283,25 +288,31 @@ const validateInput = () => {
                     Location*
                 </Form.Label>
                 <Form.Control required pattern="^\S.*$" id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleTeamDetails} />
+                <Form.Control.Feedback htmlFor="location" type="invalid">
+            Please provide a valid location.
+          </Form.Control.Feedback>
             </div>
             <div className="col-sm-3 mb-3">
                 <Form.Label htmlFor="division" className="form-label">
                     Division
                 </Form.Label>
-                <input id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleTeamDetails} />
+                <Form.Control id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-4 mb-3">
-                <label htmlFor="email" className="form-label">
+                <Form.Label htmlFor="email" className="form-label">
                     Email*
-                </label>
+                </Form.Label>
                 <Form.Control required id="email" name="email" type="email" className="form-control" value={currValues.email} onChange={handleTeamDetails} />
+                <Form.Control.Feedback htmlFor="location" type="invalid">
+            Please provide a valid email.
+          </Form.Control.Feedback>
             </div>
           </div>
           </div>
           < div className="col-sm-3 mb-3 text-center">
-                <label htmlFor="logo" className="form-label">
+                <Form.Label htmlFor="logo" className="form-label">
                     Select Logo
-                </label>
+                </Form.Label>
                 {selectedLogo && (
                     <div>
                         <img src={logoURL} alt="not found" className="rounded mw-100 mb-2 border border-secondary" style={{ width: "100rem", height: "13rem"}}/>
@@ -318,7 +329,7 @@ const validateInput = () => {
                         <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileLogo.current.click()}>Upload</button> 
                     </div>
                 )}
-                <input type="file" id="logo" name="logo" className="d-none" onChange={handleLogoChange} accept="image/*" ref={inputFileLogo}/>
+                <Form.Control type="file" id="logo" name="logo" className="d-none" onChange={handleLogoChange} accept="image/*" ref={inputFileLogo}/>
             </div>
           </div>
         </Form>
