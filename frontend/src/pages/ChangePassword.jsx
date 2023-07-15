@@ -16,19 +16,19 @@ const ChangePassword = () => {
             <label htmlFor="currentPassword" className="form-label">
               Current Password*
             </label>
-            <input id="currentPassword" type="text" className="form-control" />
+            <input id="currentPassword" name="currentPassword" type="text" className="form-control" />
           </div>
           <div className="mb-3">
             <label htmlFor="newPassword" className="form-label">
               New Password*
             </label>
-            <input id="newPassword" type="text" className="form-control" />
+            <input id="newPassword" name="newPassword" type="text" className="form-control" />
           </div>
           <div className="mb-3">
             <label htmlFor="confirmPassword" className="form-label">
               Confirm New Password*
             </label>
-            <input id="confirmNewPassword" type="text" className="form-control" />
+            <input id="confirmNewPassword" name="confirmNewPassword" type="text" className="form-control" />
           </div>
           <div className="d-flex justify-content-evenly width:100% mb-4">
             <button type="button" className="btn btn-primary" onClick={navigateSubmitChange}>

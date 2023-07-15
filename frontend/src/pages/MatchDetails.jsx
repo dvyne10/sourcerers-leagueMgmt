@@ -2,17 +2,19 @@ import { useState } from 'react';
 import { BsFillPersonFill } from 'react-icons/bs';
 import soccerField from '/football_field.jpg';
 import soccerBackground from '/football_background.jpg';
-import teamLogo1 from '/madrid.png'; 
-import teamLogo2 from '/barcelona.png';
+import basketballField from '/basketball_court.jpeg'; 
+import basketballBackground from '/basketball_background.jpeg';
 import {  Image}  from 'react-bootstrap'; 
-import { useNavigate} from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
-const MatchDetailsSoccer = () => {
+const MatchDetails = () => {
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
   const [selectedPlayerData, setSelectedPlayerData] = useState(null);
   const navigate = useNavigate(); 
-
+  const { sport } = useParams(); 
+  const teamLogo1 = sport === 'soccer' ? '/madrid.png' : '/lakers.png';
+  const teamLogo2 = sport === 'soccer' ? '/barcelona.png' : '/golden.png';
 
   const playerListOne = [
     { name: 'Lionel Messi', position: 'MF', goals: 2, assists: 0 },
@@ -43,7 +45,7 @@ const MatchDetailsSoccer = () => {
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundImage: `url(${soccerBackground})`,
+    backgroundImage: `url(${sport === 'soccer' ? soccerBackground : basketballBackground})`,
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     opacity: 0.6,  // adjust the opacity as needed
@@ -51,9 +53,9 @@ const MatchDetailsSoccer = () => {
   }}/>
  
 
- <div style={{marginLeft: '87%',  transform: 'translateY(15px)'}}><a href="/updatematch/1" className="btn btn-outline-success"><BsGearFill className="m-auto" /></a></div>
+ <div style={{marginLeft: '95%',  transform: 'translateY(15px)'}}><a href="/updatematch/1" className="btn btn-outline-success"><BsGearFill className="m-auto" /></a></div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '2%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         
         <div onClick={() => navigate('/team/:teamid')}
              style={{
@@ -67,7 +69,7 @@ const MatchDetailsSoccer = () => {
                     background: '#9FEDD7 url(' + teamLogo1 + ') center center no-repeat',
                     backgroundSize: 'contain',
                     borderTopLeftRadius: '10px',
-                    borderBottomLeftRadius: '10px',
+                    borderBottomLeftRadius: '10px',                    
                     }}>
         </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#9FEDD7', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
@@ -124,7 +126,7 @@ const MatchDetailsSoccer = () => {
             ))}
           </div>
           <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
-            <div style={{ backgroundImage: `url(${soccerField})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
+            <div style={{ backgroundImage: `url(${sport === 'soccer' ? soccerField : basketballField})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'center'}}>
           <div style={{ paddingTop: '26%'}}>
             {playerListOne.map((player, index) => (
@@ -239,5 +241,5 @@ const MatchDetailsSoccer = () => {
   );
 };
 
-export default MatchDetailsSoccer;
+export default MatchDetails;
 

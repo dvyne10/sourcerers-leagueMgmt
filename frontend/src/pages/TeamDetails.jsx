@@ -130,7 +130,7 @@ return(
       <Row>
         <Col sm={12} >
           <ListGroup>
-            <ListGroup.Item action variant="danger" href="/matchdetailsoccer/1"  className='mt-2'>
+            <ListGroup.Item action variant="danger" href="/match/soccer/1"  className='mt-2'>
               <Row className='text-center'>
               <Col md={1}>
               20.06.23
@@ -146,7 +146,7 @@ return(
               </Col>
               </Row>
             </ListGroup.Item>
-            <ListGroup.Item action variant="success" href="/matchdetailsoccer/1" className='mt-2'>
+            <ListGroup.Item action variant="success" href="/match/soccer/1" className='mt-2'>
             <Row className='text-center'>
               <Col md={1}>
               20.06.23
@@ -162,7 +162,7 @@ return(
               </Col>
               </Row>
             </ListGroup.Item>
-            <ListGroup.Item action variant="success" href="/matchdetailsoccer/1" className='mt-2'>
+            <ListGroup.Item action variant="success" href="/match/soccer/1" className='mt-2'>
             <Row className='text-center'>
               <Col md={1}>
               20.06.23
@@ -178,7 +178,7 @@ return(
               </Col>
               </Row>
             </ListGroup.Item>
-            <ListGroup.Item action variant="success" href="/matchdetailsoccer/1" className='mt-2'>
+            <ListGroup.Item action variant="success" href="/match/soccer/1" className='mt-2'>
             <Row className='text-center'>
               <Col md={1}>
               20.06.23
@@ -211,7 +211,7 @@ return(
           <h4 className='center-header'>Upcoming Matches</h4><hr />
     <ul>
       <li className='active-game-hover'>
-      <a href='/matchdetailsoccer/1' className='general-link-no-dec'>
+      <a href='/match/soccer/1' className='general-link-no-dec'>
         <span className='active-game'>21st June 2023</span>
         <div className="content">
         
@@ -221,7 +221,7 @@ return(
       </li>
       
       <li className='past-game-hover'>
-      <a href='/matchdetailsoccer/3' className='general-link-no-dec'>
+      <a href='/match/soccer/3' className='general-link-no-dec'>
         <span className='past-game'>15th April 2023</span>
         <div className="content">
           <h3>Barcelona</h3>
@@ -230,7 +230,7 @@ return(
       </li>
       
       <li className='past-game-hover'>
-      <a href='/matchdetailsoccer/2' className='general-link-no-dec'>
+      <a href='/match/soccer/2' className='general-link-no-dec'>
         <span className='past-game'>22nd March 2023</span>
         <div className="content">
           <h3>Real Madrid</h3>

@@ -4,12 +4,13 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaTrash, FaSearchPlus } from 'react-icons/fa';
 import useAuth from "../hooks/auth";
 
+
 const MatchUpdate = () => {
   
     const location = useLocation();
     const routeParams = useParams();
     const {isSignedIn, isAdmin} = useAuth()
-
+    const [action, handleAction] = useState({type: "Creation", title: "CREATE MATCH"});
     const [statistics, setStatistics] = useState([{ statId: null, statDesc: null}])
     const [currValues, setCurrentValues] = useState({matchId: routeParams.matchId, dateOfMatch: null, locationOfMatch: null,
         teamId1: null, teamName1: null, finalScore1: null, finalScorePending1: null, leaguePoints1: null, leaguePointsPending1: null, disableInput1: true,
@@ -20,28 +21,35 @@ const MatchUpdate = () => {
     const [findUsername, setFindUsername] = useState(["",""])
     const [oldValues, setOldValues] = useState(null)
     const [didMatchDetailsChange, setMatchDetailsChanged] = useState(false)
-
+    const [errorMessage, setErrorMessage] = useState([]);
+    
     useEffect(() => {
-        setStatistics([
-            { statId: 1, statDesc: "Goals"}, 
-            { statId: 2, statDesc: "Assists"},
-            { statId: 3, statDesc: "Shots"},
-        ])
-        setCurrentValues({ dateOfMatch: "2023-07-01T14:00", locationOfMatch: "York Soccer Field",
-            teamId1: 1, teamName1: "Vikings", finalScore1: 5, finalScorePending1: 6, leaguePoints1: 2, leaguePointsPending1: 2, disableInput1: false,   // false for both if isAdmin
-            teamId2: 2, teamName2: "Dodgers", finalScore2: 2, finalScorePending2: 3, leaguePoints2: 0, leaguePointsPending2: 0, disableInput2: false,
-        })
-        setMatchesToUpdate1([
-            { playerId: 1, username: "sMcdowell", fullName: "Scarlet Mcdowell", playerStats: [{ statId: 1, points: 2 }, { statId: 2, points: 1 }, { statId: 3, points: 1 } ] }, 
-            { playerId: 2, username: "uWatts", fullName: "Ursa Watts", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 0 }, { statId: 3, points: 2 }] },
-            { playerId: 3, username: "pRodriguez", fullName: "Phoebe Rodgriguez", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 2 }, { statId: 3, points: 0 } ] },
-        ])
-        setMatchesToUpdate2([
-            { playerId: 11, username: "vFloyd", fullName: "Vladimir Floyd", playerStats: [{ statId: 1, points: 2 }, { statId: 2, points: 1 }, { statId: 3, points: 1 } ] }, 
-            { playerId: 12, username: "oRandall", fullName: "Oprah Randall", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 0 }, { statId: 3, points: 2 }] },
-            { playerId: 13, username: "mCarpenter", fullName: "Mona Carpenter", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 2 }, { statId: 3, points: 0 } ] },
-        ])
-        setOldValues({ dateOfMatch: "2023-07-01T14:00", locationOfMatch: "York Soccer Field", finalScore1: 5, leaguePoints1: 2, finalScore2: 2, leaguePoints2: 0})
+        const url = window.location.pathname.substring(1,7).toLowerCase();
+        if (url === "create") {
+            handleAction({type: "Creation", title: "Create Match"})
+        } else {
+            handleAction({type: "Update", title: "Update Match"})
+            setStatistics([
+                { statId: 1, statDesc: "Goals"}, 
+                { statId: 2, statDesc: "Assists"},
+                { statId: 3, statDesc: "Shots"},
+            ])
+            setCurrentValues({ dateOfMatch: "2023-07-01T14:00", locationOfMatch: "York Soccer Field",
+                teamId1: 1, teamName1: "Vikings", finalScore1: 5, finalScorePending1: 6, leaguePoints1: 2, leaguePointsPending1: 2, disableInput1: false,   // false for both if isAdmin
+                teamId2: 2, teamName2: "Dodgers", finalScore2: 2, finalScorePending2: 3, leaguePoints2: 0, leaguePointsPending2: 0, disableInput2: false,
+            })
+            setMatchesToUpdate1([
+                { playerId: 1, username: "sMcdowell", fullName: "Scarlet Mcdowell", playerStats: [{ statId: 1, points: 2 }, { statId: 2, points: 1 }, { statId: 3, points: 1 } ] }, 
+                { playerId: 2, username: "uWatts", fullName: "Ursa Watts", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 0 }, { statId: 3, points: 2 }] },
+                { playerId: 3, username: "pRodriguez", fullName: "Phoebe Rodgriguez", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 2 }, { statId: 3, points: 0 } ] },
+            ])
+            setMatchesToUpdate2([
+                { playerId: 11, username: "vFloyd", fullName: "Vladimir Floyd", playerStats: [{ statId: 1, points: 2 }, { statId: 2, points: 1 }, { statId: 3, points: 1 } ] }, 
+                { playerId: 12, username: "oRandall", fullName: "Oprah Randall", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 0 }, { statId: 3, points: 2 }] },
+                { playerId: 13, username: "mCarpenter", fullName: "Mona Carpenter", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 2 }, { statId: 3, points: 0 } ] },
+            ])
+            setOldValues({ dateOfMatch: "2023-07-01T14:00", locationOfMatch: "York Soccer Field", finalScore1: 5, leaguePoints1: 2, finalScore2: 2, leaguePoints2: 0})
+        }
     }, [location.pathname]);
 
     const handleMatchDetails = (e) => {
@@ -117,43 +125,144 @@ const MatchUpdate = () => {
         }
     }
 
+      
     const navigate = useNavigate(); 
     const navigateUpdate = () => {
-        if ( oldValues.dateOfMatch == currValues.dateOfMatch 
-            && oldValues.locationOfMatch == currValues.locationOfMatch 
-            && oldValues.finalScore1 == currValues.finalScore1 
-            && oldValues.leaguePoints1 == currValues.leaguePoints1
-            && oldValues.finalScore2 == currValues.finalScore2
-            && oldValues.leaguePoints2 == currValues.leaguePoints2
-            && didMatchDetailsChange == false
-        ) {
-            alert("NO CHANGES FOUND!")
-        } else {
-            if (!isAdmin) {
-                if (oldValues.finalScore1 !== currValues.finalScore1
-                    || oldValues.leaguePoints1 !== currValues.leaguePoints1
-                    || oldValues.finalScore2 !== currValues.finalScore2
-                    || oldValues.leaguePoints2 !== currValues.leaguePoints2    
-                ) {
-                    if (confirm("Changes will require the approval of other team's admin.\nPlease click on OK if you wish to proceed.")) {
-                        navigate('/match/' + routeParams.matchId )
-                    } else {
-                        console.log("Update cancelled")
-                    } 
-                } else {
-                    navigate('/match/' + routeParams.matchId )
-                }
-            } else {
-                // update changes
-                navigate(-1)
+        let error = false; 
+        error = validateInput();
+        if (!error) {
+            if (action.type === "Creation") {
+                navigate('/match/soccer' + "new match detail id here");
             }
-        }    
+            else {
+                if ( oldValues.dateOfMatch == currValues.dateOfMatch 
+                    && oldValues.locationOfMatch == currValues.locationOfMatch 
+                    && oldValues.finalScore1 == currValues.finalScore1 
+                    && oldValues.leaguePoints1 == currValues.leaguePoints1
+                    && oldValues.finalScore2 == currValues.finalScore2
+                    && oldValues.leaguePoints2 == currValues.leaguePoints2
+                    && didMatchDetailsChange == false
+                ) {
+                    alert("NO CHANGES FOUND!")
+                } else {
+                    if (!isAdmin) {
+                            if (oldValues.finalScore1 !== currValues.finalScore1
+                                || oldValues.leaguePoints1 !== currValues.leaguePoints1
+                                || oldValues.finalScore2 !== currValues.finalScore2
+                                || oldValues.leaguePoints2 !== currValues.leaguePoints2    
+                            ) {
+                                if (confirm("Changes will require the approval of other team's admin.\nPlease click on OK if you wish to proceed.")) {
+                                    navigate('/match/' + routeParams.matchId )
+                                } else {
+                                    console.log("Update cancelled")
+                                } 
+                            } else {
+                                navigate('/match/' + routeParams.matchId )
+                            }
+                        } else {
+                            // update changes
+                            navigate(-1)
+                        }
+                    }
+            }
+        }
     }
     const navigateCancel = () => { navigate(-1) }
 
+    const validateInput = () => {
+        let errResp = false; 
+        let errMsgs = [];
+        let focusON = false; 
+        let now = new Date();
+        let year = now.getFullYear();
+        let month = ('0' + (now.getMonth() + 1)).slice(-2);
+        let day = ('0' + now.getDate()).slice(-2);
+        let hours = ('0' + now.getHours()).slice(-2);
+        let minutes = ('0' + now.getMinutes()).slice(-2);
+        let formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        let totalScore1 = 0;
+        matchesToUpdate1.forEach(match => {
+            match.playerStats.forEach(stat => {
+                if (stat.statId === 1) {
+                    totalScore1 += stat.points;
+                }
+            });
+        });
+
+        let totalScore2 = 0;
+        matchesToUpdate2.forEach(match => {
+            match.playerStats.forEach(stat => {
+                if (stat.statId === 1) {
+                    totalScore2 += stat.points;
+                }
+            });
+        });
+        if (currValues.locationOfMatch.trim() === "") {
+            errMsgs.push("Location of match is required.");
+            if (!focusON) {
+                document.getElementById("locationOfMatch").focus();
+                focusON = true; 
+            }
+        }
+        if (currValues.dateOfMatch === null) {
+            errMsgs.push('Date of match is required.');
+            if (!focusON) {
+                document.getElementById("dateOfMatch").focus();
+                focusON = true; 
+            }
+        } 
+        if (currValues.dateOfMatch > formattedDateTime) {
+            errMsgs.push("Date of match is invalid."); 
+            if (!focusON) {
+                document.getElementById("dateOfMatch").focus();
+                focusON = true; 
+            }
+        }
+        if (currValues.finalScore1 !== null && currValues.finalScore2 !== null && matchesToUpdate1.length === 0 || matchesToUpdate2.length === 0) {
+            errMsgs.push("The details of your team's players for this match are required."); 
+            if (!focusON) {
+                window.scrollTo(0, 0);
+                focusON = true; 
+            }
+        }
+        if (currValues.finalScore1 !== null && currValues.finalScore1 > 0 && matchesToUpdate1.playerStats === null) {
+            errMsgs.push("The statistics of your team's players for this match are required.");
+            if (!focusON) {
+                window.scrollTo(0, 0);
+                focusON = true; 
+            }
+        }
+        if (currValues.finalScore2 !== null && currValues.finalScore2 > 0 && matchesToUpdate2.playerStats === null) {
+            errMsgs.push("The statistics of your team's players for this match are required.");
+            if (!focusON) {
+                window.scrollTo(0, 0);
+                focusON = true; 
+            }
+        }
+        if (currValues.finalScore1 !== totalScore1 || currValues.finalScore2 !== totalScore2) {
+            errMsgs.push("The sum of the total scores of the players does not match the final score entered.");    
+            if (!focusON) {
+                window.scrollTo(0, 0);
+                focusON = true; 
+            }
+        }
+        
+        setErrorMessage(errMsgs);
+        if (errMsgs.length > 0) {
+            errResp = true;
+        }
+        return errResp; 
+    }
   return (
     <div className="d-flex container mt-3 justify-content-center" >
       <Card style={{ width: "60rem", padding: 20 }}>
+      {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+        )}
         <form action="">
             <div className="col mb-3 text-center">
                 <div className="row justify-content-center mb-3">
@@ -169,49 +278,49 @@ const MatchUpdate = () => {
                 </div>
                 <div className="row justify-content-center mb-2">
                     <div className="col-2">
-                        <input name="finalScore1" type="number" min="0" className="form-control" defaultValue={currValues.finalScore1} onChange={handleMatchDetails} />
+                        <input name="finalScore1" type="number" min="0" className="form-control" value={currValues.finalScore1} onChange={handleMatchDetails} />
                     </div>
                     <div className="col-3">
                         <p className="text-lg-center fw-bold">Final Score</p>
                     </div>
                     <div className="col-2">
-                        <input name="finalScore2" type="number" min="0" className="form-control" defaultValue={currValues.finalScore2} onChange={handleMatchDetails} />
+                        <input name="finalScore2" type="number" min="0" className="form-control" value={currValues.finalScore2} onChange={handleMatchDetails} />
                     </div>
                 </div>
-                { isAdmin && (
+                { isAdmin && location.pathname.substring(1,6).toLowerCase() === "admin" && (
                     <div className="row justify-content-center mb-2">
                         <div className="col-2">
-                            <input name="finalScorePending1" type="number" min="0" className="form-control" defaultValue={currValues.finalScorePending1} onChange={handleMatchDetails} />
+                            <input name="finalScorePending1" type="number" min="0" className="form-control" value={currValues.finalScorePending1} onChange={handleMatchDetails} />
                         </div>
                         <div className="col-3">
                             <p className="text-lg-center fw-bold">Final Score (Pending)</p>
                         </div>
                         <div className="col-2">
-                            <input name="finalScorePending2" type="number" min="0" className="form-control" defaultValue={currValues.finalScorePending2} onChange={handleMatchDetails} />
+                            <input name="finalScorePending2" type="number" min="0" className="form-control" value={currValues.finalScorePending2} onChange={handleMatchDetails} />
                         </div>
                     </div>
                 ) }
                 <div className="row justify-content-center mb-3">
                     <div className="col-2">
-                        <input name="leaguePoints1" type="number" min="0" className="form-control" defaultValue={currValues.leaguePoints1} onChange={handleMatchDetails} />
+                        <input name="leaguePoints1" type="number" min="0" className="form-control" value={currValues.leaguePoints1} onChange={handleMatchDetails} />
                     </div>
                     <div className="col-3">
                         <p className="text-lg-center fw-bold">League Points</p>
                     </div>
                     <div className="col-2">
-                        <input name="leaguePoints2" type="number" min="0" className="form-control" defaultValue={currValues.leaguePoints2} onChange={handleMatchDetails} />
+                        <input name="leaguePoints2" type="number" min="0" className="form-control" value={currValues.leaguePoints2} onChange={handleMatchDetails} />
                     </div>
                 </div>
-                { isAdmin && (
+                { isAdmin && location.pathname.substring(1,6).toLowerCase() === "admin" && (
                     <div className="row justify-content-center mb-2">
                         <div className="col-2">
-                            <input name="leaguePointsPending1" type="number" min="0" className="form-control" defaultValue={currValues.leaguePointsPending1} onChange={handleMatchDetails} />
+                            <input name="leaguePointsPending1" type="number" min="0" className="form-control" value={currValues.leaguePointsPending1} onChange={handleMatchDetails} />
                         </div>
                         <div className="col-3">
                             <p className="text-lg-center fw-bold">League Points (Pending)</p>
                         </div>
                         <div className="col-2">
-                            <input name="leaguePointsPending2" type="number" min="0" className="form-control" defaultValue={currValues.leaguePointsPending2} onChange={handleMatchDetails} />
+                            <input name="leaguePointsPending2" type="number" min="0" className="form-control" value={currValues.leaguePointsPending2} onChange={handleMatchDetails} />
                         </div>
                     </div>
                 ) }
@@ -220,13 +329,13 @@ const MatchUpdate = () => {
                         <label htmlFor="locationOfMatch" className="form-label text-left">
                             Location of Match
                         </label>
-                        <input name="locationOfMatch" type="text" className="form-control" defaultValue={currValues.locationOfMatch} onChange={handleMatchDetails} />
+                        <input id="locationOfMatch" name="locationOfMatch" type="text" className="form-control" value={currValues.locationOfMatch} onChange={handleMatchDetails} />
                     </div>
                     <div className="col-3 mb-3 text-start">
                         <label htmlFor="dateOfMatch" className="form-label">
-                            Date of Match
+                            Date and Time of Match
                         </label>
-                        <input name="dateOfMatch" type="datetime-local" className="form-control" defaultValue={currValues.dateOfMatch} onChange={handleMatchDetails} />
+                        <input id="dateOfMatch" name="dateOfMatch" type="datetime-local" className="form-control" value={currValues.dateOfMatch} onChange={handleMatchDetails} />
                     </div>
                 </div>
             </div>
@@ -253,7 +362,7 @@ const MatchUpdate = () => {
                                 <td style={{ width: "15rem"}}>{player.fullName}</td>
                                 {player.playerStats.map((stat) =>
                                     <td key={stat.statId} >
-                                        <input name="stat" defaultValue={stat.points} type="number" min="0" onChange={(e) => onChangeStat(e, player.playerId, stat.statId, 1)} style={{ width: "3rem"}} disabled={currValues.disableInput1}/>
+                                        <input name="stat" value={stat.points} type="number" min="0" onChange={(e) => onChangeStat(e, player.playerId, stat.statId, 1)} style={{ width: "3rem"}} disabled={currValues.disableInput1}/>
                                     </td>
                                 )}
                                 <td><FaTrash className="m-auto" onClick={() => handleRemoveRow(index, 1)} disabled={currValues.disableInput1}/></td>
@@ -261,7 +370,7 @@ const MatchUpdate = () => {
                         ))}
                         <tr>
                             <td>
-                                <input name="username" type="text" value={findUsername[0]} onChange={(e) => handleAddUsername(e, 1)} disabled={currValues.disableInput1} placeholder="Type a username" style={{ width: "10rem"}} />
+                                <input name="username1" type="text" value={findUsername[0]} onChange={(e) => handleAddUsername(e, 1)} disabled={currValues.disableInput1} placeholder="Type a username" style={{ width: "10rem"}} />
                             </td>
                             <td style={{ width: "15rem"}} />
                             {statistics.map((stat) =>       
@@ -295,7 +404,7 @@ const MatchUpdate = () => {
                                 <td style={{ width: "15rem"}}>{player.fullName}</td>
                                 {player.playerStats.map((stat) =>
                                     <td key={stat.statId} >
-                                        <input style={{ width: "3rem"}} name="stat" defaultValue={stat.points} type="number" min="0" onChange={(e) => onChangeStat(e, player.playerId, stat.statId, 2)} disabled={currValues.disableInput2}/>
+                                        <input style={{ width: "3rem"}} name="stat" value={stat.points} type="number" min="0" onChange={(e) => onChangeStat(e, player.playerId, stat.statId, 2)} disabled={currValues.disableInput2}/>
                                     </td>
                                 )}
                                 <td><FaTrash className="m-auto" onClick={() => handleRemoveRow(index, 2)} disabled={currValues.disableInput2}/></td>
@@ -303,7 +412,7 @@ const MatchUpdate = () => {
                         ))}
                         <tr>
                             <td>
-                                <input name="username" type="text" value={findUsername[1]} onChange={(e) => handleAddUsername(e, 2)} disabled={currValues.disableInput2} placeholder="Type a username" style={{ width: "10rem"}} />
+                                <input name="username2" type="text" value={findUsername[1]} onChange={(e) => handleAddUsername(e, 2)} disabled={currValues.disableInput2} placeholder="Type a username" style={{ width: "10rem"}} />
                             </td>
                             <td style={{ width: "15rem"}} />
                             {statistics.map((stat) =>       

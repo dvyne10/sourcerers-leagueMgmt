@@ -39,7 +39,7 @@ const Home = () => {
       {
         accessorKey: 'title', //access nested data with dot notation
         header: 'Who',
-        size: 600,
+        size: 300,
       },
       {
         accessorKey: 'desc',
@@ -140,7 +140,7 @@ const Home = () => {
     sx: {
       // Highlight the first row
       '& tr:nth-of-type(1)': {
-        backgroundColor: '#FEF9C7',
+        backgroundColor: '#F5F5F5',
       },
     },
   }}
