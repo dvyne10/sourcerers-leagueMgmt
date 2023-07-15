@@ -1,18 +1,13 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
+import SysParmModel from "../models/systemParameter.model.js";
 
 let ObjectId = mongoose.Types.ObjectId;
 
 export const createLeague = async function(data) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    let userId = new ObjectId("648ba153251b78d7946df30d")   // temp
-
-    if (!canUserCreateNewLeague(userId)) {
-        response.requestStatus = 'RJCT'
-        response.errMsg = "Maximum allowed number of active leagues created is already reached."
-        return response
-    }
+    let userId = new ObjectId("648ba153251b78d7946df01d")   // temp
 
     let validate = leagueValidation(data, "NEW", userId)
 
@@ -21,8 +16,7 @@ export const createLeague = async function(data) {
     } else {
         data.status = "NS"
         data.lookingForTeams = false
-        data.lookingForTeamsChgBy = new ObjectId("648ba153251b78d7946df311")
-        data.createdBy = new ObjectId("648ba153251b78d7946df311")
+        data.createdBy = new ObjectId(userId)
         let newLeague = new LeagueModel(data);
         await newLeague.save()
         .then(function () {
@@ -41,13 +35,7 @@ export const updateLeague = async function(leagueId, data){
     let response = {requestStatus: "", errField: "", errMsg: ""}
     let userId = new ObjectId("648ba153251b78d7946df311")   // temp
 
-    console.log(44)
-    if (!isLeagueAdmin(userId, leagueId)) {
-        response.requestStatus = 'RJCT'
-        response.errMsg = "Not authorized to this page !!!"
-        return response
-    }
-
+    data.leagueId = leagueId
     let validate = leagueValidation(data, "CHG", userId)
 
     if (validate.requestStatus !== "") {
@@ -83,48 +71,67 @@ export const updateLeague = async function(leagueId, data){
 export const leagueValidation = (data, requestType, userId) => {
     let response = {requestStatus: "", errField: "", errMsg: ""}
     let ageGroupChars = /[0-9]-[0-9]/
-    if (data.leagueName.trim() === "") {
+    let canCreate = false;
+    if (requestType === "NEW") {
+        canUserCreateNewLeague(userId)
+        .then(resp => {
+            canCreate = resp
+        })
+    }
+    let isLeagueAdminInd = false
+    if (requestType === "CHG") {
+        isLeagueAdmin((userId, data.leagueId))
+        .then(resp => {
+            isLeagueAdminInd = resp
+        })
+    }
+    if (requestType != "NEW" && requestType != "CHG" && requestType != "DEL") {
+        response.errMsg = 'Request type is invalid.'
+    } else if (requestType === "NEW" && !canCreate) {
+        response.errMsg = 'Maximum allowed number of active leagues created is already reached.'
+    } else if (requestType === "CHG" && !isLeagueAdminInd) {
+        response.errMsg = 'Not authorized to this page !!!'
+    } else if (requestType != "DEL" && data.leagueName.trim() === "") {
         response.errMsg = 'League name is required.'
         response.errField = "leagueName"
-    } else if (data.sportsTypeId === "") {
+    } else if (requestType != "DEL" && data.sportsTypeId === "") {
         response.errMsg = 'Sport is required.'
         response.errField = "sport"
-    } else if (data.location.trim() === "") {
+    } else if (requestType != "DEL" && data.location.trim() === "") {
         response.errMsg = 'Location is required.'
         response.errField = "location"
-    } else if (data.startDate === null || data.startDate.trim() === "" ) {
+    } else if (requestType != "DEL" && (data.startDate === null || data.startDate.trim() === "")) {
         response.errMsg = 'Start date is required.'
         response.errField = "startDate"
-    } else if (isNaN(Date.parse(data.startDate))) {
+    } else if (requestType != "DEL" && isNaN(Date.parse(data.startDate))) {
         response.errMsg = 'Start date is invalid.'
         response.errField = "startDate"
-    } else if (data.endDate === null  || data.endDate.trim() === "") {
+    } else if (requestType != "DEL" && data.endDate === null  || data.endDate.trim() === "") {
         response.errMsg = 'End date is required.'
         response.errField = "endDate"
-    } else if (isNaN(Date.parse(data.endDate))) {
+    } else if (requestType != "DEL" && isNaN(Date.parse(data.endDate))) {
         response.errMsg = 'End date is invalid.'
         response.errField = "endDate"
-    } else if (data.endDate < data.startDate) {
+    } else if (requestType != "DEL" && data.endDate < data.startDate) {
         response.errMsg = 'End date cannot be less than start date.'
         response.errField = "endDate"
-    } else if (data.ageGroup.trim() === "") {
+    } else if (requestType != "DEL" && data.ageGroup.trim() === "") {
         response.errMsg = 'Age group is required.'
         response.errField = "ageGroup"
-    } else if (!ageGroupChars.test(data.ageGroup.trim())){
+    } else if (requestType != "DEL" && !ageGroupChars.test(data.ageGroup.trim())){
         response.errMsg = 'Age group format is invalid.'
         response.errField = "ageGroup"
-    } else if (Number(data.ageGroup.trim().substring(0,data.ageGroup.trim().indexOf("-"))) 
+    } else if (requestType != "DEL" && Number(data.ageGroup.trim().substring(0,data.ageGroup.trim().indexOf("-"))) 
         > Number(data.ageGroup.trim().substring(data.ageGroup.trim().indexOf("-")+1))){
             response.errMsg = 'Age group value is invalid.'
             response.errField = "ageGroup"
-    } else if (data.numberOfTeams < 3) {
+    } else if (requestType != "DEL" && (data.numberOfTeams < 3 || isNaN(data.numberOfTeams) )) {
         response.errMsg = 'Number of teams cannot be less than 3.'
         response.errField = "numberOfTeams"
-    } else if (data.numberOfRounds < 1) {
+    } else if (requestType != "DEL" && (data.numberOfRounds < 1 || isNaN(data.numberOfRounds) )) {
         response.errMsg = 'Number of rounds cannot be less than 1.'
         response.errField = "numberOfRounds"
     }
-
     if (response.errMsg !== "") {
         response.requestStatus = 'RJCT'
     }
@@ -133,16 +140,22 @@ export const leagueValidation = (data, requestType, userId) => {
 
 export const deleteLeague = async function(data) {
     // TEMP ONLY
-    return false
+    return ""
 }
 
 export const updateLeagueTeams = async function(data) {
     // TEMP ONLY
-    return false
+    return ""
 }
 
 export const canUserCreateNewLeague = async function(userId) {
-    // TEMP ONLY
+    let parms = await SysParmModel.findOne({ parameterId: "maxParms"}, {maxParms: 1}).exec();
+    //let maxLeaguesAllowed = parms.maxParms.maxActiveLeaguesCreated
+    let maxLeaguesAllowed = 20 //temp
+    let activeLeaguesCreated = await LeagueModel.countDocuments({ createdBy : new ObjectId(userId) })
+    if (activeLeaguesCreated < maxLeaguesAllowed) {
+        return true
+    }
     return false
 }
 
@@ -155,9 +168,7 @@ export const isLeagueAdmin = async function(userId, leagueId) {
     if (league.createdBy.equals(userId)) {
         return true
     } else {
-        console.log(148)
         let teamCreator;
-        console.log(league.teams.length)
         for (let i=0; i < league.teams.length; i++) {
             teamCreator = await UserModel.findOne({ "teamsCreated._id": league.teams[i].teamId }, {_id : 1}).exec()
             if (teamCreator._id.equals(userId)) {

@@ -218,8 +218,7 @@ const LeagueMaintenance = () => {
             }
         }
         console.log(currValues.startDate)
-        //if (currValues.startDate === null || currValues.startDate.trim() === "") {
-            if (currValues.startDate === null ) {
+        if (currValues.startDate === null || currValues.startDate.trim() === "") {
             errMsgs.push('Start date is required.');
             if (!focusON) {
                 document.getElementById("startDate").focus()
@@ -237,8 +236,7 @@ const LeagueMaintenance = () => {
                 dateErr = true
             }
         }
-        //if (currValues.endDate === null || currValues.endDate.trim() === "") {
-            if (currValues.endDate === null) {
+        if (currValues.endDate === null || currValues.endDate.trim() === "") {
             errMsgs.push('End date is required.');
             if (!focusON) {
                 document.getElementById("endDate").focus()
