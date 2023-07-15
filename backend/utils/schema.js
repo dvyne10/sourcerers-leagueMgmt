@@ -1,3 +1,3 @@
 export function validateSchemaProperty(ctx, property) {
-  return (ctx.parameterId = property ? true : false);
+  return ([ctx].parameterId = property ? true : false);
 }
