@@ -11,13 +11,13 @@ const LeagueMaintenance = () => {
     const routeParams = useParams();
     const inputFileBanner = useRef(null);
     const inputFileLogo = useRef(null);
+    const [isLeagueAdmin, setLeagueAdmin] = useState(false)
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
     const sportsOptions = [ {label: "Soccer", value: "648ba153251b78d7946df311"}, {label: "Basketball", value: "648ba153251b78d7946df322"} ]
     const [currValues, setCurrentValues] = useState({leagueName: "", sportsTypeId: sportsOptions[0].value, description: "", location: "",
         division: "", startDate: null, endDate: null, ageGroup: "", numberOfTeams: "3", numberOfRounds: "1"
     })
     const [teamsList, setTeamsList] = useState(null)
-    //const [sportSelected, setSportSelected] = useState(sportsOptions[0].value)
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
@@ -31,7 +31,7 @@ const LeagueMaintenance = () => {
         if (url === "create") {
             handleAction({type: "Creation", title: "Create League"})
         } else {
-            handleAction({type: "Update", title: "Update League", protectSport: true, protectRounds: true})
+            handleAction({type: "Update", title: "Update League", protectSport: false, protectRounds: false})
             // cannot amend sport if it has team/s
             // cannot amend number of rounds is status is ST/EN.
             setCurrentValues({leagueName: "York League 2023", sportsTypeId: sportsOptions[0].value, description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
@@ -52,7 +52,26 @@ const LeagueMaintenance = () => {
             // setDeleteButton(false)
             setOldValues({ leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
                 division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", numberOfTeams: "15", numberOfRounds: "2", 
-                sportsTypeId: "soccerId", logo: "x", banner: "x" })
+                sportsTypeId: "648ba153251b78d7946df311", logo: "x", banner: "x" })
+        }
+    }, []);
+
+    useEffect(() => {
+        const url = window.location.pathname.substring(1,7).toLowerCase()
+        if (url === "update" && isSignedIn) {
+            fetch(`${backend}/admin?league=${routeParams.leagueid}`, {
+                method: "POST",
+                body: JSON.stringify(currValues),   // temp
+                headers: {
+                    "Content-Type": "Application/JSON"
+                }
+            })
+            .then(response => response.json())
+            .then(data=>{
+                setLeagueAdmin(data)
+            }).catch((error) => {
+                console.log(error)
+            })
         }
     }, []);
 
@@ -69,10 +88,6 @@ const LeagueMaintenance = () => {
             setBannerURL(URL.createObjectURL(event.target.files[0]))
         }
     };
-
-    // const handleSportChange= event => {
-    //     setSportSelected(event.target.value);
-    // }
 
     const handleLeagueDetails = (e) => {
         const arrOfNumerics = ["numberOfTeams", "numberOfRounds"]
@@ -111,7 +126,8 @@ const LeagueMaintenance = () => {
         if (!error) {
             if (action.type === "Creation") {
                 data = {...currValues}
-                //data.sportsTypeId = sportSelected
+                //data.logo = selectedLogo
+                //data.banner = selectedBanner
                 fetch(`${backend}/createleague`, {
                     method: "POST",
                     body: JSON.stringify(data),
@@ -148,7 +164,29 @@ const LeagueMaintenance = () => {
                 ) {
                     alert("NO CHANGES FOUND!")
                 } else {
-                    navigate('/league/' + routeParams.leagueid)
+                    data = {...currValues}
+                    //data.logo = selectedLogo
+                    //data.banner = selectedBanner
+                    fetch(`${backend}/updateleague/${routeParams.leagueid}`, {
+                        method: "POST",
+                        body: JSON.stringify(data),
+                        headers: {
+                            "Content-Type": "Application/JSON"
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data=>{
+                        if (data.requestStatus === 'RJCT') {
+                            setErrorMessage([data.errMsg])
+                            if (data.errField !== "") {
+                                document.getElementById(data.errField).focus()
+                            }
+                        } else {
+                            navigate('/league/' + routeParams.leagueid)
+                        }
+                    }).catch((error) => {
+                        console.log(error)
+                    })
                 } 
             }
         }
@@ -179,7 +217,9 @@ const LeagueMaintenance = () => {
                 focusON = true
             }
         }
-        if (currValues.startDate === null) {
+        console.log(currValues.startDate)
+        //if (currValues.startDate === null || currValues.startDate.trim() === "") {
+            if (currValues.startDate === null ) {
             errMsgs.push('Start date is required.');
             if (!focusON) {
                 document.getElementById("startDate").focus()
@@ -197,7 +237,8 @@ const LeagueMaintenance = () => {
                 dateErr = true
             }
         }
-        if (currValues.endDate === null) {
+        //if (currValues.endDate === null || currValues.endDate.trim() === "") {
+            if (currValues.endDate === null) {
             errMsgs.push('End date is required.');
             if (!focusON) {
                 document.getElementById("endDate").focus()
@@ -239,22 +280,22 @@ const LeagueMaintenance = () => {
             let num1 = Number(currValues.ageGroup.trim().substring(0,dash))
             let num2 = Number(currValues.ageGroup.trim().substring(dash+1))
             if (num1 > num2) {
-                errMsgs.push('Age group format is invalid.');
+                errMsgs.push('Age group value is invalid.');
                 if (!focusON) {
                     document.getElementById("ageGroup").focus()
                     focusON = true
                 }
             }
         }
-        if (currValues.numberOfTeams === 0) {
-            errMsgs.push('Number of teams cannot be zero.');
+        if (currValues.numberOfTeams < 3) {
+            errMsgs.push('Number of teams cannot be less than 3.');
             if (!focusON) {
                 document.getElementById("numberOfTeams").focus()
                 focusON = true
             }
         }
-        if (currValues.numberOfRounds === 0) {
-            errMsgs.push('Number of rounds cannot be zero.');
+        if (currValues.numberOfRounds < 1) {
+            errMsgs.push('Number of rounds cannot be less than 1.');
             if (!focusON) {
                 document.getElementById("numberOfRounds").focus()
                 focusON = true
@@ -304,6 +345,11 @@ const LeagueMaintenance = () => {
                 {navigate('/signin')}
             </div>
         ) : (
+        ( action.type == "Update" && !isLeagueAdmin ? (
+            <div>
+                <h1>Not authorized to this page !!!</h1>
+            </div>
+        ) : (
         <Card style={{ width: "60rem", padding: 20 }}>
         {errorMessage.length > 0 && (
             <div className="alert alert-danger mb-3 p-1">
@@ -347,13 +393,13 @@ const LeagueMaintenance = () => {
                 <label htmlFor="leagueName" className="form-label">
                     Name of League*
                 </label>
-                <input id="leagueName" name="leagueName" type="text" className="form-control" value={currValues.leagueName} onChange={handleLeagueDetails} />
+                <input id="leagueName" name="leagueName" type="text" className="form-control" value={currValues.leagueName} onChange={handleLeagueDetails} required/>
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="sportsTypeId" className="form-label">
                     Sport*
                 </label>
-                <select id="sportsTypeId" name="sportsTypeId" className="form-control" value={currValues.sportsTypeId} onChange={handleLeagueDetails} disabled={action.protectSport}>
+                <select id="sportsTypeId" name="sportsTypeId" className="form-control" value={currValues.sportsTypeId} onChange={handleLeagueDetails} disabled={action.protectSport} required>
                     {sportsOptions.map((option) => (
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
@@ -371,7 +417,7 @@ const LeagueMaintenance = () => {
                 <label htmlFor="location" className="form-label">
                     Location*
                 </label>
-                <input id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleLeagueDetails} />
+                <input id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleLeagueDetails} required />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="division" className="form-label">
@@ -385,19 +431,19 @@ const LeagueMaintenance = () => {
                 <label htmlFor="startDate" className="form-label">
                     Start Date*
                 </label>
-                <input id="startDate" name="startDate" type="date" className="form-control" value={currValues.startDate} onChange={handleLeagueDetails} />
+                <input id="startDate" name="startDate" type="date" className="form-control" value={currValues.startDate} onChange={handleLeagueDetails} required />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
                 <label htmlFor="endDate" className="form-label">
                     End Date*
                 </label>
-                <input id="endDate" name="endDate" type="date" className="form-control" value={currValues.endDate} onChange={handleLeagueDetails} />
+                <input id="endDate" name="endDate" type="date" className="form-control" value={currValues.endDate} onChange={handleLeagueDetails} required />
             </div>
             <div className="col-sm-2 mb-3 mx-4">
                 <label htmlFor="ageGroup" className="form-label">
                     Age Group*
                 </label>
-                <input id="ageGroup" name="ageGroup" type="text" className="form-control" placeholder="18-35" value={currValues.ageGroup} onChange={handleLeagueDetails} />
+                <input id="ageGroup" name="ageGroup" type="text" className="form-control" placeholder="18-35" value={currValues.ageGroup} onChange={handleLeagueDetails} required />
             </div>
           </div>
           <div className="row">
@@ -405,13 +451,13 @@ const LeagueMaintenance = () => {
                 <label htmlFor="numberOfTeams" className="form-label">
                     Number of Teams
                 </label>
-                <input id="numberOfTeams" name="numberOfTeams" type="number" min="3" className="form-control" value={currValues.numberOfTeams} onChange={handleLeagueDetails} />
+                <input id="numberOfTeams" name="numberOfTeams" type="number" min="3" className="form-control" value={currValues.numberOfTeams} onChange={handleLeagueDetails} required />
             </div>
             <div className="col-sm-3 mb-3 mx-3">
                 <label htmlFor="numberOfRounds" className="form-label">
                     Number of Rounds
                 </label>
-                <input id="numberOfRounds" name="numberOfRounds" type="number" min="1" max="10" className="form-control" value={currValues.numberOfRounds} onChange={handleLeagueDetails} disabled={action.protectRounds}/>
+                <input id="numberOfRounds" name="numberOfRounds" type="number" min="1" max="10" className="form-control" value={currValues.numberOfRounds} onChange={handleLeagueDetails} required disabled={action.protectRounds}/>
             </div>
           </div>
           </div>
@@ -497,6 +543,7 @@ const LeagueMaintenance = () => {
             </div>
             )}
       </Card>
+        ))
         )}
     </div>
   );

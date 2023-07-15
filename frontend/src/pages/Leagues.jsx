@@ -93,7 +93,7 @@ export default function Leagues() {
           teamsJoined={12}
           expanded={true}
           onClick={() => {
-            navigate("/league/123");
+            navigate("/league/64b16c1cfedfc1169b969900");
           }}
         />
         <LeagueCard
@@ -102,7 +102,7 @@ export default function Leagues() {
           totalTeams={12}
           teamsJoined={6}
           onClick={() => {
-            navigate("/league/123");
+            navigate("/league/64b0cb5f6ca805fd5d63036c");
           }}
         />
         <LeagueCard
