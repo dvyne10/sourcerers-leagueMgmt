@@ -4,6 +4,7 @@ import soccerField from '/football_field.jpg';
 import soccerBackground from '/football_background.jpg';
 import basketballField from '/basketball_court.jpeg'; 
 import basketballBackground from '/basketball_background.jpeg';
+import Button from 'react-bootstrap/Button'; 
 import {  Image}  from 'react-bootstrap'; 
 import { useParams, useNavigate } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
@@ -12,6 +13,7 @@ const MatchDetails = () => {
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
   const [selectedPlayerData, setSelectedPlayerData] = useState(null);
   const navigate = useNavigate(); 
+  const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
   const { sport } = useParams(); 
   const teamLogo1 = sport === 'soccer' ? '/madrid.png' : '/lakers.png';
   const teamLogo2 = sport === 'soccer' ? '/barcelona.png' : '/golden.png';
@@ -53,7 +55,7 @@ const MatchDetails = () => {
   }}/>
  
 
- <div style={{marginLeft: '95%',  transform: 'translateY(15px)'}}><a href="/updatematch/1" className="btn btn-outline-success"><BsGearFill className="m-auto" /></a></div>
+ <div style={{marginLeft: '95%',  transform: 'translateY(15px)'}}><Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         

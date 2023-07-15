@@ -132,7 +132,7 @@ const MatchUpdate = () => {
         error = validateInput();
         if (!error) {
             if (action.type === "Creation") {
-                navigate('/match/soccer' + "new match detail id here");
+                navigate('/match/soccer/' + "new match detail id here");
             }
             else {
                 if ( oldValues.dateOfMatch == currValues.dateOfMatch 
@@ -152,12 +152,13 @@ const MatchUpdate = () => {
                                 || oldValues.leaguePoints2 !== currValues.leaguePoints2    
                             ) {
                                 if (confirm("Changes will require the approval of other team's admin.\nPlease click on OK if you wish to proceed.")) {
-                                    navigate('/match/' + routeParams.matchId )
+                                   
+                                    navigate('/match/soccer/' + routeParams.matchid )
                                 } else {
                                     console.log("Update cancelled")
                                 } 
                             } else {
-                                navigate('/match/' + routeParams.matchId )
+                                navigate('/match/soccer/' + routeParams.matchid )
                             }
                         } else {
                             // update changes
@@ -193,7 +194,6 @@ const MatchUpdate = () => {
             });
         });
 
-
         matchesToUpdate2.forEach(match => {
             match.playerStats.forEach(stat => {
                 if (stat.statId === 1) {
@@ -209,16 +209,8 @@ const MatchUpdate = () => {
                 focusON = true; 
             }
         }
-        if (currValues.dateOfMatch === null) {
-            errMsgs.push('Date of match is required.');
-            if (!focusON) {
-                window.scrollTo(0, 0);
-                document.getElementById("dateOfMatch").focus();
-                focusON = true; 
-            }
-        } 
         if (isNaN(dateObj)) {
-            errMsgs.push('Date of match is invalid');
+            errMsgs.push('Date of match is required');
             if (!focusON) {
                 window.scrollTo(0, 0);
                 document.getElementById("dateOfMatch").focus();
@@ -230,13 +222,6 @@ const MatchUpdate = () => {
             if (!focusON) {
                 window.scrollTo(0, 0);
                 document.getElementById("dateOfMatch").focus();
-                focusON = true; 
-            }
-        }
-        if (matchesToUpdate1.length === 0 || matchesToUpdate2.length === 0) {
-            errMsgs.push("Player list cannot be empty.");
-            if (!focusON) {
-                window.scrollTo(0, 0);
                 focusON = true; 
             }
         }
@@ -268,6 +253,7 @@ const MatchUpdate = () => {
                 focusON = true; 
             }
         }
+
         
         setErrorMessage(errMsgs);
         if (errMsgs.length > 0) {
