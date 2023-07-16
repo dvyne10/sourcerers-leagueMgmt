@@ -14,10 +14,23 @@ export const createLeague = async function(data) {
     if (validate.requestStatus !== "ACTC") {
         response = validate
     } else {
-        data.status = "NS"
-        data.lookingForTeams = false
-        data.createdBy = new ObjectId(userId)
-        let newLeague = new LeagueModel(data);
+        let newLeague = new LeagueModel({
+            leagueName: data.leagueName,
+            status: "NS",
+            location: data.location,
+            division: data.division,
+            description: data.description,
+            sportsTypeId: data.sportsTypeId,
+            ageGroup: data.ageGroup,
+            numberOfTeams: data.numberOfTeams,
+            numberOfRounds: data.numberOfRounds,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            lookingForTeams: false,
+            createdBy: new ObjectId(userId)
+            //logo: data.logo
+            //banner: data.selectedBanner
+        })
         await newLeague.save()
         .then(() => {
             response.requestStatus = "ACTC"
@@ -42,17 +55,19 @@ export const updateLeague = async function(leagueId, data){
         response = validate
     } else {
         await LeagueModel.updateOne({ _id: new ObjectId(leagueId)}, { 
-            $set: {
+            $set: { 
                 leagueName: data.leagueName,
-                description: data.description,
                 location: data.location,
                 division: data.division,
-                startDate: data.startDate,
-                endDate: data.endDate,
+                description: data.description,
+                sportsTypeId: data.sportsTypeId,
                 ageGroup: data.ageGroup,
                 numberOfTeams: data.numberOfTeams,
                 numberOfRounds: data.numberOfRounds,
-                sportsTypeId: data.sportsTypeId,
+                startDate: data.startDate,
+                endDate: data.endDate,
+                lookingForTeams: false,
+                createdBy: new ObjectId(userId)
                 //logo: data.logo
                 //banner: data.selectedBanner
             } 
@@ -204,6 +219,12 @@ export const leagueValidation = async function(data, requestType, userId) {
     }
     if (requestType != "DEL" && (data.numberOfRounds < 1 || isNaN(data.numberOfRounds) )) {
         response.errMsg = 'Number of rounds cannot be less than 1.'
+        response.errField = "numberOfRounds"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    if (requestType === "CHG" && data.numberOfRounds !== oldLeagueObject.sportsTypeId && oldLeagueObject.sportsTypeId !== "NS" ) {
+        response.errMsg = 'Number of rounds can no longer be changed.'
         response.errField = "numberOfRounds"
         response.requestStatus = 'RJCT'
         return response
