@@ -15,7 +15,7 @@ const LeagueMaintenance = () => {
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
     const sportsOptions = [ {label: "Soccer", value: "648ba153251b78d7946df311"}, {label: "Basketball", value: "648ba153251b78d7946df322"} ]
     const [currValues, setCurrentValues] = useState({leagueName: "", sportsTypeId: sportsOptions[0].value, description: "", location: "",
-        division: "", startDate: null, endDate: null, ageGroup: "", numberOfTeams: "3", numberOfRounds: "1"
+        division: "", startDate: null, endDate: null, ageGroup: "", numberOfTeams: 3, numberOfRounds: 1
     })
     const [teamsList, setTeamsList] = useState(null)
     const [selectedLogo, setSelectedLogo] = useState(null);
@@ -35,7 +35,7 @@ const LeagueMaintenance = () => {
             // cannot amend sport if it has team/s
             // cannot amend number of rounds is status is ST/EN.
             setCurrentValues({leagueName: "York League 2023", sportsTypeId: sportsOptions[0].value, description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
-                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", numberOfTeams: "15", numberOfRounds: "2", leagueStatus: "ST"
+                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", numberOfTeams: 15, numberOfRounds: 2, leagueStatus: "ST"
             })
             setTeamsList([
                 { teamId: 1, teamName: "Vikings", approvedBy: "Hayes Lawson", joinedOn: "2022-07-01", action: "Remove", toRemove: false },
@@ -218,7 +218,6 @@ const LeagueMaintenance = () => {
                 focusON = true
             }
         }
-        console.log(currValues.startDate)
         if (currValues.startDate === null || currValues.startDate.trim() === "") {
             errMsgs.push('Start date is required.');
             if (!focusON) {
