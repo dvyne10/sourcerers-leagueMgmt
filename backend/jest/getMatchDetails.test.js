@@ -14,7 +14,7 @@
  *
  */
 
-function getMatchDetails(matchId, statusToRetrieve, matchCollection) {
+function validateMatch(matchId, statusToRetrieve, matchCollection) {
     let matchObject = {requestStatus: '', errMsg: ''}; 
 
     if (!matchId || matchId.trim() === '') {
@@ -60,65 +60,65 @@ describe('retrieve match function', () => {
     ];
     // matchId empty or contains blank/s only 
     test('should reject if match id is null', () => {
-        let result = getMatchDetails(null);
+        let result = validateMatch(null);
         console.log(result);
         expect(result.requestStatus).toBe('RJCT');
         expect(result.errMsg).toBe('Match is invalid.');
     });
 
     test('should reject if match id is undefined', () => {
-        let result = getMatchDetails(undefined);
+        let result = validateMatch(undefined);
         expect(result.requestStatus).toBe('RJCT');
         expect(result.errMsg).toBe('Match is invalid.');
     });
 
     test('should reject if match id is empty', () => {
-        let result = getMatchDetails('');
+        let result = validateMatch('');
         expect(result.requestStatus).toBe('RJCT');
         expect(result.errMsg).toBe('Match is invalid.');
     });
 
     test('should reject if match id contains only blank spaces', () => {
-        let result = getMatchDetails('   '); // Match ID contains three blank spaces
+        let result = validateMatch('   '); // Match ID contains three blank spaces
         expect(result.requestStatus).toBe('RJCT');
         expect(result.errMsg).toBe('Match is invalid.');
     });
 
     // statusToRetrieve != 'ACTV' and != 'PEND'
     test('should reject if statusToRetrieve is not equal to ACTV or PEND ', () => {
-        let result = getMatchDetails(matchId, 'ACTC'); 
+        let result = validateMatch(matchId, 'ACTC'); 
         expect(result.requestStatus).toBe('RJCT');
         expect(result.errMsg).toBe('Match status to retrieve is invalid.')
     });
 
     test('should reject if statusToRetrieve is null', () => {
-        let result = getMatchDetails(matchId, null);
+        let result = validateMatch(matchId, null);
         expect(result.requestStatus).toBe('RJCT');
         expect(result.errMsg).toBe('Match status to retrieve is invalid.');
     });
     
     test('should reject if statusToRetrieve is undefined', () => {
-        let result = getMatchDetails(matchId, undefined);
+        let result = validateMatch(matchId, undefined);
         expect(result.requestStatus).toBe('RJCT');
         expect(result.errMsg).toBe('Match status to retrieve is invalid.');
     });
     
     test('should reject if statusToRetrieve is an empty string', () => {
-        let result = getMatchDetails(matchId, '');
+        let result = validateMatch(matchId, '');
         expect(result.requestStatus).toBe('RJCT');
         expect(result.errMsg).toBe('Match status to retrieve is invalid.');
     });
 
     // matchId + statusToRetrieve is not found in matches collection
     test('should reject if matchId, statusToRetrieve is not found in matches collection', () => {
-        let result = getMatchDetails('1236', 'ACTV', matchesCollection); 
+        let result = validateMatch('1236', 'ACTV', matchesCollection); 
         expect(result.requestStatus).toBe('RJCT');
         expect(result.errMsg).toBe('Match is not found.');
     });
 
     // matchId + statusToRetrieve found in matches collection
     test('found item from the match collection', () => {
-        let result = getMatchDetails('123', 'ACTV', matchesCollection); 
+        let result = validateMatch('123', 'ACTV', matchesCollection); 
         expect(result.requestStatus).toBe('ACTC'); 
     }); 
 });

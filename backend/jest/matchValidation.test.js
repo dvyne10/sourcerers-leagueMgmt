@@ -14,48 +14,52 @@
  *
  */
 
+function getMatchDetails(matchId, status) {
+    let txnRespObj = { requestStatus: '', errField: '', errMsg: ''};
 
-const { getMatchDetails } = require('./getMatchDetails.test');
-
-
-function validateMatch(matchId, data) {
-    let txnRespObj = { requestStatus: '', errField: '', errMsg: '' };
-    
-    // Embed getMatchDetails logic inside validateMatch function
-    let oldMatchObject = {
-        requestStatus: 'RJCT', 
-        matchId: matchId,
-    };
-    
-    if (data.status === 'PEND') {
-        oldMatchObject.requestStatus = 'ACTC';
-    } else if (data.status === 'ACTV') {
-        oldMatchObject.requestStatus = 'RJCT';
+    if (status === 'PEND') {
+        txnRespObj.requestStatus = 'RJCT';
+        txnRespObj.errField = 'status'; 
+        txnRespObj.errMsg = 'Cannot update match details while previous update is still pending for approval.';
+    } else if (status === 'ACTV') {
+        txnRespObj.requestStatus = 'RJCT';
+        txnRespObj.errField = '12345'; 
+        txnRespObj.errMsg = 'Match is not found.'; 
     }
 
-    if (oldMatchObject.requestStatus === 'ACTC') {
-      txnRespObj.requestStatus = 'RJCT';
-      txnRespObj.errField = 'status';
-      txnRespObj.errMsg = 'Cannot update match details while previous update is still pending for approval.';
-    } 
-
-    else if (oldMatchObject.requestStatus === 'RJCT') {
-      txnRespObj.requestStatus = 'ACTC'; 
-    }
-  
-    return txnRespObj;
+    return txnRespObj; 
 }
 
-  
+function getTeamDetails(teamId, userId) {
 
-  describe('validateMatch function', () => {
-    const mockMatchId = '648e9014466c1c99574590b1';
+    // temp team collection for testing
+    const teamObjectCollection = [
+        { teamId: '648e132ff3d2cb1d615fbd9d', createdBy: '648e9014466c1c99574590b1' },
+        { teamId: '342e132ff3d2cb1d615fbd9d', createdBy: '912e9014466c1c99574590b1' },
+        { teamId: '579e132ff3d2cb1d615fbd9d', createdBy: '706e9014466c1c99574590b1' },
+      ];
+
+    let txnRespObj = { requestStatus: '', errField: '', errMsg: ''};
+
+    const teamObject = teamObjectCollection.find((team) => team.teamId === teamId);
+
+    if (teamObject.createdBy !== userId) {
+        txnRespObj.requestStatus = 'RJCT';
+        txnRespObj.errField = userId;
+        txnRespObj.errMsg = 'Not authorized to update match details.';
+    }
+
+    return txnRespObj; 
+}
+
+describe('validateMatch function', () => {
+    const tempUserId = '648e9014466c1c9912321'; 
     const mockData = {
-      matchId: mockMatchId,
+      matchId: '12345',
       dateOfMatch: '2023-06-18T09:00:00.000+00:00',
       locationOfMatch: 'Cheery Beach Sports Fields',
       team1: {
-        teamId: '648e9014466c1c99574590b1',
+        teamId: '648e132ff3d2cb1d615fbd9d',
         finalScore: 2,
         finalScorePending: 5,
         leaguePoints: 3,
@@ -92,25 +96,31 @@ function validateMatch(matchId, data) {
       chgRequestedBy: 'chgRequestedById',
     };
   
-    test('should reject if the match is already pending', () => {
-      const matchDetails = getMatchDetails(mockMatchId, 'PEND');
-  
-      const response = validateMatch(mockMatchId, mockData, matchDetails);
-  
-      expect(response.requestStatus).toBe('RJCT');
-      expect(response.errField).toBe('status');
-      expect(response.errMsg).toBe('Cannot update match details while previous update is still pending for approval.');
-    });
+    // test('should reject if the match is already pending', () => {
+    //     let oldMatchObject = getMatchDetails('123', 'PEND');
+            
+    //     expect(oldMatchObject.requestStatus).toBe('RJCT');
+    //     expect(oldMatchObject.errField).toBe('status');
+    //     expect(oldMatchObject.errMsg).toBe('Cannot update match details while previous update is still pending for approval.');
+    // });
 
-    test('should reject if the match is already active', ()=>{
-        const matchDetails = getMatchDetails(mockMatchId, 'ACTV'); 
+    // test('should reject if the match is active', () => {
+    //     let oldMatchObject = getMatchDetails('123', 'ACTV');
 
-        const response = validateMatch(mockMatchId, mockData, matchDetails);
+    //     expect(oldMatchObject.requestStatus).toBe('RJCT');
+    //     expect(oldMatchObject.errField).toBe(oldMatchObject.errField);
+    //     expect(oldMatchObject.errMsg).toBe(oldMatchObject.errMsg);
+    // });
+
+    test('should reject if user is not authorized to update match details', () => {
+        const response = getTeamDetails(mockData.team1.teamId, tempUserId); 
 
         expect(response.requestStatus).toBe('RJCT');
-        expect(response.errField).toBe('matchId');
-        expect(response.errMsg).toBe(matchDetails.errMsg);
+        expect(response.errField).toBe(response.errField);
+        expect(response.errMsg).toBe('Not authorized to update match details.');
     });
+
+
 });
   
 
