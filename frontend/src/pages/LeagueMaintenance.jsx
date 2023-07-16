@@ -224,7 +224,6 @@ const LeagueMaintenance = () => {
                 document.getElementById("startDate").focus()
                 focusON = true
             }
-            dateErr = true
         } else {
             let dateInput = Date.parse(currValues.startDate)
             if (isNaN(dateInput)) {
@@ -391,7 +390,7 @@ const LeagueMaintenance = () => {
                 <label htmlFor="leagueName" className="form-label">
                     Name of League*
                 </label>
-                <input id="leagueName" name="leagueName" type="text" className="form-control" value={currValues.leagueName} onChange={handleLeagueDetails} required/>
+                <input id="leagueName" name="leagueName" type="text" className="form-control" value={currValues.leagueName} onChange={handleLeagueDetails} />
             </div>
             <div className="col-sm-4 mb-3">
                 <label htmlFor="sportsTypeId" className="form-label">

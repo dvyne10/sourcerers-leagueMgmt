@@ -7,6 +7,7 @@ import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams } from "./utils/leaguesModule.js";
+import { getMatch, updateMatch } from './utils/matchModule.js'; 
 
 dotenv.config();
 connectDB();
@@ -54,6 +55,7 @@ app.post("/admin", (req, res) => {
   
 });
 
+
 app.post("/createleague", (req, res) => {
   createLeague(req.body)
   .then((data)=>{
@@ -74,6 +76,34 @@ app.delete("/updateleague/:leagueid", (req, res) => {
     res.json(data);
   })
 });
+
+
+// app.get("/updatematch/:matchid", (req, res)=> {
+//   const matchId = req.params.matchid; 
+
+//   getMatch('648ba154251b78d7946df33a')
+//     .then(response => {
+//       if (response.requestStatus === "ACTC") {
+//         console.log(response.data); 
+//         res.status(200).json(response.data); 
+//       } else {
+//         res.status(400).json({message: response.errMsg}); 
+//       }
+//     })
+//     .catch(error => {
+//         res.status(500).json({message: error.message}); 
+//     })
+// }); 
+
+app.post("/updatematch/:matchid", (req, res) => {
+  updateMatch(req.params.matchid, req.body)
+  .then((data)=>{
+    console.log(data);
+  }).catch(()=>{
+    console.log(req.body); 
+  })
+});
+
 
 app.use(notFound);
 app.use(errorHandler);

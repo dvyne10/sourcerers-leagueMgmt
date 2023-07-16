@@ -4,6 +4,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaTrash, FaSearchPlus } from 'react-icons/fa';
 import useAuth from "../hooks/auth";
 
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://playpal.netlify.app";
 
 const MatchUpdate = () => {
   
@@ -34,10 +35,21 @@ const MatchUpdate = () => {
                 { statId: 2, statDesc: "Assists"},
                 { statId: 3, statDesc: "Shots"},
             ])
+            
+            // fetch match data from the server
+            fetch(`${backend}/updatematch/${routeParams.matchid}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.dateOfMatch);
+            })
+            .catch(error=>{
+                console.log("Error " + error);
+            })
             setCurrentValues({ dateOfMatch: "2023-07-01T14:00", locationOfMatch: "York Soccer Field",
                 teamId1: 1, teamName1: "Vikings", finalScore1: 5, finalScorePending1: 6, leaguePoints1: 2, leaguePointsPending1: 2, disableInput1: false,   // false for both if isAdmin
                 teamId2: 2, teamName2: "Dodgers", finalScore2: 2, finalScorePending2: 3, leaguePoints2: 0, leaguePointsPending2: 0, disableInput2: false,
             })
+
             setMatchesToUpdate1([
                 { playerId: 1, username: "sMcdowell", fullName: "Scarlet Mcdowell", playerStats: [{ statId: 1, points: 2 }, { statId: 2, points: 1 }, { statId: 3, points: 1 } ] }, 
                 { playerId: 2, username: "uWatts", fullName: "Ursa Watts", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 0 }, { statId: 3, points: 2 }] },
@@ -128,11 +140,13 @@ const MatchUpdate = () => {
       
     const navigate = useNavigate(); 
     const navigateUpdate = () => {
+        let data = {}
         let error = false; 
         error = validateInput();
         if (!error) {
             if (action.type === "Creation") {
-                navigate('/match/soccer' + "new match detail id here");
+                data = {...currValues}
+                navigate('/match/soccer/' + "new match detail id here");
             }
             else {
                 if ( oldValues.dateOfMatch == currValues.dateOfMatch 
@@ -152,12 +166,35 @@ const MatchUpdate = () => {
                                 || oldValues.leaguePoints2 !== currValues.leaguePoints2    
                             ) {
                                 if (confirm("Changes will require the approval of other team's admin.\nPlease click on OK if you wish to proceed.")) {
-                                    navigate('/match/' + routeParams.matchId )
+                                    data = {...currValues};
+                                    
+                                    fetch(`${backend}/updatematch/${routeParams.matchid}`, {
+                                        method: "POST",
+                                        body: JSON.stringify(data),
+                                        headers: {
+                                            "Content-Type": "Application/JSON"
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data=>{ 
+                                        console.log(data); 
+                                        if (data.requestStatus === 'RJCT') {
+                                            setErrorMessage([data.errMsg])
+                                            if (data.errField !== "") {
+                                                document.getElementById(data.errField).focus()
+                                            }
+                                        } else {
+                                            navigate('/match/soccer/' + data.league._id)
+                                        }
+                                    }).catch((error) => {
+                                        console.log(error)
+                                    })
+                                  
                                 } else {
                                     console.log("Update cancelled")
                                 } 
                             } else {
-                                navigate('/match/' + routeParams.matchId )
+                                navigate('/match/soccer/' + routeParams.matchid )
                             }
                         } else {
                             // update changes
@@ -181,6 +218,10 @@ const MatchUpdate = () => {
         let minutes = ('0' + now.getMinutes()).slice(-2);
         let formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
         let totalScore1 = 0;
+        let totalScore2 = 0;
+        let dateStr = currValues.dateOfMatch; // Your date string
+        let dateObj = new Date(dateStr);
+
         matchesToUpdate1.forEach(match => {
             match.playerStats.forEach(stat => {
                 if (stat.statId === 1) {
@@ -189,7 +230,6 @@ const MatchUpdate = () => {
             });
         });
 
-        let totalScore2 = 0;
         matchesToUpdate2.forEach(match => {
             match.playerStats.forEach(stat => {
                 if (stat.statId === 1) {
@@ -200,20 +240,23 @@ const MatchUpdate = () => {
         if (currValues.locationOfMatch.trim() === "") {
             errMsgs.push("Location of match is required.");
             if (!focusON) {
+                window.scrollTo(0, 0);
                 document.getElementById("locationOfMatch").focus();
                 focusON = true; 
             }
         }
-        if (currValues.dateOfMatch === null) {
-            errMsgs.push('Date of match is required.');
+        if (isNaN(dateObj)) {
+            errMsgs.push('Date of match is required');
             if (!focusON) {
+                window.scrollTo(0, 0);
                 document.getElementById("dateOfMatch").focus();
                 focusON = true; 
             }
-        } 
+        }
         if (currValues.dateOfMatch > formattedDateTime) {
-            errMsgs.push("Date of match is invalid."); 
+            errMsgs.push("Date of match cannot be later than the current date."); 
             if (!focusON) {
+                window.scrollTo(0, 0);
                 document.getElementById("dateOfMatch").focus();
                 focusON = true; 
             }
@@ -246,6 +289,7 @@ const MatchUpdate = () => {
                 focusON = true; 
             }
         }
+
         
         setErrorMessage(errMsgs);
         if (errMsgs.length > 0) {
