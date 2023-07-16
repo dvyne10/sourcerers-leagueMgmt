@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import LiveCard from "./LiveCard";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import Collapse from "react-bootstrap/Collapse";
 
 const LeagueCard = ({
   name,
@@ -35,6 +37,8 @@ const LeagueCard = ({
     </>
   );
 
+  const [open, setOpen] = useState(expanded);
+
   const navigate = useNavigate();
   return (
     <div>
@@ -63,20 +67,25 @@ const LeagueCard = ({
           <button
             type="button"
             className="btn"
-            data-bs-toggle="collapse"
-            data-bs-target={`#leagueCardCollapse-${name.split(" ").join("")}`}
-            aria-expanded="true"
-            aria-controls={`leagueCardCollapse-${name.split(" ").join("")}`}
+            onClick={() => setOpen(!open)}
+            aria-controls={`league-card`}
+            aria-expanded={open}
           >
-            <i className="bi bi-caret-up-fill p-2"></i>
+            {open ? (
+              <i className="bi bi-caret-up-fill p-2"></i>
+            ) : (
+              <i className="bi bi-caret-down-fill p-2"></i>
+            )}
           </button>
         </div>
       </div>
-      <div
-        className={`collapse${expanded ? ".show" : ""} px-5`}
-        id={`leagueCardCollapse-${name.split(" ").join("")}`}
-      >
-        <div className="card card-body d-flex flex-row overflow-auto">
+      <div>
+      <Collapse in={open}>
+        <div
+          id={`league-card`}
+          className="card m-3"
+        >
+          <div className="card-body d-flex flex-row overflow-auto">
           <div className="league-details px-5">
             <div className="fs-6 fw-light">
               <p className="p-0 m-0">League Start Date</p>
@@ -108,8 +117,12 @@ const LeagueCard = ({
               }}
             />
           </div>
+          </div>
+          
         </div>
+      </Collapse>
       </div>
+     
     </div>
   );
 };

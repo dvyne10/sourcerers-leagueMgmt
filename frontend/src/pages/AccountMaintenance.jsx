@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
+import validator from 'validator'
 
 const AccountMaintenance = () => {
   const location = useLocation();
@@ -35,8 +36,9 @@ const AccountMaintenance = () => {
   const [cities, setCities] = useState([]);
   const [prevCountry, setPrevCountry] = useState("");
   const [prevState, setPrevState] = useState("");
-  const [sportOfInterestError, setSportsOfInterestError] = useState("");
   const [formError, setFormError] = useState(false);
+  const [formErrorArray, setFormErrorArray] = useState('')
+
 
   useEffect(() => {
     const url = location.pathname.substring(1, 4).toLowerCase();
@@ -117,7 +119,8 @@ const AccountMaintenance = () => {
 
   const handleAccountDetails = (e) => {
     const field = e.target.name;
-    setCurrentValues({ ...currValues, [field]: e.target.value });
+    const fieldValue = e.target.value.trim()
+    setCurrentValues({ ...currValues, [field]: fieldValue });
   };
 
   function getCountries() {
@@ -179,11 +182,22 @@ const AccountMaintenance = () => {
   const navigate = useNavigate();
   const navigateCreateUpdate = (e) => {
     e.preventDefault()
+    setFormError(false)
     if (sportsSelected.length < 1) {
       setFormError(true);
-      setSportsOfInterestError("select at least one sport of interest");
+      setFormErrorArray('select at least one sport of interest')
       return;
     }
+
+    if(!validator.isEmail(currValues.email)){
+      setFormError(true);
+      setFormErrorArray([])
+ 
+      setFormErrorArray('enter a valid email')
+      return
+    }
+    setFormError(false)
+    setFormErrorArray('')
     if (action.type === "Register") {
       navigate("/inputotp", { state: { fromPage: "Register" } });
     } else {
@@ -225,7 +239,7 @@ const AccountMaintenance = () => {
             className="alert alert-danger alert-dismissible fade show"
             role="alert"
           >
-            {sportOfInterestError}
+            {formErrorArray}
             <button
               type="button"
               className="btn-close"

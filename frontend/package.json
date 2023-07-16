@@ -32,6 +32,7 @@
     "react-slick": "^0.29.0",
     "react-transition-group": "^4.4.5",
     "slick-carousel": "^1.8.1",
+    "validator": "^13.9.0",
     "yarn": "^1.22.19"
   },
   "devDependencies": {
