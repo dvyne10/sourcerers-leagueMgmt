@@ -4,6 +4,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaTrash, FaSearchPlus } from 'react-icons/fa';
 import useAuth from "../hooks/auth";
 
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://playpal.netlify.app";
 
 const MatchUpdate = () => {
   
@@ -34,10 +35,21 @@ const MatchUpdate = () => {
                 { statId: 2, statDesc: "Assists"},
                 { statId: 3, statDesc: "Shots"},
             ])
+            
+            // fetch match data from the server
+            fetch(`${backend}/updatematch/${routeParams.matchid}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.dateOfMatch);
+            })
+            .catch(error=>{
+                console.log("Error " + error);
+            })
             setCurrentValues({ dateOfMatch: "2023-07-01T14:00", locationOfMatch: "York Soccer Field",
                 teamId1: 1, teamName1: "Vikings", finalScore1: 5, finalScorePending1: 6, leaguePoints1: 2, leaguePointsPending1: 2, disableInput1: false,   // false for both if isAdmin
                 teamId2: 2, teamName2: "Dodgers", finalScore2: 2, finalScorePending2: 3, leaguePoints2: 0, leaguePointsPending2: 0, disableInput2: false,
             })
+
             setMatchesToUpdate1([
                 { playerId: 1, username: "sMcdowell", fullName: "Scarlet Mcdowell", playerStats: [{ statId: 1, points: 2 }, { statId: 2, points: 1 }, { statId: 3, points: 1 } ] }, 
                 { playerId: 2, username: "uWatts", fullName: "Ursa Watts", playerStats: [{ statId: 1, points: 0 }, { statId: 2, points: 0 }, { statId: 3, points: 2 }] },
@@ -128,10 +140,12 @@ const MatchUpdate = () => {
       
     const navigate = useNavigate(); 
     const navigateUpdate = () => {
+        let data = {}
         let error = false; 
         error = validateInput();
         if (!error) {
             if (action.type === "Creation") {
+                data = {...currValues}
                 navigate('/match/soccer/' + "new match detail id here");
             }
             else {
@@ -152,8 +166,30 @@ const MatchUpdate = () => {
                                 || oldValues.leaguePoints2 !== currValues.leaguePoints2    
                             ) {
                                 if (confirm("Changes will require the approval of other team's admin.\nPlease click on OK if you wish to proceed.")) {
-                                   
-                                    navigate('/match/soccer/' + routeParams.matchid )
+                                    data = {...currValues};
+                                    
+                                    fetch(`${backend}/updatematch/${routeParams.matchid}`, {
+                                        method: "POST",
+                                        body: JSON.stringify(data),
+                                        headers: {
+                                            "Content-Type": "Application/JSON"
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data=>{ 
+                                        console.log(data); 
+                                        if (data.requestStatus === 'RJCT') {
+                                            setErrorMessage([data.errMsg])
+                                            if (data.errField !== "") {
+                                                document.getElementById(data.errField).focus()
+                                            }
+                                        } else {
+                                            navigate('/match/soccer/' + data.league._id)
+                                        }
+                                    }).catch((error) => {
+                                        console.log(error)
+                                    })
+                                  
                                 } else {
                                     console.log("Update cancelled")
                                 } 

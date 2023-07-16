@@ -12,6 +12,7 @@ const MatchDetails = () => {
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
   const [selectedPlayerData, setSelectedPlayerData] = useState(null);
+
   const navigate = useNavigate(); 
   const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
   const { sport } = useParams(); 
@@ -38,6 +39,7 @@ const MatchDetails = () => {
     setSelectedPlayerData(player);
     setSelectedPlayerRight(player.name);
   };
+  
 
   return (
     <>
