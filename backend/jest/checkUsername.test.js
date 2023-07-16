@@ -1,16 +1,16 @@
-//const {isUserNameAvailable} = require("./utils/registerModulefortesting");
+const {isUserNameAvailable} = require("./utils/registerModulefortesting.js");
 
-function isUserNameAvailable(username) {
-  userNameObject = UserModel.findOne({userName: username});
+// function isUserNameAvailable(username) {
+//   userNameObject = UserModel.findOne({userName: username});
 
-  if ((userNameObject = username)) {
-    return false;
-  } else if ((userNameObject = "")) {
-    return false;
-  } else {
-    return true;
-  }
-}
+//   if ((userNameObject = username)) {
+//     return false;
+//   } else if ((userNameObject = "")) {
+//     return false;
+//   } else {
+//     return true;
+//   }
+// }
 
 describe("email", function () {
   test("UserName function is a function", function () {

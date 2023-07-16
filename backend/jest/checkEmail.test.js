@@ -1,4 +1,4 @@
-const {isEmailAvailable} = require("./utils/registerModulefortesting");
+const {isEmailAvailable} = require("./utils/registerModulefortesting.js");
 
 // function isEmailAvailable(emailaddress) {
 //   emailObject = UserModel.findOne({email: emailaddress});
