@@ -1,16 +1,6 @@
-const {isEmailAvailable} = require("./utils/registerModulefortesting.js");
-
-// function isEmailAvailable(emailaddress) {
-//   emailObject = UserModel.findOne({email: emailaddress});
-
-//   if ((emailObject = emailaddress)) {
-//     return false;
-//   } else if ((emailObject = "")) {
-//     return false;
-//   } else {
-//     return true;
-//   }
-// }
+// Student Name   : Jinny Lee
+// Student Number : 123647224
+const {isEmailAvailable} = require("../utils/registerModulefortesting.js");
 
 describe("email", function () {
   test("EmailAvailable function is a function", function () {

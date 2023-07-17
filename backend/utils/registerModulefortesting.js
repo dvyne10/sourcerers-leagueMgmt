@@ -1,6 +1,6 @@
 import UserModel from "../models/user.model.js";
 
-function isUserNameAvailable(username) {
+export function isUserNameAvailable(username) {
   userNameObject = UserModel.findOne({userName: username});
 
   if ((userNameObject = username)) {
@@ -12,7 +12,7 @@ function isUserNameAvailable(username) {
   }
 }
 
-function isEmailAvailable(emailaddress) {
+export function isEmailAvailable(emailaddress) {
   emailObject = UserModel.findOne({email: emailaddress});
 
   if ((emailObject = emailaddress)) {
@@ -23,5 +23,3 @@ function isEmailAvailable(emailaddress) {
     return true;
   }
 }
-
-module.exports = {isEmailAvailable, isUserNameAvailable};
