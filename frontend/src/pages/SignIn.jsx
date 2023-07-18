@@ -9,8 +9,6 @@ const SignIn = () => {
   const navigate = useNavigate(); 
   const {signIn, isSignedIn} = useAuth()
 
-  const [formValues, setFormValues] = useState({ username: "", password: "" })
-
   const [input, setInput] = useState({
     username: '',
     password: ''
@@ -58,7 +56,7 @@ const SignIn = () => {
 
   const navigateForgotPassword = () => { navigate('/forgotpassword') }
   const navigateProfile = () => {
-    if (formValues.username.toLowerCase() === "admin") {    // TEMP ONLY
+    if (input.username.toLowerCase() === "admin") {    // TEMP ONLY
       signIn("ADMIN")
       navigate('/adminusers') 
     } else {
