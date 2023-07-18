@@ -98,4 +98,5 @@ function isRegular() {
   return this.userType == 'USER' ? true : false;
 }
 
+
 export default model("user", userSchema);
