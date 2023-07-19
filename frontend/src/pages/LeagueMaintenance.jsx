@@ -96,7 +96,7 @@ const LeagueMaintenance = () => {
         if (arrOfNumerics.find(e => e === field) ) {
             setCurrentValues({ ...currValues, [field] : Number(e.target.value) })
         } else {
-            setCurrentValues({ ...currValues, [field] : e.target.value })
+            setCurrentValues({ ...currValues, [field] : e.target.value.trim() })
         }
     }
 

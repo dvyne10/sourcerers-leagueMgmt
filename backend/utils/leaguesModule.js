@@ -7,7 +7,7 @@ let ObjectId = mongoose.Types.ObjectId;
 
 export const createLeague = async function(data) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    let userId = new ObjectId("648ba154251b78d7946df338")   // temp
+    let userId = new ObjectId("648ba154251b78d7946df340")   // temp
 
     let validate = await leagueValidation(data, "NEW", userId)
 
@@ -15,13 +15,13 @@ export const createLeague = async function(data) {
         response = validate
     } else {
         let newLeague = new LeagueModel({
-            leagueName: data.leagueName,
+            leagueName: data.leagueName.trim(),
             status: "NS",
-            location: data.location,
-            division: data.division,
-            description: data.description,
-            sportsTypeId: data.sportsTypeId,
-            ageGroup: data.ageGroup,
+            location: data.location.trim(),
+            division: data.division.trim(),
+            description: data.description.trim(),
+            sportsTypeId: data.sportsTypeId.trim(),
+            ageGroup: data.ageGroup.trim(),
             numberOfTeams: data.numberOfTeams,
             numberOfRounds: data.numberOfRounds,
             startDate: data.startDate,
@@ -56,18 +56,18 @@ export const updateLeague = async function(leagueId, data){
     } else {
         await LeagueModel.updateOne({ _id: new ObjectId(leagueId)}, { 
             $set: { 
-                leagueName: data.leagueName,
-                location: data.location,
-                division: data.division,
-                description: data.description,
-                sportsTypeId: data.sportsTypeId,
-                ageGroup: data.ageGroup,
+                leagueName: data.leagueName.trim(),
+                location: data.location.trim(),
+                division: data.division.trim(),
+                description: data.description.trim(),
+                sportsTypeId: data.sportsTypeId.trim(),
+                ageGroup: data.ageGroup.trim(),
                 numberOfTeams: data.numberOfTeams,
                 numberOfRounds: data.numberOfRounds,
                 startDate: data.startDate,
                 endDate: data.endDate,
                 lookingForTeams: false,
-                createdBy: new ObjectId(userId)
+                updatedBy: new ObjectId(userId)
                 //logo: data.logo
                 //banner: data.selectedBanner
             } 
@@ -99,19 +99,19 @@ export const leagueValidation = async function(data, requestType, userId) {
     } 
     if (requestType === "NEW") {
         canCreate =  await canUserCreateNewLeague(userId)
-    }
-    if (requestType === "NEW" && !canCreate) {
-        response.errMsg = 'Maximum allowed number of active leagues created is already reached.'
-        response.requestStatus = 'RJCT'
-        return response
+        if (!canCreate) {
+            response.errMsg = 'Maximum allowed number of active leagues created is already reached.'
+            response.requestStatus = 'RJCT'
+            return response
+        }
     }
     if (requestType !== "NEW") {
         oldLeagueObject =  await LeagueModel.findOne({ _id : new ObjectId(data.leagueId) })
-    }
-    if (requestType !== "NEW" && !oldLeagueObject) {
-        response.errMsg = 'League is not found.'
-        response.requestStatus = 'RJCT'
-        return response
+        if (!oldLeagueObject) {
+            response.errMsg = 'League is not found.'
+            response.requestStatus = 'RJCT'
+            return response
+        }
     }
     if (requestType === "CHG") {
         isLeagueAdminInd =  await isLeagueAdmin(userId, data.leagueId)
@@ -131,7 +131,7 @@ export const leagueValidation = async function(data, requestType, userId) {
         response.requestStatus = 'RJCT'
         return response
     }
-    if (requestType === "CHG" && !oldLeagueObject.sportsTypeId.equals(new ObjectId(data.sportsTypeId)) && oldLeagueObject.teams.length !== 0 ) {
+    if (requestType === "CHG" && data.sportsTypeId.trim() != "" && !oldLeagueObject.sportsTypeId.equals(new ObjectId(data.sportsTypeId)) && oldLeagueObject.teams.length !== 0 ) {
         response.errMsg = 'Sports type cannot be amended.'
         response.requestStatus = 'RJCT'
         return response
@@ -142,7 +142,7 @@ export const leagueValidation = async function(data, requestType, userId) {
         response.requestStatus = 'RJCT'
         return response
     } 
-    if (requestType != "DEL" && data.sportsTypeId === "") {
+    if (requestType != "DEL" && data.sportsTypeId.trim() === "") {
         response.errMsg = 'Sport is required.'
         response.errField = "sport"
         response.requestStatus = 'RJCT'
@@ -168,7 +168,8 @@ export const leagueValidation = async function(data, requestType, userId) {
         response.requestStatus = 'RJCT'
         return response
     }
-    if (requestType != "DEL" && isNaN(Date.parse(data.startDate))) {
+    let dateChecker = (dateToCheck) => {return (dateToCheck instanceof Date && !isNaN(dateToCheck))}
+    if (requestType != "DEL" && !dateChecker(new Date(data.startDate))) {
         response.errMsg = 'Start date is invalid.'
         response.errField = "startDate"
         response.requestStatus = 'RJCT'
@@ -180,7 +181,7 @@ export const leagueValidation = async function(data, requestType, userId) {
         response.requestStatus = 'RJCT'
         return response
     } 
-    if (requestType != "DEL" && isNaN(Date.parse(data.endDate))) {
+    if (requestType != "DEL" && !dateChecker(new Date(data.endDate))) {
         response.errMsg = 'End date is invalid.'
         response.errField = "endDate"
         response.requestStatus = 'RJCT'
@@ -223,7 +224,7 @@ export const leagueValidation = async function(data, requestType, userId) {
         response.requestStatus = 'RJCT'
         return response
     }
-    if (requestType === "CHG" && data.numberOfRounds !== oldLeagueObject.sportsTypeId && oldLeagueObject.sportsTypeId !== "NS" ) {
+    if (requestType === "CHG" && data.numberOfRounds !== oldLeagueObject.numberOfRounds && oldLeagueObject.status !== "NS" ) {
         response.errMsg = 'Number of rounds can no longer be changed.'
         response.errField = "numberOfRounds"
         response.requestStatus = 'RJCT'
@@ -231,7 +232,6 @@ export const leagueValidation = async function(data, requestType, userId) {
     }
     response.requestStatus = 'ACTC'
     return response
-    
 }
 
 export const deleteLeague = async function(data) {
@@ -257,6 +257,11 @@ export const canUserCreateNewLeague = async function(userId) {
 
 export const isLeagueAdmin = async function(userId, leagueId) {
 
+    if (userId.trim() === "" || leagueId.trim() === "") {
+        return false
+    }
+    userId = userId.trim()
+    leagueId = leagueId.trim()
     let league = await LeagueModel.findOne({ _id: new ObjectId(leagueId)}, {createdBy: 1, teams: 1, _id : 0}).exec();
     if (league === null) {
         return false
