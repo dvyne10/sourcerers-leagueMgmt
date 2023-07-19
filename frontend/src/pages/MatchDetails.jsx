@@ -4,6 +4,13 @@ import soccerField from '/images/matchDetails/football_field.jpg';
 import soccerBackground from '/images/matchDetails/football_background.jpg';
 import basketballField from '/images/matchDetails/basketball_court.jpeg'; 
 import basketballBackground from '/images/matchDetails/basketball_background.jpeg';
+import messiImage from '/images/matchDetails/messi.jpeg'; 
+import ronaldoImage from '/images/matchDetails/ronaldo.jpeg';
+import vanDijkImage from '/images/matchDetails/vanDijk.jpeg'; 
+import kevinImage from '/images/matchDetails/kevin.jpeg';
+import ramosImage from '/images/matchDetails/ramos.jpeg'; 
+import neymarImage from '/images/matchDetails/neymar.jpeg'; 
+
 import Button from 'react-bootstrap/Button'; 
 import {  Image}  from 'react-bootstrap'; 
 import { useParams, useNavigate } from 'react-router-dom';
@@ -20,14 +27,14 @@ const MatchDetails = () => {
   const teamLogo2 = sport === '1' ? '/images/matchDetails/barcelona.png' : '/images/matchDetails/golden.png';
 
   const playerListOne = [
-    { name: 'Lionel Messi', position: 'MF', goals: 2, assists: 0 },
-    { name: 'Cristiano Ronaldo', position: 'FW', goals: 0, assists: 2 },
-    { name: 'Virgil van Dijk', position: 'DF', goals: 0, assists: 0 },
+    { name: 'Lionel Messi', position: 'MF', goals: 2, assists: 0, image: messiImage},
+    { name: 'Cristiano Ronaldo', position: 'FW', goals: 0, assists: 2, image: ronaldoImage },
+    { name: 'Virgil van Dijk', position: 'DF', goals: 0, assists: 0, image: vanDijkImage },
   ];
   const playerListTwo = [
-    { name: 'Kevin De Bruyne', position: 'MF', goals: 10, assists: 7 },
-    { name: 'Sergio Ramos', position: 'DF', goals: 3, assists: 12 },
-    { name: 'Neymar Jr', position: 'FW', goals: 2, assists: 4 },
+    { name: 'Kevin De Bruyne', position: 'MF', goals: 10, assists: 7, image: kevinImage},
+    { name: 'Sergio Ramos', position: 'DF', goals: 3, assists: 12, image: ramosImage},
+    { name: 'Neymar Jr', position: 'FW', goals: 2, assists: 4, image: neymarImage},
   ];
 
   const handleClickPlayerLeft = (player) => {
@@ -93,7 +100,7 @@ const MatchDetails = () => {
               <span>Barcelona</span> <br/>
             </div>
   
-            <div style={{fontSize: '15px', color: '#026670'}}>Toronto Stadium </div>
+            <div style={{fontSize: '15px', color: '#026670'}}>Toronto Stadium</div>
             <div style={{fontSize: '15px', color: '#026670'}}>22 July 2023, 09:00 PM</div>
           </div>
 
@@ -142,14 +149,22 @@ const MatchDetails = () => {
           <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
             <div style={{ backgroundImage: `url(${sport === '1' ? soccerField : basketballField})`, backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'center'}}>
-          <div style={{ paddingTop: '26%'}}>
+          <div style={{ paddingTop: '15%'}}>
             {playerListOne.map((player, index) => (
               <div key={index} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                <BsFillPersonFill
-                  size={70}
-                  color={selectedPlayerData && selectedPlayerData.name === player.name ? 'white' : 'white'}
+                <Image
+                  src={
+                    selectedPlayerData && selectedPlayerData.name === player.name
+                      ? player.image
+                      : player.image
+                  }
                   onClick={() => handleClickPlayerLeft(player)}
+                  className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
+                  roundedCircle 
+                  fluid 
+                  style={{ width: "5em", height: "5em" }}
                 />
+
                 
                 {selectedPlayerData && selectedPlayerData.name === player.name && (
                   <div
@@ -168,13 +183,20 @@ const MatchDetails = () => {
               </div>
             ))} 
           </div>
-          <div style={{ paddingLeft: '20%', paddingTop: '26%'}}>
+          <div style={{ paddingLeft: '20%', paddingTop: '15%'}}>
             {playerListTwo.map((player, index) => (
               <div key={index} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                <BsFillPersonFill
-                  size={70}
-                  color={selectedPlayerData && selectedPlayerData.name === player.name ? 'white' : 'white'}
-                  onClick={() => handleClickPlayerRight(player)}
+                <Image
+                  src={
+                    selectedPlayerData && selectedPlayerData.name === player.name
+                      ? player.image
+                      : player.image
+                  }
+                  onClick={() => handleClickPlayerLeft(player)}
+                  className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
+                  roundedCircle 
+                  fluid 
+                  style={{ width: "5em", height: "5em" }}
                 />
                 
                 {selectedPlayerData && selectedPlayerData.name === player.name && (
@@ -196,9 +218,6 @@ const MatchDetails = () => {
           </div>
         </div>
 
-
-
- 
             </div>
           </div>
           <div style={{ backgroundColor: '#116466', width: '20%', height: '60vh', marginRight: '10%', textAlign: 'center', color: 'white', borderTopRightRadius: '10px', borderBottomRightRadius: '10px' }}>
