@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BsFillPersonFill } from 'react-icons/bs';
-import soccerField from '/football_field.jpg';
-import soccerBackground from '/football_background.jpg';
-import basketballField from '/basketball_court.jpeg'; 
-import basketballBackground from '/basketball_background.jpeg';
+import soccerField from '/images/matchDetails/football_field.jpg';
+import soccerBackground from '/images/matchDetails/football_background.jpg';
+import basketballField from '/images/matchDetails/basketball_court.jpeg'; 
+import basketballBackground from '/images/matchDetails/basketball_background.jpeg';
 import Button from 'react-bootstrap/Button'; 
 import {  Image}  from 'react-bootstrap'; 
 import { useParams, useNavigate } from 'react-router-dom';
@@ -16,8 +16,8 @@ const MatchDetails = () => {
   const navigate = useNavigate(); 
   const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
   const { sport } = useParams(); 
-  const teamLogo1 = sport === 'soccer' ? '/madrid.png' : '/lakers.png';
-  const teamLogo2 = sport === 'soccer' ? '/barcelona.png' : '/golden.png';
+  const teamLogo1 = sport === '1' ? '/images/matchDetails/madrid.png' : '/images/matchDetails/lakers.png';
+  const teamLogo2 = sport === '1' ? '/images/matchDetails/barcelona.png' : '/images/matchDetails/golden.png';
 
   const playerListOne = [
     { name: 'Lionel Messi', position: 'MF', goals: 2, assists: 0 },
@@ -40,6 +40,15 @@ const MatchDetails = () => {
     setSelectedPlayerRight(player.name);
   };
   
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     console.log(`Window dimensions: ${window.innerWidth} * ${window.innerHeight}`);
+  //   }, 5000);
+
+  //   // This will clear the interval (stop the repeating function) when the component unmounts.
+  //   return () => clearInterval(intervalId);
+  // }, []);
+
 
   return (
     <>
@@ -49,7 +58,7 @@ const MatchDetails = () => {
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundImage: `url(${sport === 'soccer' ? soccerBackground : basketballBackground})`,
+    backgroundImage: `url(${sport === '1' ? soccerBackground : basketballBackground})`,
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     opacity: 0.6,  // adjust the opacity as needed
@@ -63,20 +72,21 @@ const MatchDetails = () => {
         
         <div onClick={() => navigate('/team/:teamid')}
              style={{
-                    backgroundColor: '#9FEDD7',
+                    backgroundColor: '#D1E8E2',
                     width: '20%',
                     height: '15vh',
                     marginLeft: '10%',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    background: '#9FEDD7 url(' + teamLogo1 + ') center center no-repeat',
+                    background: '#D1E8E2 url(' + teamLogo1 + ') center center no-repeat',
                     backgroundSize: 'contain',
                     borderTopLeftRadius: '10px',
                     borderBottomLeftRadius: '10px',                    
                     }}>
         </div>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#9FEDD7', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
+
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#D1E8E2', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
             <div style={{paddingRight: '6%'}}>
               <span>Real Madrid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
               <span style={{ color: '#3b3c4c' }}>2&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -85,18 +95,18 @@ const MatchDetails = () => {
   
             <div style={{fontSize: '15px', color: '#026670'}}>Toronto Stadium </div>
             <div style={{fontSize: '15px', color: '#026670'}}>22 July 2023, 09:00 PM</div>
-
           </div>
+
           <div onClick={() => navigate('/team/:teamid')}
                style={{
-                    backgroundColor: '#9FEDD7',
+                    backgroundColor: '#D1E8E2',
                     width: '20%',
                     height: '15vh',
                     marginRight: '10%',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    background: '#9FEDD7 url(' + teamLogo2 + ') center center no-repeat',
+                    background: '#D1E8E2 url(' + teamLogo2 + ') center center no-repeat',
                     backgroundSize: 'contain',
                     borderTopRightRadius: '10px',
                     borderBottomRightRadius: '10px',
@@ -105,7 +115,7 @@ const MatchDetails = () => {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '2%' }}>
-          <div style={{ backgroundColor: '#026670', width: '20%', height: '60vh', marginLeft: '10%', textAlign: 'center', color: 'white', borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px'}}>
+          <div style={{ backgroundColor: '#116466', width: '20%', height: '60vh', marginLeft: '10%', textAlign: 'center', color: 'white', borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px'}}>
             <div style={{ paddingTop: '5%', fontSize: '30px' }}>Player List</div>
             {playerListOne.map((player, index) => (
               <button
@@ -130,7 +140,7 @@ const MatchDetails = () => {
             ))}
           </div>
           <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
-            <div style={{ backgroundImage: `url(${sport === 'soccer' ? soccerField : basketballField})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
+            <div style={{ backgroundImage: `url(${sport === '1' ? soccerField : basketballField})`, backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'center'}}>
           <div style={{ paddingTop: '26%'}}>
             {playerListOne.map((player, index) => (
@@ -191,7 +201,7 @@ const MatchDetails = () => {
  
             </div>
           </div>
-          <div style={{ backgroundColor: '#026670', width: '20%', height: '60vh', marginRight: '10%', textAlign: 'center', color: 'white', borderTopRightRadius: '10px', borderBottomRightRadius: '10px' }}>
+          <div style={{ backgroundColor: '#116466', width: '20%', height: '60vh', marginRight: '10%', textAlign: 'center', color: 'white', borderTopRightRadius: '10px', borderBottomRightRadius: '10px' }}>
             <div style={{ paddingTop: '5%', fontSize: '30px' }}>Player List</div>
             {playerListTwo.map((player, index) => (
               <button
@@ -217,7 +227,7 @@ const MatchDetails = () => {
         
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', height: '60vh', paddingTop: '1%', color: 'white' }}>
-      <div style={{ backgroundColor: '#026670', width: '80%', height: '50%', borderRadius: '10px' }}>
+      <div style={{ backgroundColor: '#116466', width: '80%', height: '50%', borderRadius: '10px' }}>
         <h2 style={{ paddingTop: '1%' }}>Previous Matches</h2>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginRight: '20%' }}>
