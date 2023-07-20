@@ -279,3 +279,34 @@ export const isLeagueAdmin = async function(userId, leagueId) {
     }
     return false
 }
+
+export const getOpenLeagues = async function() {
+    let openLeagues = await LeagueModel.aggregate([ { $match: { lookingForTeams : true, lookingForTeamsChgTmst : {$ne : null} } }, 
+        { 
+            $project: {
+                leagueId: "$_id", leagueName : 1, indicatorChgTmst: "$lookingForTeamsChgTmst", _id : 0
+            }
+        }, {
+            $sort: { indicatorChgTmst : -1}
+        }
+    ])
+
+    let parm = await SysParmModel.findOne({ parameterId: "dfltAnnouncement"}, {dfltAnnouncement : 1}).exec();
+    let dfltLeagueMsg = parm.dfltAnnouncement.defaultMsgLeagueAncmt
+    let startPos = dfltLeagueMsg.indexOf("&leagueName")
+    let endPos = dfltLeagueMsg.indexOf(" ", startPos)
+    let startString = ""
+    let endString = ""
+    if (startPos > 0) {
+         startString = dfltLeagueMsg.substring(0,startPos)
+    }
+    if (endPos > 0 && endPos !== -1) {
+        endString = dfltLeagueMsg.substring(endPos)
+    }
+
+    for (let i=0; i < openLeagues.length; i++) {
+        openLeagues[i].leagueMsg = startString + openLeagues[i].leagueName + endString
+    }
+
+    return openLeagues
+}

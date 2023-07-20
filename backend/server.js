@@ -7,7 +7,7 @@ import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams } from "./utils/leaguesModule.js";
-
+import { getHomeDetails } from "./utils/homePageModule.js";
 
 dotenv.config();
 connectDB();
@@ -27,7 +27,10 @@ app.get("/leagues", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send({ message: "server is working perfectly fine from the home route" });
+  getHomeDetails()
+  .then((data)=>{
+    res.json(data);
+  })
 });
 
 app.post("/admin", (req, res) => {

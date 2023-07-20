@@ -60,7 +60,13 @@ const AdminLeagueMnt = () => {
 
     const handleLeagueDetails = (e) => {
         const field = e.target.name
-        setCurrentValues({ ...currValues, [field] : e.target.value })
+        if (field === "lookingForTeams") {
+            let newInd = currValues.lookingForTeams
+            newInd = !newInd
+            setCurrentValues({...currValues, lookingForTeams : newInd })
+        } else {
+            setCurrentValues({ ...currValues, [field] : e.target.value })
+        }
     }
 
     const handleRemoveTeam = (index) => {

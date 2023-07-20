@@ -2,6 +2,7 @@ import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate } from 'react-router-dom';
 import { MultiSelect } from "react-multi-select-component";
+import { FaTrash, FaPlusCircle } from 'react-icons/fa';
 import useAuth from "../../hooks/auth";
 
 const AdminUserMnt = () => {
@@ -10,7 +11,7 @@ const AdminUserMnt = () => {
     const inputFile = useRef(null);
     const [action, handleAction] = useState("");
     const [currValues, setCurrentValues] = useState({userName: null, password: null, role: "USER", email: null, phone: null,
-      firstName: null, lastName: null, country: "", province: "", city: "", teamsCreated: [], 
+      firstName: null, lastName: null, country: "", province: "", city: "", announcementsCreated: [{ announcementMsg: "", showInHome: false }], teamsCreated: [], 
       requestsSent: [], notifications: [], successfulLoginDetails: [], failedLoginDetails: { failedLogins: [] }
     })
     const [sportsSelected, setSportsSelected] = useState([])
@@ -42,6 +43,7 @@ const AdminUserMnt = () => {
               setPrevState("City of London")
               setCurrentValues({status: "ACTV", userName: "hpotter", email: "hpotter@gmail.com", password: "991f120169ac3db7cbd57b9af5f8fb81718a14d19dc79db185160a66ec4dcd09", salt: "buFeA9ckvzI/DXBLL8PhJQ==", 
                 role: "USER", adminAnnounce: [], phone: "", firstName: "Harry", lastName: "Potter", country: "United Kingdom", province: "City of London", city: "N/A",
+                announcementsCreated: [{ announcementMsg: "announce1", showInHome: false}, { announcementMsg: "announce2", showInHome: true}],
                 teamsCreated: ["648ba154251b78d7946df340", "648ba154251b78d7946df344"], 
                 requestsSent: ["648ba154251b78d7946df34a", "648ba154251b78d7946df335"], 
                 notifications: ["648ba154251b78d7946df34b", "648ba154251b78d7946df335" ], 
@@ -101,6 +103,32 @@ const AdminUserMnt = () => {
     const handleAccountDetails = (e) => {
       const field = e.target.name
       setCurrentValues({ ...currValues, [field] : e.target.value })
+    }
+
+    const handleAnnouncements = (event, index) => {
+        const field = event.target.name
+        let newList = [...currValues.announcementsCreated]
+        if (field === "showInHome") {
+            newList[index].showInHome = !newList[index].showInHome
+            setCurrentValues({ ...currValues, announcementsCreated : newList })
+        } else {
+            newList[index][field] = event.target.value
+            setCurrentValues({ ...currValues, announcementsCreated : newList })
+        }
+      }
+
+    const addAdminAnnouncement = () => {
+        let newList = [...currValues.announcementsCreated]
+        newList.push({ announcementMsg: "", showInHome: false })
+        setCurrentValues({ ...currValues, announcementsCreated : newList })
+    }
+
+    const removeAdminAnnouncement = (index) => {
+        console.log(index)
+        let newList = [...currValues.announcementsCreated]
+        newList = newList.filter((items, itemIndex) => itemIndex !== index)
+        console.log("131" + JSON.stringify(newList))
+        setCurrentValues({ ...currValues, announcementsCreated : newList })
     }
 
     function getCountries() {
@@ -211,6 +239,28 @@ const AdminUserMnt = () => {
                 <div className="col-2 text-end"><label htmlFor="email" className="form-label">Email*</label></div>
                 <div className="col-4"><input id="email" name="email" type="email" className="form-control" value={currValues.email} onChange={handleAccountDetails} /></div>
             </div>
+            { currValues.role === "ADMIN" && (
+            <>
+            <div className = "row mt-3 mb-2">
+                <div className="col-2"></div>
+                <div className="col-7 text-center"><label className="form-label" >Admin Announcement Messages</label></div>
+                <div className="col-2 text-center"><label className="form-label" >Show in Homepage?</label></div>
+            </div>
+            
+            <div className = "row mb-3">
+                {currValues.announcementsCreated.map((announce, index) => (
+                    <div className="row mb-2" key={index}>
+                        <div className="col-2"></div>
+                        <div className="col-7"><textarea name="announcementMsg" type="text" className="form-control form-control-sm" value={announce.announcementMsg} onChange={(e) => handleAnnouncements(e, index)} /></div>
+                        <div className="col-2 mt-2 text-center"><input name="showInHome" type="checkbox" className="form-check-input" defaultChecked={announce.showInHome && "checked"} onChange={(e) => handleAnnouncements(e, index)} /></div>
+                        <div className="col-1 mt-2"><FaTrash onClick={()=> removeAdminAnnouncement(index)} /></div>
+                    </div>
+                ))}
+                <div className="col-2"></div>
+                <div className="col-7 text-end"><FaPlusCircle onClick={()=> addAdminAnnouncement()} /></div>
+            </div> 
+            </>
+            )}   
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="sports" className="form-label">Sports of Interest**</label></div>
                 <div className="col-4"><MultiSelect options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} className="form-control"/></div>
