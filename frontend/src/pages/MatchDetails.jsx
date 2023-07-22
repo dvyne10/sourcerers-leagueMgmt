@@ -23,7 +23,8 @@ const MatchDetails = () => {
 
   const navigate = useNavigate(); 
   const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
-  const { sport } = useParams(); 
+  let { sport } = useParams();
+  sport = sport || '1'; 
   const teamLogo1 = sport === '1' ? '/images/matchDetails/madrid.png' : '/images/matchDetails/lakers.png';
   const teamLogo2 = sport === '1' ? '/images/matchDetails/barcelona.png' : '/images/matchDetails/golden.png';
 

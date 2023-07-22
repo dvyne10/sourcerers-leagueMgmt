@@ -143,7 +143,7 @@ const routes = createBrowserRouter([
     element: <MatchUpdate />,
   },
   {
-    path: "/match/:sport/:matchid",
+    path: "/match/:matchid",
     exact: true,
     element: <MatchDetails/>,
   },
