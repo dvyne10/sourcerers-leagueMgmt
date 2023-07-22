@@ -1,20 +1,26 @@
 pipeline {
-    agent any
-        stages {
-            stage('Build') {
-                steps {
-                    sh 'npm run build'
-                }
-            }
-            stage('Test') {
-                steps {
-                    echo 'Testing..'
-                }
-            }
-            stage('Deploy') {
-                steps {
-                    echo 'Deploying....'
-                }
+    agent {
+         docker {
+            image 'node'
+            args '-u root'
+        }
+    }
+    stages {
+        stage('Build') {
+            steps {
+                echo 'building....'
+                sh 'npm install'
             }
         }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
 }
