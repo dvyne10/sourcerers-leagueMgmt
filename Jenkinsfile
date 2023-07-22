@@ -1,7 +1,7 @@
 pipeline {
     agent {
-         docker {
-            image 'node'
+          docker {
+            image 'node:lts-bullseye-slim'
         }
     }
 
