@@ -15,7 +15,7 @@ const ForgotPassword = () => {
             <label htmlFor="email" className="form-label">
               Email*
             </label>
-            <input id="email" type="email" className="form-control" />
+            <input id="email" name="email" type="email" className="form-control" />
           </div>
           <div className="d-flex justify-content-evenly width:100% mb-4">
             <button type="button" className="btn btn-primary" onClick={navigateInputOTP}>

@@ -39,7 +39,7 @@ const Home = () => {
       {
         accessorKey: 'title', //access nested data with dot notation
         header: 'Who',
-        size: 600,
+        size: 300,
       },
       {
         accessorKey: 'desc',
@@ -72,7 +72,7 @@ const Home = () => {
     <div className="App" style={{textAlign: 'center'}}>
 
       <div style={{
-        backgroundImage: "url('/basketball_galaxy.png')",
+        backgroundImage: "url('/images/mainPage/basketball_galaxy.png')",
         backgroundSize: 'cover',
         width: '100%',
         height: '1000px'
@@ -92,44 +92,39 @@ const Home = () => {
       <div style={{paddingLeft: '5%', paddingRight: '5%'}}>
         <Slider {...settings}>
           <div>
-            <FlippableCard imageUrl="/basketball_pic1.jpg" cardText="BasketBall Club"/>
+            <FlippableCard imageUrl="/images/mainPage/basketball_pic1.jpg" cardText="BasketBall Club"/>
           </div>
           <div>
-            <FlippableCard imageUrl="/basketball_pic2.jpg" cardText="Jordan Warriors"/>
+            <FlippableCard imageUrl="/images/mainPage/basketball_pic2.jpg" cardText="Jordan Warriors"/>
           </div>
           <div>
-          <FlippableCard imageUrl="/soccer_pic1.jpg" cardText="Go Messi"/>
+          <FlippableCard imageUrl="/images/mainPage/soccer_pic1.jpg" cardText="Go Messi"/>
           </div>
           <div>
-          <FlippableCard imageUrl="/soccer_pic2.jpg" cardText="Play With Us!"/>
+          <FlippableCard imageUrl="/images/mainPage/soccer_pic2.jpg" cardText="Play With Us!"/>
           </div>
           <div>
-          <FlippableCard imageUrl="/soccer_pic3.jpg" cardText="Moving on"/>
+          <FlippableCard imageUrl="/images/mainPage/soccer_pic3.jpg" cardText="Moving on"/>
           </div>
           <div>
-          <FlippableCard imageUrl="/soccer_pic4.jpg" cardText="Shoot or not"/>
+          <FlippableCard imageUrl="/images/mainPage/soccer_pic4.jpg" cardText="Shoot or not"/>
           </div>
           <div>
-          <FlippableCard imageUrl="/basketball_pic3.jpg" cardText="3 points seeker"/>
+          <FlippableCard imageUrl="/images/mainPage/basketball_pic3.jpg" cardText="3 points seeker"/>
           </div>
           <div>
-          <FlippableCard imageUrl="/basketball_pic4.jpg" cardText="We love basketball"/>
+          <FlippableCard imageUrl="/images/mainPage/basketball_pic4.jpg" cardText="We love basketball"/>
           </div>
           <div>
-          <FlippableCard imageUrl="/basketball_pic5.jpg" cardText="Ball Ball"/>
+          <FlippableCard imageUrl="/images/mainPage/basketball_pic5.jpg" cardText="Ball Ball"/>
           </div>
           <div>
-          <FlippableCard imageUrl="/basketball_pic6.jpg" cardText="Go Dunk"/>
+          <FlippableCard imageUrl="/images/mainPage/basketball_pic6.jpg" cardText="Go Dunk"/>
           </div>
         </Slider>
       </div>
       </div>
 
-
- 
-     
-    
-       
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2%', paddingBottom: '2%'}}>
         <h1>ANNOUNCEMENTS</h1>
       
@@ -140,7 +135,7 @@ const Home = () => {
     sx: {
       // Highlight the first row
       '& tr:nth-of-type(1)': {
-        backgroundColor: '#FEF9C7',
+        backgroundColor: '#F5F5F5',
       },
     },
   }}

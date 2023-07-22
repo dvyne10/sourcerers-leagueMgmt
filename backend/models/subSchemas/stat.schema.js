@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import { validateSchemaProperty } from "../../utils/schema.js";
 
 const statSchema = Schema({
   _id: false,

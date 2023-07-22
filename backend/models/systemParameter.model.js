@@ -1,11 +1,11 @@
 import { Schema, model } from "mongoose";
-import sportsSchema from "./subSchemas/sports.schema";
-import statSchema from "./subSchemas/stat.schema";
-import positionSchema from "./subSchemas/position.schema";
-import loginSchema from "./subSchemas/login.schema";
-import announcementsSchema from "./subSchemas/announcements.schema";
-import maxParmsSchema from "./subSchemas/maxParams.schema";
-import defaultMsgSchema from "./subSchemas/defaultMsg.schema";
+import sportsSchema from "./subSchemas/sports.schema.js";
+import statSchema from "./subSchemas/stat.schema.js";
+import positionSchema from "./subSchemas/position.schema.js";
+import loginSchema from "./subSchemas/login.schema.js";
+import announcementsSchema from "./subSchemas/announcements.schema.js";
+import maxParmsSchema from "./subSchemas/maxParams.schema.js";
+import defaultMsgSchema from "./subSchemas/defaultMsg.schema.js";
 
 const sysParamSchema = Schema(
   {

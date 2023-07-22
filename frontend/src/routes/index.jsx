@@ -28,8 +28,8 @@ import AccountMaintenance from "../pages/AccountMaintenance";
 import LeagueDetails from "../pages/LeagueDetails";
 import TeamDetails from "../pages/TeamDetails";
 import MatchUpdate from "../pages/MatchUpdate";
-import MatchDetailsSoccer from "../pages/MatchDetailsSoccer";
-import MatchDetailsBasketball from "../pages/MatchDetailsBasketball";
+import MatchDetails from "../pages/MatchDetails";
+
 const routes = createBrowserRouter([
   {
     path: "/",
@@ -143,14 +143,9 @@ const routes = createBrowserRouter([
     element: <MatchUpdate />,
   },
   {
-    path: "/matchdetailsoccer/:matchid",
+    path: "/match/:sport/:matchid",
     exact: true,
-    element: <MatchDetailsSoccer />,
-  },
-  {
-    path: "/matchdetailbasketball/:matchid",
-    exact: true,
-    element: <MatchDetailsBasketball/>,
+    element: <MatchDetails/>,
   },
   {
     path: "/notifications",

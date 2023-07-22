@@ -1,17 +1,24 @@
-import { useState, useEffect }  from 'react';
+import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import useAuth from "../hooks/auth";
+import {Form} from 'react-bootstrap/';
+
 
 const TeamMaintenance = () => {
-  
+    const [validated, setValidated] = useState(false);
+    const {isSignedIn} = useAuth()
     const location = useLocation();
     const routeParams = useParams();
+    const inputFileBanner = useRef(null);
+    const inputFileLogo = useRef(null);
     const [action, handleAction] = useState({type: "Creation", title: "CREATE TEAM"});
     const [currValues, setCurrentValues] = useState({teamName: null, description: null, location: null,
         division: null, email: null 
     })
     const [playersList, setPlayersList] = useState(null)
-    const [sportSelected, setSportSelected] = useState("")
+    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+    const [sportSelected, setSportSelected] = useState(sportsOptions[0].value)
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
@@ -19,8 +26,10 @@ const TeamMaintenance = () => {
     const [disableDelete, setDeleteButton] = useState(true)
     const [oldValues, setOldValues] = useState(null)
     const [didPlayersChange, setPlayersChanged] = useState(false)
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+    const [errorMessage, setErrorMessage] = useState([]);
+    
     const positionOptions = [ {label: "Team Captain", value: "SCP01"}, {label: "Goalkeeper", value: "SCP02"}, {label: "Defender", value: "SCP03"} ]
+
 
     useEffect(() => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
@@ -44,6 +53,7 @@ const TeamMaintenance = () => {
                 { playerId: 9, username: "oBurt", playerName: "Olivia Burt", position: "SCP03", jerseyNumber: 27, joinedDate: "2022-07-09" },
                 { playerId: 10, username: "kJustice", playerName: "Katelyn Justice", position: "SCP02", jerseyNumber: 36, joinedDate: "2022-07-10" },
             ])
+            
             setSportSelected("soccerId")
             setLogoURL("https://images.unsplash.com/photo-1511886929837-354d827aae26?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80")
             setSelectedLogo("x")
@@ -57,32 +67,22 @@ const TeamMaintenance = () => {
     }, []);
 
     const handleLogoChange = event => {
-        setSelectedLogo(event.target.files[0])
-        setLogoURL(URL.createObjectURL(event.target.files[0]))
+        if (event.target.files.length > 0) {
+            setSelectedLogo(event.target.files[0])
+            setLogoURL(URL.createObjectURL(event.target.files[0]))
+        }
     };
 
     const handleBannerChange = event => {
-        setSelectedBanner(event.target.files[0])
-        setBannerURL(URL.createObjectURL(event.target.files[0]))
+        if (event.target.files.length > 0) {
+            setSelectedBanner(event.target.files[0])
+            setBannerURL(URL.createObjectURL(event.target.files[0]))
+        }
     };
 
     const handleSportChange= event => {
         setSportSelected(event.target.value);
     }
-
-    // const handlePositionChange = (event, index) => {
-    //     let newList = [...playersList]
-    //     newList[index].position = event.target.value
-    //     setPlayersList(newList)
-    //     setPlayersChanged(true)
-    // }
-
-    // const handleJerseyChange = (event, index) => {
-    //     let newList = [...playersList]
-    //     newList[index].jerseyNumber = event.target.value
-    //     setPlayersList(newList)
-    //     setPlayersChanged(true)
-    // }
 
     const handlePLayerChange = (event, index) => {
         const field = event.target.name
@@ -116,7 +116,16 @@ const TeamMaintenance = () => {
             navigate('/team/' + routeParams.teamid)
         } 
     }
-    const navigateTeamDetails = () => { 
+    const navigateTeamDetails = (event) => { 
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        setValidated(true);
+        let error = false
+        error = validateInput()
+        if (!error) {
         if (action.type === "Creation") {
             navigate('/team/' + "new team id here")
         } else {
@@ -136,6 +145,39 @@ const TeamMaintenance = () => {
             } 
         }
     }
+}
+
+const validateInput = () => {
+    let errResp = false
+    let errMsgs = []
+    let focusON = false
+    if (currValues.teamName.trim() === "") {
+        errMsgs.push('Team name is required.');
+        document.getElementById("teamName").focus()
+        focusON = true
+    }
+    if (currValues.location.trim() === "") {
+        errMsgs.push('Location is required.');
+        if (!focusON) {
+            document.getElementById("location").focus()
+            focusON = true
+        }
+    }
+    if (currValues.email.trim() === "") {
+        errMsgs.push('Email is required.');
+        if (!focusON) {
+            document.getElementById("email").focus()
+            focusON = true
+        }
+    }
+    
+
+    setErrorMessage(errMsgs)
+    if (errMsgs.length > 0) {
+        errResp = true
+    }
+    return errResp
+}
 
     const navigateDelete = () => {
         let count = (playersList === null ? 0 : 1)
@@ -152,28 +194,44 @@ const TeamMaintenance = () => {
 
   return (
     <div className="d-flex container mt-2 justify-content-center">
-      <Card style={{ width: "60rem", padding: 20 }}>
+        { !isSignedIn ? (
+            <div>
+                {navigate('/signin')}
+            </div>
+        ) : (
+        <Card style={{ width: "60rem", padding: 20 }}>
+        {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+        )}
         <h2 className="mb-4 center-text">{action.title.toUpperCase()}</h2>
-        <form action="" encType="multipart/form-data">
-            < div className="col mb-5 text-center">               
-                <label htmlFor="banner" className="form-label mb-1">
+        <Form noValidate validated={validated} action="" encType="multipart/form-data">
+            < div className="col mb-5 text-center">           
+                <Form.Label htmlFor="banner" className="form-label mb-1">
                     Select Banner
-                </label>
+                </Form.Label>
                 {selectedBanner && (
                     <div>
-                        <img src={bannerURL} alt="Team Banner" className="object-fit-cover rounded mw-100 mb-2" style={{ width: "100rem", height: "10rem"}}/>
-                        <button onClick={() => setSelectedBanner(null)} className="btn btn-secondary mb-3" >Remove</button>
+                        <img src={bannerURL} alt="Team Banner" className="object-fit-cover rounded mw-100 mb-2" style={{ width: "100rem", height: "20rem"}}/>
+                        <button onClick={() => setSelectedBanner(null)} className="btn btn-secondary mb-3 mx-1 btn-sm" >Remove</button>
+                        <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileBanner.current.click()}>Replace</button>
                     </div>
                 ) }
                 {!selectedBanner && (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "10rem"}} viewBox="-12 -12 40 40">
+                    <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "20rem"}} viewBox="-12 -12 40 40">
                         <path d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
                         <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
-                  </svg> 
+                    </svg> 
+                    <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileBanner.current.click()}>Upload</button>
+                    </div> 
                 )}
                 <div className="row justify-content-center">
                     <div className="col-3">
-                        <input type="file" id="banner" name="banner" className="form-control" onChange={handleBannerChange} accept="image/*"/>
+                        <Form.Control type="file" id="banner" name="banner" className="d-none" onChange={handleBannerChange} accept="image/*" ref={inputFileBanner}/>
                     </div>
                 </div>
             </div>
@@ -181,69 +239,100 @@ const TeamMaintenance = () => {
             <div className="col-sm-9 mb-3"> 
           <div className="row">
             <div className="col-sm-7 mb-3">
-                <label htmlFor="teamName" className="form-label">
+                <Form.Label htmlFor="teamName"  className="form-label">
                     Team Name*
-                </label>
-                <input name="teamName" type="text" className="form-control" defaultValue={currValues.teamName} onChange={handleTeamDetails} />
+                </Form.Label>
+                <Form.Control
+            required
+            pattern="^\S.*$"
+            // pattern="^(?!.*\s)[^']*$" --this is for avoiding ' as well.
+            type="text"
+            placeholder="Last name"
+            defaultValue="Otto" id="teamName" name="teamName" className="form-control" value={currValues.teamName} onChange={handleTeamDetails} />
+            
+            <Form.Control.Feedback htmlFor="teamName" type="invalid">
+            Please provide a valid team name.
+          </Form.Control.Feedback>
+          
+            {/* <Form.Group controlId="validationCustom03">
+          <Form.Label>City</Form.Label>
+          <Form.Control type="text" placeholder="City" required />
+          <Form.Control.Feedback type="invalid">
+            Please provide a valid city.
+          </Form.Control.Feedback>
+        </Form.Group> */}
             </div>
             <div className="col-sm-4 mb-3">
-                <label htmlFor="sport" className="form-label">
+                <Form.Label htmlFor="sport" className="form-label">
                     Sport*
-                </label>
-                <select name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
+                </Form.Label>
+                <Form.Select id="sport" name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
                     {sportsOptions.map((option) => (
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
-                </select>
+                </Form.Select>
+                <Form.Control.Feedback htmlFor="sport" type="invalid">
+            Please select a sport.
+          </Form.Control.Feedback>
             </div>
           </div>
           <div className="col-sm-11 mb-3">
-                <label htmlFor="description" className="form-label">
+                <Form.Label htmlFor="description" className="form-label" required>
                     Description
-                </label>
-            <textarea name="description" className="form-control form-control-sm" defaultValue={currValues.description} onChange={handleTeamDetails} />
+                </Form.Label>
+            <textarea id="description" name="description" className="form-control form-control-sm" value={currValues.description} onChange={handleTeamDetails} />
           </div>
           <div className="row">
             <div className="col-sm-5 mb-3">
-                <label htmlFor="location" className="form-label">
+                <Form.Label htmlFor="location" className="form-label">
                     Location*
-                </label>
-                <input name="location" type="text" className="form-control" defaultValue={currValues.location} onChange={handleTeamDetails} />
+                </Form.Label>
+                <Form.Control required pattern="^\S.*$" id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleTeamDetails} />
+                <Form.Control.Feedback htmlFor="location" type="invalid">
+            Please provide a valid location.
+          </Form.Control.Feedback>
             </div>
             <div className="col-sm-3 mb-3">
-                <label htmlFor="division" className="form-label">
+                <Form.Label htmlFor="division" className="form-label">
                     Division
-                </label>
-                <input name="division" type="text" className="form-control" defaultValue={currValues.division} onChange={handleTeamDetails} />
+                </Form.Label>
+                <Form.Control id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-4 mb-3">
-                <label htmlFor="email" className="form-label">
+                <Form.Label htmlFor="email" className="form-label">
                     Email*
-                </label>
-                <input name="email" type="text" className="form-control" defaultValue={currValues.email} onChange={handleTeamDetails} />
+                </Form.Label>
+                <Form.Control required id="email" name="email" type="email" className="form-control" value={currValues.email} onChange={handleTeamDetails} />
+                <Form.Control.Feedback htmlFor="location" type="invalid">
+            Please provide a valid email.
+          </Form.Control.Feedback>
             </div>
           </div>
           </div>
           < div className="col-sm-3 mb-3 text-center">
-                <label htmlFor="logo" className="form-label">
+                <Form.Label htmlFor="logo" className="form-label">
                     Select Logo
-                </label>
+                </Form.Label>
                 {selectedLogo && (
                     <div>
                         <img src={logoURL} alt="not found" className="rounded mw-100 mb-2 border border-secondary" style={{ width: "100rem", height: "13rem"}}/>
-                        <button onClick={() => setSelectedLogo(null)} className="btn btn-secondary mb-3" >Remove</button>
+                        <button onClick={() => setSelectedLogo(null)} className="btn btn-secondary mb-3 mx-1 btn-sm" >Remove</button>
+                        <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileLogo.current.click()}>Replace</button>
                     </div>
                 ) }
                 {!selectedLogo && (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "13rem"}} viewBox="-12 -12 40 40">
-                        <path d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
-                        <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
-                  </svg> 
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="rounded mw-100 mb-3 border border-secondary" style={{ width: "100rem", height: "13rem"}} viewBox="-12 -12 40 40">
+                            <path d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
+                            <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                        </svg>
+                        <button type="button" className="btn btn-secondary mb-3 btn-sm" onClick={() => inputFileLogo.current.click()}>Upload</button> 
+                    </div>
                 )}
-                <input type="file" id="logo" name="logo" className="form-control" onChange={handleLogoChange} accept="image/*"/>
+                <Form.Control type="file" id="logo" name="logo" className="d-none" onChange={handleLogoChange} accept="image/*" ref={inputFileLogo}/>
             </div>
           </div>
-        </form>
+        </Form>
         { action.type === "Update" && playersList !== null && playersList.length !== 0 && (
             <div>
                 <div>
@@ -264,14 +353,14 @@ const TeamMaintenance = () => {
                                     <td>{player.playerName}</td>
                                     <td>{player.username}</td>
                                     <td>
-                                        <select name="position" className="form-control" defaultValue={player.position} onChange={(e) => handlePLayerChange(e, index)}>
+                                        <select name="position" className="form-control" value={player.position} onChange={(e) => handlePLayerChange(e, index)}>
                                             {positionOptions.map((option) => (
                                                 <option value={option.value} key={option.value}>{option.label}</option>
                                             ))}
                                         </select>
                                     </td>
                                     <td>
-                                        <input name="jerseyNumber" type="number" defaultValue={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
+                                        <input name="jerseyNumber" type="number" value={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
                                     </td>
                                     <td>{player.joinedDate}</td>
                                     <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemovePlayer(index)}>Remove</button></td>
@@ -283,7 +372,7 @@ const TeamMaintenance = () => {
             </div>
         )}
                 <div className="row justify-content-center mt-5">
-                    <button className="btn btn-dark col-2 mx-5" type="submit" onClick={navigateTeamDetails}>
+                    <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateTeamDetails}>
                         {action.title}
                     </button>
                     { action.type !== "Creation" && (
@@ -297,6 +386,7 @@ const TeamMaintenance = () => {
                 </div>
 
       </Card>
+      )}
     </div>
   );
 };

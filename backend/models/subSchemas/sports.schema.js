@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { validateSchemaProperty } from "../../utils/schema";
+import { validateSchemaProperty } from "../../utils/schema.js";
 
 const sportsSchema = Schema({
   _id: false,

@@ -104,7 +104,7 @@ const AdminRequestMnt = () => {
 
             <div className = "row mb-2">
                 <div className="col-3 text-end"><label htmlFor="requestor" className="form-label">Requestor's Username*</label></div>
-                <div className="col-3"><input name="requestor" type="text" className="form-control" defaultValue={currValues.requestor} onChange={handleRequestDetails} /></div>
+                <div className="col-3"><input id="requestor" name="requestor" type="text" className="form-control" value={currValues.requestor} onChange={handleRequestDetails} /></div>
                 <div className="col-1"><FaSearchPlus className="m-auto" onClick={()=> handleSearchUser(currValues.requestor, "requestorId")} /></div>
                 <div className="col-2 text-end"><label htmlFor="requestorId" className="form-label" >Requestor's User Id</label></div>
                 <div className="col-3">
@@ -114,7 +114,7 @@ const AdminRequestMnt = () => {
             <div className = "row mb-2">
                 <div className="col-3 text-end"><label htmlFor="reqType" className="form-label" >Request Type*</label></div>
                 <div className="col-4">
-                    <select name="reqType" type="text" className="form-control" defaultValue={currValues.reqType} onChange={handleRequestDetails}>
+                    <select id="reqType" name="reqType" type="text" className="form-control" value={currValues.reqType} onChange={handleRequestDetails}>
                         {requestTypeOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
                         ))}
@@ -122,7 +122,7 @@ const AdminRequestMnt = () => {
                 </div>
                 <div className="col-2 text-end"><label htmlFor="reqStatus" className="form-label" >Request Status*</label></div>
                 <div className="col-2">
-                    <select name="reqStatus" type="text" className="form-control" defaultValue={currValues.reqStatus} onChange={handleRequestDetails}>
+                    <select id="reqStatus" name="reqStatus" type="text" className="form-control" value={currValues.reqStatus} onChange={handleRequestDetails}>
                         {requestStatusOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
                         ))}
@@ -131,20 +131,20 @@ const AdminRequestMnt = () => {
             </div>
             <div className = "row mb-2">
                 <div className="col-3 text-end"><label htmlFor="minAppr" className="form-label">Min Number of Approvals</label></div>
-                <div className="col-1"><input name="minAppr" type="number" min="1" className="form-control" defaultValue={currValues.minAppr} onChange={handleRequestDetails} /></div>
+                <div className="col-1"><input id="minAppr" name="minAppr" type="number" min="1" className="form-control" value={currValues.minAppr} onChange={handleRequestDetails} /></div>
                 <div className="col-5 text-end"><label htmlFor="apprCounter" className="form-label">Approval/s Count</label></div>
-                <div className="col-1"><input name="apprCounter" type="number" min="0" className="form-control" defaultValue={currValues.apprCounter} onChange={handleRequestDetails} /></div>
+                <div className="col-1"><input id="apprCounter" name="apprCounter" type="number" min="0" className="form-control" value={currValues.apprCounter} onChange={handleRequestDetails} /></div>
             </div>
             <div className = "row mb-2">
                 <div className="col-3 text-end"><label htmlFor="reqExp" className="form-label">Request Expiry</label></div>
-                <div className="col-4"><input name="reqExp" type="text" className="form-control" defaultValue={currValues.reqExp} onChange={handleRequestDetails} /></div>
+                <div className="col-4"><input id="reqExp" name="reqExp" type="text" className="form-control" value={currValues.reqExp} onChange={handleRequestDetails} /></div>
             </div>
             <div className="row mt-5">
                 <div className="col-3 text-end"><p>RECEIVER/S :</p></div>
                 </div>
             <div className="row mt-2">
                 <div className="col-3 text-end"><label htmlFor="rcvrUsername" className="form-label">User</label></div>
-                <div className="col-3"><input name="rcvrUsername" type="text" className="form-control" defaultValue={currValues.rcvrUsername} onChange={handleRequestDetails} placeholder="Search by username" /></div>
+                <div className="col-3"><input id="rcvrUsername" name="rcvrUsername" type="text" className="form-control" value={currValues.rcvrUsername} onChange={handleRequestDetails} placeholder="Search by username" /></div>
                 <div className="col-1"><FaSearchPlus className="m-auto" onClick={()=> handleSearchUser(currValues.rcvrUsername, "rcvrUserId")} /></div>
                 <div className="col-3">
                     <a href={`/adminuserupdate/${currValues.rcvrUserId}`} target="_blank" rel="noreferrer" name="rcvrUserId">{currValues.rcvrUserId}</a>
@@ -152,7 +152,7 @@ const AdminRequestMnt = () => {
             </div>
             <div className="row mt-2">
                 <div className="col-3 text-end"><label htmlFor="rcvrTeamName" className="form-label">Team</label></div>
-                <div className="col-3"><input name="rcvrTeamName" type="text" className="form-control" defaultValue={currValues.rcvrTeamName} onChange={handleRequestDetails} placeholder="Search by team name" /></div>
+                <div className="col-3"><input id="rcvrTeamName" name="rcvrTeamName" type="text" className="form-control" value={currValues.rcvrTeamName} onChange={handleRequestDetails} placeholder="Search by team name" /></div>
                 <div className="col-1"><FaSearchPlus className="m-auto" onClick={()=> handleSearchTeam(currValues.rcvrTeamName)} /></div>
                 <div className="col-3">
                     <a href={`/adminuserupdate/${currValues.rcvrTeamId}`} target="_blank" rel="noreferrer" name="rcvrTeamId">{currValues.rcvrTeamId}</a>
@@ -160,7 +160,7 @@ const AdminRequestMnt = () => {
             </div>
             <div className="row mt-2">
                 <div className="col-3 text-end"><label htmlFor="rcvrLeagueName" className="form-label">League</label></div>
-                <div className="col-3"><input name="rcvrLeagueName" type="text" className="form-control" defaultValue={currValues.rcvrLeagueName} onChange={handleRequestDetails} placeholder="Search by league name" /></div>
+                <div className="col-3"><input id="rcvrLeagueName" name="rcvrLeagueName" type="text" className="form-control" value={currValues.rcvrLeagueName} onChange={handleRequestDetails} placeholder="Search by league name" /></div>
                 <div className="col-1"><FaSearchPlus className="m-auto" onClick={()=> handleSearchLeague(currValues.rcvrLeagueName)} /></div>
                 <div className="col-3">
                     <a href={`/adminuserupdate/${currValues.rcvrLeagueId}`} target="_blank" rel="noreferrer" name="rcvrLeagueId">{currValues.rcvrLeagueId}</a>

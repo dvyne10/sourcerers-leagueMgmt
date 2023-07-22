@@ -9,16 +9,17 @@ export default function Leagues() {
   return (
     <>
       <div
-        className="container"
         style={{
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          paddingInline: 30,
+          width: "100%",
+          alignSelf: "center",
           justifyContent: "center",
-          paddingTop: "50px",
+          paddingTop: "2%",
         }}
       >
-        <div className="d-flex justify-content-between w-100 p-3 align-items-end">
+        <div className="d-flex justify-content-between w-100  align-items-end">
           <div className="d-flex ">
             <i className="bi bi-filter"></i>
             <p>Filter</p>
@@ -30,7 +31,7 @@ export default function Leagues() {
             <div className="d-flex align-items-end">
               <button
                 type="button mh-25"
-                className="btn btn-light"
+                className="btn  btn-secondary"
                 onClick={navigateCreateLeague}
               >
                 <i className="bi bi-plus">Create League</i>
@@ -93,7 +94,7 @@ export default function Leagues() {
           teamsJoined={12}
           expanded={true}
           onClick={() => {
-            navigate("/league/123");
+            navigate("/league/648e9013466c1c995745907c");
           }}
         />
         <LeagueCard
@@ -102,7 +103,7 @@ export default function Leagues() {
           totalTeams={12}
           teamsJoined={6}
           onClick={() => {
-            navigate("/league/123");
+            navigate("/league/648e9018466c1c9957459258");
           }}
         />
         <LeagueCard
