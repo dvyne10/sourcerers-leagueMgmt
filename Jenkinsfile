@@ -27,7 +27,7 @@ pipeline {
                 dir('frontend'){
                     echo 'Deploying....'
                     withCredentials([string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN')]) {
-                        sh '/usr/local/bin/ntl deploy --prod --open'
+                        sh '/usr/local/bin/netlify deploy --prod --open'
                     }
                 }
             }
