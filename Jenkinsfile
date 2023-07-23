@@ -10,7 +10,8 @@ pipeline {
        stage('Build') {
             steps {
                 dir('frontend'){
-                    echo 'Building....'
+                    echo 'Installing Vite and Dependencies....'
+                    sh 'yarn global add create-vite'
                     sh 'yarn install' 
                     sh 'yarn run build' 
                 }
@@ -27,7 +28,7 @@ pipeline {
                 dir('frontend'){
                     echo 'Deploying....'
                     withCredentials([string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN')]) {
-                        sh '/usr/local/bin/netlify deploy --prod --open'
+                        sh '/usr/local/bin/ntl deploy --prod --open'
                     }
                 }
             }
