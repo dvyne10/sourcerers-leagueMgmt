@@ -7,11 +7,12 @@ pipeline {
     }
 
     stages {
-        // stage('Prepare'){
-        //     steps{
-        //      sh "npm install -g yarn"
-        //     }
-        // }
+        stage('Prepare') {
+            steps {
+                // Install Yarn globally inside the Docker container
+                sh 'npm install -g yarn'
+            }
+        }
        stage('Build') {
             steps {
                 dir('frontend'){
