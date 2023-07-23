@@ -14,7 +14,7 @@ pipeline {
         // }
        stage('Build') {
             steps {
-                dir('/frontend/'){
+                dir('frontend'){
                     echo 'Building....'
                     sh 'npm install' 
                     sh 'npm run build' 
