@@ -38,5 +38,10 @@ pipeline {
                 }
             }
         }
+         stage('Check Environment Variables') {
+            steps {
+                sh 'echo $PATH'
+            }
+        }
     }
 }
