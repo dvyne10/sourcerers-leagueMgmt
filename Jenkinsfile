@@ -11,8 +11,8 @@ pipeline {
             steps {
                 dir('frontend'){
                     echo 'Building....'
-                    sh 'npm install' 
-                    sh 'npm run build' 
+                    sh 'yarn install' 
+                    sh 'yarn run build' 
                 }
                
             }
