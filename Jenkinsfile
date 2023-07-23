@@ -28,7 +28,7 @@ pipeline {
                 dir('backend'){
                     echo 'installing packages'
                     sh 'npm install'
-                    sh 'jest /jest/register.test.js'
+                    sh 'npm test'
                 }
             }
         }
