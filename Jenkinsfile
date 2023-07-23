@@ -7,6 +7,11 @@ pipeline {
     }
 
     stages {
+         stage('Check Environment Variables') {
+            steps {
+                sh 'echo $PATH'
+            }
+        }
        stage('Build') {
             steps {
                 dir('frontend'){
