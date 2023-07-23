@@ -107,19 +107,19 @@ return (
           height: '1000px',
         }}
       >
-        <h1
-          className="animated-text"
-          style={{
-            color: 'white',
-            opacity: opacity,
-            transition: 'opacity 5s',
-            paddingLeft: '40%',
-            paddingTop: '15%',
-            fontSize: '60px',
-          }}
-        >
-          Find your team <br /> open your dream
-        </h1>
+          <h1
+            className="animated-text"
+            style={{
+              color: 'white',
+              opacity: opacity,
+              transition: 'opacity 5s',
+              paddingLeft: '40%',
+              paddingTop: '15%',
+              fontSize: '5vw', // Adjust the font size using vw (viewport width) units
+            }}
+          >
+            Find your team <br /> open your dream
+          </h1>
       </div>
 
       <div style={{ width: '100%' }}>
