@@ -7,25 +7,27 @@ pipeline {
     }
 
     stages {
-        //  stage('Check Environment Variables') {
-        //     steps {
-        //         sh 'echo $PATH'
-        //     }
-        // }
+         stage('Check Environment Variables') {
+            steps {
+                sh 'echo $PATH'
+            }
+        }
        stage('Build') {
             steps {
                 dir('frontend'){
                     echo 'Installing Vite and Dependencies....'
                     sh 'yarn global add create-vite'
                     sh 'yarn install' 
-                    sh 'yarn run build' 
+                    sh 'yarn dev' 
                 }
                
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
+                dir('backend'){
+                    echo 'installing packages'
+                }
             }
         }
         stage('Deploy') {
@@ -33,14 +35,9 @@ pipeline {
                 dir('frontend'){
                     echo 'Deploying....'
                     withCredentials([string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN')]) {
-                        sh '/usr/local/bin/ntl deploy --prod --open'
+                        // sh '/usr/local/bin/ntl deploy --prod'
                     }
                 }
-            }
-        }
-         stage('Check Environment Variables') {
-            steps {
-                sh 'echo $PATH'
             }
         }
     }
