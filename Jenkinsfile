@@ -27,7 +27,7 @@ pipeline {
                 echo 'Deploying....'
                 withCredentials([string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN')]) {
                     sh "yarn global add netlify-cli"
-                    sh 'netlify deploy --auth "$NETLIFY_AUTH_TOKEN"'
+                    sh 'netlify deploy --prod --open'
                 }
             }
         }
