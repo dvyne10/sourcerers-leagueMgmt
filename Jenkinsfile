@@ -18,7 +18,7 @@ pipeline {
                     echo 'Installing Vite and Dependencies....'
                     sh 'yarn global add create-vite'
                     sh 'yarn install' 
-                    sh 'yarn dev' 
+                    sh 'yarn run build' 
                 }
                
             }
@@ -27,6 +27,8 @@ pipeline {
             steps {
                 dir('backend'){
                     echo 'installing packages'
+                    sh 'npm install'
+                    sh 'jest /jest/register.test.js'
                 }
             }
         }
