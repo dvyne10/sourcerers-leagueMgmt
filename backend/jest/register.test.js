@@ -43,7 +43,7 @@ describe("test user password", () => {
 
 describe("test user email", () => {
   test("otp length", () => {
-    expect(() => validateOTP("12345")).toThrow("Invalid OTP");
+    expect(() => validateOTP("12345232")).toThrow("Invalid OTP");
   });
 
   test("otp should be numbers only", () => {
