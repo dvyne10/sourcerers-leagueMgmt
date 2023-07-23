@@ -16,7 +16,6 @@ pipeline {
             steps {
                 dir('/frontend/'){
                     echo 'Building....'
-                    sh 'cd /frontend/'
                     sh 'npm install' 
                     sh 'npm run build' 
                 }
