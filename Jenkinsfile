@@ -1,18 +1,12 @@
 pipeline {
     agent {
         docker {
-            image 'node:lts-bullseye-slim' 
+            image 'node:lts' 
             args '-p 3000:3000' 
         }
     }
 
     stages {
-        stage('Prepare') {
-            steps {
-                // Install Yarn globally inside the Docker container
-                sh 'npm install -g yarn'
-            }
-        }
        stage('Build') {
             steps {
                 dir('frontend'){
