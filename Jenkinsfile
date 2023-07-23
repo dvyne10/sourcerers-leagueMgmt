@@ -2,10 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+       stage('Build') {
             steps {
-                echo 'building....'
-                // sh 'npm install'
+                echo 'Building....'
+                sh 'yarn install' 
+                sh 'yarn run build' 
             }
         }
         stage('Test') {
