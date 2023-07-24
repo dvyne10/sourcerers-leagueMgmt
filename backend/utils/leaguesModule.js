@@ -670,7 +670,7 @@ export const joinLeague = async function(userId, teamId, leagueId, msg) {
         let pendingRequestId = reqDetails.pendingRequestId
         let admins = await getLeagueAdmins(leagueId)
         const promises = admins.map(async function(admin) {
-            await UserModel.updateOne({ _id : admin }, { 
+            await UserModel.updateOne({ _id : admin.userId }, { 
                 $push: { notifications : {
                     readStatus: false,
                     notificationType: notif.data._id,
@@ -692,6 +692,65 @@ export const joinLeague = async function(userId, teamId, leagueId, msg) {
     return response
 }
 
+export const unjoinLeague = async function(userId, leagueId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    let notifId = "NTFLGL"
+
+    if (userId === null || userId.trim() === "" || leagueId === null || leagueId.trim() === "") {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid entry parameters"
+        return response
+    }
+
+    let leagueButtons = await getLeagueButtons(userId, leagueId)
+    if (leagueButtons.displayUnjoinButton !== true) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Cannot unjoin the league."
+        return response
+    }
+
+    let notif = await getNotifParmByNotifId(notifId)
+    if (notif.requestStatus !== 'ACTC') {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid notification type."
+        return response
+    }
+
+    // Remove from league
+    let admins = await getLeagueAdmins(leagueId)
+    let index = admins.findIndex(admin => admin.userId.equals(userId))
+    if (index === -1 || !admins[index].teamId ) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid unjoin request."
+        return response
+    }
+    let teamToUnjoin = admins[index].teamId
+    let promise1 = LeagueModel.updateOne({ _id : new ObjectId(leagueId) }, { 
+        $pull: { teams : {
+          teamId: teamToUnjoin
+        } } 
+    })
+    // TO DO - remove all pending notifs to userId that is related to that leagueId !!!!!
+
+    // Send notifications to league admins
+    const promise2 = admins.map(async function(admin) {
+        if (!admin.userId.equals(userId)) {
+            await UserModel.updateOne({ _id : admin.userId }, { 
+                $push: { notifications : {
+                    readStatus: false,
+                    notificationType: notif.data._id,
+                    senderUserId: new ObjectId(userId),
+                    senderTeamId: teamToUnjoin,
+                    senderLeagueId: new ObjectId(leagueId),
+                } } 
+            })
+        }
+    })
+    await Promise.all([promise1, promise2]);
+    response.requestStatus = "ACTC"
+    return response
+}
+
 export const getLeagueAdmins = async function(leagueId) {
     let admins = []
     if (leagueId === null || leagueId.trim() === "") {
@@ -702,13 +761,13 @@ export const getLeagueAdmins = async function(leagueId) {
     if (league === null) {
         return admins
     }
-    admins.push(league.createdBy)
+    admins.push({role: "League Creator", userId: league.createdBy})
 
     let teamAdmin
     const promises = league.teams.map(async function(team) {
         teamAdmin = await getTeamAdmin(team.teamId.toString())
         if (teamAdmin !== "") {
-            admins.push(teamAdmin)
+            admins.push({role: "Team Creator", userId: teamAdmin, teamId: team.teamId})
         }
     })
     await Promise.all(promises);

@@ -7,7 +7,7 @@ import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getLeagues, createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams, 
-  canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams,getLeagueAdmins, joinLeague } from "./utils/leaguesModule.js";
+  canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams,getLeagueAdmins, joinLeague, unjoinLeague } from "./utils/leaguesModule.js";
 import { getHomeDetails } from "./utils/homePageModule.js";
 import { getRequestById, hasPendingRequest } from "./utils/requestsModule.js";
 import { getTeamDetails } from "./utils/teamsModule.js";
@@ -77,6 +77,15 @@ app.post("/joinleague/:leagueid", (req, res) => {
   let teamId = "648ba154251b78d7946df340"  // TEMP ONLY
   let msg = "This is a msg from the team to join league" //TEMP ONLY
   joinLeague(userId, teamId, req.params.leagueid, msg)
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.post("/unjoinleague/:leagueid", (req, res) => {
+  let userId = "648e4ff1db2a68344fda3742" //TEMP ONLY
+  //let userId = "648ba154251b78d7946df339" //league creator
+  unjoinLeague(userId, req.params.leagueid)
   .then((data)=>{
     res.json(data);
   })
