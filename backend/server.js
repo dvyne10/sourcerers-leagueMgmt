@@ -6,8 +6,11 @@ import connectDB from "./config/db.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
-import { createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams } from "./utils/leaguesModule.js";
+import { getLeagues, createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams, 
+  canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams } from "./utils/leaguesModule.js";
 import { getHomeDetails } from "./utils/homePageModule.js";
+import { getRequestById, hasPendingRequest } from "./utils/requestsModule.js";
+import { getTeamDetails } from "./utils/teamsModule.js";
 
 dotenv.config();
 connectDB();
@@ -22,12 +25,69 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/users", userRoutes);
 
-app.get("/leagues", (req, res) => {
-  res.send({ message: "Welcome to the Leagues page." });
-});
-
 app.get("/", (req, res) => {
   getHomeDetails()
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.get("/leagues", (req, res) => {
+  getLeagues()
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.post("/canusercreatenewleague", (req, res) => {
+  let userId = "648ba154251b78d7946df339" // temp - max reached
+  //let userId = "648ba154251b78d7946df338" // temp - max NOT yet reached
+  canUserCreateNewLeague(userId)
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.post("/league/:leagueid", (req, res) => {
+  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
+  getLeagueDetailsAndButtons(userId, req.params.leagueid)
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.post("/lookingforteamson/:leagueid", (req, res) => {
+  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
+  updateLookingForTeams(userId, req.params.leagueid, true)
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.post("/lookingforteamsoff/:leagueid", (req, res) => {
+  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
+  updateLookingForTeams(userId, req.params.leagueid, false)
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.post("/joinleague/:leagueid", (req, res) => {
+  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
+  let teamId = "648e224f91a1a82229a6c11f"  // TEMP ONLY
+  joinLeague(userId, teamId, req.params.leagueid)
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.get("/testing", (req, res) => {
+  //getLeagueDetails("648e9013466c1c995745907c")
+  getTeamDetails("648e224f91a1a82229a6c11f")
+  //hasPendingRequest("APTMJ", "648ba154251b78d7946df33c", "", "648e80bb453c973512704aea", "")
+  //getLeaguesUserIsAdmin("648e132ff3d2cb1d615fbd9d") //cNunez
+  //getLeaguesUserIsAdmin("648ba154251b78d7946df339")
+  //getRequestById("648ba154251b78d7946df34a")
   .then((data)=>{
     res.json(data);
   })
@@ -57,6 +117,7 @@ app.post("/admin", (req, res) => {
   }
   
 });
+
 
 
 app.post("/createleague", (req, res) => {
