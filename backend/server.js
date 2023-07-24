@@ -7,7 +7,7 @@ import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getLeagues, createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams, 
-  canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams } from "./utils/leaguesModule.js";
+  canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams,getLeagueAdmins, joinLeague } from "./utils/leaguesModule.js";
 import { getHomeDetails } from "./utils/homePageModule.js";
 import { getRequestById, hasPendingRequest } from "./utils/requestsModule.js";
 import { getTeamDetails } from "./utils/teamsModule.js";
@@ -73,9 +73,10 @@ app.post("/lookingforteamsoff/:leagueid", (req, res) => {
 });
 
 app.post("/joinleague/:leagueid", (req, res) => {
-  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
-  let teamId = "648e224f91a1a82229a6c11f"  // TEMP ONLY
-  joinLeague(userId, teamId, req.params.leagueid)
+  let userId = "648ba154251b78d7946df338" //TEMP ONLY
+  let teamId = "648ba154251b78d7946df340"  // TEMP ONLY
+  let msg = "This is a msg from the team to join league" //TEMP ONLY
+  joinLeague(userId, teamId, req.params.leagueid, msg)
   .then((data)=>{
     res.json(data);
   })
@@ -83,11 +84,12 @@ app.post("/joinleague/:leagueid", (req, res) => {
 
 app.get("/testing", (req, res) => {
   //getLeagueDetails("648e9013466c1c995745907c")
-  getTeamDetails("648e224f91a1a82229a6c11f")
+  //getTeamDetails("648e224f91a1a82229a6c11f")
   //hasPendingRequest("APTMJ", "648ba154251b78d7946df33c", "", "648e80bb453c973512704aea", "")
-  //getLeaguesUserIsAdmin("648e132ff3d2cb1d615fbd9d") //cNunez
-  //getLeaguesUserIsAdmin("648ba154251b78d7946df339")
+  //getNSLeaguesUserIsAdmin("648e132ff3d2cb1d615fbd9d") //cNunez
+  //getNSLeaguesUserIsAdmin("648ba154251b78d7946df339")
   //getRequestById("648ba154251b78d7946df34a")
+  getLeagueAdmins("648e9013466c1c995745907c")
   .then((data)=>{
     res.json(data);
   })
@@ -117,8 +119,6 @@ app.post("/admin", (req, res) => {
   }
   
 });
-
-
 
 app.post("/createleague", (req, res) => {
   createLeague(req.body)

@@ -61,10 +61,15 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 return response
             } else {
                 let parm = await getNotifParmByNotifId(notifId)
+                if (parm.requestStatus !== 'ACTC') {
+                    response.requestStatus = "RJCT"
+                    response.errMsg = "Invalid notification type"
+                    return response
+                }
                 let aptmi = await UserModel.aggregate([ 
                     { 
                         $match: { _id: new ObjectId(userId), "requestsSent.receiverUserId" : new ObjectId(playerId),
-                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : new ObjectId(parm._id)
+                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : parm.data._id
                         } 
                     }, 
                     { 
@@ -76,7 +81,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                                     cond: { $and : [
                                         { $eq: [ "$$req.receiverUserId", new ObjectId(playerId) ] },
                                         { $eq: [ "$$req.requestStatus", "PEND" ] },
-                                        { $eq: [ "$$req.requestType", new ObjectId(parm._id) ] },
+                                        { $eq: [ "$$req.requestType", parm.data._id ] },
                                     ]}
                                 }
                             }
@@ -104,10 +109,15 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 return response
             } else {
                 let parm = await getNotifParmByNotifId(notifId)
+                if (parm.requestStatus !== 'ACTC') {
+                    response.requestStatus = "RJCT"
+                    response.errMsg = "Invalid notification type"
+                    return response
+                }
                 let aptmj = await UserModel.aggregate([ 
                     { 
                         $match: { _id: new ObjectId(userId), "requestsSent.receiverTeamId" : new ObjectId(teamId),
-                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : new ObjectId(parm._id)
+                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : parm.data._id
                         } 
                     }, 
                     { 
@@ -119,7 +129,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                                     cond: { $and : [
                                         { $eq: [ "$$req.receiverTeamId", new ObjectId(teamId) ] },
                                         { $eq: [ "$$req.requestStatus", "PEND" ] },
-                                        { $eq: [ "$$req.requestType", new ObjectId(parm._id) ] },
+                                        { $eq: [ "$$req.requestType", new ObjectId(parm.data._id) ] },
                                     ]}
                                 }
                             }
@@ -159,12 +169,17 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 return response
             } else {
                 let parm = await getNotifParmByNotifId(notifId)
-                let resp1 = getLeaguesUserIsAdmin(userId)
+                if (parm.requestStatus !== 'ACTC') {
+                    response.requestStatus = "RJCT"
+                    response.errMsg = "Invalid notification type"
+                    return response
+                }
+                let resp1 = getNSLeaguesUserIsAdmin(userId)
                 let resp2 = getTeamDetails(teamId)
                 let resp3 = UserModel.aggregate([ 
                     { 
                         $match: { "requestsSent.receiverTeamId" : new ObjectId(teamId),
-                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : new ObjectId(parm._id)
+                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : parm.data._id
                         } 
                     }, 
                     { 
@@ -176,7 +191,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                                     cond: { $and : [
                                         { $eq: [ "$$req.receiverTeamId", new ObjectId(teamId) ] },
                                         { $eq: [ "$$req.requestStatus", "PEND" ] },
-                                        { $eq: [ "$$req.requestType", new ObjectId(parm._id) ] },
+                                        { $eq: [ "$$req.requestType", parm.data._id ] },
                                     ]}
                                 }
                             }
@@ -190,11 +205,11 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                     return response
                 }
                 let teamSport = team.details.sportsTypeId
-                let leaguesUserIsAdmin = await usersLeagues.filter(league => league.sportsTypeId.equals(teamSport))
+                let nsLeaguesUserIsAdmin = await usersLeagues.filter(league => league.sportsTypeId.equals(teamSport))
                 
                 if (aplgi === null || aplgi.length === 0) {
                     response.hasPending = false
-                    response.leaguesUserIsAdmin = leaguesUserIsAdmin
+                    response.nsLeaguesUserIsAdmin = nsLeaguesUserIsAdmin
                     return response
                 } else {
                     let found = false
@@ -221,7 +236,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                             }
                         ]).limit(1)
                         if (notif !== null && notif.length > 0) {
-                            leagueIndex = await leaguesUserIsAdmin.findIndex((i) => i.leagueId.equals(notif[0].notifications[0].senderLeagueId))
+                            leagueIndex = await nsLeaguesUserIsAdmin.findIndex((i) => i.leagueId.equals(notif[0].notifications[0].senderLeagueId))
                             if (leagueIndex !== -1) {
                                 found = true
                                 response.pendingInviteRequestId = req._id
@@ -233,7 +248,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                     if (found === false) {
                         response.hasPending = false
                         response.requestStatus = "ACTC"
-                        response.leaguesUserIsAdmin = leaguesUserIsAdmin
+                        response.nsLeaguesUserIsAdmin = nsLeaguesUserIsAdmin
                     } else {
                         response.hasPending = true
                         response.requestStatus = "ACTC"
@@ -250,10 +265,15 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 return response
             } else {
                 let parm = await getNotifParmByNotifId(notifId)
+                if (parm.requestStatus !== 'ACTC') {
+                    response.requestStatus = "RJCT"
+                    response.errMsg = "Invalid notification type"
+                    return response
+                }
                 let aplgj = await UserModel.aggregate([ 
                     { 
                         $match: { _id: new ObjectId(userId), "requestsSent.receiverLeagueId" : new ObjectId(leagueId),
-                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : new ObjectId(parm._id)
+                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : parm.data._id
                         } 
                     }, 
                     { 
@@ -265,7 +285,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                                     cond: { $and : [
                                         { $eq: [ "$$req.receiverLeagueId", new ObjectId(leagueId) ] },
                                         { $eq: [ "$$req.requestStatus", "PEND" ] },
-                                        { $eq: [ "$$req.requestType", new ObjectId(parm._id) ] },
+                                        { $eq: [ "$$req.requestType", parm.data._id ] },
                                     ]}
                                 }
                             }
@@ -303,10 +323,15 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 return response
             } else {
                 let parm = await getNotifParmByNotifId(notifId)
+                if (parm.requestStatus !== 'ACTC') {
+                    response.requestStatus = "RJCT"
+                    response.errMsg = "Invalid notification type"
+                    return response
+                }
                 let aplgr = await UserModel.aggregate([ 
                     { 
                         $match: { "requestsSent.receiverTeamId" : new ObjectId(teamId), "requestsSent.receiverLeagueId" : new ObjectId(leagueId),
-                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : new ObjectId(parm._id)
+                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : parm.data._id
                         } 
                     }, 
                     { 
@@ -319,7 +344,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                                         { $eq: [ "$$req.receiverTeamId", new ObjectId(teamId) ] },
                                         { $eq: [ "$$req.receiverLeagueId", new ObjectId(leagueId) ] },
                                         { $eq: [ "$$req.requestStatus", "PEND" ] },
-                                        { $eq: [ "$$req.requestType", new ObjectId(parm._id) ] },
+                                        { $eq: [ "$$req.requestType", parm.data._id ] },
                                     ]}
                                 }
                             }
@@ -345,10 +370,15 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 return response
             } else {
                 let parm = await getNotifParmByNotifId(notifId)
+                if (parm.requestStatus !== 'ACTC') {
+                    response.requestStatus = "RJCT"
+                    response.errMsg = "Invalid notification type"
+                    return response
+                }
                 let aplgs = await UserModel.aggregate([ 
                     { 
                         $match: { "requestsSent.receiverLeagueId" : new ObjectId(leagueId),
-                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : new ObjectId(parm._id)
+                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : parm.data._id
                         } 
                     }, 
                     { 
@@ -360,7 +390,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                                     cond: { $and : [
                                         { $eq: [ "$$req.receiverLeagueId", new ObjectId(leagueId) ] },
                                         { $eq: [ "$$req.requestStatus", "PEND" ] },
-                                        { $eq: [ "$$req.requestType", new ObjectId(parm._id) ] },
+                                        { $eq: [ "$$req.requestType", parm.data._id ] },
                                     ]}
                                 }
                             }

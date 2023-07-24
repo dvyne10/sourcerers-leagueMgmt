@@ -132,7 +132,32 @@ export const getTeamName = async function(teamId) {
         }
         
     } else {
-        return teamId
+        return ""
+    }   
+}
+
+export const getTeamAdmin = async function(teamId) {
+    if (teamId !== null && teamId!== "") {
+        let team = await UserModel.aggregate([ { $match: { "teamsCreated._id"  : new ObjectId(teamId) } }, 
+            { 
+                $project: {
+                    teamsCreated: {
+                        $filter: {
+                           input: "$teamsCreated",
+                           as: "team",
+                           cond: { $eq: [ "$$team._id", new ObjectId(teamId) ]  }
+                        }
+                    }
+                }
+            }
+        ]).limit(1)
+        if (team.length !== 0) {
+            return team[0]._id
+        } else {
+            return ""
+        }
+    } else {
+        return ""
     }   
 }
 
