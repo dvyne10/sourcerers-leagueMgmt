@@ -10,11 +10,12 @@ import vanDijkImage from '/images/matchDetails/vanDijk.jpeg';
 import kevinImage from '/images/matchDetails/kevin.jpeg';
 import ramosImage from '/images/matchDetails/ramos.jpeg'; 
 import neymarImage from '/images/matchDetails/neymar.jpeg'; 
-
 import Button from 'react-bootstrap/Button'; 
-import {  Image}  from 'react-bootstrap'; 
+import { Image }  from 'react-bootstrap'; 
 import { useParams, useNavigate } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
+
+
 const MatchDetails = () => {
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
@@ -22,7 +23,8 @@ const MatchDetails = () => {
 
   const navigate = useNavigate(); 
   const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
-  const { sport } = useParams(); 
+  let { sport } = useParams();
+  sport = sport || '1'; 
   const teamLogo1 = sport === '1' ? '/images/matchDetails/madrid.png' : '/images/matchDetails/lakers.png';
   const teamLogo2 = sport === '1' ? '/images/matchDetails/barcelona.png' : '/images/matchDetails/golden.png';
 
@@ -37,6 +39,8 @@ const MatchDetails = () => {
     { name: 'Neymar Jr', position: 'FW', goals: 2, assists: 4, image: neymarImage},
   ];
 
+
+  
   const handleClickPlayerLeft = (player) => {
     setSelectedPlayerData(player);
     setSelectedPlayerLeft(player.name);
@@ -162,7 +166,7 @@ const MatchDetails = () => {
                   className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
                   roundedCircle 
                   fluid 
-                  style={{ width: "5em", height: "5em" }}
+                  style={{ width: "3em", height: "3em" }}
                 />
 
                 
@@ -196,7 +200,7 @@ const MatchDetails = () => {
                   className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
                   roundedCircle 
                   fluid 
-                  style={{ width: "5em", height: "5em" }}
+                  style={{ width: "3em", height: "3em" }}
                 />
                 
                 {selectedPlayerData && selectedPlayerData.name === player.name && (
