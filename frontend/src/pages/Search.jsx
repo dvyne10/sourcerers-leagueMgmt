@@ -47,6 +47,7 @@ const Search = () => {
     const data = [
         {
       id:1,
+      type: "Team",
       name: "Real Madrid",
       numberOfPlayers: 23,
       location: "Toronto",
@@ -55,6 +56,7 @@ const Search = () => {
       
     },{
       id:2,
+      type: "Team",
       name: "Barcelona",
       numberOfPlayers: 23,
       location: "Toronto",
@@ -63,6 +65,7 @@ const Search = () => {
       
     },{
       id:3,
+      type: "Team",
       name: "Lakers",
       numberOfPlayers: 11,
       location: "Toronto",
@@ -71,6 +74,7 @@ const Search = () => {
       
     },{
       id:4,
+      type: "Team",
       name: "Bulls",
       numberOfPlayers: 123,
       location: "Toronto",
@@ -79,6 +83,7 @@ const Search = () => {
       
     },{
       id:5,
+      type: "Team",
       name: "No Name Team",
       numberOfPlayers: 15,
       location: "Toronto",
@@ -89,52 +94,71 @@ const Search = () => {
       
    {
       id:1,
+      type: "League",
       name: "Play or Don't, just live.",
       lookingForTeams: true
       
     },{
       id:2,
+      type: "League",
       name: "Winner gets the girl",
       lookingForTeams: false
       
       
     },{
       id:3,
+      type: "League",
       name: "Winner gets the boy",
       lookingForTeams: true
       
     },{
       id:4,
+      type: "League",
       name: "Winner gets nothing",
       lookingForTeams: true
     },
-{
+    {
     
       id:1,
+      type: "Player",
       name: "Baris Berber"
       
     },{
       id:2,
+      type: "Player",
       name: "Jemma MatchPlay"
       
     },{
       id:3,
+      type: "Player",
       name: "Hyun LEEgue"
       
     },{
       id:4,
+      type: "Player",
       name: "Jinny Leegue"
       
     },{
       id:5,
+      type: "Player",
       name: "Divine TheGodOu(dagadu)"
       
     }
     
 ];
-
-
-
+const filteredLeague = data.filter(filteredData=>{
+  if(filteredData.type === "League"){
+    filteredData.lookingForPlayers = "N/A";
+    return filteredData;
+  }})
+const filteredTeam = data.filter(filteredData=>{
+  if(filteredData.type === "Team"){
+    return filteredData;
+  }});
+  const filteredPlayers = data.filter(filteredData=>{
+    if(filteredData.type === "Player"){
+      return filteredData;
+    }})
       
 
   return (
@@ -176,16 +200,16 @@ const Search = () => {
             <Col>Looking for Players</Col>
           </Row>
           {/* Team Listing */}
-          {teamFilter === true &&
-          data.Teams.map(team => 
-            <li key={data.Teams.id} className='border'>
-            <a href={"team/"+ team.id} >
+          {!teamFilter && !leagueFilter && !playerFilter &&
+          data.map(list => 
+            <li key={list.id} className='border'>
+            <a href={"team/"+ list.id} >
             <Row className='search-list p-2'>
-            <Col> {team.name}</Col>
-            <Col>{team.location}</Col>
+            <Col> {list.name}</Col>
+            <Col>{list.location}</Col>
             <Col>Status</Col>
-            <Col>{team.lookingForPlayers ? "Yes" : "No"}</Col>
-            <Col></Col>
+            <Col>{(list.lookingForTeams === undefined ? "N/A" : (list.lookingForTeams ? "Yes" : "No"))}</Col>
+            <Col>{(list.lookingForTeams === undefined ? "N/A" : (list.lookingForTeams ? "Yes" : "No"))}</Col>
           </Row>
           </a>
           
@@ -193,14 +217,14 @@ const Search = () => {
             )}
             
                     {leagueFilter === true &&
-         data.Leagues.map(league => 
-         <li key={data.Leagues.id} className='border'>
+                    filteredLeague.map(league=>
+         <li key={league.id} className='border'>
             <a href={"league/"+ league.id} >
             <Row className='search-list p-2'>
             <Col> {league.name}</Col>
             <Col>{league.location}</Col>
             <Col>Status</Col>
-            <Col>N/A</Col>
+            <Col>{}</Col>
             <Col>{league.lookingForTeams ? "Yes" : "No"} </Col>
           </Row>
           </a>
@@ -209,9 +233,9 @@ const Search = () => {
          
          )}
                     {playerFilter === true &&
-          data.Players.map(player => 
+          filteredPlayers.map(player => 
           
-            <li key={data.Leagues.id} className='border'>
+            <li key={player.id} className='border'>
             <a href={"league/"+ player.id} >
             <Row className='search-list p-2'>
             <Col> {player.name}</Col>
@@ -226,11 +250,22 @@ const Search = () => {
           
           
           )}
-          {!teamFilter && !leagueFilter && !playerFilter &&
-  <div>
-    Please choose at least one filter to search.
-  </div>
-          }
+ {teamFilter === true &&
+                    filteredTeam.map(team=>
+         <li key={team.id} className='border'>
+            <a href={"league/"+ team.id} >
+            <Row className='search-list p-2'>
+            <Col> {team.name}</Col>
+            <Col>{team.location}</Col>
+            <Col>Status</Col>
+            <Col>N/A</Col>
+            <Col>{team.lookingForTeams ? "Yes" : "No"} </Col>
+          </Row>
+          </a>
+          
+          </li>
+         
+         )}
           </ul>
         </div>
         

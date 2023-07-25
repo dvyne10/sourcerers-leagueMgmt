@@ -30,6 +30,17 @@
   }
 }
 
+.league-details-team-listing{
+  transition: background-color 0.5s ease;
+  border-radius: 20%;
+  &:hover{
+    transition: background-color 0.5s ease;
+    background-color: rgb(221, 215, 215);
+    border-radius: 20%;
+  }
+  
+}
+
 .team-jersey-list-number{
   font-family:"Saira Extra Condensed";
   color:white;
