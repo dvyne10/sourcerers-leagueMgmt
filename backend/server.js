@@ -7,10 +7,13 @@ import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getLeagues, createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams, 
-  canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams,getLeagueAdmins, joinLeague, unjoinLeague } from "./utils/leaguesModule.js";
+  canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams,getLeagueAdmins, joinLeague, unjoinLeague,
+  startLeague
+   } from "./utils/leaguesModule.js";
 import { getHomeDetails } from "./utils/homePageModule.js";
-import { getRequestById, hasPendingRequest } from "./utils/requestsModule.js";
+import { getRequestById, hasPendingRequest, cancelRequest } from "./utils/requestsModule.js";
 import { getTeamDetails } from "./utils/teamsModule.js";
+import { getSysParmList } from "./utils/sysParmModule.js";
 
 dotenv.config();
 connectDB();
@@ -91,14 +94,34 @@ app.post("/unjoinleague/:leagueid", (req, res) => {
   })
 });
 
+app.post("/cancelrequest/:pendingrequestid", (req, res) => {
+  let userId = "648ba154251b78d7946df338" //TEMP ONLY
+  //let userId = "648ba154251b78d7946df339" //league creator
+  cancelRequest(userId, req.params.pendingrequestid)
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.post("/startleague/:leagueid", (req, res) => {
+  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
+  startLeague(userId, req.params.leagueid)
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
 app.get("/testing", (req, res) => {
   //getLeagueDetails("648e9013466c1c995745907c")
   //getTeamDetails("648e224f91a1a82229a6c11f")
   //hasPendingRequest("APTMJ", "648ba154251b78d7946df33c", "", "648e80bb453c973512704aea", "")
   //getNSLeaguesUserIsAdmin("648e132ff3d2cb1d615fbd9d") //cNunez
   //getNSLeaguesUserIsAdmin("648ba154251b78d7946df339")
-  //getRequestById("648ba154251b78d7946df34a")
-  getLeagueAdmins("648e9013466c1c995745907c")
+  //getRequestById("64bee2ccf271e5e25657c8e8")
+  getRequestById("64bee2ccf271e5e25657c8e8")
+  //getLeagueAdmins("648e9013466c1c995745907c")
+  //getSysParmList("notification_type")
+  //deleteNotifs()
   .then((data)=>{
     res.json(data);
   })

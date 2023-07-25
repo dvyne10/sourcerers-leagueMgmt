@@ -4,13 +4,24 @@ import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
 import { getNotifParmByNotifId } from "./sysParmModule.js";
 import { getTeamDetails, getTeamsCreated, getUsersTeams } from "./teamsModule.js";
-import { getLeagueDetails } from "./leaguesModule.js";
+import { getLeagueDetails, isLeagueAdmin } from "./leaguesModule.js";
+import { getSysParmList } from "./sysParmModule.js"
 
 let ObjectId = mongoose.Types.ObjectId;
 
+// export const deleteNotifs = async function() {
+//     let test = await UserModel.updateMany({ "notifications.forAction.requestId" : null, "notifications.notificationType" : new ObjectId('64bf3072c786fd8e4aa1549a') }, { 
+//         $pull: { notifications : {
+//             "forAction.requestId": null
+//         } }
+//     })
+//     console.log(test)
+// }
+
 export const getRequestById = async function(requestId) {
+
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    if (requestId === null || requestId === "") {
+    if (requestId === null || requestId.trim() === "") {
         response.requestStatus = "RJCT"
         response.errMsg = "Request id required"
         return response
@@ -42,7 +53,32 @@ export const getRequestById = async function(requestId) {
     } else {
         let requestor = req[0]._id
         req = req[0].requestsSent[0]
-        response.details = { ...req, requestId:requestId, requestedBy : requestor }
+        response.details = await { ...req, requestId: new ObjectId(requestId), requestedBy : requestor }
+
+        let notif = await UserModel.aggregate([ 
+            { 
+                $match: { "notifications.forAction.requestId" : new ObjectId(requestId)
+                } 
+            }, 
+            { 
+                $project: {
+                    notifications: {
+                        $filter: {
+                            input: "$notifications",
+                            as: "notif",
+                            cond: {
+                                $eq: [ "$$notif.forAction.requestId", new ObjectId(requestId) ]
+                            }
+                        }
+                    }
+                }
+            }
+        ]).limit(1)
+        if (notif !== null && notif.length > 0) {
+            notif = notif[0].notifications[0]
+            response.details = await { ...response.details, senderTeamId: notif.senderTeamId, senderLeagueId : notif.senderLeagueId }
+        }
+        response.requestStatus = "ACTC"
         return response
     }
 }
@@ -357,6 +393,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                     return response
                 } else {
                     response.hasPending = true
+                    response.pendingRemovalRequestId = aplgr[0].requestsSent[0]._id
                     response.requestStatus = "ACTC"
                     return response
                 }
@@ -399,14 +436,106 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 ]).limit(1)
                 if (aplgs === null || aplgs.length === 0) {
                     response.hasPending = false
+                    let league = await getLeagueDetails(leagueId)
+                    if (league.requestStatus !== "ACTC") {
+                        response.requestStatus = "RJCT"
+                        response.errMsg = league.errMsg
+                        return response
+                    }
+                    response.minApprovals = 999
+                    if (league.details.teams.length > 0 && league.details.status === "NS") {
+                        response.minApprovals = Math.ceil(league.details.teams.length/2)
+                    }
                     response.requestStatus = "ACTC"
                     return response
                 } else {
                     response.hasPending = true
+                    response.pendingStartLeagueRequestId = aplgs[0].requestsSent[0]._id
                     response.requestStatus = "ACTC"
                     return response
                 }
             }
         }
     }
+}
+
+export const cancelRequest = async function(userId, requestId) {
+
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (userId === null || userId.trim() === "") {
+        response.requestStatus = "RJCT"
+        response.errMsg = "User id required"
+        return response
+    }
+
+    let req = await getRequestById(requestId)
+    if (req.requestStatus !== "ACTC") {
+        return req
+    }
+
+    if (req.details.requestStatus !== "PEND") {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Cannot cancel a non-pending request."
+        return response
+    }
+
+    let notifParms = await getSysParmList("notification_type")
+    if (notifParms.requestStatus !== "ACTC" || notifParms.data.length === 0) {
+        return notifParms
+    }
+
+    let cancellable = ["APTMI", "APTMJ", "APLGJ", "APLGI"]
+    let cancellableNotifDetails = []
+    await notifParms.data.map((notif) => {
+        if (cancellable.findIndex(i => i === notif.notification_type.notifId)) {
+            cancellableNotifDetails.push({parmId : notif._id, notifId: notif.notification_type.notifId, infoOrApproval: notif.notification_type.infoOrApproval.$and})
+        }
+    })
+
+    let index = await cancellableNotifDetails.findIndex(i => i.parmId.equals(req.details.requestType))
+    if (index === -1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Cannot cancel the request."
+        return response
+    }
+
+    // "APTMI", "APTMJ", "APLGJ" can only be cancelled by requestor
+    if (cancellableNotifDetails[index].notifId !== "APLGI" && !req.details.requestedBy.equals(new ObjectId(userId))) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Not authorized to cancel the request."
+        return response
+    }
+
+    // "APLGI" can be cancelled by any of the league admins
+    if (cancellableNotifDetails[index].notifId === "APLGI" && !req.details.senderLeagueId) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid cancellation request."
+        return response
+    }
+
+    if (cancellableNotifDetails[index].notifId === "APLGI") {
+        let admin = await isLeagueAdmin(userId, req.details.senderLeagueId.toString())
+        if (!admin) {
+            response.requestStatus = "RJCT"
+            response.errMsg = "Not authorized to cancel the request."
+            return response
+        }
+    }
+
+    let promise1 = UserModel.updateOne({ "requestsSent._id" : new ObjectId(requestId) }, { 
+        $pull: { requestsSent : {
+          _id: new ObjectId(requestId)
+        } } 
+    })
+
+    let promise2 = UserModel.updateMany({ "notifications.forAction.requestId" : new ObjectId(requestId) }, { 
+        $pull: { notifications : {
+            "forAction.requestId": new ObjectId("64bee2ccf271e5e25657c8e8")
+        } }
+    })
+
+    await Promise.all([promise1, promise2]);
+    response.requestStatus = "ACTC"
+    return response
 }
