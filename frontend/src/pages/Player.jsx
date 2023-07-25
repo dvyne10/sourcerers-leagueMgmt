@@ -35,11 +35,14 @@ const Player = () => {
                 <div className="mt-3">
                   <h4>Harry Potter</h4>
                   <p className="text-secondary mb-1">@hpotter</p>
-                  <p className="text-muted font-size-sm">
-                    United Kingdom, London
+                  
+                  <p className="text-secondary font-size-sm mb-1">
+                    Toronto, CA
                   </p>
+                  <p className="text-secondary font-size-sm mb-2"><a href={"mailto:"} className="text-secondary text-decoration-none">hpotter@hogwarts.gr</a></p>
                   
                   <Button variant={invite === false ? "btn btn-outline-success" : "btn btn-outline-danger"} onClick={handleShow}>{invite === false ? "Invite" : "Uninvite"}</Button>{" "}
+                
                 </div>
               </div>
             </Card.Body>
@@ -47,23 +50,8 @@ const Player = () => {
           <Card className="mt-3">
             <Card.Body>
               <ul className="list-group list-group-flush">
-                <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                  <h6 className="mb-0">
-                   
-                    Sports of Interest
-                  </h6>
-                  <span className="text-secondary">
-                    Basketball
-                  </span>
-                </li>
-                <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                  <h6 className="mb-0">
-                    
-                    Phone Number
-                  </h6>
-                  <span className="text-secondary">444444444</span>
-                </li>
-                
+
+                <h4 className="text-center pt-1 pb-3">Sports</h4>
                 <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                   <h6 className="mb-0">
                     
@@ -86,19 +74,13 @@ const Player = () => {
                   </h6>
                   <span className="text-secondary">Active</span>
                 </li>
-                <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                  <h6 className="mb-0">
-                    
-                    Location
-                  </h6>
-                  <span className="text-secondary">Toronto</span>
-                </li>
+                
               </ul>
             </Card.Body>
           </Card>
           <Card className="mt-3">
             <Card.Body>
-              <h2 className="text-center">Past Matches</h2>
+              <h4 className="text-center">Past Matches</h4>
                    {/* Past Matches Here */}
                    <ListGroup>
             <ListGroup.Item action variant="danger" href="/match/soccer/1"  className='mt-2'>
@@ -141,24 +123,30 @@ const Player = () => {
           <Card>
             
               <h4 className="center-header">Statistics</h4>
-              <div className="mx-auto">
-              <Stack direction="horizontal" gap={2}>
-      <div className="p-2"><h1 style={{fontSize:"10rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>72</h1></div>
-      <div className="p-2"><h5 className="border-top border-bottom">Goals</h5></div>
-      <div className="p-2 ms-5"><h1 style={{fontSize:"10rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>11</h1></div>
-      <div className="p-2"><h5 className="border-top border-bottom">Wins</h5></div>
-      <div className="p-2 ms-5"><h1 style={{fontSize:"10rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>5</h1></div>
-      <div className="p-2"><h5 className="border-top border-bottom">Championships</h5></div>
+              
+              <div className="denemerow12">
+                {/* This part will repeat */}
+              <div className="d-block denemecolumn12">
+        <h1 className=" text-center" style={{fontSize:"9rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>72</h1>
+        <div className="text-center w-50 mx-auto"><h6 className="border-top border-bottom">Goals</h6></div>
+      </div>
+{/* Repeat end */}
+<div className="d-block denemecolumn12 ">
+        <h1 className=" text-center" style={{fontSize:"9rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>1.15</h1>
+        <div className="text-center w-50 mx-auto"><h6 className="border-top border-bottom">Avg Goal Per Game</h6></div>
+      </div>
+      <div className="d-block denemecolumn12">
+        <h1 className=" text-center" style={{fontSize:"9rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>30</h1>
+        <div className="text-center w-50 mx-auto"><h6 className="border-top border-bottom">Assists</h6></div>
+      </div>
+      <div className="d-block denemecolumn12">
+        <h1 className=" text-center" style={{fontSize:"9rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>150</h1>
+        <div className="text-center w-50 mx-auto"><h6 className="border-top border-bottom">Shots</h6></div>
+      </div>
+
       
-    </Stack>
-    <Stack direction="horizontal" gap={2}>
-      <div className="p-2"><h1 style={{fontSize:"10rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>1.7</h1></div>
-      <div className="p-2"><h5 className="border-top border-bottom">Averge goals per game</h5></div>
-      <div className="p-2 ms-5"><h1 style={{fontSize:"10rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>182</h1></div>
-      <div className="p-2"><h5 className="border-top border-bottom">Games played</h5></div>
-      
-    </Stack>
-    </div>
+      </div>
+    
         </Card>
 
           <Card className="mt-5">

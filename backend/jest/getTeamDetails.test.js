@@ -12,7 +12,8 @@
 
  let result = "";
  const { getTeamDetails } = require('../utils/teamDetailsModule.js');
-
+ 
+ describe('Get Team function', function () {
 test('Should be rejected if the TeamId is null', async function ()  {
     result = await getTeamDetails(null);
     console.log(result);
@@ -61,7 +62,7 @@ test('Should prompt not found if the TeamId is not found', async function ()  {
     
 });
 
-
+ });
 let teamCollection = [{
     teamId : '648ba154251b78d7946df340',
     teamName : "Gryffindor",

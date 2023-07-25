@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500&display=swap');
 
+:root{
+  --black: #2C3531;
+  --green: #116466;
+  --brown: #D9B08C;
+  --lightBrown: #FFCB9A;
+  --lightBlue: #D1E8E2;
+  --pink: #D65472;
+}
+
 .card-wrapper {
   display: flex;
   width: auto;
@@ -120,6 +129,99 @@ aside#sidebar .team-btw-match ul li.vs span {
   background-color: rgba(37,38,46,0.8);
 }
 }
+.player-list-names {
+  	transition: color .3s ease-in-out;
+	  color: var(--pink);
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-family:"Saira Extra Condensed";
+    
+    
+
+
+  	
+	&:hover {
+    color: black;
+  	}
+}
+
+
+.denemerow12 {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Create four equal columns */
+.denemecolumn12 {
+  flex: 25%;
+  padding: 20px;
+}
+
+.search-list {
+  position: relative;
+}
+
+.search-list ul {
+  position: relative;
+}
+.search-list ul li {
+  position: relative;
+  left: 0;
+  color: #fce4ec;
+  list-style: none;
+  margin: 4px 0;
+  transition: 0.5s;
+  cursor: pointer;
+}
+.search-list ul li:hover {
+  left: 10px;
+}
+.search-list ul li span {
+  position: relative;
+  padding: 8px;
+  padding-left: 12px;
+  display: inline-block;
+  z-index: 1;
+  transition: 0.5s;
+}
+.search-list a{
+  text-decoration: none;
+  color: black;
+
+  &:hover{
+    color: var(--green);
+  }
+}
+.search-list ul li:hover span {
+  color: #111;
+}
+.search-list ul li:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #D1E8E2;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: 0.5s;
+}
+.search-list ul li:hover:before {
+  transform: scaleX(1);
+}
+
+/* On screens that are 992px wide or less, go from four columns to two columns */
+@media screen and (max-width: 992px) {
+  .column {
+    flex: 50%;
+  }
+}
+
+/* On screens that are 600px wide or less, make the columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .row {
+    flex-direction: column;
+  }
+}
 
 
 body {
@@ -179,6 +281,7 @@ body {
   transform: scaleX(1);
   transform-origin: bottom middle;
 }
+
 
 /* Search and Sign in buttons effects */
 .trialbtn {

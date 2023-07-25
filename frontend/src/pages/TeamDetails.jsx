@@ -107,7 +107,7 @@ return(
       </a>
       </Col>
       <Col md="auto" className='mx-auto mt-2'>
-        <h6>{teamMember.body}</h6>
+        <a href={`/player/${teamMember.id}`} className='player-list-names'>{teamMember.body}</a>
         <p>{teamMember.position == undefined ? "Not Assigned" : teamMember.position}</p>
         <h6>23</h6>
       </Col>
