@@ -19,6 +19,11 @@ const FlippableCard = ({imageUrl, cardText}) => {
                 }}
                 imageUrl={imageUrl}
                 cardText={cardText}
+                style={{
+                    width: '100%',  // Set width as needed
+                    height: 'auto', // Maintain aspect ratio
+                    borderRadius: '50%',
+                  }}
                 />
             </CSSTransition>
         </div>

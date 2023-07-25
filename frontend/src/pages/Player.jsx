@@ -83,7 +83,7 @@ const Player = () => {
               <h4 className="text-center">Past Matches</h4>
                    {/* Past Matches Here */}
                    <ListGroup>
-            <ListGroup.Item action variant="danger" href="/match/soccer/1"  className='mt-2'>
+            <ListGroup.Item action variant="danger" href="/match/1"  className='mt-2'>
               <Row className='text-center'>
               <Col>
               20.06.23
@@ -99,7 +99,7 @@ const Player = () => {
               </Col>
               </Row>
             </ListGroup.Item>
-            <ListGroup.Item action variant="success" href="/match/soccer/1" className='mt-2'>      
+            <ListGroup.Item action variant="success" href="/match/1" className='mt-2'>      
             <Row className='text-center'>
               <Col>
               20.06.23

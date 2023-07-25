@@ -65,7 +65,13 @@ const AdminTeamMnt = () => {
 
     const handleTeamDetails = (e) => {
         const field = e.target.name
-        setCurrentValues({ ...currValues, [field] : e.target.value })
+        if (field === "lookingForPlayers") {
+            let newInd = currValues.lookingForPlayers
+            newInd = !newInd
+            setCurrentValues({ ...currValues, lookingForPlayers : newInd })
+        } else {
+            setCurrentValues({ ...currValues, [field] : e.target.value })
+        }
     }
 
     const handleRemovePlayer = (index) => {
@@ -92,7 +98,6 @@ const AdminTeamMnt = () => {
     }
 
     const handleSearchPlayer = (username) => {
-        console.log("handleSearchPlayer")
         if (username !== "") {
             const randomId = "83xj2udjm4fu3x2om3r342x"
             let date = new Date()

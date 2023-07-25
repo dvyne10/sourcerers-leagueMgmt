@@ -202,81 +202,81 @@ describe('validateMatch function', () => {
     };
   
     // Match Pending 
-    // test('should reject if the match is already pending', () => {
-    //     let oldMatchObject = getMatchDetails('123', 'PEND');
+    test('should reject if the match is already pending', () => {
+        let oldMatchObject = getMatchDetails('123', 'PEND');
             
-    //     expect(oldMatchObject.requestStatus).toBe('RJCT');
-    //     expect(oldMatchObject.errField).toBe('status');
-    //     expect(oldMatchObject.errMsg).toBe('Cannot update match details while previous update is still pending for approval.');
-    // });
+        expect(oldMatchObject.requestStatus).toBe('RJCT');
+        expect(oldMatchObject.errField).toBe('status');
+        expect(oldMatchObject.errMsg).toBe('Cannot update match details while previous update is still pending for approval.');
+    });
 
     // Match Active
-    // test('should reject if the match is active', () => {
-    //     let oldMatchObject = getMatchDetails('123', 'ACTV');
+    test('should reject if the match is active', () => {
+        let oldMatchObject = getMatchDetails('123', 'ACTV');
 
-    //     expect(oldMatchObject.requestStatus).toBe('RJCT');
-    //     expect(oldMatchObject.errField).toBe(oldMatchObject.errField);
-    //     expect(oldMatchObject.errMsg).toBe(oldMatchObject.errMsg);
-    // });
+        expect(oldMatchObject.requestStatus).toBe('RJCT');
+        expect(oldMatchObject.errField).toBe(oldMatchObject.errField);
+        expect(oldMatchObject.errMsg).toBe(oldMatchObject.errMsg);
+    });
 
     // Only team admin and update match
-    // test('should reject if user is not authorized to update match details', () => {
-    //     const response = getTeamDetails(mockData.team1.teamId, tempUserId); 
+    test('should reject if user is not authorized to update match details', () => {
+        const response = getTeamDetails(mockData.team1.teamId, tempUserId); 
 
-    //     expect(response.requestStatus).toBe('RJCT');
-    //     expect(response.errField).toBe(response.errField);
-    //     expect(response.errMsg).toBe('Not authorized to update match details.');
-    // });
+        expect(response.requestStatus).toBe('RJCT');
+        expect(response.errField).toBe(response.errField);
+        expect(response.errMsg).toBe('Not authorized to update match details.');
+    });
 
-    // test('should reject if teamId exists, and teamId1 and teamId2 are not equal to teamId', () => {
-    //     const matchObject = { 
-    //         teamId: '523e9014466c1c99574590b1', 
-    //         teamId1: '901e9014466c1c99574590b1', 
-    //         teamId2: '176e9014466c1c99574590b1' 
-    //     };
-    //     const response = validateMatch(matchObject);
-    //     expect(response.requestStatus).toBe('RJCT');
-    //     expect(response.errField).toBe('teamId');
-    //     expect(response.errMsg).toBe('Invalid match statistics.');
-    // });
+    test('should reject if teamId exists, and teamId1 and teamId2 are not equal to teamId', () => {
+        const matchObject = { 
+            teamId: '523e9014466c1c99574590b1', 
+            teamId1: '901e9014466c1c99574590b1', 
+            teamId2: '176e9014466c1c99574590b1' 
+        };
+        const response = validateMatch(matchObject);
+        expect(response.requestStatus).toBe('RJCT');
+        expect(response.errField).toBe('teamId');
+        expect(response.errMsg).toBe('Invalid match statistics.');
+    });
 
     // Date empty & invalid check
-    // test('should reject if date is missing, or contains blank/s only', () => {
-    //     const result = validateMatch(mockData);
-    //     expect(result.requestStatus).toBe('RJCT');
-    //     expect(result.errField).toBe('dateOfMatch');
-    //     expect(result.errMsg).toBe('Date of match is required.');
-    // }); 
+    test('should reject if date is missing, or contains blank/s only', () => {
+        const result = validateMatch(mockData);
+        expect(result.requestStatus).toBe('RJCT');
+        expect(result.errField).toBe('dateOfMatch');
+        expect(result.errMsg).toBe('Date of match is required.');
+    }); 
 
-    //    test('should reject if date is invalid', () => {
-    //        const result = validateMatch(mockData); 
-    //        expect(result.requestStatus).toBe('RJCT');
-    //        expect(result.errField).toBe('dateOfMatch');
-    //        expect(result.errMsg).toBe('Date of match is invalid.'); 
-    //    });
-    //    test('should reject if date is higher than the current date', () => {
-    //        const result = validateMatch(mockData);
-    //        expect(result.requestStatus).toBe('RJCT');
-    //        expect(result.errField).toBe('dateOfMatch');
-    //        expect(result.errMsg).toBe('Date of match should before than the current date.');   
-    //    });
+       test('should reject if date is invalid', () => {
+           const result = validateMatch(mockData); 
+           expect(result.requestStatus).toBe('RJCT');
+           expect(result.errField).toBe('dateOfMatch');
+           expect(result.errMsg).toBe('Date of match is invalid.'); 
+       });
+       test('should reject if date is higher than the current date', () => {
+           const result = validateMatch(mockData);
+           expect(result.requestStatus).toBe('RJCT');
+           expect(result.errField).toBe('dateOfMatch');
+           expect(result.errMsg).toBe('Date of match should before than the current date.');   
+       });
 
 
     // Location of match empty
-    // test('should reject if location of match is missing, or contains blank/s only', () => {
-    //     const result = validateMatch(mockData);
-    //     expect(result.requestStatus).toBe('RJCT');
-    //     expect(result.errField).toBe('locationOfMatch');
-    //     expect(result.errMsg).toBe('Location of match is required.');
-    // });
+    test('should reject if location of match is missing, or contains blank/s only', () => {
+        const result = validateMatch(mockData);
+        expect(result.requestStatus).toBe('RJCT');
+        expect(result.errField).toBe('locationOfMatch');
+        expect(result.errMsg).toBe('Location of match is required.');
+    });
     
     // Player list & statistics empty
-    // test('should reject if player list is missing or empty', () => {
-    //     const result = validateMatch(mockData);
-    //     expect(result.requestStatus).toBe('RJCT');
-    //     expect(result.errField).toBe('players');
-    //     expect(result.errMsg).toBe(`The details of your team's players for this match are required.`); 
-    // });
+    test('should reject if player list is missing or empty', () => {
+        const result = validateMatch(mockData);
+        expect(result.requestStatus).toBe('RJCT');
+        expect(result.errField).toBe('players');
+        expect(result.errMsg).toBe(`The details of your team's players for this match are required.`); 
+    });
     
     test('should reject if player statistics is missing or empty', () => {
         const result = validateMatch(mockData);
