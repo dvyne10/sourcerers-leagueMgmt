@@ -42,9 +42,6 @@ const registerUser = async (req, res) => {
     password,
   } = req.body;
 
-  console.log(req.socket.remoteAddress, "not trusted ip");
-  console.log(req.ip, "trusted ip");
-
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
@@ -75,9 +72,11 @@ const registerUser = async (req, res) => {
     // generating otp
     const otp = generateOTP();
 
+    user.detailsOTP = parseInt(otp);
+    await user.save()
+
     // generating email
     const html = generateOTPEmail(otp, userName, email);
-    const htmlTemplate = handlebars.compile(html);
 
     // sending the otp through the provided email for verification
     sendEmail({
