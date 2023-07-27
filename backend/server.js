@@ -8,12 +8,13 @@ import userRoutes from "./routes/userRoutes.js";
 
 import { getLeagues, createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams, 
   canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams,getLeagueAdmins, joinLeague, unjoinLeague,
-  startLeague
+  startLeague, getLeaguesCreated
    } from "./utils/leaguesModule.js";
 import { getHomeDetails } from "./utils/homePageModule.js";
 import { getRequestById, hasPendingRequest, cancelRequest } from "./utils/requestsModule.js";
 import { getTeamDetails } from "./utils/teamsModule.js";
 import { getSysParmList } from "./utils/sysParmModule.js";
+import { getPlayers, getUserStats, getPlayerDetails } from "./utils/usersModule.js";
 
 dotenv.config();
 connectDB();
@@ -111,6 +112,21 @@ app.post("/startleague/:leagueid", (req, res) => {
   })
 });
 
+app.get("/players", (req, res) => {
+  getPlayers()
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
+app.post("/player/:playerid", (req, res) => {
+  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
+  getPlayerDetails(req.params.playerid)
+  .then((data)=>{
+    res.json(data);
+  })
+});
+
 app.get("/testing", (req, res) => {
   //getLeagueDetails("648e9013466c1c995745907c")
   //getTeamDetails("648e224f91a1a82229a6c11f")
@@ -118,10 +134,13 @@ app.get("/testing", (req, res) => {
   //getNSLeaguesUserIsAdmin("648e132ff3d2cb1d615fbd9d") //cNunez
   //getNSLeaguesUserIsAdmin("648ba154251b78d7946df339")
   //getRequestById("64bee2ccf271e5e25657c8e8")
-  getRequestById("64bee2ccf271e5e25657c8e8")
+  //getRequestById("64bee2ccf271e5e25657c8e8")
   //getLeagueAdmins("648e9013466c1c995745907c")
   //getSysParmList("notification_type")
-  //deleteNotifs()
+  //deleteLeagues()
+  //getUsersGames("648e7e34db2a68344fda38fc")  // 648e7e34db2a68344fda3928
+  getUserStats("648e7e34db2a68344fda3907")
+  //getUserStats("648e5a24db2a68344fda38e1")
   .then((data)=>{
     res.json(data);
   })

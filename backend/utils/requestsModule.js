@@ -17,6 +17,9 @@ let ObjectId = mongoose.Types.ObjectId;
 //     })
 //     console.log(test)
 // }
+export const deleteLeagues = async function() {
+    let test = await LeagueModel.deleteMany({ leagueName : "Mississauga League 2023 V2" })
+}
 
 export const getRequestById = async function(requestId) {
 
