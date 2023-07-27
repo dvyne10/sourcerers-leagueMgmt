@@ -38,7 +38,7 @@ export const getLeagues = async function() {
                 }
             }, 
         }, {
-            $sort: { status : -1}
+            $sort: { status : -1, totalPoints: -1}
         }, { 
             $project: {
                 totalPoints: 0, _id: 0, "matches.team1.players" : 0, "matches.team2.players" : 0,
@@ -732,7 +732,7 @@ export const unjoinLeague = async function(userId, leagueId) {
           teamId: teamToUnjoin
         } } 
     })
-    // TO DO - remove all pending notifs to userId that is related to that leagueId !!!!!
+    // TO DO - remove all notifs to or requests from user that is related to that leagueId !!!!!
 
     // Send notifications to league admins
     const promise2 = admins.map(async function(admin) {
@@ -840,6 +840,18 @@ export const getLeagueAdmins = async function(leagueId) {
     })
     await Promise.all(promises);
     return admins
+}
+
+export const getLeaguesCreated = async function(userId) {
+    let leaguesCreated = await LeagueModel.aggregate([
+        { $match : {createdBy : new ObjectId(userId) } }, 
+        { $project: { _id: 0, leagueId: "$_id", leagueName : 1, sportsTypeId : 1, status : 1 } }
+    ])
+    if (leaguesCreated === null || leaguesCreated.length === 0) {
+        return []
+    } else {
+        return leaguesCreated
+    }    
 }
 
 const getTimestamp = (daysToAdd) => {
