@@ -1,4 +1,4 @@
-import  { useEffect, useMemo, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
@@ -7,25 +7,7 @@ import { Link } from 'react-router-dom';
 import '../App.css';
 
 const Home = () => {
-  const data = [
-    // Your data array here...
-  ];
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: 'title',
-        header: 'Who',
-        size: 300,
-      },
-      {
-        accessorKey: 'desc',
-        header: 'Message',
-        size: 600,
-      },
-    ],
-    []
-  );
 
   const [opacity, setOpacity] = useState(0);
 
@@ -168,7 +150,7 @@ return (
                  
       <section className="section-50">
       <div className="container">
-        <h3 className="m-b-50 heading-line">Notifications <i className="fa fa-bell text-muted"></i></h3>
+        <h1 className="m-b-50 heading-line">Announcements <i className="fa fa-bell text-muted"></i></h1>
 
         <div className="notification-ui_dd-content">
           <Link to="/team/1" className="notification-list notification-list--unread">
@@ -186,6 +168,40 @@ return (
               <img src="https://i.imgur.com/AbZqFnR.jpg" alt="Feature image" />
             </div>
           </Link>
+
+          <Link to="/team/1" className="notification-list notification-list--unread">
+            <div className="notification-list_content">
+              <div className="notification-list_img">
+                <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
+              </div>
+              <div className="notification-list_detail">
+                <p><b>John Doe</b> reacted to your post</p>
+                <p className="text-muted">abcd</p>
+                <p className="text-muted"><small>10 mins ago</small></p>
+              </div>
+            </div>
+            <div className="notifcation-list_feature-img">
+              <img src="https://i.imgur.com/AbZqFnR.jpg" alt="Feature image" />
+            </div>
+          </Link>
+
+
+          <Link to="/team/1" className="notification-list notification-list--unread">
+            <div className="notification-list_content">
+              <div className="notification-list_img">
+                <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
+              </div>
+              <div className="notification-list_detail">
+                <p><b>John Doe</b> reacted to your post</p>
+                <p className="text-muted">abcd</p>
+                <p className="text-muted"><small>10 mins ago</small></p>
+              </div>
+            </div>
+            <div className="notifcation-list_feature-img">
+              <img src="https://i.imgur.com/AbZqFnR.jpg" alt="Feature image" />
+            </div>
+          </Link>
+
 
           <Link to="/team/1" className="notification-list notification-list--unread">
             <div className="notification-list_content">
