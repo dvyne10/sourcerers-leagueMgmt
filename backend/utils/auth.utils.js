@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import crypto, { createHash } from "crypto";
+import { createTransporter } from "../config/mailer.js";
 
 export const generateToken = (res, userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -14,9 +15,12 @@ export const generateToken = (res, userId) => {
   });
 };
 
-const verifyToken = () =>{
-    
-}
+const verifyToken = () => {};
+
+export const sendEmail = async (emailOptions) => {
+  let emailTransporter = await createTransporter();
+  await emailTransporter.sendMail(emailOptions);
+};
 
 export const generateOTP = () => {
   const digits = "0123456789";

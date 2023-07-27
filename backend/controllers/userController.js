@@ -7,7 +7,15 @@
  */
 
 import User from "../models/user.model.js";
-import { genHash, genSalt, generateToken } from "../utils/auth.utils.js";
+import { generateOTPEmail } from "../templates/otpEmail.js";
+import {
+  genHash,
+  genSalt,
+  generateOTP,
+  generateToken,
+  sendEmail,
+} from "../utils/auth.utils.js";
+import handlebars from "handlebars";
 
 const authUser = (req, res) => {
   res.status(200).json({
@@ -34,6 +42,9 @@ const registerUser = async (req, res) => {
     password,
   } = req.body;
 
+  console.log(req.socket.remoteAddress, "not trusted ip");
+  console.log(req.ip, "trusted ip");
+
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
@@ -46,7 +57,7 @@ const registerUser = async (req, res) => {
   const hashedPassword = await genHash(password, salt);
 
   const user = await User({
-    status: "ACTV",
+    status: "PEND",
     userName,
     email,
     password: hashedPassword,
@@ -61,7 +72,20 @@ const registerUser = async (req, res) => {
   }).save();
 
   if (user) {
-    generateToken(res, user._id);
+    // generating otp
+    const otp = generateOTP();
+
+    // generating email
+    const html = generateOTPEmail(otp, userName, email);
+    const htmlTemplate = handlebars.compile(html);
+
+    // sending the otp through the provided email for verification
+    sendEmail({
+      subject: "Verification OTP for PlayPal",
+      html:html,
+      to: email,
+      from: process.env.EMAIL,
+    });
     res.status(201).send({ success: true, data: { user } });
   } else {
     res.status(400);
