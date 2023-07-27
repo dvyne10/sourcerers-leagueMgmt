@@ -19,13 +19,13 @@ const Privacy = () => {
       </div>
       <br />
       <br />
-      <div className="d-flex justify-content-center">
-        <Card style={{ width: "60rem", padding: 20 }}>
+      <div className="d-flex justify-content-center" >
+        <Card style={{ width: "60rem", padding: 20}}>
           <Card.Header as="h5">
             ABOUT YOUR PRIVACY POLICY WITH PLAYPAL
           </Card.Header>
           <Card.Body>
-            <Card.Text>
+            <Card.Text className="text-dark">
             PlayPal are committed to a voluntary privacy policy for our registrants. The objective of this policy is to ensure that information that could be used to identify you (Personal Information) be managed in a responsible and transparent manner.
 This Privacy Policy relates to your privacy as a user of our websites at https://playpal.netlify.app/. The privacy of our members is important to us. We may request Personal Information from time to time in order to enable you to participate in and enjoy various benefits. We are committed to advising you on how we use your Personal Information. Unless you authorize us to do otherwise, we will ensure that the Personal Information that you provide to us will be protected and not disclosed to any third parties in accordance with this Privacy Policy.
             </Card.Text>
@@ -39,7 +39,7 @@ This Privacy Policy relates to your privacy as a user of our websites at https:/
             PROTECTING YOUR PERSONAL INFORMATION
           </Card.Header>
           <Card.Body>
-            <Card.Text>
+            <Card.Text className="text-dark">
             We will keep your Personal Information and safeguard it from unauthorized access. We will keep your Personal Information only as long as necessary or relevant for the identified purposes or as required by law. Where your Personal Information is kept electronically, it will reside in secure data storage and be protected by the passwords.
             </Card.Text>
           </Card.Body>
@@ -51,8 +51,8 @@ This Privacy Policy relates to your privacy as a user of our websites at https:/
           <Card.Header as="h5">
             COLLECTION OF YOUR PERSONAL INFORMATION
           </Card.Header>
-          <Card.Body>
-            <Card.Text>
+          <Card.Body >
+            <Card.Text className="text-dark">
             The PlayPal requires personal information from its members (players, team admin, league admin and volunteers) in order to offer its various services. This information is collected via appropriate electrical forms, historical participation, and website activity logs.
             </Card.Text>
           </Card.Body>
@@ -64,8 +64,8 @@ This Privacy Policy relates to your privacy as a user of our websites at https:/
           <Card.Header as="h5">
             HOW YOUR PERSONAL INFORMATION IS USED
           </Card.Header>
-          <Card.Body>
-            <Card.Text>
+          <Card.Body >
+            <Card.Text className="text-dark">
             Part of our commitment to you is to tell you how we use and will not use the Personal Information that we collect:<br/><br/>
 <ul>
 <li>A limited set of your Personal Information can be shared with our insurer in connection with insurance coverage.</li>
@@ -89,8 +89,8 @@ We will not disclose Personal Information about you to any third party without f
           <Card.Header as="h5">
             CONTROL OF YOUR PERSONAL INFORMATION
           </Card.Header>
-          <Card.Body>
-            <Card.Text>
+          <Card.Body >
+            <Card.Text className="text-dark">
             Files are maintained on any information in your file including applications, enquiries, complaints, compliments, insurance and other correspondence made by you and our response if any.
 The PlayPal maintains all players, team admins, league admins and volunteer registration files for several years as required.
 <br/><br/>
