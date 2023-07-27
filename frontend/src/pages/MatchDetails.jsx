@@ -57,6 +57,13 @@ const MatchDetails = () => {
   const handleClickTeam2 = () => {
     setDisplayedTeam(2);
   };
+  
+  const playerPositions = {
+    GK: { left: '50%', top: '15%', transform: 'translate(-50%, 0%)' }, // Goalkeeper
+    DF: { left: '30%', top: '50%', transform: 'translate(-50%, -50%)' }, // Defender
+    MF: { left: '50%', top: '70%', transform: 'translate(-50%, -100%)' }, // Midfielder
+    FW: { left: '70%', top: '50%', transform: 'translate(-50%, -50%)' }, // Forward
+  };
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -166,6 +173,7 @@ const MatchDetails = () => {
               </button>
             ))}
           </div>
+          
           <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
             <div style={{ backgroundImage: `url(${sport === '1' ? soccerField : basketballField})`, backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'center'}}>
@@ -216,7 +224,7 @@ const MatchDetails = () => {
                   className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
                   roundedCircle 
                   fluid 
-                  style={{ width: "3em", height: "3em" }}
+                  style={{ width: "2em", height: "2em" }}
                 />
                 
                 {selectedPlayerData && selectedPlayerData.name === player.name && (
