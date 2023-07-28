@@ -17,18 +17,6 @@ import {
 } from "../utils/auth.utils.js";
 import handlebars from "handlebars";
 
-const authUser = (req, res) => {
-  res.status(200).json({
-    message: "Auth user",
-  });
-};
-
-const login = (req, res) => {
-  res.status(200).json({
-    message: "login user",
-  });
-};
-
 const registerUser = async (req, res) => {
   const {
     firstName,
@@ -68,28 +56,43 @@ const registerUser = async (req, res) => {
     salt,
   }).save();
 
-  if (user) {
-    // generating otp
-    const otp = generateOTP();
+  try {
+    if (user) {
+      // generating otp
+      const otp = generateOTP();
+      const otpDate = new Date();
 
-    user.detailsOTP = parseInt(otp);
-    await user.save()
+      console.log(otp, otpDate);
 
-    // generating email
-    const html = generateOTPEmail(otp, userName, email);
+      user.detailsOTP.OTP = parseInt(otp);
+      user.detailsOTP.expiryTimeOTP = otpDate;
+      await user.save();
 
-    // sending the otp through the provided email for verification
-    sendEmail({
-      subject: "Verification OTP for PlayPal",
-      html:html,
-      to: email,
-      from: process.env.EMAIL,
-    });
-    res.status(201).send({ success: true, data: { user } });
-  } else {
-    res.status(400);
-    throw new Error("Invalid data");
+      // generating email
+      const html = generateOTPEmail(otp, userName, email);
+
+      // sending the otp through the provided email for verification
+      // await sendEmail({
+      //   subject: "Verification OTP for PlayPal",
+      //   html: html,
+      //   to: email,
+      //   from: process.env.EMAIL,
+      // })
+      //   .then(() => {
+      //     console.log("email has been sent");
+      //   })
+      //   .catch((e) => {
+      //     console.log(`email could not be sent ${e}`);
+      //   });
+
+      res.status(201).send({ success: true, data: { user } });
+    } else {
+      res.status(400);
+      throw new Error("Invalid data");
+    }
+  } catch (error) {
+    res.status(400).send({ success: false, error });
   }
 };
 
-export { authUser, login, registerUser };
+export { registerUser };
