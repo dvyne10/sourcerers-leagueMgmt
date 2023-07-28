@@ -94,8 +94,8 @@ export const getPlayerDetailsAndButtons = async function(userId, playerId) {
         return player
     }
     
-    let resp1 = getUsersTeams(playerId)
-    let resp2 = getTeamsCreated(playerId)
+    let resp1 = getUsersTeams(playerId)  // returns an array
+    let resp2 = getTeamsCreated(playerId)   // returns an array
     let resp3 = getGameHistory(playerId)
     let resp4 = getLeaguesCreated(playerId)
 
@@ -212,6 +212,21 @@ export const getUserWins = async function(playerId) {
     return wins
 }
 
+export const getGameHistory = async function(playerId) {
+    let wins = 0
+    let games = await getUsersGames(playerId).catch(() => { return 0 })
+    if (games.requestStatus !== "ACTC") {
+        return 0
+    }
+    const promises = games.details.map(async function(league) {
+        await league.matches.map((match) => {
+            match.playerTeam.won === true ? (wins += 1) : 0
+        })
+    })
+    await Promise.all(promises);
+    return wins
+}
+
 export const getUsersGames = async function(playerId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
     let userGames = await LeagueModel.aggregate([
@@ -292,8 +307,32 @@ export const getUsersGames = async function(playerId) {
     return response
 }
 
+export const getUserStatsTotal = async function(playerId) {
+    let userStats = await getUserStats(playerId)
+    if (userStats.length === 0) {
+        return []
+    }
+    let totalStat = []
+    const promises = userStats.reduce((totalStat, cur) => {
+        const promises2 = cur.playerStats.reduce((totalStat, cur) => {
+            const promises3 = cur.stat.reduce((totalStat, cur) => {
+                let item = totalStat.find(({ statisticsId }) => statisticsId.equals(cur.statisticsId))
+                if (item) {
+                    item.totalValue += cur.totalValue 
+                } else {
+                    totalStat.push({ statisticsId: cur.statisticsId, totalValue: cur.totalValue })
+                }
+                return totalStat
+            }, totalStat) 
+            return promises3
+        }, totalStat) 
+        return promises2
+    }, totalStat)  
+    const totalPoints = await Promise.all(promises)
+    return totalPoints
+}
+
 export const getUserStats = async function(playerId) {
-    let response = {requestStatus: "", errField: "", errMsg: ""}
     let userStats = await LeagueModel.aggregate([
         {
             $match: {
@@ -302,7 +341,7 @@ export const getUserStats = async function(playerId) {
         },
         {
             $project : {
-                filteredPlayers : {
+                playerStats : {
                     $map : {
                         input: "$matches",
                         as: "match",
@@ -337,9 +376,9 @@ export const getUserStats = async function(playerId) {
         },
         {
             $project : {
-                filteredPlayers : {
+                playerStats : {
                     $map : {
-                        input: "$filteredPlayers",
+                        input: "$playerStats",
                         as: "player",
                         in: {
                             $cond : [
@@ -349,8 +388,7 @@ export const getUserStats = async function(playerId) {
                                     leagueId: "$$player.leagueId",
                                     sportsTypeId: "$$player.sportsTypeId",
                                     teamId: "$$player.teamId1",
-                                    statId: { $arrayElemAt : [ { $arrayElemAt : [ "$$player.team1.statistics.statisticsId" , 0] } , 0] },
-                                    statValue: { $arrayElemAt : [ { $arrayElemAt : [ "$$player.team1.statistics.value" , 0] } , 0] }
+                                    stat: { $arrayElemAt : [ "$$player.team1.statistics" , 0] },
                                 },
                                 { $cond : [
                                     { $ne : [ "$$player.team2", [] ] } ,
@@ -359,8 +397,7 @@ export const getUserStats = async function(playerId) {
                                         leagueId: "$$player.leagueId",
                                         sportsTypeId: "$$player.sportsTypeId",
                                         teamId: "$$player.teamId2",
-                                        statId: { $arrayElemAt : [ { $arrayElemAt : [ "$$player.team2.statistics.statisticsId" , 0] } , 0] },
-                                        statValue: { $arrayElemAt : [ { $arrayElemAt : [ "$$player.team2.statistics.value" , 0] } , 0] }
+                                        stat: { $arrayElemAt : [ "$$player.team2.statistics" , 0] },
                                     },
                                     "X"
                                 ]}
@@ -372,9 +409,9 @@ export const getUserStats = async function(playerId) {
         },
         {
             $project : {
-                filteredPlayers : {
+                playerStats : {
                     $filter : {
-                        input: "$filteredPlayers",
+                        input: "$playerStats",
                         as: "stat",
                         cond: {
                             $ne : [ "$$stat", "X"],
@@ -384,13 +421,6 @@ export const getUserStats = async function(playerId) {
             }
         }
     ])
-    .catch((error) => {
-        response.requestStatus = "RJCT"
-        response.errMsg = error
-        return response
-    })
 
-    response.requestStatus = "ACTC"
-    response.details = userStats
-    return response
+    return userStats
 }

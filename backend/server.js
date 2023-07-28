@@ -14,7 +14,7 @@ import { getHomeDetails } from "./utils/homePageModule.js";
 import { getRequestById, hasPendingRequest, cancelRequest } from "./utils/requestsModule.js";
 import { getTeamDetails } from "./utils/teamsModule.js";
 import { getSysParmList } from "./utils/sysParmModule.js";
-import { getPlayers, getUserStats, getPlayerDetails } from "./utils/usersModule.js";
+import { getPlayers, getUserStats, getPlayerDetails, getUserStatsTotal } from "./utils/usersModule.js";
 
 dotenv.config();
 connectDB();
@@ -139,8 +139,9 @@ app.get("/testing", (req, res) => {
   //getSysParmList("notification_type")
   //deleteLeagues()
   //getUsersGames("648e7e34db2a68344fda38fc")  // 648e7e34db2a68344fda3928
-  getUserStats("648e7e34db2a68344fda3907")
-  //getUserStats("648e5a24db2a68344fda38e1")
+  //getUserStats("648e7e34db2a68344fda3907")
+  getUserStatsTotal("648e5a24db2a68344fda38e1")
+  //getUserStats()
   .then((data)=>{
     res.json(data);
   })

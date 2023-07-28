@@ -160,9 +160,22 @@ export const getLeagueDetails = async function(leagueId) {
     let league = leagues[0]
     let teams = getManyTeamNames(league.teams)
     let sportsName = getSportName(league.sportsTypeId.toString())
+    let totalPts = getTeamLeaguePoints(league.matches)
 
-    const [teamNames, leagueSportName] = await Promise.all([teams, sportsName])
-    const leagueWithdetails = { ...league, teams : teamNames, sportsName: leagueSportName };
+    const [teamNames, leagueSportName, teamPoints] = await Promise.all([teams, sportsName, totalPts])
+
+    let teamDetails = teamNames.map((team) => {
+        let idx = teamPoints.findIndex(i => i.teamId.equals(team.teamId))
+        if (idx !== -1) {
+            return { ...team, totalLeaguePts: teamPoints[idx].points, totalScore: teamPoints[idx].score  }
+        }
+    })
+    teamDetails.sort((a, b) => {
+        var orderPoints = b.totalLeaguePts - a.totalLeaguePts
+        var orderScore = b.totalScore - a.totalScore
+        return orderPoints || orderScore
+    })
+    const leagueWithdetails = { ...league, teams : teamDetails, sportsName: leagueSportName };
 
     response.requestStatus = "ACTC"
     response.details = leagueWithdetails
@@ -224,6 +237,29 @@ export const getLeagueButtons = async function(userId, leagueId) {
     }
 
     return response
+}
+
+export const getTeamLeaguePoints = async function(matches) {
+
+    const promises = matches.reduce((acc, cur) => {
+        let item1 = acc.find(({ teamId }) => teamId.equals(cur.team1.teamId))
+        if (item1) {
+            item1.points += cur.team1.leaguePoints 
+            item1.score += cur.team1.finalScore 
+        } else {
+            acc.push({ teamId: cur.team1.teamId, points: cur.team1.leaguePoints, score: cur.team1.finalScore })
+        }
+        let item2 = acc.find(({ teamId }) => teamId.equals(cur.team2.teamId))
+        if (item2) {
+            item2.points += cur.team2.leaguePoints 
+            item2.score += cur.team2.finalScore 
+        } else {
+            acc.push({ teamId: cur.team2.teamId, points: cur.team2.leaguePoints, score: cur.team2.finalScore })
+        }
+        return acc
+    }, [])  
+    const totalPoints = await Promise.all(promises)
+    return totalPoints
 }
 
 export const canUserCreateNewLeague = async function(userId) {
