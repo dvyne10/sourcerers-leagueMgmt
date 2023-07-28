@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 
 const matchDetailsSchema = Schema(
     {
+      _id: false,
       teamId: { type: Schema.Types.ObjectId, required: true },
       finalScore: Number,
       finalScorePending: Number,

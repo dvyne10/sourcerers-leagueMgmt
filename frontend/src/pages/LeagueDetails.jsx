@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {Container,Row,Col, Button, Card, Image} from 'react-bootstrap';
+import {Container,Row,Col, Button, Card, Image, ListGroup} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './teamdetails.css'
@@ -58,48 +58,105 @@ function changeJoinShow(){
         <Col className='border'>
         <div className='team-past-matches'>
           <h2 className='center-header gap-divider'>Teams</h2>
-         <Row className='mb-5'>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          
-         </Row>
-
-         <Row className='mb-5'>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          <Col className='mx-5'>
-          <a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a>
-          </Col>
-          
+         <Row className='mb-5 mx-5'>
+          <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+         
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+         <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+            <Col className='league-details-team-listing text-break ms-5' md={1} >
+            
+            <a href='/team/1' className='general-link-no-dec'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            Real Madrid</a>
+            
+            </Col>
+         
          </Row>
 
           </div>
@@ -113,26 +170,93 @@ function changeJoinShow(){
         <Col sm={9} className='border'>
         <div className='team-past-matches'>
           <h2 className='center-header gap-divider'>Team Matchups</h2>
-          <Card className='mx-auto text-center border border-danger' style={{ width: '20rem'}}>
-
-    
-        
-<Row className='pt-3'>
-<Col md={5}><a href='/team/1'><Image src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a></Col>
-<Col md={2} className='align-self-center'>vs</Col>
-<Col md={5} ><a href='/team/1'><Image src="https://clipart.info/images/ccovers/1526524314real-madrid-icon-clipart-logo-png.png"  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em"}}/></a></Col>
-</Row>
-
-<Row>
-<Col md={12}><hr /></Col>
-</Row>
-<Row >
-<Col md={5} className='text-start ms-2 mb-3'>11 July</Col>
-<Col md={1} className='text-start ms-2 mb-3'>|</Col>
-<Col md={5} className='text-end me-2'>10:00 PM</Col>
-
-</Row>
-  </Card>
+          <Row className='text-center mx-1'>
+              <Col md={2}>
+              <h6 className='border-bottom border-secondary'>Date</h6>
+              </Col>
+              <Col md={4}>
+              <h6 className='border-bottom border-secondary'>Teams</h6>
+              </Col>
+              <Col md={4}>
+              <h6 className='border-bottom border-secondary'>Score</h6>
+              </Col>
+              <Col md={2}>
+              <h6 className='border-bottom border-secondary'>Location</h6>
+              </Col>
+              </Row>
+      <Row>
+        <Col sm={12} >
+          <ListGroup>
+            <ListGroup.Item action variant="secondary" href="/match/1"  className='mt-2'>
+              <Row className='text-center'>
+              <Col md={2}>
+              20.06.23
+              </Col>
+              <Col md={4}>
+              Real Madrid - Cologne
+              </Col>
+              <Col md={4}>
+              1-4
+              </Col>
+              <Col md={2}>
+              Toronto
+              </Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item action variant="success" href="/match/1" className='mt-2'>
+            <Row className='text-center'>
+              <Col md={2}>
+              20.09.23
+              </Col>
+              <Col md={4}>
+              Real Madrid - Barcelona
+              </Col>
+              <Col md={4}>
+              TBD
+              </Col>
+              <Col md={2}>
+              Toronto
+              </Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item action variant="success" href="/match/1" className='mt-2'>
+            <Row className='text-center'>
+              <Col md={2}>
+              20.09.23
+              </Col>
+              <Col md={4}>
+              Justice - Content
+              </Col>
+              <Col md={4}>
+              TBD
+              </Col>
+              <Col md={2}>
+              Toronto
+              </Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item action variant="success" href="/match/1" className='mt-2'>
+            <Row className='text-center'>
+              <Col md={2}>
+              20.09.23
+              </Col>
+              <Col md={4}>
+              Real Madrid - Raptors
+              </Col>
+              <Col md={4}>
+              TBD
+              </Col>
+              <Col md={2}>
+              Toronto
+              </Col>
+              </Row>
+            </ListGroup.Item>
+          </ListGroup>
+        </Col>
+        <Col sm={8}>
+          
+        </Col>
+      </Row>
 
           </div>
         </Col>
@@ -140,7 +264,7 @@ function changeJoinShow(){
 
           {/* This is the timeline for upcoming matches on the right side of the page*/}
         <div className="team-upcoming-matches w-100">
-          <h4 className='center-header'>Upcoming Matches</h4><hr />
+          <h4 className='center-header'>Recent Matches</h4><hr />
     <ul>
       <li className='active-game-hover'>
       <a href='/matchdetailsoccer/1' className='general-link-no-dec'>

@@ -247,7 +247,7 @@ const validateInput = () => {
             pattern="^\S.*$"
             // pattern="^(?!.*\s)[^']*$" --this is for avoiding ' as well.
             type="text"
-            placeholder="Last name"
+            placeholder="Team name"
             defaultValue="Otto" id="teamName" name="teamName" className="form-control" value={currValues.teamName} onChange={handleTeamDetails} />
             
             <Form.Control.Feedback htmlFor="teamName" type="invalid">

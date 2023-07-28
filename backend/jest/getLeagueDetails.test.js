@@ -13,6 +13,8 @@
  let result = "";
  const { getLeagueDetails } = require('../utils/leagueDetailsModule.js');
 
+
+ describe('Get League function testing', function () {
 test('Should be rejected if the LeagueId is null', async function ()  {
     result = await getLeagueDetails(null);
     console.log(result);
@@ -67,7 +69,7 @@ test('Should prompt not found if the LeagueId is not found', async function () {
     
 });
 
-
+});
 let leagueCollection = [{
     
 leagueId : '648ba154251b78d7946df35d',
@@ -111,3 +113,4 @@ updatedAt : '2023-07-16T20:57:30.785+00:00',
 },
 ]
 
+  

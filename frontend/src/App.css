@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500&display=swap');
 
+:root{
+  --black: #2C3531;
+  --green: #116466;
+  --brown: #D9B08C;
+  --lightBrown: #FFCB9A;
+  --lightBlue: #D1E8E2;
+  --pink: #D65472;
+}
+
 .card-wrapper {
   display: flex;
   width: auto;
@@ -19,6 +28,17 @@
   &:hover{
     background-color: #e5e6e7;
   }
+}
+
+.league-details-team-listing{
+  transition: background-color 0.5s ease;
+  border-radius: 20%;
+  &:hover{
+    transition: background-color 0.5s ease;
+    background-color: rgb(221, 215, 215);
+    border-radius: 20%;
+  }
+  
 }
 
 .team-jersey-list-number{
@@ -120,6 +140,99 @@ aside#sidebar .team-btw-match ul li.vs span {
   background-color: rgba(37,38,46,0.8);
 }
 }
+.player-list-names {
+  	transition: color .3s ease-in-out;
+	  color: var(--pink);
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-family:"Saira Extra Condensed";
+    
+    
+
+
+  	
+	&:hover {
+    color: black;
+  	}
+}
+
+
+.denemerow12 {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Create four equal columns */
+.denemecolumn12 {
+  flex: 25%;
+  padding: 20px;
+}
+
+.search-list {
+  position: relative;
+}
+
+.search-list ul {
+  position: relative;
+}
+.search-list ul li {
+  position: relative;
+  left: 0;
+  color: #fce4ec;
+  list-style: none;
+  margin: 4px 0;
+  transition: 0.5s;
+  cursor: pointer;
+}
+.search-list ul li:hover {
+  left: 10px;
+}
+.search-list ul li span {
+  position: relative;
+  padding: 8px;
+  padding-left: 12px;
+  display: inline-block;
+  z-index: 1;
+  transition: 0.5s;
+}
+.search-list a{
+  text-decoration: none;
+  color: black;
+
+  &:hover{
+    color: var(--green);
+  }
+}
+.search-list ul li:hover span {
+  color: #111;
+}
+.search-list ul li:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #D1E8E2;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: 0.5s;
+}
+.search-list ul li:hover:before {
+  transform: scaleX(1);
+}
+
+/* On screens that are 992px wide or less, go from four columns to two columns */
+@media screen and (max-width: 992px) {
+  .column {
+    flex: 50%;
+  }
+}
+
+/* On screens that are 600px wide or less, make the columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .row {
+    flex-direction: column;
+  }
+}
 
 
 body {
@@ -179,6 +292,7 @@ body {
   transform: scaleX(1);
   transform-origin: bottom middle;
 }
+
 
 /* Search and Sign in buttons effects */
 .trialbtn {
@@ -270,5 +384,135 @@ body {
         }
       }
     }
+  }
+}
+
+
+.section-50 {
+  padding: 50px 0;
+}
+
+.m-b-50 {
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+.dark-link {
+  color: #333;
+}
+
+.heading-line {
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.heading-line:after {
+  content: "";
+  height: 4px;
+  width: 75px;
+  background-color: #29B6F6;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.notification-ui_dd-content {
+  margin-bottom: 30px;
+}
+
+.notification-list {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  padding: 20px;
+  margin-bottom: 7px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  transition: background-color 0.3s ease;
+  display: flex; /* Added display flex */
+  align-items: center; /* Added alignment to center content vertically */
+}
+
+.notification-list:hover {
+  background-color: #f2f2f2;
+}
+
+.notification-list--unread {
+  border-left: 2px solid #29B6F6;
+}
+
+.notification-list .notification-list_content {
+  display: flex;
+  flex: 1; /* Take the remaining width */
+}
+
+.notification-list .notification-list_content .notification-list_img img {
+  height: 48px;
+  width: 48px;
+  border-radius: 50px;
+  margin-right: 20px;
+}
+
+.notification-list .notification-list_content .notification-list_detail p {
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+
+.notification-list .notification-list_feature-img {
+  flex: 1; /* Take the remaining width */
+  text-align: right; /* Align the image to the right */
+}
+
+.notification-list .notification-list_feature-img img {
+  height: 48px;
+  width: 48px;
+  border-radius: 5px;
+  /* Removed margin-left */
+}
+
+/* Match details css */
+@media (max-width: 1300px) {
+  .team-names {
+    font-size: 35px; /* Adjust the font size as per your preference */
+  }
+}
+
+@media (max-width: 1100px) {
+  .team-names {
+    font-size: 30px; /* Adjust the font size as per your preference */
+  }
+}
+
+@media (max-width: 950px) {
+  .team-names {
+    font-size: 25px; /* Adjust the font size as per your preference */
+  }
+}
+
+@media (max-width: 790px) {
+  .team-names {
+    font-size: 20px; /* Adjust the font size as per your preference */
+  }
+}
+
+@media (max-width: 650px) {
+  .team-names {
+    font-size: 18px; /* Adjust the font size as per your preference */
+  }
+}
+
+/* Hide the buttons for screen width larger than 900px */
+@media (min-width: 1100px) {
+  .team-buttons {
+    display: none;
+  }
+}
+
+/* Center the buttons for screen width less than 900px */
+@media (max-width: 1099px) {
+  .team-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
   }
 }
