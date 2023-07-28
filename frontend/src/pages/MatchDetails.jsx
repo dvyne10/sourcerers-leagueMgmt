@@ -20,6 +20,7 @@ const MatchDetails = () => {
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
   const [selectedPlayerData, setSelectedPlayerData] = useState(null);
+  const [displayedTeam, setDisplayedTeam] = useState(1); // 1 for Team 1, 2 for Team 2
 
   const navigate = useNavigate(); 
   const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
@@ -39,8 +40,6 @@ const MatchDetails = () => {
     { name: 'Neymar Jr', position: 'FW', goals: 2, assists: 4, image: neymarImage},
   ];
 
-
-  
   const handleClickPlayerLeft = (player) => {
     setSelectedPlayerData(player);
     setSelectedPlayerLeft(player.name);
@@ -51,14 +50,29 @@ const MatchDetails = () => {
     setSelectedPlayerRight(player.name);
   };
   
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     console.log(`Window dimensions: ${window.innerWidth} * ${window.innerHeight}`);
-  //   }, 5000);
+  const handleClickTeam1 = () => {
+    setDisplayedTeam(1);
+  };
 
-  //   // This will clear the interval (stop the repeating function) when the component unmounts.
-  //   return () => clearInterval(intervalId);
-  // }, []);
+  const handleClickTeam2 = () => {
+    setDisplayedTeam(2);
+  };
+  
+  const playerPositions = {
+    GK: { left: '50%', top: '15%', transform: 'translate(-50%, 0%)' }, // Goalkeeper
+    DF: { left: '30%', top: '50%', transform: 'translate(-50%, -50%)' }, // Defender
+    MF: { left: '50%', top: '70%', transform: 'translate(-50%, -100%)' }, // Midfielder
+    FW: { left: '70%', top: '50%', transform: 'translate(-50%, -50%)' }, // Forward
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      console.log(`Window dimensions: ${window.innerWidth} * ${window.innerHeight}`);
+    }, 5000);
+
+    // This will clear the interval (stop the repeating function) when the component unmounts.
+    return () => clearInterval(intervalId);
+  }, []);
 
 
   return (
@@ -81,7 +95,7 @@ const MatchDetails = () => {
 
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         
-        <div onClick={() => navigate('/team/:teamid')}
+        <div className="team-logo-container" onClick={() => navigate('/team/:teamid')}
              style={{
                     backgroundColor: '#D1E8E2',
                     width: '20%',
@@ -98,7 +112,7 @@ const MatchDetails = () => {
         </div>
 
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#D1E8E2', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
-            <div style={{paddingRight: '6%'}}>
+            <div className="team-names" style={{paddingRight: '6%'}}>
               <span>Real Madrid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
               <span style={{ color: '#3b3c4c' }}>2&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
               <span>Barcelona</span> <br/>
@@ -108,7 +122,7 @@ const MatchDetails = () => {
             <div style={{fontSize: '15px', color: '#026670'}}>22 July 2023, 09:00 PM</div>
           </div>
 
-          <div onClick={() => navigate('/team/:teamid')}
+          <div className="team-logo-container" onClick={() => navigate('/team/:teamid')}
                style={{
                     backgroundColor: '#D1E8E2',
                     width: '20%',
@@ -123,6 +137,15 @@ const MatchDetails = () => {
                     borderBottomRightRadius: '10px',
                     }}>
             </div>
+        </div>
+
+        <div className="team-buttons">
+          <Button variant="primary" onClick={handleClickTeam1} style={{ marginRight: '10px' }}>
+            Team 1
+          </Button>
+          <Button variant="primary" onClick={handleClickTeam2}>
+            Team 2
+          </Button>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '2%' }}>
@@ -150,6 +173,7 @@ const MatchDetails = () => {
               </button>
             ))}
           </div>
+          
           <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
             <div style={{ backgroundImage: `url(${sport === '1' ? soccerField : basketballField})`, backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'center'}}>
@@ -200,7 +224,7 @@ const MatchDetails = () => {
                   className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
                   roundedCircle 
                   fluid 
-                  style={{ width: "3em", height: "3em" }}
+                  style={{ width: "2em", height: "2em" }}
                 />
                 
                 {selectedPlayerData && selectedPlayerData.name === player.name && (

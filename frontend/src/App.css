@@ -470,304 +470,49 @@ body {
   /* Removed margin-left */
 }
 
-/* MatchDetails.css */
-
-/* Global styles */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-}
-
-/* Responsive Background Image Container */
-.background-image-container {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-}
-
-/* Background Image */
-.background-image {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-size: cover;
-  background-repeat: no-repeat;
-  opacity: 0.6; /* adjust the opacity as needed */
-  z-index: -1;
-}
-
-/* Settings Button */
-.settings-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 15px;
-}
-
-/* Team Info Container */
-.team-info-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #D1E8E2;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 30px;
-}
-
-/* Team Logo Container */
-.team-logo-container {
-  cursor: pointer;
-}
-
-.team-logo {
-  width: 100px;
-  height: 100px;
-}
-
-.match-info {
-  text-align: center;
-}
-
-.team-names {
-  font-size: 24px;
-  color: #3b3c4c;
-}
-
-.score {
-  color: #9faec1;
-}
-
-.match-date {
-  font-size: 15px;
-  color: #026670;
-}
-
-.match-time {
-  font-size: 15px;
-  color: #026670;
-}
-
-/* Player Lists Container */
-.player-list-container {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 2%;
-}
-
-/* Player List One */
-.player-list-one {
-  background-color: #116466;
-  width: 20%;
-  height: 60vh;
-  margin-left: 10%;
-  text-align: center;
-  color: white;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-  overflow-y: auto;
-}
-
-.player-button {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  background-color: transparent;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  color: white;
-  padding: 10px 0;
-  margin-bottom: 5px;
-}
-
-.player-button.selected {
-  background-color: lightgray;
-}
-
-.player-icon {
-  margin-left: 5%;
-  margin-right: 5%;
-}
-
-/* Field Container */
-.field-container {
-  background-color: #d5dcde;
-  width: 60%;
-  height: 60vh;
-}
-
-.field {
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.player-grid {
-  display: flex;
-  justify-content: center;
-  padding-top: 15%;
-}
-
-.player-grid-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-left: 20%;
-}
-
-.player-details {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.border {
-  border: 1px solid #17a2b8 !important;
-}
-
-.object-fit-cover {
-  object-fit: cover;
-}
-
-.ml-auto {
-  margin-left: auto;
-}
-
-/* Player Stats */
-.player-stats {
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 1%;
-  border-radius: 5px;
-  width: 100px;
-  text-align: center;
-}
-
-/* Player List Two */
-.player-list-two {
-  background-color: #116466;
-  width: 20%;
-  height: 60vh;
-  margin-right: 10%;
-  text-align: center;
-  color: white;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  overflow-y: auto;
-}
-
-/* Previous Matches */
-.previous-matches {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  height: 60vh;
-  padding-top: 1%;
-  color: white;
-}
-
-.previous-matches-title {
-  font-size: 24px;
-}
-
-.match-details {
-  display: flex;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.team-score {
-  display: flex;
-  align-items: center;
-  margin-right: 20%;
-}
-
-.team-score .score-divider {
-  margin: 0 10px;
-}
-
-.match-dates {
-  font-size: 15px;
-}
-
-/* Media Queries for Responsive Design */
-
-/* Mobile Devices */
-@media (max-width: 768px) {
-  .team-info-container {
-    flex-direction: column;
-  }
-
-  .team-logo-container {
-    margin-bottom: 20px;
-  }
-
-  .match-info {
-    margin-bottom: 20px;
-  }
-
-  .player-list-container {
-    flex-direction: column;
-  }
-
-  .field-container {
-    width: 100%;
-    margin-top: 20px;
-    height: auto;
-  }
-
-  .player-grid {
-    flex-direction: row;
-  }
-
-  .player-grid-column {
-    padding-left: 0;
-    flex: 1;
-  }
-
-  .previous-matches {
-    height: auto;
-    padding-top: 10px;
-  }
-
-  .previous-matches-title {
-    font-size: 20px;
-  }
-
-  .match-details {
-    flex-direction: column;
-  }
-
-  .team-score {
-    margin-right: 0;
-    margin-bottom: 10px;
+/* Match details css */
+@media (max-width: 1300px) {
+  .team-names {
+    font-size: 35px; /* Adjust the font size as per your preference */
   }
 }
 
-/* Tablets */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .field {
-    background-size: contain;
+@media (max-width: 1100px) {
+  .team-names {
+    font-size: 30px; /* Adjust the font size as per your preference */
   }
+}
 
-  .player-list-container {
-    flex-direction: column;
+@media (max-width: 950px) {
+  .team-names {
+    font-size: 25px; /* Adjust the font size as per your preference */
   }
+}
 
-  .player-grid {
-    flex-direction: row;
+@media (max-width: 790px) {
+  .team-names {
+    font-size: 20px; /* Adjust the font size as per your preference */
   }
+}
 
-  .player-grid-column {
-    padding-left: 0;
-    flex: 1;
+@media (max-width: 650px) {
+  .team-names {
+    font-size: 18px; /* Adjust the font size as per your preference */
+  }
+}
+
+/* Hide the buttons for screen width larger than 900px */
+@media (min-width: 1100px) {
+  .team-buttons {
+    display: none;
+  }
+}
+
+/* Center the buttons for screen width less than 900px */
+@media (max-width: 1099px) {
+  .team-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
   }
 }
