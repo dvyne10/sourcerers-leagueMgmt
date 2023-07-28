@@ -5,7 +5,7 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "NODE_ENV=development jest",
+    "test": "NODE_ENV=development jest jest/register.test.js",
     "dev": "NODE_ENV=development nodemon server.js",
     "start": "NODE_ENV=production node server.js"
   },
