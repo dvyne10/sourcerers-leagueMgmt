@@ -121,7 +121,7 @@ export const getUsersTeams = async function(userId) {
 export const getManyTeamNames = async function(teams) {
     if (teams.length > 0) {
         const promises = teams.map((team) => {
-            return getTeamName(team.teamId).then((teamName) => {
+            return getTeamName(team.teamId.toString()).then((teamName) => {
               return { ...team, teamName: teamName };
             });
           });   
