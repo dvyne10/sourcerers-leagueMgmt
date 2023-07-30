@@ -4,16 +4,23 @@ import { genHash, generateToken } from "../utils/auth.utils.js";
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = User.findOne({ email });
-  // compare hash password to the user password in the database
-  const hashedPassword = await genHash(password, user.salt);
+  if (!email || !password) {
+    res.status(401).send({ message: "Incorrect email or password" });
+  }
 
-  if (hashedPassword === user.password) {
-    generateToken(res, user._id);
-    res.status(200).send({
-      message: "Auth user",
-      user,
-    });
+  const user = await User.findOne({ email });
+  // compare hash password to the user password in the database
+
+  if (user) {
+    const hashedPassword = genHash(password, user.salt);
+
+    if (hashedPassword === user.password) {
+      generateToken(res, user._id);
+      res.status(200).send({
+        message: "Auth user",
+        user,
+      });
+    }
   }
 };
 
