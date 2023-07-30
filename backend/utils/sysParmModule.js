@@ -4,7 +4,7 @@ import SysParmModel from "../models/systemParameter.model.js";
 let ObjectId = mongoose.Types.ObjectId;
 
 export const getSysParmById = async function(recordId) {
-    if (recordId === null || recordId === "") {
+    if (!mongoose.isValidObjectId(recordId.trim())) {
         return ""
     } else {
         let data = await SysParmModel.findOne({ _id: new ObjectId(recordId)}).exec();
@@ -53,7 +53,7 @@ export const getSysParmList = async function(parmId) {
 }
 
 export const getSportName = async function(recordId) {
-    if (recordId === null || recordId === "") {
+    if (!mongoose.isValidObjectId(recordId.trim())) {
         return ""
     }
     let sportsParm = await getSysParmById(recordId)

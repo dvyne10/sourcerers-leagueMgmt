@@ -2,10 +2,11 @@ import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
-import { getLeaguesCreated } from "./leaguesModule.js";
-import { getUsersTeams } from "./teamsModule.js";
-import { getSportsList, getSportName, getNotifParmByNotifId } from "./sysParmModule.js";
+
+import { getUsersTeams, getTeamsCreated, } from "./teamsModule.js";
+import { getLeagueDetails, getLeaguesCreated, getTeamActiveLeagues } from "./leaguesModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
+import { getSportsList, getSportName, getSysParmById } from "./sysParmModule.js";
 
 let ObjectId = mongoose.Types.ObjectId;
 const userStatus = [ {desc: "Active", code: "ACTV"}, {desc: "Banned", code: "BAN"},
@@ -61,13 +62,13 @@ export const getPlayers = async function() {
 
     let resp1, resp2, wins, userString, sportsName, sportIndex
     const promises1 = users.map(async function(user) {
-        wins = await getUserWins(user.playerId.toString())
+        wins = await getUserWinsCount(user.playerId.toString())
         if (wins > 0) {
             return {...user, wins }
         }
     })
     const usersWithWins = await Promise.all(promises1);
-    const top50Players = await usersWithWins.sort((a, b) => b.wins - a.wins).slice(0,50)
+    const top50Players = usersWithWins.sort((a, b) => b.wins - a.wins).slice(0,50)
 
     const promises2 = top50Players.map(async function(user) {
         userString = user.playerId.toString()
@@ -89,40 +90,36 @@ export const getPlayers = async function() {
 
 export const getPlayerDetailsAndButtons = async function(userId, playerId) {
 
-    let player = await getPlayerDetails(playerId)
-    if (player.requestStatus !== "ACTC") {
-        return player
+    let playerDetails = await getPlayerDetails(playerId)
+    if (playerDetails.requestStatus !== "ACTC") {
+        return playerDetails
     }
     
-    let resp1 = getUsersTeams(playerId)  // returns an array
+    let resp1 = getUsersTeamsAndLeagues(playerId)  // returns an array
     let resp2 = getTeamsCreated(playerId)   // returns an array
-    let resp3 = getGameHistory(playerId)
-    let resp4 = getLeaguesCreated(playerId)
+    let resp3 = getUserGamesWinsChamps(playerId)
+    let resp4 = getUserStatsTotal(playerId)  //returns an array
+    let resp5 = getLeaguesCreated(playerId) //returns an array
 
-    if (userId !== null && userId.trim() !== "") {
-        
-        //playerButtons = getPlayerButtons(userId, playerId)
-
-
-        let [leagueDetails, leagueButtonsInd] = await Promise.all([league, leagueButtons])
-        if (leagueDetails.requestStatus !== "ACTC") {
-            return leagueDetails
-        } else {
-            leagueDetails = {...leagueDetails, buttons: leagueButtonsInd}
-            return leagueDetails
-        }
+    if (mongoose.isValidObjectId(userId.trim())) {
+        let resp6 = getPlayerButtons(userId, playerId)
+        let [activeTeamsLeagues, teamsCreated, playerMatches, statistics, leaguesCreated, buttons] = await Promise.all([resp1, resp2, resp3, resp4, resp5, resp6])
+        playerDetails = {...playerDetails, activeTeams: activeTeamsLeagues.activeTeams, teamsCreated, matches: playerMatches.matches, 
+            pastLeagues: playerMatches.pastLeagues, totalGamesPlayed: playerMatches.totalGamesPlayed, wins: playerMatches.wins, 
+            championships: playerMatches.championships, activeLeagues: activeTeamsLeagues.activeLeagues, statistics, leaguesCreated, buttons}
     } else {
-
-
-        league = await getLeagueDetails(leagueId)
-        return league
+        let [activeTeamsLeagues, teamsCreated, playerMatches, statistics, leaguesCreated] = await Promise.all([resp1, resp2, resp3, resp4, resp5])
+        playerDetails = {...playerDetails, activeTeams: activeTeamsLeagues.activeTeams, teamsCreated, matches: playerMatches.matches, 
+            pastLeagues: playerMatches.pastLeagues, totalGamesPlayed: playerMatches.totalGamesPlayed, wins: playerMatches.wins, 
+            championships: playerMatches.championships, activeLeagues: activeTeamsLeagues.activeLeagues, statistics, leaguesCreated}
     }
+    return playerDetails
 }
 
 export const getPlayerDetails = async function(playerId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
 
-    if (playerId === null || playerId.trim() === "") {
+    if (!mongoose.isValidObjectId(playerId.trim())) {
         response.requestStatus = "RJCT"
         response.errMsg = "User Id is required."
         return response
@@ -178,13 +175,12 @@ export const getPlayerDetails = async function(playerId) {
     }
 
     player = player[0]
-    let idx = await userStatus.findIndex(i => i.code === player.status)
+    let idx = userStatus.findIndex(i => i.code === player.status)
     let statusDesc = idx !== -1 ? userStatus[idx].desc : ""
     
     let sportsName
     let promise = player.sports.map(async function(sport) {
         sportsName = await getSportName(sport.toString())
-        console.log(sport + sportsName)
         return { sportsTypeId: sport, sportsName}
     })
     const withSportsName  = await Promise.all(promise)
@@ -193,42 +189,145 @@ export const getPlayerDetails = async function(playerId) {
     
     response.requestStatus = "ACTC"
     response.details = playerDetails
-    console.log(163)
     return response
 }
 
-export const getUserWins = async function(playerId) {
-    let wins = 0
-    let games = await getUsersGames(playerId).catch(() => { return 0 })
-    if (games.requestStatus !== "ACTC") {
-        return 0
+export const getPlayerButtons = async function(userId, playerId) {
+    let response = { displayInviteToTeamButton: false, teamsCreated: [],  displayUninviteToTeamButton: false, pendingInviteRequestId : "", 
+        teamNamePlayerIsInvitedTo: "" }
+
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(playerId.trim())) {
+        return response
     }
-    const promises = games.details.map(async function(league) {
-        await league.matches.map((match) => {
-            match.playerTeam.won === true ? (wins += 1) : 0
+    
+    let inviteToTeam = await hasPendingRequest("APTMI", userId, playerId, "", "")
+    if (inviteToTeam !== null && inviteToTeam.requestStatus === "ACTC") {
+        if (inviteToTeam.hasPending === false && inviteToTeam.teamsCreated.length > 0) {
+            response.displayInviteToTeamButton = true
+            response.teamsCreated = inviteToTeam.teamsCreated
+        }
+        if (inviteToTeam.hasPending === true) {
+            response.displayUninviteToTeamButton = true
+            response.pendingInviteRequestId = inviteToTeam.pendingInviteRequestId
+            response.teamNamePlayerIsInvitedTo = inviteToTeam.teamNamePlayerIsInvitedTo
+        }
+    }
+
+    return response
+}
+
+export const getUserWinsCount = async function(playerId) {
+    let wins = 0
+    let userGames = await LeagueModel.aggregate([
+        {
+            $match: {
+                $or : [{ "matches.team1.players.playerId" : new ObjectId(playerId)} , {"matches.team2.players.playerId" : new ObjectId(playerId) }]
+            }
+        },
+        {
+            $addFields: {
+                wins: {
+                    $map: {
+                        input: "$matches",
+                        as: "match",
+                        in: {
+                            $cond : [{
+                                $anyElementTrue: {
+                                    $map: {
+                                        input: "$$match.team1.players",
+                                        in: { $eq : [ "$$this.playerId", new ObjectId(playerId) ] }
+                                    }
+                                }
+                            },
+                            { 
+                                $cond : [ { $gt : [ "$$match.team1.leaguePoints", "$$match.team2.leaguePoints" ] }, 1, 0]
+                            },
+                            {$cond : [
+                                {
+                                    $anyElementTrue: {
+                                        $map: {
+                                            input: "$$match.team2.players",
+                                            in: { $eq : [ "$$this.playerId", new ObjectId(playerId) ] }
+                                        }
+                                    }
+                                },
+                                {
+                                    $cond : [ { $gt : [ "$$match.team2.leaguePoints", "$$match.team1.leaguePoints" ] }, 1, 0]
+                                },
+                                0
+                            ]}
+                            ]
+                        }
+                    }
+                }
+            }
+        }, {
+            $project : { _id : 0, wins: 1 }
+        }
+    ])
+
+    userGames.map((league) => {
+        league.wins.map((match) => {
+            wins += match
         })
     })
-    await Promise.all(promises);
+    //wins = await Promise.all(promises);
     return wins
 }
 
-export const getGameHistory = async function(playerId) {
+export const getUserGamesWinsChamps = async function(playerId) {
+    let matches = []
+    let pastLeagues = []
+    let totalGamesPlayed = 0
     let wins = 0
-    let games = await getUsersGames(playerId).catch(() => { return 0 })
-    if (games.requestStatus !== "ACTC") {
-        return 0
+    let championships = 0
+    let teams = []
+    let playerTeam, teamMatches, item1, item2, teamName1, teamName2, leagueDetails, match, leagueWinner
+
+    let games = await getUsersGames(playerId)
+    if (games.length === 0) {
+        return {matches, pastLeagues, totalGamesPlayed, wins, championships}
     }
-    const promises = games.details.map(async function(league) {
-        await league.matches.map((match) => {
-            match.playerTeam.won === true ? (wins += 1) : 0
+    const promises = await games.map(async (league) => {
+        leagueDetails = await getLeagueDetails(league.leagueId.toString())
+        if (league.status === "EN") {
+            pastLeagues.push({ leagueId: league.leagueId, leagueName: league.leagueName, sportsTypeId: league.sportsTypeId, 
+                location: league.location, startDate: league.startDate, endDate: league.endDate })
+            leagueWinner = leagueDetails.details.teams[0].teamId
+            playerTeam = null
+        }
+        teams = leagueDetails.details.teams
+        teamMatches = league.matches.map(async (cur) => {
+            item1 = teams.findIndex(team => team.teamId.equals(cur.team1.teamId))
+            item2 = teams.findIndex(team => team.teamId.equals(cur.team2.teamId))
+            teamName1 = teams[item1].teamName
+            teamName2 = teams[item2].teamName
+            if (cur.playerTeam.teamNo === 1 || cur.playerTeam.teamNo === 2) {
+                match = {...cur}
+                match.team1.teamName = teamName1
+                match.team2.teamName = teamName2
+                matches.push(match)
+                cur.playerTeam.won === true ? (wins += 1) : 0
+                totalGamesPlayed += 1
+                if (playerTeam === null && league.status === "EN") {
+                    if (cur.playerTeam.teamNo === 1 ) {
+                        playerTeam = cur.team1.teamId
+                    } else {
+                        playerTeam = cur.team2.teamId
+                    }
+                    if (leagueWinner.equals(playerTeam)) {
+                        championships += 1
+                    }
+                }
+            }
         })
+        await Promise.all(teamMatches)
     })
     await Promise.all(promises);
-    return wins
+    return { matches, pastLeagues, totalGamesPlayed, wins, championships }
 }
 
 export const getUsersGames = async function(playerId) {
-    let response = {requestStatus: "", errField: "", errMsg: ""}
     let userGames = await LeagueModel.aggregate([
         {
             $match: {
@@ -296,15 +395,7 @@ export const getUsersGames = async function(playerId) {
             location : 1, startDate : 1, endDate : 1, matches: "$matchesFiltered" }
         }
     ])
-    .catch((error) => {
-        response.requestStatus = "RJCT"
-        response.errMsg = error
-        return response
-    })
-
-    response.requestStatus = "ACTC"
-    response.details = userGames
-    return response
+    return userGames
 }
 
 export const getUserStatsTotal = async function(playerId) {
@@ -312,24 +403,42 @@ export const getUserStatsTotal = async function(playerId) {
     if (userStats.length === 0) {
         return []
     }
+    let sportStat = []
     let totalStat = []
-    const promises = userStats.reduce((totalStat, cur) => {
-        const promises2 = cur.playerStats.reduce((totalStat, cur) => {
-            const promises3 = cur.stat.reduce((totalStat, cur) => {
-                let item = totalStat.find(({ statisticsId }) => statisticsId.equals(cur.statisticsId))
-                if (item) {
-                    item.totalValue += cur.totalValue 
+    let sportsName, statParm, itemSport, itemStat
+    const promises = await userStats.reduce(async (sportStat, cur) => {
+        let leagueStat = await cur.playerStats.reduce(async (init, cur) => {
+            sportStat = await init
+            itemSport = await sportStat.find(({ sportsTypeId }) => sportsTypeId.equals(cur.sportsTypeId))
+            if (itemSport) {
+                totalStat = itemSport.stats
+            } else {
+                sportsName = await getSportName(cur.sportsTypeId.toString())
+                sportStat.push({ sportsTypeId: cur.sportsTypeId, sportsName, stats: [] })
+                itemSport = sportStat.find(({ sportsTypeId }) => sportsTypeId.equals(cur.sportsTypeId))
+                totalStat = []
+            }
+            let matchStat = await cur.stat.reduce(async (init, cur) => {
+                totalStat = await init
+                itemStat = await totalStat.find(({ statisticsId }) => statisticsId.equals(cur.statisticsId))
+                if (itemStat) {
+                    itemStat.totalValue += cur.value 
                 } else {
-                    totalStat.push({ statisticsId: cur.statisticsId, totalValue: cur.totalValue })
+                    statParm = await getSysParmById(cur.statisticsId.toString())
+                    if (statParm !== "" && statParm.statistic !== null) {
+                        totalStat.push({ statisticsId: cur.statisticsId, statShortDesc: statParm.statistic.statShortDesc, 
+                                    statLongDesc: statParm.statistic.statLongDesc, totalValue: cur.value })
+                    }
                 }
                 return totalStat
-            }, totalStat) 
-            return promises3
-        }, totalStat) 
-        return promises2
-    }, totalStat)  
-    const totalPoints = await Promise.all(promises)
-    return totalPoints
+            }, Promise.resolve(totalStat)) 
+            itemSport.stats = matchStat
+            return sportStat
+        }, Promise.resolve(sportStat)) 
+        return leagueStat
+    }, Promise.resolve(sportStat))  
+    await Promise.all(promises)
+    return sportStat
 }
 
 export const getUserStats = async function(playerId) {
@@ -423,4 +532,34 @@ export const getUserStats = async function(playerId) {
     ])
 
     return userStats
+}
+
+export const getUsersTeamsAndLeagues = async function(userId) {
+    let activeTeams = []
+    let activeLeagues = []
+    if (!mongoose.isValidObjectId(userId.trim())) {
+        return { activeTeams, activeLeagues }
+    }
+    let teams = await UserModel.find({"teamsCreated.players.playerId"  : new ObjectId(userId)}, { _id: 0, teamsCreated : 1})
+    if (teams !== null && teams.length > 0) {
+        for (let i=0; i < teams.length; i++) {
+            for (let j=0; j < teams[i].teamsCreated.length; j++) {
+                for (let k=0; k < teams[i].teamsCreated[j].players.length; k++) {
+                    if (teams[i].teamsCreated[j].players[k].playerId.equals(new ObjectId(userId))) {
+                        let resp1 = getSportName(teams[i].teamsCreated[j].sportsTypeId.toString())
+                        let resp2 = getTeamActiveLeagues(teams[i].teamsCreated[j]._id.toString())
+                        let [sportsName, activeLeaguesOfTeam] = await Promise.all([resp1, resp2])
+                        activeTeams.push({teamId : teams[i].teamsCreated[j]._id, teamName : teams[i].teamsCreated[j].teamName, 
+                            sportsTypeId: teams[i].teamsCreated[j].sportsTypeId, sportsName: sportsName,
+                            jerseyNumber: teams[i].teamsCreated[j].players[k].jerseyNumber
+                        })
+                        activeLeaguesOfTeam.map(league => {
+                            activeLeagues.push({...league, sportsName})
+                        })
+                    }
+                }
+            }
+        }
+    }
+    return { activeTeams, activeLeagues }
 }

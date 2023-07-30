@@ -9,7 +9,7 @@ let ObjectId = mongoose.Types.ObjectId;
 export const getTeamDetails = async function(teamId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
 
-    if (teamId === null || teamId.trim() === "") {
+    if (!mongoose.isValidObjectId(teamId.trim())) {
         response.requestStatus = "RJCT"
         response.errMsg = "Teams Id is required."
         return response
@@ -55,7 +55,7 @@ export const getTeamDetails = async function(teamId) {
 
 export const getTeamsCreated = async function(userId) {
     let teamsCreated = []
-    if (userId.trim() === "" || userId === null) {
+    if (!mongoose.isValidObjectId(userId.trim())) {
         return teamsCreated
     }
     let teams = await UserModel.findOne({ _id: new ObjectId(userId)}, 
@@ -71,35 +71,57 @@ export const getTeamsCreated = async function(userId) {
 
 export const getUsersTeams = async function(userId) {
     let teamsUserIsMember = []
-    if (userId.trim() === "" || userId === null) {
+    if (!mongoose.isValidObjectId(userId.trim())) {
         return teamsUserIsMember
     }
-    let teams = await UserModel.find({"teamsCreated.players.playerId"  : new ObjectId(userId)}, { _id: 0, teamsCreated : 1})
-    if (teams !== null && teams.length > 0) {
-        for (let i=0; i < teams.length; i++) {
-            for (let j=0; j < teams[i].teamsCreated.length; j++) {
-                for (let k=0; k < teams[i].teamsCreated[j].players.length; k++) {
-                    if (teams[i].teamsCreated[j].players[k].playerId.equals(new ObjectId(userId))) {
-                        await getSportName(teams[i].teamsCreated[j].sportsTypeId)
-                        .then(resp => {
-                            teamsUserIsMember.push({teamId : teams[i].teamsCreated[j]._id, teamName : teams[i].teamsCreated[j].teamName, 
-                                sportsTypeId: teams[i].teamsCreated[j].sportsTypeId, sportsName: resp,
-                                jerseyNumber: teams[i].teamsCreated[j].players[k].jerseyNumber
-                            })
-                        })
-                        
+    let teams = await UserModel.aggregate([ { $match: { "teamsCreated.players.playerId"  : new ObjectId(userId) } },
+        { 
+            $project: {
+                teamsCreated: {
+                    $filter: {
+                        input: "$teamsCreated",
+                        as: "team",
+                        cond: { 
+                            $anyElementTrue: {
+                                $map: {
+                                    input: "$$team.players",
+                                    in: { $eq : [ "$$this.playerId", new ObjectId(userId) ] }
+                                }
+                            }
+                        }
+                    }
+                }, _id: 0
+            }
+        },
+        {
+            $project: {
+                team: {
+                    $map: {
+                        input: "$teamsCreated",
+                        as: "team",
+                        in: {
+                            teamId: "$$team._id",
+                            teamName: "$$team.teamName",
+                            sportsTypeId: "$$team.sportsTypeId"
+                        }
                     }
                 }
             }
         }
-    }
+    ])
+
+    teams.map(teamCreator => {
+        teamCreator.team.map(team => {
+            teamsUserIsMember.push(team)
+        })
+    })
     return teamsUserIsMember
 }
 
 export const getManyTeamNames = async function(teams) {
     if (teams.length > 0) {
         const promises = teams.map((team) => {
-            return getTeamName(team.teamId).then((teamName) => {
+            return getTeamName(team.teamId.toString()).then((teamName) => {
               return { ...team, teamName: teamName };
             });
           });   
@@ -111,7 +133,7 @@ export const getManyTeamNames = async function(teams) {
 }
 
 export const getTeamName = async function(teamId) {
-    if (teamId !== null && teamId!== "") {
+    if (mongoose.isValidObjectId(teamId.trim())) {
         let team = await UserModel.aggregate([ { $match: { "teamsCreated._id"  : new ObjectId(teamId) } }, 
             { 
                 $project: {
@@ -137,7 +159,7 @@ export const getTeamName = async function(teamId) {
 }
 
 export const getTeamAdmin = async function(teamId) {
-    if (teamId !== null && teamId!== "") {
+    if (mongoose.isValidObjectId(teamId.trim())) {
         let team = await UserModel.aggregate([ { $match: { "teamsCreated._id"  : new ObjectId(teamId) } }, 
             { 
                 $project: {
@@ -158,6 +180,22 @@ export const getTeamAdmin = async function(teamId) {
         }
     } else {
         return ""
+    }   
+}
+
+export const isTeamMember = async function(userId, playerId) {
+    if (mongoose.isValidObjectId(userId.trim()) && mongoose.isValidObjectId(playerId.trim())) {
+        if (userId === playerId) {
+            return true
+        }
+        let team = await UserModel.findOne({ _id: new ObjectId(userId), "teamsCreated.players.playerId"  : new ObjectId(playerId) }, { _id: 1})
+        if (team !== null) {
+            return true
+        } else {
+            return false
+        }
+    } else {
+        return false
     }   
 }
 

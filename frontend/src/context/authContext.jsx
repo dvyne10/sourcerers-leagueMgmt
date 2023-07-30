@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { loginService } from "../services/authService";
 
 const AuthContext = createContext({});
 
@@ -13,7 +14,9 @@ const AuthContextProvider = ({ children }) => {
   }, [isSignedIn]);
 
   return (
-    <AuthContext.Provider value={{ signIn, signOut, isSignedIn, isAdmin }}>
+    <AuthContext.Provider
+      value={{ signIn, signOut, isSignedIn, isAdmin }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -33,6 +36,11 @@ const AuthContextProvider = ({ children }) => {
     }
   }
 
+  // async function login(email, password) {
+  //   const data = await loginService(email, password);
+  //   console.log(data);
+  // }
+
   // retrieving the data from the local storage
   async function getUserFromLocalStorage() {
     const user = await localStorage.getItem("login");
@@ -46,7 +54,7 @@ const AuthContextProvider = ({ children }) => {
   async function signOut() {
     setSignedIn(false);
     setAdmin(false);
-    await localStorage.clear()
+    await localStorage.clear();
   }
 };
 
