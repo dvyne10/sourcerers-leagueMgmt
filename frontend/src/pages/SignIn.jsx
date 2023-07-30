@@ -55,15 +55,7 @@ const SignIn = () => {
 
 
   const navigateForgotPassword = () => { navigate('/forgotpassword') }
-  // const navigateProfile = () => {
-  //   if (input.username.toLowerCase() === "admin") {    // TEMP ONLY
-  //     signIn("ADMIN")
-  //     navigate('/adminusers') 
-  //   } else {
-  //     signIn()
-  //     navigate('/myprofile') 
-  //   }
-  // }
+
   const navigateRegister = () => { navigate('/register') }
 
   return (
