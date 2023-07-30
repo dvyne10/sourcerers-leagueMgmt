@@ -10,14 +10,17 @@ export const login = async (req, res) => {
 
   const user = await User.findOne({ email });
   // compare hash password to the user password in the database
-  const hashedPassword = await genHash(password, user.salt);
 
-  if (hashedPassword === user.password) {
-    generateToken(res, user._id);
-    res.status(200).send({
-      message: "Auth user",
-      user,
-    });
+  if (user) {
+    const hashedPassword = genHash(password, user.salt);
+
+    if (hashedPassword === user.password) {
+      generateToken(res, user._id);
+      res.status(200).send({
+        message: "Auth user",
+        user,
+      });
+    }
   }
 };
 
