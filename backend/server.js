@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -25,98 +26,88 @@ const port = process.env.PORT || 8000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.set("trust proxy", true);
+app.use(cookieParser());
 
 app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
-  getHomeDetails()
-  .then((data)=>{
+  getHomeDetails().then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.get("/leagues", (req, res) => {
-  getLeagues()
-  .then((data)=>{
+  getLeagues().then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/canusercreatenewleague", (req, res) => {
-  let userId = "648ba154251b78d7946df339" // temp - max reached
+  let userId = "648ba154251b78d7946df339"; // temp - max reached
   //let userId = "648ba154251b78d7946df338" // temp - max NOT yet reached
-  canUserCreateNewLeague(userId)
-  .then((data)=>{
+  canUserCreateNewLeague(userId).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/league/:leagueid", (req, res) => {
-  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
-  getLeagueDetailsAndButtons(userId, req.params.leagueid)
-  .then((data)=>{
+  let userId = "648e132ff3d2cb1d615fbd9d"; //TEMP ONLY
+  getLeagueDetailsAndButtons(userId, req.params.leagueid).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/lookingforteamson/:leagueid", (req, res) => {
-  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
-  updateLookingForTeams(userId, req.params.leagueid, true)
-  .then((data)=>{
+  let userId = "648e132ff3d2cb1d615fbd9d"; //TEMP ONLY
+  updateLookingForTeams(userId, req.params.leagueid, true).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/lookingforteamsoff/:leagueid", (req, res) => {
-  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
-  updateLookingForTeams(userId, req.params.leagueid, false)
-  .then((data)=>{
+  let userId = "648e132ff3d2cb1d615fbd9d"; //TEMP ONLY
+  updateLookingForTeams(userId, req.params.leagueid, false).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/joinleague/:leagueid", (req, res) => {
-  let userId = "648ba154251b78d7946df338" //TEMP ONLY
-  let teamId = "648ba154251b78d7946df340"  // TEMP ONLY
-  let msg = "This is a msg from the team to join league" //TEMP ONLY
-  joinLeague(userId, teamId, req.params.leagueid, msg)
-  .then((data)=>{
+  let userId = "648ba154251b78d7946df338"; //TEMP ONLY
+  let teamId = "648ba154251b78d7946df340"; // TEMP ONLY
+  let msg = "This is a msg from the team to join league"; //TEMP ONLY
+  joinLeague(userId, teamId, req.params.leagueid, msg).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/unjoinleague/:leagueid", (req, res) => {
-  let userId = "648e4ff1db2a68344fda3742" //TEMP ONLY
+  let userId = "648e4ff1db2a68344fda3742"; //TEMP ONLY
   //let userId = "648ba154251b78d7946df339" //league creator
-  unjoinLeague(userId, req.params.leagueid)
-  .then((data)=>{
+  unjoinLeague(userId, req.params.leagueid).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/cancelrequest/:pendingrequestid", (req, res) => {
   let userId = "64c583d4bdda61420219e2bd" //TEMP ONLY
   //let userId = "648ba154251b78d7946df339" //league creator
-  cancelRequest(userId, req.params.pendingrequestid)
-  .then((data)=>{
+  cancelRequest(userId, req.params.pendingrequestid).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/startleague/:leagueid", (req, res) => {
-  let userId = "648e132ff3d2cb1d615fbd9d" //TEMP ONLY
-  startLeague(userId, req.params.leagueid)
-  .then((data)=>{
+  let userId = "648e132ff3d2cb1d615fbd9d"; //TEMP ONLY
+  startLeague(userId, req.params.leagueid).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.get("/players", (req, res) => {
-  getPlayers()
-  .then((data)=>{
+  getPlayers().then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/player/:playerid", (req, res) => {
@@ -134,7 +125,7 @@ app.post("/invitetoteam/:playerid", (req, res) => {
   inviteToTeam(userId, teamId, req.params.playerid, msg)
   .then((data)=>{
     res.json(data);
-  })
+  });
 });
 
 app.get("/testing", (req, res) => {
@@ -158,51 +149,43 @@ app.get("/testing", (req, res) => {
 });
 
 app.post("/admin", (req, res) => {
-  req.body.userId = "648e0a6ff1915e7c19e2303a"  // Temp only league creator
+  req.body.userId = "648e0a6ff1915e7c19e2303a"; // Temp only league creator
   //req.body.userId = "648e132ff3d2cb1d615fbd9d" // TEMP team Creator
   let leagueId = req.query.league;
   let teamId = req.query.team;
   let matchId = req.query.match;
   if (leagueId) {
-    isLeagueAdmin(req.body.userId, leagueId)
-    .then((data)=>{
+    isLeagueAdmin(req.body.userId, leagueId).then((data) => {
       res.json(data);
-    })
+    });
   } else if (teamId) {
-    isTeamAdmin(req.body.userId, teamId)
-    .then((data)=>{
+    isTeamAdmin(req.body.userId, teamId).then((data) => {
       res.json(data);
-    })
+    });
   } else if (matchId) {
-    isMatchAdmin(req.body.userId, matchId)
-    .then((data)=>{
+    isMatchAdmin(req.body.userId, matchId).then((data) => {
       res.json(data);
-    })
+    });
   }
-  
 });
 
 app.post("/createleague", (req, res) => {
-  createLeague(req.body)
-  .then((data)=>{
+  createLeague(req.body).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/updateleague/:leagueid", (req, res) => {
-  updateLeague(req.params.leagueid, req.body)
-  .then((data)=>{
+  updateLeague(req.params.leagueid, req.body).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.delete("/updateleague/:leagueid", (req, res) => {
-  updateLeague(req.params.leagueid, req.body)
-  .then((data)=>{
+  updateLeague(req.params.leagueid, req.body).then((data) => {
     res.json(data);
-  })
+  });
 });
-
 
 app.use(notFound);
 app.use(errorHandler);

@@ -7,19 +7,15 @@
  */
 
 import User from "../models/user.model.js";
-import { genHash, genSalt, generateToken } from "../utils/auth.utils.js";
-
-const authUser = (req, res) => {
-  res.status(200).json({
-    message: "Auth user",
-  });
-};
-
-const login = (req, res) => {
-  res.status(200).json({
-    message: "login user",
-  });
-};
+import { generateOTPEmail } from "../templates/otpEmail.js";
+import {
+  genHash,
+  genSalt,
+  generateOTP,
+  generateToken,
+  sendEmail,
+} from "../utils/auth.utils.js";
+import handlebars from "handlebars";
 
 const registerUser = async (req, res) => {
   const {
@@ -46,7 +42,7 @@ const registerUser = async (req, res) => {
   const hashedPassword = await genHash(password, salt);
 
   const user = await User({
-    status: "ACTV",
+    status: "PEND",
     userName,
     email,
     password: hashedPassword,
@@ -60,13 +56,43 @@ const registerUser = async (req, res) => {
     salt,
   }).save();
 
-  if (user) {
-    generateToken(res, user._id);
-    res.status(201).send({ success: true, data: { user } });
-  } else {
-    res.status(400);
-    throw new Error("Invalid data");
+  try {
+    if (user) {
+      // generating otp
+      const otp = generateOTP();
+      const otpDate = new Date();
+
+      console.log(otp, otpDate);
+
+      user.detailsOTP.OTP = parseInt(otp);
+      user.detailsOTP.expiryTimeOTP = otpDate;
+      await user.save();
+
+      // generating email
+      const html = generateOTPEmail(otp, userName, email);
+
+      // sending the otp through the provided email for verification
+      // await sendEmail({
+      //   subject: "Verification OTP for PlayPal",
+      //   html: html,
+      //   to: email,
+      //   from: process.env.EMAIL,
+      // })
+      //   .then(() => {
+      //     console.log("email has been sent");
+      //   })
+      //   .catch((e) => {
+      //     console.log(`email could not be sent ${e}`);
+      //   });
+
+      res.status(201).send({ success: true, data: { user } });
+    } else {
+      res.status(400);
+      throw new Error("Invalid data");
+    }
+  } catch (error) {
+    res.status(400).send({ success: false, error });
   }
 };
 
-export { authUser, login, registerUser };
+export { registerUser };
