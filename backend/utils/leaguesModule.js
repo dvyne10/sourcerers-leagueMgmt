@@ -3,8 +3,8 @@ import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
 import { getManyTeamNames, getTeamsCreated, getTeamAdmin } from "./teamsModule.js";
-import { getSportsList, getSportName, getNotifParmByNotifId } from "./sysParmModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
+import { getSportsList, getSportName } from "./sysParmModule.js";
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -94,7 +94,7 @@ export const getLeagues = async function() {
 export const getLeagueDetailsAndButtons = async function(userId, leagueId) {
     let league
     let leagueButtons
-    if (userId !== null && userId.trim() !== "") {
+    if (mongoose.isValidObjectId(userId.trim())) {
         league = getLeagueDetails(leagueId)
         leagueButtons = getLeagueButtons(userId, leagueId)
         let [leagueDetails, leagueButtonsInd] = await Promise.all([league, leagueButtons])
@@ -113,7 +113,7 @@ export const getLeagueDetailsAndButtons = async function(userId, leagueId) {
 export const getLeagueDetails = async function(leagueId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
 
-    if (leagueId === null || leagueId.trim() === "") {
+    if (!mongoose.isValidObjectId(leagueId.trim())) {
         response.requestStatus = "RJCT"
         response.errMsg = "League Id is required."
         return response
@@ -187,7 +187,7 @@ export const getLeagueButtons = async function(userId, leagueId) {
         displayUnjoinButton: false, displayJoinButton: false, teamsCreated: [],  displayCancelReqButton: false, pendingRequestId : "", 
         displayStartLeagueButton: false, minApprovals: 999, displayPendingStartLeagueInd: false, pendingStartLeagueRequestId : "" }
 
-    if (userId === null || userId.trim() === "" || leagueId === null || leagueId.trim() === "") {
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
         return response
     }
     
@@ -363,11 +363,9 @@ export const updateLeagueTeams = async function(data) {
 
 export const isLeagueAdmin = async function(userId, leagueId) {
 
-    if (userId.trim() === "" || leagueId.trim() === "") {
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
         return false
     }
-    userId = userId.trim()
-    leagueId = leagueId.trim()
     let league = await LeagueModel.findOne({ _id: new ObjectId(leagueId)}, {createdBy: 1, teams: 1, _id : 0}).exec();
     if (league === null) {
         return false
@@ -539,7 +537,7 @@ export const leagueValidation = async function(data, requestType, userId) {
 
 export const getNSLeaguesUserIsAdmin = async function(userId) {
     let nsLeaguesUserIsAdmin = []
-    if (userId.trim() === "" || userId === null) {
+    if (!mongoose.isValidObjectId(userId.trim())) {
         return nsLeaguesUserIsAdmin
     }
 
@@ -558,9 +556,9 @@ export const getNSLeaguesUserIsAdmin = async function(userId) {
         const promises = teamsCreated.map(async function(team) {
             leagues = await LeagueModel.find({ "teams.teamId": new ObjectId(team.teamId), status : "NS" }, { _id :1, leagueName : 1, sportsTypeId :  1 })
             let promises2 = leagues.map(async function(league) {
-                listIndex = await nsLeaguesUserIsAdmin.findIndex((i) => i.leagueId.equals(league._id))
+                listIndex = nsLeaguesUserIsAdmin.findIndex((i) => i.leagueId.equals(league._id))
                 if (listIndex === -1) {
-                    sportIndex = await sports.findIndex((i) => i.sportsId.equals(league.sportsTypeId))
+                    sportIndex = sports.findIndex((i) => i.sportsId.equals(league.sportsTypeId))
                     sportsName = sportIndex === -1 ? "" : sports[sportIndex].sportsName
                     nsLeaguesUserIsAdmin.push({ leagueId: league._id, leagueName: league.leagueName, sportsTypeId: league.sportsTypeId, sportsName })
                 }
@@ -572,9 +570,9 @@ export const getNSLeaguesUserIsAdmin = async function(userId) {
 
     let leaguesCreated = await LeagueModel.find({ createdBy: new ObjectId(userId), status : { $ne : "EN"} }, { _id :1, leagueName : 1, sportsTypeId :  1 })
     let promises3 = leaguesCreated.map(async function(league) {
-        listIndex = await nsLeaguesUserIsAdmin.findIndex((i) => i.leagueId.equals(league._id))
+        listIndex = nsLeaguesUserIsAdmin.findIndex((i) => i.leagueId.equals(league._id))
         if (listIndex === -1) {
-            sportIndex = await sports.findIndex((i) => i.sportsId.equals(league.sportsTypeId))
+            sportIndex = sports.findIndex((i) => i.sportsId.equals(league.sportsTypeId))
             sportsName = sportIndex === -1 ? "" : sports[sportIndex].sportsName
             nsLeaguesUserIsAdmin.push({ leagueId: league._id, leagueName: league.leagueName, sportsTypeId: league.sportsTypeId, sportsName })
         }
@@ -619,7 +617,7 @@ export const getOpenLeagues = async function() {
 export const updateLookingForTeams = async function(userId, leagueId, indicator) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
 
-    if (userId.trim() === "" || leagueId.trim() === "") {
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
         response.requestStatus = "RJCT"
         response.errMsg = "Invalid entry parameters"
         return response
@@ -662,202 +660,9 @@ export const updateLookingForTeams = async function(userId, leagueId, indicator)
     return response
 }
 
-export const joinLeague = async function(userId, teamId, leagueId, msg) {
-    let response = {requestStatus: "", errField: "", errMsg: ""}
-    let notifId = "APLGJ"
-
-    if (userId === null || userId.trim() === "" || teamId === null || teamId.trim() === "" || leagueId === null || leagueId.trim() === "") {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Invalid entry parameters"
-        return response
-    }
-
-    let leagueButtons = await getLeagueButtons(userId, leagueId)
-    if (leagueButtons.displayJoinButton !== true) {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Cannot join the league."
-        return response
-    }
-    if (leagueButtons.teamsCreated.findIndex(team => team.teamId.equals(teamId)) === -1) {
-        response.requestStatus = "RJCT"
-        response.errMsg = "You cannot do requests for the team."
-        return response
-    }
-
-    let notif = await getNotifParmByNotifId(notifId)
-    if (notif.requestStatus !== 'ACTC') {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Invalid notification type"
-        return response
-    }
-
-    // Insert request record
-    await UserModel.updateOne({ _id : new ObjectId(userId) }, { 
-        $push: { requestsSent : {
-          requestType: notif.data._id,
-          requestStatus: "PEND",
-          minimumApprovals: 1,
-          approvalsCounter: 0,
-          receiverLeagueId: new ObjectId(leagueId),
-        } } 
-    })
-
-    // Send notifications to league admins
-    let reqDetails = await hasPendingRequest(notifId, userId, "", "", leagueId)
-    if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
-        let pendingRequestId = reqDetails.pendingRequestId
-        let admins = await getLeagueAdmins(leagueId)
-        const promises = admins.map(async function(admin) {
-            await UserModel.updateOne({ _id : admin.userId }, { 
-                $push: { notifications : {
-                    readStatus: false,
-                    notificationType: notif.data._id,
-                    senderUserId: new ObjectId(userId),
-                    senderTeamId: new ObjectId(teamId),
-                    forAction: {
-                        requestId: pendingRequestId,
-                        actionDone: null,
-                        actionTimestamp: null
-                    },
-                    notificationDetails: msg
-                } } 
-            })
-        })
-        await Promise.all(promises);
-        response.requestStatus = "ACTC"
-        return response
-    }
-    return response
-}
-
-export const unjoinLeague = async function(userId, leagueId) {
-    let response = {requestStatus: "", errField: "", errMsg: ""}
-    let notifId = "NTFLGL"
-
-    if (userId === null || userId.trim() === "" || leagueId === null || leagueId.trim() === "") {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Invalid entry parameters"
-        return response
-    }
-
-    let leagueButtons = await getLeagueButtons(userId, leagueId)
-    if (leagueButtons.displayUnjoinButton !== true) {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Cannot unjoin the league."
-        return response
-    }
-
-    let notif = await getNotifParmByNotifId(notifId)
-    if (notif.requestStatus !== 'ACTC') {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Invalid notification type."
-        return response
-    }
-
-    // Remove from league
-    let admins = await getLeagueAdmins(leagueId)
-    let index = admins.findIndex(admin => admin.userId.equals(userId))
-    if (index === -1 || !admins[index].teamId ) {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Invalid unjoin request."
-        return response
-    }
-    let teamToUnjoin = admins[index].teamId
-    let promise1 = LeagueModel.updateOne({ _id : new ObjectId(leagueId) }, { 
-        $pull: { teams : {
-          teamId: teamToUnjoin
-        } } 
-    })
-    // TO DO - remove all notifs to or requests from user that is related to that leagueId !!!!!
-
-    // Send notifications to league admins
-    const promise2 = admins.map(async function(admin) {
-        if (!admin.userId.equals(userId)) {
-            await UserModel.updateOne({ _id : admin.userId }, { 
-                $push: { notifications : {
-                    readStatus: false,
-                    notificationType: notif.data._id,
-                    senderUserId: new ObjectId(userId),
-                    senderTeamId: teamToUnjoin,
-                    senderLeagueId: new ObjectId(leagueId),
-                } } 
-            })
-        }
-    })
-    await Promise.all([promise1, promise2]);
-    response.requestStatus = "ACTC"
-    return response
-}
-
-export const startLeague = async function(userId, leagueId) {
-    let response = {requestStatus: "", errField: "", errMsg: ""}
-    let notifId = "APLGS"
-
-    if (userId === null || userId.trim() === "" || leagueId === null || leagueId.trim() === "") {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Invalid entry parameters"
-        return response
-    }
-
-    let leagueButtons = await getLeagueButtons(userId, leagueId)
-    if (leagueButtons.displayStartLeagueButton !== true) {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Cannot start the league."
-        return response
-    }
-
-    let notif = await getNotifParmByNotifId(notifId)
-    if (notif.requestStatus !== 'ACTC') {
-        response.requestStatus = "RJCT"
-        response.errMsg = "Invalid notification type"
-        return response
-    }
-
-    // Insert request record
-    await UserModel.updateOne({ _id : new ObjectId(userId) }, { 
-        $push: { requestsSent : {
-          requestType: notif.data._id,
-          requestStatus: "PEND",
-          minimumApprovals: leagueButtons.minApprovals,
-          approvalsCounter: 0,
-          receiverLeagueId: new ObjectId(leagueId),
-        } } 
-    })
-
-    // Send notifications to league admins
-    let reqDetails = await hasPendingRequest(notifId, userId, "", "", leagueId)
-    if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
-        let pendingRequestId = reqDetails.pendingStartLeagueRequestId
-        console.log(JSON.stringify(reqDetails))
-        console.log(reqDetails.pendingRequestId + typeof(reqDetails.pendingRequestId))
-        let admins = await getLeagueAdmins(leagueId)
-        const promises = admins.map(async function(admin) {
-            if (!admin.userId.equals(new ObjectId(userId))) {       // send to all admins except requestor
-                await UserModel.updateOne({ _id : admin.userId }, { 
-                    $push: { notifications : {
-                        readStatus: false,
-                        notificationType: notif.data._id,
-                        senderUserId: new ObjectId(userId),
-                        senderLeagueId: new ObjectId(leagueId),
-                        forAction: {
-                            requestId: pendingRequestId,
-                            actionDone: null,
-                            actionTimestamp: null
-                        },
-                    } } 
-                })
-            }
-        })
-        await Promise.all(promises);
-        response.requestStatus = "ACTC"
-        return response
-    }
-    return response
-}
-
 export const getLeagueAdmins = async function(leagueId) {
     let admins = []
-    if (leagueId === null || leagueId.trim() === "") {
+    if (!mongoose.isValidObjectId(leagueId.trim())) {
         return admins
     }
 
@@ -888,6 +693,28 @@ export const getLeaguesCreated = async function(userId) {
     } else {
         return leaguesCreated
     }    
+}
+
+export const getTeamActiveLeagues = async function(teamId){
+    if (!mongoose.isValidObjectId(teamId.trim())) {
+        return []
+    }
+    let leagues = await LeagueModel.aggregate([ { $match: { "teams.teamId" : new ObjectId(teamId), status : {$ne : "EN"} } }, 
+        { 
+            $project: {
+                leagueId: "$_id", _id: 0, leagueName : 1, "teams.teamId" : 1, sportsTypeId: 1
+            }
+        }
+    ])
+
+    const promises = leagues.map((league) => {
+        return getManyTeamNames(league.teams).then((teams) => {
+          return { ...league, teams };
+        });
+      });
+    
+    const leaguesWithTeamNames = await Promise.all(promises);
+    return leaguesWithTeamNames
 }
 
 const getTimestamp = (daysToAdd) => {

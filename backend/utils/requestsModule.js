@@ -2,29 +2,28 @@ import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
-import { getNotifParmByNotifId } from "./sysParmModule.js";
-import { getTeamDetails, getTeamsCreated, getUsersTeams } from "./teamsModule.js";
-import { getLeagueDetails, isLeagueAdmin } from "./leaguesModule.js";
-import { getSysParmList } from "./sysParmModule.js"
+import { getPlayerButtons } from "./usersModule.js";
+import { getTeamDetails, getTeamsCreated, getUsersTeams, isTeamMember } from "./teamsModule.js";
+import { getLeagueDetails, isLeagueAdmin, getLeagueButtons, getLeagueAdmins } from "./leaguesModule.js";
+import { getNotifParmByNotifId, getSysParmByParmId, getSysParmList } from "./sysParmModule.js"
 
 let ObjectId = mongoose.Types.ObjectId;
 
-// export const deleteNotifs = async function() {
-//     let test = await UserModel.updateMany({ "notifications.forAction.requestId" : null, "notifications.notificationType" : new ObjectId('64bf3072c786fd8e4aa1549a') }, { 
-//         $pull: { notifications : {
-//             "forAction.requestId": null
-//         } }
-//     })
-//     console.log(test)
-// }
-export const deleteLeagues = async function() {
-    let test = await LeagueModel.deleteMany({ leagueName : "Mississauga League 2023 V2" })
+export const deleteNotifs = async function() {
+    let test = await UserModel.updateMany({ "notifications.forAction.requestId" : new ObjectId("64c57337844dadcb9f016316") }, { 
+        $pull: { notifications : {
+            "forAction.requestId": new ObjectId("64c57337844dadcb9f016316")
+        } }
+    })
 }
+// export const deleteLeagues = async function() {
+//     let test = await LeagueModel.deleteMany({ leagueName : "Mississauga League 2023 V2" })
+// }
 
 export const getRequestById = async function(requestId) {
 
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    if (requestId === null || requestId.trim() === "") {
+    if (!mongoose.isValidObjectId(requestId.trim())) {
         response.requestStatus = "RJCT"
         response.errMsg = "Request id required"
         return response
@@ -88,17 +87,24 @@ export const getRequestById = async function(requestId) {
 
 export const hasPendingRequest = async function(notifId, userId, playerId, teamId, leagueId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    if (notifId === null || notifId === "" || (userId === "" && playerId === "" && teamId === "" && leagueId === "")) {
+    if (!mongoose.isValidObjectId(notifId.trim()) || (userId === "" && playerId === "" && teamId === "" && leagueId === "")) {
         response.requestStatus = "RJCT"
         response.errMsg = "Entry parameters are required"
         return response
     } else {
         if (notifId === "APTMI") {      // approval request from team admin to player to join team
-            if (userId === "" || userId === null || playerId === "" || playerId === null) {
+            if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(playerId.trim())) {
                 response.requestStatus = "RJCT"
                 response.errMsg = "Entry parameters are required"
                 return response
             } else {
+                let isPlayerAlreadyTeamMember = await isTeamMember(userId, playerId)
+                if (isPlayerAlreadyTeamMember === true) {
+                    response.hasPending = false
+                    response.teamsCreated = []
+                    response.requestStatus = "ACTC"
+                    return response
+                }
                 let parm = await getNotifParmByNotifId(notifId)
                 if (parm.requestStatus !== 'ACTC') {
                     response.requestStatus = "RJCT"
@@ -135,6 +141,13 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 } else {
                     response.hasPending = true
                     response.pendingInviteRequestId = aptmi[0].requestsSent[0]._id
+                    let req = await getRequestById(aptmi[0].requestsSent[0]._id.toString())
+                    if (req.requestStatus === "ACTC" && req.details.senderTeamId) {
+                        let teamReq = req.details.senderTeamId.toString()
+                        let teamName = await getTeamName(teamReq)
+                        response.teamNamePlayerIsInvitedTo = teamName
+                        response.teamIdPlayerIsInvitedTo = req.details.senderTeamId
+                    }
                     response.requestStatus = "ACTC"
                     return response
                 }
@@ -142,7 +155,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
         }
 
         if (notifId === "APTMJ") {      // approval request from player to team admin to join team
-            if (userId === "" || userId === null || teamId === "" || teamId === null) {
+            if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(teamId.trim())) {
                 response.requestStatus = "RJCT"
                 response.errMsg = "Entry parameters are required"
                 return response
@@ -184,7 +197,8 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                         let teamSport = team.details.sportsTypeId
                         let index = usersTeams.findIndex((i) => i.sportsTypeId.equals(teamSport))
                         if (index !== -1 ) {
-                            response.playerCurrentTeam = usersTeams[index].teamName
+                            response.playerCurrentTeamName = usersTeams[index].teamName
+                            response.playerCurrentTeamId = usersTeams[index].teamId
                         } else {
                             response.playerCurrentTeam = ""
                         }
@@ -202,7 +216,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
         }
 
         if (notifId === "APLGI") {      // approval request from league admin (league creator or team admin) to team to join league
-            if (userId === "" || userId === null || teamId === "" || teamId === null || leagueId === "" || leagueId === null) {
+            if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(teamId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
                 response.requestStatus = "RJCT"
                 response.errMsg = "Entry parameters are required"
                 return response
@@ -298,7 +312,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
         }
 
         if (notifId === "APLGJ") {      // approval request from team admin to league admin to join league
-            if (userId === "" || userId === null || leagueId === "" || leagueId === null) {
+            if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
                 response.requestStatus = "RJCT"
                 response.errMsg = "Entry parameters are required"
                 return response
@@ -356,7 +370,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
         }
 
         if (notifId === "APLGR") {      // approval request from league admin to remove another team from the league
-            if (userId === "" || userId === null || teamId === "" || teamId === null || leagueId === "" || leagueId === null) {
+            if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(teamId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
                 response.requestStatus = "RJCT"
                 response.errMsg = "Entry parameters are required"
                 return response
@@ -404,7 +418,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
         }
 
         if (notifId === "APLGS") {      // approval to start league
-            if (userId === "" || userId === null || leagueId === "" || leagueId === null) {
+            if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(userId.trim())) {
                 response.requestStatus = "RJCT"
                 response.errMsg = "Entry parameters are required"
                 return response
@@ -462,11 +476,208 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
     }
 }
 
+export const joinLeague = async function(userId, teamId, leagueId, msg) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    let notifId = "APLGJ"
+
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(teamId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid entry parameters"
+        return response
+    }
+
+    let leagueButtons = await getLeagueButtons(userId, leagueId)
+    if (leagueButtons.displayJoinButton !== true) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Cannot join the league."
+        return response
+    }
+    if (leagueButtons.teamsCreated.findIndex(team => team.teamId.equals(teamId)) === -1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "You cannot do requests for the team."
+        return response
+    }
+
+    let notif = await getNotifParmByNotifId(notifId)
+    if (notif.requestStatus !== 'ACTC') {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid notification type"
+        return response
+    }
+
+    // Insert request record
+    await UserModel.updateOne({ _id : new ObjectId(userId) }, { 
+        $push: { requestsSent : {
+          requestType: notif.data._id,
+          requestStatus: "PEND",
+          minimumApprovals: 1,
+          approvalsCounter: 0,
+          receiverLeagueId: new ObjectId(leagueId),
+        } } 
+    })
+
+    // Send notifications to league admins
+    let reqDetails = await hasPendingRequest(notifId, userId, "", "", leagueId)
+    if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
+        let pendingRequestId = reqDetails.pendingRequestId
+        let admins = await getLeagueAdmins(leagueId)
+        const promises = admins.map(async function(admin) {
+            await UserModel.updateOne({ _id : admin.userId }, { 
+                $push: { notifications : {
+                    readStatus: false,
+                    notificationType: notif.data._id,
+                    senderUserId: new ObjectId(userId),
+                    senderTeamId: new ObjectId(teamId),
+                    forAction: {
+                        requestId: pendingRequestId,
+                        actionDone: null,
+                        actionTimestamp: null
+                    },
+                    notificationDetails: msg
+                } } 
+            })
+        })
+        await Promise.all(promises);
+        response.requestStatus = "ACTC"
+        return response
+    }
+    return response
+}
+
+export const unjoinLeague = async function(userId, leagueId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    let notifId = "NTFLGL"
+
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid entry parameters"
+        return response
+    }
+
+    let leagueButtons = await getLeagueButtons(userId, leagueId)
+    if (leagueButtons.displayUnjoinButton !== true) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Cannot unjoin the league."
+        return response
+    }
+
+    let notif = await getNotifParmByNotifId(notifId)
+    if (notif.requestStatus !== 'ACTC') {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid notification type."
+        return response
+    }
+
+    // Remove from league
+    let admins = await getLeagueAdmins(leagueId)
+    let index = admins.findIndex(admin => admin.userId.equals(userId))
+    if (index === -1 || !admins[index].teamId ) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid unjoin request."
+        return response
+    }
+    let teamToUnjoin = admins[index].teamId
+    let promise1 = LeagueModel.updateOne({ _id : new ObjectId(leagueId) }, { 
+        $pull: { teams : {
+          teamId: teamToUnjoin
+        } } 
+    })
+    // TO DO - remove all notifs to or requests from user that is related to that leagueId !!!!!
+
+    // Send notifications to league admins
+    const promise2 = admins.map(async function(admin) {
+        if (!admin.userId.equals(userId)) {
+            await UserModel.updateOne({ _id : admin.userId }, { 
+                $push: { notifications : {
+                    readStatus: false,
+                    notificationType: notif.data._id,
+                    senderUserId: new ObjectId(userId),
+                    senderTeamId: teamToUnjoin,
+                    senderLeagueId: new ObjectId(leagueId),
+                } } 
+            })
+        }
+    })
+    await Promise.all([promise1, promise2]);
+    response.requestStatus = "ACTC"
+    return response
+}
+
+export const startLeague = async function(userId, leagueId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    let notifId = "APLGS"
+
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid entry parameters"
+        return response
+    }
+
+    let leagueButtons = await getLeagueButtons(userId, leagueId)
+    if (leagueButtons.displayStartLeagueButton !== true) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Cannot start the league."
+        return response
+    }
+
+    let notif = await getNotifParmByNotifId(notifId)
+    if (notif.requestStatus !== 'ACTC') {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid notification type"
+        return response
+    }
+
+    // Insert request record
+    let exp = 15
+    let startLeagueExp = await getSysParmByParmId("maxParms")
+    if (startLeagueExp.requestStatus === "ACTC") {
+        exp = startLeagueExp.data.maxParms.startLeagueApprovalExp
+    }
+    await UserModel.updateOne({ _id : new ObjectId(userId) }, { 
+        $push: { requestsSent : {
+          requestType: notif.data._id,
+          requestStatus: "PEND",
+          minimumApprovals: leagueButtons.minApprovals,
+          approvalsCounter: 0,
+          requestExpiry: getTimestamp(exp),
+          receiverLeagueId: new ObjectId(leagueId),
+        } } 
+    })
+
+    //Send notifications to league admins
+    let reqDetails = await hasPendingRequest(notifId, userId, "", "", leagueId)
+    if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
+        let pendingRequestId = reqDetails.pendingStartLeagueRequestId
+        let admins = await getLeagueAdmins(leagueId)
+        const promises = admins.map(async function(admin) {
+            if (!admin.userId.equals(new ObjectId(userId))) {       // send to all admins except requestor
+                await UserModel.updateOne({ _id : admin.userId }, { 
+                    $push: { notifications : {
+                        readStatus: false,
+                        notificationType: notif.data._id,
+                        senderUserId: new ObjectId(userId),
+                        senderLeagueId: new ObjectId(leagueId),
+                        forAction: {
+                            requestId: pendingRequestId,
+                            actionDone: null,
+                            actionTimestamp: null
+                        },
+                    } } 
+                })
+            }
+        })
+        await Promise.all(promises);
+        response.requestStatus = "ACTC"
+        return response
+    }
+    return response
+}
+
 export const cancelRequest = async function(userId, requestId) {
 
     let response = {requestStatus: "", errField: "", errMsg: ""}
 
-    if (userId === null || userId.trim() === "") {
+    if (!mongoose.isValidObjectId(userId.trim())) {
         response.requestStatus = "RJCT"
         response.errMsg = "User id required"
         return response
@@ -491,11 +702,12 @@ export const cancelRequest = async function(userId, requestId) {
     let cancellable = ["APTMI", "APTMJ", "APLGJ", "APLGI"]
     let cancellableNotifDetails = []
     await notifParms.data.map((notif) => {
-        if (cancellable.findIndex(i => i === notif.notification_type.notifId)) {
+        if (cancellable.findIndex(i => i === notif.notification_type.notifId) !== -1) {
             cancellableNotifDetails.push({parmId : notif._id, notifId: notif.notification_type.notifId, infoOrApproval: notif.notification_type.infoOrApproval.$and})
         }
     })
 
+    console.log(req.details.requestType)
     let index = await cancellableNotifDetails.findIndex(i => i.parmId.equals(req.details.requestType))
     if (index === -1) {
         response.requestStatus = "RJCT"
@@ -534,11 +746,74 @@ export const cancelRequest = async function(userId, requestId) {
 
     let promise2 = UserModel.updateMany({ "notifications.forAction.requestId" : new ObjectId(requestId) }, { 
         $pull: { notifications : {
-            "forAction.requestId": new ObjectId("64bee2ccf271e5e25657c8e8")
+            "forAction.requestId": new ObjectId(requestId)
         } }
     })
 
     await Promise.all([promise1, promise2]);
     response.requestStatus = "ACTC"
+    return response
+}
+
+export const inviteToTeam = async function(userId, teamId, playerId, msg) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    let notifId = "APTMI"
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(teamId.trim()) || !mongoose.isValidObjectId(playerId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid entry parameters"
+        return response
+    }
+
+    let playerButtons = await getPlayerButtons(userId, playerId)
+    if (playerButtons.displayInviteToTeamButton !== true) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Cannot invite to team."
+        return response
+    }
+    if (playerButtons.teamsCreated.findIndex(team => team.teamId.equals(teamId)) === -1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "You cannot do requests for the team."
+        return response
+    }
+
+    let notif = await getNotifParmByNotifId(notifId)
+    if (notif.requestStatus !== 'ACTC') {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid notification type"
+        return response
+    }
+
+    // Insert request record
+    await UserModel.updateOne({ _id : new ObjectId(userId) }, { 
+        $push: { requestsSent : {
+          requestType: notif.data._id,
+          requestStatus: "PEND",
+          minimumApprovals: 1,
+          approvalsCounter: 0,
+          receiverUserId: new ObjectId(playerId),
+        } } 
+    })
+
+    // Send notification to player
+    let reqDetails = await hasPendingRequest(notifId, userId, playerId, "", "")
+    if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
+        let pendingRequestId = reqDetails.pendingInviteRequestId
+        await UserModel.updateOne({ _id : new ObjectId(playerId) }, { 
+            $push: { notifications : {
+                readStatus: false,
+                notificationType: notif.data._id,
+                senderUserId: new ObjectId(userId),
+                senderTeamId: new ObjectId(teamId),
+                forAction: {
+                    requestId: pendingRequestId,
+                    actionDone: null,
+                    actionTimestamp: null
+                },
+                notificationDetails: msg
+            } } 
+        })
+        response.requestStatus = "ACTC"
+        return response
+    }
     return response
 }
