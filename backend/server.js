@@ -29,6 +29,7 @@ app.use(cors(
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: ['Content-Type', 'Authorization'],
     origin: ['http://127.0.0.1:5173'], 
+    // exposedHeaders: ["set-cookie"],
   }
 ));
 app.use(express.json());
