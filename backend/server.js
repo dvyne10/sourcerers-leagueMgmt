@@ -13,8 +13,9 @@ import { getTeamDetails, isTeamMember, getUsersTeams } from "./utils/teamsModule
 import { getLeagues, createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams, 
   canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams,
    } from "./utils/leaguesModule.js";
+import { getMatchDetails } from "./utils/matchModule.js";
 import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam } from "./utils/requestsModule.js";
-import { getSysParmList } from "./utils/sysParmModule.js";
+import { getSysParmList, getPosnAndStatBySport } from "./utils/sysParmModule.js";
 
 
 dotenv.config();
@@ -139,10 +140,12 @@ app.get("/testing", (req, res) => {
   //getLeagueAdmins("648e9013466c1c995745907c")
   //getSysParmList("notification_type")
   //deleteNotifs()
-  getUsersTeams("648ba154251b78d7946df33c")  // 648e7e34db2a68344fda3928
+  //getUsersTeams("648ba154251b78d7946df33c")  // 648e7e34db2a68344fda3928
   //getUserStats("648e7e34db2a68344fda3907")
   //getTeamActiveLeagues("648e7418b5437b97e2eef0a8")
   //isTeamMember("648e5702db2a68344fda3841", "648e5702db2a68344fda3840")
+  getMatchDetails("648ba154251b78d7946df33c", "64c3deff7ac9bd6a6d2daa4e")
+  getPosnAndStatBySport("648ba153251b78d7946df311")
   .then((data)=>{
     res.json(data);
   })
