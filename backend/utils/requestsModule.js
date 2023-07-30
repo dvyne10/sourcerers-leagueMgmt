@@ -9,13 +9,13 @@ import { getNotifParmByNotifId, getSysParmByParmId, getSysParmList } from "./sys
 
 let ObjectId = mongoose.Types.ObjectId;
 
-export const deleteNotifs = async function() {
-    let test = await UserModel.updateMany({ "notifications.forAction.requestId" : new ObjectId("64c57337844dadcb9f016316") }, { 
-        $pull: { notifications : {
-            "forAction.requestId": new ObjectId("64c57337844dadcb9f016316")
-        } }
-    })
-}
+// export const deleteNotifs = async function() {
+//     let test = await UserModel.updateMany({ "notifications.forAction.requestId" : new ObjectId("64c57337844dadcb9f016316") }, { 
+//         $pull: { notifications : {
+//             "forAction.requestId": new ObjectId("64c57337844dadcb9f016316")
+//         } }
+//     })
+// }
 // export const deleteLeagues = async function() {
 //     let test = await LeagueModel.deleteMany({ leagueName : "Mississauga League 2023 V2" })
 // }

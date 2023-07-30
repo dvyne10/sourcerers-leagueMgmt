@@ -81,6 +81,32 @@ export const getSportsList = async function() {
     return response
 }
 
+export const getPosnAndStatBySport = async function(sportParmId) {
+    let response = {sport: {}, positions: [], stats:[]}
+    if (!mongoose.isValidObjectId(sportParmId.trim())) {
+        return response
+    } else {
+        let data = await SysParmModel.find({ $or : [ { _id: new ObjectId(sportParmId), parameterId: "sport"},
+                        { parameterId: "position", "position.sportsType": new ObjectId(sportParmId)}, 
+                        { parameterId: "statistic", "statistic.sportsType": new ObjectId(sportParmId)}
+                    ] })
+        if (data !== null) {
+            data.map(parm => {
+                if (parm.parameterId === "sport") {
+                    response.sport = {sportsTypeId: parm._id, sportsName: parm.sport.sportsName}
+                } else if (parm.parameterId === "statistic") {
+                    response.stats.push({statisticsId: parm._id, statShortDesc: parm.statistic.statShortDesc, statLongDesc: parm.statistic.statLongDesc})
+                } else if (parm.parameterId === "position") {
+                    response.positions.push({positionParmId: parm._id, positionId: parm.position.positionId, positionDesc: parm.position.positionDesc})
+                }
+            })
+            return response
+        } else {
+            return response
+        }
+    }
+}
+
 export const getNotifParmByNotifId = async function(notifId) {
     let response = {requestStatus: "", errMsg: "", data: {}}
     if (notifId === null || notifId === "") {
