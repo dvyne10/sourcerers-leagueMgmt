@@ -7,7 +7,7 @@ import useAuth from "../hooks/auth";
 const SignIn = () => {
   
   const navigate = useNavigate(); 
-  const {signIn, isSignedIn} = useAuth()
+  const {signIn, isSignedIn,login} = useAuth()
 
   const [input, setInput] = useState({
     username: '',
@@ -55,15 +55,15 @@ const SignIn = () => {
 
 
   const navigateForgotPassword = () => { navigate('/forgotpassword') }
-  const navigateProfile = () => {
-    if (input.username.toLowerCase() === "admin") {    // TEMP ONLY
-      signIn("ADMIN")
-      navigate('/adminusers') 
-    } else {
-      signIn()
-      navigate('/myprofile') 
-    }
-  }
+  // const navigateProfile = () => {
+  //   if (input.username.toLowerCase() === "admin") {    // TEMP ONLY
+  //     signIn("ADMIN")
+  //     navigate('/adminusers') 
+  //   } else {
+  //     signIn()
+  //     navigate('/myprofile') 
+  //   }
+  // }
   const navigateRegister = () => { navigate('/register') }
 
   return (
@@ -92,7 +92,7 @@ const SignIn = () => {
             className="mb-4 "
           />
           <div className="d-flex justify-content-evenly width:100% mb-4">
-            <button className="btn btn-primary sign-in-btn" type="button" onClick={navigateProfile}>
+            <button className="btn btn-primary sign-in-btn" type="button" onClick={()=>{login(input,navigate)}}>
               Sign In
             </button>
             <button type="button" className="btn btn-light" onClick={navigateForgotPassword}>
