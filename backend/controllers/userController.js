@@ -33,7 +33,7 @@ const registerUser = async (req, res) => {
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    res.status(400).send({ success: false, message: "user already exits" });
+    res.status(200).send({ requestStatus:'RJCT', errMsg: "user already exits" });
     return;
   }
 

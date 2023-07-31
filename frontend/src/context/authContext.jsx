@@ -15,7 +15,7 @@ const AuthContextProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ signIn, signOut, isSignedIn, isAdmin, login }}
+      value={{ signIn, signOut, isSignedIn, isAdmin, login, registerUser }}
     >
       {children}
     </AuthContext.Provider>
@@ -43,15 +43,32 @@ const AuthContextProvider = ({ children }) => {
       console.log(data);
       if (data) {
         const { user } = data.data;
+        setSignedIn(true);
         if (user.userType === "USER") {
           navigate("/myprofile");
           setAdmin(false);
           await localStorage.setItem("login", JSON.stringify(user));
         } else {
           setAdmin(true);
-          navigate("/admin");
+
+          //temporal one
+          const adminObject = {
+            name: "ADMIN",
+            admin: true,
+          };
+          await localStorage.setItem("login", JSON.stringify(adminObject));
+          navigate("/adminusers");
         }
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function registerUser(currentValues) {
+    try {
+      const data = await loginService.registerUser(currentValues);
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
