@@ -8,15 +8,39 @@ import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
-import { getPlayers, getPlayerDetailsAndButtons, getUserWinsCount } from "./utils/usersModule.js";
-import { getTeamDetails, isTeamMember, getUsersTeams } from "./utils/teamsModule.js";
-import { getLeagues, createLeague, isLeagueAdmin, updateLeague, deleteLeague, updateLeagueTeams, 
-  canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams,
-   } from "./utils/leaguesModule.js";
+import {
+  getPlayers,
+  getPlayerDetailsAndButtons,
+  getUserWinsCount,
+} from "./utils/usersModule.js";
+import {
+  getTeamDetails,
+  isTeamMember,
+  getUsersTeams,
+} from "./utils/teamsModule.js";
+import {
+  getLeagues,
+  createLeague,
+  isLeagueAdmin,
+  updateLeague,
+  deleteLeague,
+  updateLeagueTeams,
+  canUserCreateNewLeague,
+  getLeagueDetailsAndButtons,
+  updateLookingForTeams,
+} from "./utils/leaguesModule.js";
 import { getMatchDetails } from "./utils/matchModule.js";
-import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam } from "./utils/requestsModule.js";
-import { getSysParmList, getPosnAndStatBySport } from "./utils/sysParmModule.js";
-
+import {
+  joinLeague,
+  unjoinLeague,
+  startLeague,
+  cancelRequest,
+  inviteToTeam,
+} from "./utils/requestsModule.js";
+import {
+  getSysParmList,
+  getPosnAndStatBySport,
+} from "./utils/sysParmModule.js";
 
 dotenv.config();
 connectDB();
@@ -24,18 +48,19 @@ connectDB();
 const app = express();
 const port = process.env.PORT || 8000;
 
-//enable preflight
-app.options('*', cors());
-
-app.use(cors(
-  {
+app.use(
+  cors({
     credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    origin: ['http://127.0.0.1:5173','https://playpal.netlify.app/'], 
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: ["http://127.0.0.1:5173", "https://playpal.netlify.app/"],
     // exposedHeaders: ["set-cookie"],
-  }
-));
+  })
+);
+
+app.use((req, res, next) => {
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", true);
@@ -102,7 +127,7 @@ app.post("/unjoinleague/:leagueid", (req, res) => {
 });
 
 app.post("/cancelrequest/:pendingrequestid", (req, res) => {
-  let userId = "64c583d4bdda61420219e2bd" //TEMP ONLY
+  let userId = "64c583d4bdda61420219e2bd"; //TEMP ONLY
   //let userId = "648ba154251b78d7946df339" //league creator
   cancelRequest(userId, req.params.pendingrequestid).then((data) => {
     res.json(data);
@@ -123,19 +148,17 @@ app.get("/players", (req, res) => {
 });
 
 app.post("/player/:playerid", (req, res) => {
-  let userId = "64c583d4bdda61420219e2bd" //TEMP ONLY
-  getPlayerDetailsAndButtons(userId, req.params.playerid)
-  .then((data)=>{
+  let userId = "64c583d4bdda61420219e2bd"; //TEMP ONLY
+  getPlayerDetailsAndButtons(userId, req.params.playerid).then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/invitetoteam/:playerid", (req, res) => {
-  let userId = "64c583d4bdda61420219e2bd" //TEMP ONLY - Team Falcon admin
-  let teamId = "648e7418b5437b97e2eef0a8" //TEMp ONLY - Team Falcon
-  let msg = "This is a msg from the admin to join team." //TEMP ONLY
-  inviteToTeam(userId, teamId, req.params.playerid, msg)
-  .then((data)=>{
+  let userId = "64c583d4bdda61420219e2bd"; //TEMP ONLY - Team Falcon admin
+  let teamId = "648e7418b5437b97e2eef0a8"; //TEMp ONLY - Team Falcon
+  let msg = "This is a msg from the admin to join team."; //TEMP ONLY
+  inviteToTeam(userId, teamId, req.params.playerid, msg).then((data) => {
     res.json(data);
   });
 });
@@ -155,11 +178,10 @@ app.get("/testing", (req, res) => {
   //getUserStats("648e7e34db2a68344fda3907")
   //getTeamActiveLeagues("648e7418b5437b97e2eef0a8")
   //isTeamMember("648e5702db2a68344fda3841", "648e5702db2a68344fda3840")
-  getMatchDetails("648ba154251b78d7946df33c", "64c3deff7ac9bd6a6d2daa4e")
-  getPosnAndStatBySport("648ba153251b78d7946df311")
-  .then((data)=>{
+  getMatchDetails("648ba154251b78d7946df33c", "64c3deff7ac9bd6a6d2daa4e");
+  getPosnAndStatBySport("648ba153251b78d7946df311").then((data) => {
     res.json(data);
-  })
+  });
 });
 
 app.post("/admin", (req, res) => {
