@@ -4,11 +4,18 @@ import { genHash, generateToken } from "../utils/auth.utils.js";
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
+  let user;
+
   if (!email || !password) {
     res.status(401).send({ message: "Incorrect email or password" });
   }
 
-  const user = await User.findOne({ email });
+  if (email.includes("@")) {
+    user = await User.findOne({ email });
+  } else {
+    user = await User.findOne({ userName: email });
+  }
+
   // compare hash password to the user password in the database
   if (!user) {
     res.status(200).send({
