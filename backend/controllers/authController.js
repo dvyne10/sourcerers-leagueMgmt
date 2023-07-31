@@ -10,10 +10,11 @@ export const login = async (req, res) => {
 
   const user = await User.findOne({ email });
   // compare hash password to the user password in the database
-  console.log(user);
   if (!user) {
-    console.log('user not found');
-    res.status();
+    res.status(200).send({
+      requestStatus: "RJCT",
+      message: "Incorrect email or password",
+    });
   }
 
   if (user) {
@@ -22,8 +23,13 @@ export const login = async (req, res) => {
     if (hashedPassword === user.password) {
       generateToken(res, user._id);
       res.status(200).send({
-        message: "Auth user",
+        requestStatus: "ACTC",
         user,
+      });
+    } else {
+      res.status(200).send({
+        requestStatus: "RJCT",
+        message: "Incorrect email or password",
       });
     }
   }

@@ -7,6 +7,9 @@ const AuthContext = createContext({});
 const AuthContextProvider = ({ children }) => {
   const [isSignedIn, setSignedIn] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [isLoginError, setIsLoginError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // this useeffect runs each time the value of isSignedIn changes
   useEffect(() => {
@@ -15,7 +18,17 @@ const AuthContextProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ signIn, signOut, isSignedIn, isAdmin, login, registerUser }}
+      value={{
+        signIn,
+        signOut,
+        isSignedIn,
+        isAdmin,
+        login,
+        registerUser,
+        loginError,
+        isLoginError,
+        isLoading
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -39,25 +52,36 @@ const AuthContextProvider = ({ children }) => {
   async function login(input, navigate) {
     const { username: email, password } = input;
     try {
+      setIsLoading(true)
       const data = await loginService.login(email, password);
       console.log(data);
-      if (data) {
-        const { user } = data.data;
-        setSignedIn(true);
-        if (user.userType === "USER") {
-          navigate("/myprofile");
-          setAdmin(false);
-          await localStorage.setItem("login", JSON.stringify(user));
-        } else {
-          setAdmin(true);
+      if (data.data) {
+        setIsLoading(false)
+        const { requestStatus } = data.data;
 
-          //temporal one
-          const adminObject = {
-            name: "ADMIN",
-            admin: true,
-          };
-          await localStorage.setItem("login", JSON.stringify(adminObject));
-          navigate("/adminusers");
+        if (requestStatus === "ACTC") {
+          const { user } = data.data;
+          setSignedIn(true);
+          if (user.userType === "USER") {
+            navigate("/myprofile");
+            setAdmin(false);
+            await localStorage.setItem("login", JSON.stringify(user));
+          } else {
+            setAdmin(true);
+
+            //temporal one
+            const adminObject = {
+              name: "ADMIN",
+              admin: true,
+            };
+            await localStorage.setItem("login", JSON.stringify(adminObject));
+            navigate("/adminusers");
+          }
+        } else if (requestStatus === "RJCT") {
+          setSignedIn(false);
+          setIsLoginError(true);
+          const { message } = data.data;
+          setLoginError(message);
         }
       }
     } catch (error) {
