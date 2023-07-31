@@ -10,6 +10,11 @@ export const login = async (req, res) => {
 
   const user = await User.findOne({ email });
   // compare hash password to the user password in the database
+  console.log(user);
+  if (!user) {
+    console.log('user not found');
+    res.status();
+  }
 
   if (user) {
     const hashedPassword = genHash(password, user.salt);
