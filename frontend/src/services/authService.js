@@ -20,7 +20,6 @@ async function login(email, password) {
       },
       { withCredentials: true }
     );
-    
 
     return response;
   } catch (error) {
@@ -40,7 +39,20 @@ async function registerUser(data) {
   }
 }
 
+async function verifyOTP(data) {
+  try {
+    const response = await axios.post(`${BASE_URL}/verifyotp`, data, {
+      withCredentials: true,
+    });
+
+    return response;
+  } catch (error) {
+    return error;
+  }
+}
+
 export default {
   login,
   registerUser,
+  verifyOTP,
 };

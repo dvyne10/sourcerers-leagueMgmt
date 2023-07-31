@@ -10,6 +10,9 @@ const AuthContextProvider = ({ children }) => {
   const [loginError, setLoginError] = useState("");
   const [isLoginError, setIsLoginError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [registrationError, setRegistrationError] = useState("");
+  const [otpError, setOTPError] = useState(false);
+  const [otpErrorMessage, setOTPErrorMessage] = useState("");
 
   // this useeffect runs each time the value of isSignedIn changes
   useEffect(() => {
@@ -27,7 +30,13 @@ const AuthContextProvider = ({ children }) => {
         registerUser,
         loginError,
         isLoginError,
-        isLoading
+        isLoading,
+        verifyOTP,
+        otpError,
+        setOTPError,
+        otpErrorMessage,
+        registrationError,
+        setOTPErrorMessage
       }}
     >
       {children}
@@ -52,11 +61,11 @@ const AuthContextProvider = ({ children }) => {
   async function login(input, navigate) {
     const { username: email, password } = input;
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const data = await loginService.login(email, password);
       console.log(data);
       if (data.data) {
-        setIsLoading(false)
+        setIsLoading(false);
         const { requestStatus } = data.data;
 
         if (requestStatus === "ACTC") {
@@ -89,10 +98,44 @@ const AuthContextProvider = ({ children }) => {
     }
   }
 
-  async function registerUser(currentValues) {
+  async function registerUser(currentValues, navigate) {
     try {
-      const data = await loginService.registerUser(currentValues);
-      console.log(data);
+      const response = await loginService.registerUser(currentValues);
+      console.log(response);
+      if (response) {
+        const { requestStatus } = response.data;
+        if (requestStatus === "RJCT") {
+          setRegistrationError(response.data.errMsg);
+        } else {
+          await localStorage.setItem(
+            "login",
+            JSON.stringify(response.data.user)
+          );
+          navigate("/inputotp", { state: { fromPage: "Register" } });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function verifyOTP(otp, navigate) {
+    try {
+      let user = await JSON.parse(localStorage.getItem("login"));
+      const email = user.email;
+      const data = { email, otp };
+      const response = await loginService.verifyOTP(data);
+      if (response) {
+        const { requestStatus } = response.data;
+        if (requestStatus === "RJCT") {
+          setOTPError(true);
+          setOTPErrorMessage(response.data.message);
+          return;
+        }
+        setSignedIn(true);
+
+        navigate("/");
+      }
     } catch (error) {
       console.log(error);
     }

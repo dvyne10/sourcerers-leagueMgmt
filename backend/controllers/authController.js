@@ -9,12 +9,17 @@ export const login = async (req, res) => {
   if (!email || !password) {
     res.status(401).send({ message: "Incorrect email or password" });
   }
-
-  if (email.includes("@")) {
-    user = await User.findOne({ email });
-  } else {
-    user = await User.findOne({ userName: email });
-  }
+  user = User.findOne({
+    $or: [
+      { userName: new RegExp(`^${email}$`, "i") },
+      { email: new RegExp(`^${email}$`, "i") },
+    ],
+  });
+  // if (email.includes("@")) {
+  //   user = await User.findOne({ email });
+  // } else {
+  //   user = await User.findOne({ userName: email });
+  // }
 
   // compare hash password to the user password in the database
   if (!user) {
@@ -83,28 +88,31 @@ export const verifyOTP = async (req, res) => {
             // generate token
             generateToken(res, user._id);
 
+            user.status = "ACTV";
+            await user.save();
+
             return res.status(200).send({
-              success: true,
+              requestStatus: 'ACTC',
               message: "OTP verified",
               remainingTime: `${secondsRemaining}s`,
             });
           } else {
             return res
               .status(401)
-              .send({ success: false, message: "OTP has expiredd" });
+              .send({ requestStatus: "RJCT", message: "OTP has expiredd" });
           }
         } else {
           return res
             .status(401)
-            .send({ success: false, message: "OTP has expired" });
+            .send({ requestStatus: "RJCT", message: "OTP has expired" });
         }
       } else {
-        return res.status(401).send({ success: false, message: "invalid OTP" });
+        return res.status(401).send({ requestStatus: "RJCT", message: "invalid OTP" });
       }
     } else {
       return res
         .status(401)
-        .send({ success: false, message: "user not found" });
+        .send({ requestStatus: "RJCT", message: "user not found" });
     }
   } catch (error) {}
 
