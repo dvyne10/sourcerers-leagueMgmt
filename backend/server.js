@@ -24,12 +24,15 @@ connectDB();
 const app = express();
 const port = process.env.PORT || 8000;
 
+//enable preflight
+app.options('*', cors());
+
 app.use(cors(
   {
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: ['Content-Type', 'Authorization'],
-    origin: ['http://127.0.0.1:5173'], 
+    origin: ['http://127.0.0.1:5173','https://playpal.netlify.app/'], 
     // exposedHeaders: ["set-cookie"],
   }
 ));
