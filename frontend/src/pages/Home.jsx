@@ -7,13 +7,26 @@ import { Link } from 'react-router-dom';
 import '../App.css';
 
 const Home = () => {
-
-
+  const [topLeagues, setTopLeagues] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [opacity, setOpacity] = useState(0);
 
   useEffect(() => {
     setOpacity(1);
+    fetchTopLeagues();
   }, []);
+
+  const fetchTopLeagues = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/');
+      const data = await response.json();
+      console.log(data); // Log the data received from the backend
+      setTopLeagues(data.details.topLeagues);
+      setAnnouncements(data.details.announcements);
+    } catch (error) {
+      console.error('Error fetching top leagues data:', error);
+    }
+  };
 
 // Settings for different screen sizes
 const sliderSettings = {
@@ -111,36 +124,12 @@ return (
         {/* Render the Slider with the appropriate settings and a unique key */}
         <div className="slider-wrapper" style={{ paddingLeft: '5%', paddingRight: '5%' }}>
           <Slider key={sliderSettingsToUse.slidesToShow} {...sliderSettingsToUse}>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/basketball_pic1.jpg" cardText="BasketBall Club" />
-            </div>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/basketball_pic2.jpg" cardText="Jordan Warriors" />
-            </div>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/soccer_pic1.jpg" cardText="Go Messi" />
-            </div>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/soccer_pic2.jpg" cardText="Play With Us!" />
-            </div>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/soccer_pic3.jpg" cardText="Moving on" />
-            </div>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/soccer_pic4.jpg" cardText="Shoot or not" />
-            </div>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/basketball_pic3.jpg" cardText="3 points seeker" />
-            </div>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/basketball_pic4.jpg" cardText="We love basketball" />
-            </div>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/basketball_pic5.jpg" cardText="Ball Ball" />
-            </div>
-            <div>
-              <FlippableCard imageUrl="/images/mainPage/basketball_pic6.jpg" cardText="Go Dunk" />
-            </div>
+            {topLeagues.map((league, index) => (
+              <div key={index}>
+                <FlippableCard imageUrl={league.imageUrl} cardText={league.leagueName} />
+              </div>
+            ))}
+                      
           </Slider>
         </div>
       </div>
@@ -153,76 +142,43 @@ return (
         <h1 className="m-b-50 heading-line">Announcements <i className="fa fa-bell text-muted"></i></h1>
 
         <div className="notification-ui_dd-content">
-          <Link to="/team/1" className="notification-list notification-list--unread">
-            <div className="notification-list_content">
-              <div className="notification-list_img">
-                <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
-              </div>
-              <div className="notification-list_detail">
-                <p><b>John Doe</b> sent a team invitation</p>
-                <p className="text-muted">We want to invite you to our team, please join us</p>
-                <p className="text-muted"><small>10 mins ago</small></p>
-              </div>
-            </div>
-            <div className="notifcation-list_feature-img">
-              <img src="https://i.imgur.com/AbZqFnR.jpg" alt="Feature image" />
-            </div>
-          </Link>
+          {announcements.map((announcement, index) => (
+            <div key={index}>
+              {announcement.leagueName && (
+                <Link to={`/league/${announcement.leagueId}`} className="notification-list notification-list--unread">
+                  <div className="notification-list_content">
+                    <div className="notification-list_img">
+                    <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
+                    </div>
+                    <div className="notification-list_detail">
+                      <p><b>{announcement.leagueName}</b></p>
+                      <p className="text-muted">{announcement.leagueMsg}</p>
+                    </div>
+                  </div>
+                </Link>
+              )}
 
-          <Link to="/team/1" className="notification-list notification-list--unread">
-            <div className="notification-list_content">
-              <div className="notification-list_img">
-                <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
-              </div>
-              <div className="notification-list_detail">
-                <p><b>John Doe</b> reacted to your post</p>
-                <p className="text-muted">abcd</p>
-                <p className="text-muted"><small>10 mins ago</small></p>
-              </div>
+              {announcement.teamId && (
+                <Link to={`/team/${announcement.teamId}`} className="notification-list notification-list--unread">
+                  <div className="notification-list_content">
+                    <div className="notification-list_img">
+                    <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
+                    </div>
+                    <div className="notification-list_detail">
+                      <p><b>{announcement.teamName}</b></p>
+                      <p className="text-muted">{announcement.teamMsg}</p>
+                      <p className="text-muted">
+                        <small>{new Date(announcement.indicatorChgTmst).toLocaleString()}</small>
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              )}
             </div>
-            <div className="notifcation-list_feature-img">
-              <img src="https://i.imgur.com/AbZqFnR.jpg" alt="Feature image" />
-            </div>
-          </Link>
-
-
-          <Link to="/team/1" className="notification-list notification-list--unread">
-            <div className="notification-list_content">
-              <div className="notification-list_img">
-                <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
-              </div>
-              <div className="notification-list_detail">
-                <p><b>John Doe</b> reacted to your post</p>
-                <p className="text-muted">abcd</p>
-                <p className="text-muted"><small>10 mins ago</small></p>
-              </div>
-            </div>
-            <div className="notifcation-list_feature-img">
-              <img src="https://i.imgur.com/AbZqFnR.jpg" alt="Feature image" />
-            </div>
-          </Link>
-
-
-          <Link to="/team/1" className="notification-list notification-list--unread">
-            <div className="notification-list_content">
-              <div className="notification-list_img">
-                <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
-              </div>
-              <div className="notification-list_detail">
-                <p><b>John Doe</b> reacted to your post</p>
-                <p className="text-muted">abcd</p>
-                <p className="text-muted"><small>10 mins ago</small></p>
-              </div>
-            </div>
-            <div className="notifcation-list_feature-img">
-              <img src="https://i.imgur.com/AbZqFnR.jpg" alt="Feature image" />
-            </div>
-          </Link>
-
-          {/* Add other notifications using the Link component */}
-
+          ))}
         </div>
       </div>
+
     </section>
   </>
 );
