@@ -62,20 +62,18 @@ const AuthContextProvider = ({ children }) => {
     const { username: email, password } = input;
     try {
       setIsLoading(true);
-      const data = await loginService.login(email, password);
-      console.log(data);
-      if (data.data) {
+      const resp = await loginService.login(email, password);
+      if (resp.data) {
         setIsLoading(false);
-        const { requestStatus } = data.data;
-
+        const { requestStatus } = resp.data;
         if (requestStatus === "ACTC") {
-          const { user } = data.data;
+          const { user } = resp.data;
           setSignedIn(true);
           if (user.userType === "USER") {
             navigate("/myprofile");
             setAdmin(false);
             await localStorage.setItem("login", JSON.stringify(user));
-          } else {
+          } else if (user.userType === "ADMIN") {
             setAdmin(true);
 
             //temporal one
@@ -88,8 +86,9 @@ const AuthContextProvider = ({ children }) => {
           }
         } else if (requestStatus === "RJCT") {
           setSignedIn(false);
+          setAdmin(false);
           setIsLoginError(true);
-          const { message } = data.data;
+          const { message } = resp.data;
           setLoginError(message);
         }
       }
