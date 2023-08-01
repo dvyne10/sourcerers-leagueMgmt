@@ -7,7 +7,7 @@ import connectDB from "./config/db.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
-import { getHomeDetails } from "./utils/homePageModule.js";
+import { getHomeDetails} from "./utils/homePageModule.js";
 import {
   getPlayers,
   getPlayerDetailsAndButtons,
@@ -72,8 +72,10 @@ app.use(cookieParser());
 
 app.use("/api/users", userRoutes);
 
+
 app.get("/", (req, res) => {
   getHomeDetails().then((data) => {
+    console.log(data.details.topLeagues.teams); 
     res.json(data);
   });
 });
@@ -146,6 +148,7 @@ app.post("/startleague/:leagueid", (req, res) => {
 });
 
 app.get("/players", (req, res) => {
+  console.log("called"); 
   getPlayers().then((data) => {
     res.json(data);
   });
