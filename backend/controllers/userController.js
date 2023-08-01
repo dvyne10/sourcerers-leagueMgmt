@@ -33,7 +33,10 @@ const registerUser = async (req, res) => {
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    res.status(200).send({ requestStatus:'RJCT', errMsg: "user already exits" });
+    res.status(200).send({
+      requestStatus: "RJCT",
+      errMsg: "A user with this email already exits",
+    });
     return;
   }
 
@@ -85,7 +88,7 @@ const registerUser = async (req, res) => {
       //     console.log(`email could not be sent ${e}`);
       //   });
 
-      res.status(201).send({ success: true, data: { user } });
+      res.status(201).send({ requestStatus: "ACTC", user });
     } else {
       res.status(400);
       throw new Error("Invalid data");

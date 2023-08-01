@@ -6,10 +6,8 @@ import validator from "validator";
 import useAuth from "../hooks/auth";
 
 const AccountMaintenance = () => {
-
   //hooks
-  const {registerUser} = useAuth()
-
+  const { registerUser } = useAuth();
 
   const location = useLocation();
   const routeParams = useParams();
@@ -204,8 +202,7 @@ const AccountMaintenance = () => {
     setFormError(false);
     setFormErrorArray("");
     if (action.type === "Register") {
-      registerUser(currValues)
-      navigate("/inputotp", { state: { fromPage: "Register" } });
+      registerUser(currValues, navigate);
     } else {
       let sportsSelectedValues = "";
       sportsSelected.map(
