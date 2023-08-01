@@ -124,14 +124,14 @@ const SignIn = () => {
 
                 if (input.username.trim() === "") {
                   setInputError(true);
-                  const username = "username is required";
+                  const username = "Username/Email is required.";
                   setError({ ...error, username });
                   return;
                 }
 
                 if (input.password.trim() === "") {
                   setInputError(true);
-                  const password = "password is required";
+                  const password = "Password is required.";
                   setError({ ...error, password });
                   return;
                 }
