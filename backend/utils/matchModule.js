@@ -48,35 +48,40 @@ export const getMatchDetails = async function(userId, matchId) {
         return response
     }
 
-    let sportDetails = getPosnAndStatBySport(leagueMatch.sportsTypeId.toString())
-    // let sports = []
-    // let sportsParms = await getSportsList()
-    // if (sportsParms.requestStatus === 'ACTC') {
-    //     sports = sportsParms.data
-    // }
-
-    // let teams
-    // let fullName
-    // let sportsName
-    // let sportIndex = 0
-    // const promises = leagues.map(async function(league) {
-    //     teams = getManyTeamNames(league.teams)
-    //     fullName = UserModel.findOne({ _id: new ObjectId(league.createdBy)}, { _id :0, firstName : 1, lastName :  1 })
-    //             .then((creator) => {
-    //                 if (creator !== null) {
-    //                     return `${creator.firstName} ${creator.lastName}`
-    //                 } else {
-    //                     return ""
-    //                 }
-    //             });
-    //     sportIndex = sports.findIndex((i) => i.sportsId.equals(league.sportsTypeId))
-    //     sportsName = sportIndex === -1 ? "" : sports[sportIndex].sportsName
-    //     const [teamNames, leagueCreator, leagueSportName] = await Promise.all([teams, fullName, sportsName])
-    //     return { ...league, teams : teamNames, createdByName: leagueCreator, sportsName: leagueSportName };
-    // })
+    let matchDetails = leagueMatch[0].matches[0]
+    matchDetails = {...matchDetails, leagueId: leagueMatch[0].leagueId, leagueStatus: leagueMatch[0].leagueStatus, sportsTypeId: leagueMatch[0].sportsTypeId }
+    let index
+    let sportDetails = await getPosnAndStatBySport(matchDetails.sportsTypeId.toString())
+    let promises1, promises2, promises3, promises4, playerStat
+    if (sportDetails.sport !== null) {
+        matchDetails.sportsName = sportDetails.sport.sportsName
+        promises1 = matchDetails.team1.players.map(async (player) => {
+            promises2 = player.statistics.map(async (stat) => {
+                index = sportDetails.stats.findIndex(statParm => statParm.statisticsId.equals(stat.statisticsId))
+                if (index !== -1) {
+                    return {...stat, statShortDesc : sportDetails.stats[index].statShortDesc, statLongDesc : sportDetails.stats[index].statLongDesc}
+                }
+            })
+            playerStat = await Promise.all(promises2);
+            return {...player, statistics: playerStat}
+        })
+        promises3 = matchDetails.team2.players.map(async (player) => {
+            promises4 = player.statistics.map(async (stat) => {
+                index = sportDetails.stats.findIndex(statParm => statParm.statisticsId.equals(stat.statisticsId))
+                if (index !== -1) {
+                    return {...stat, statShortDesc : sportDetails.stats[index].statShortDesc, statLongDesc : sportDetails.stats[index].statLongDesc}
+                }
+            })
+            playerStat = await Promise.all(promises4);
+            return {...player, statistics: playerStat}
+        })
+        const [players1, players2] = await Promise.all([promises1, promises3]);
+        console.log(80 + JSON.stringify(players2))
+        //matchDetails.team1.players = players1
+        //matchDetails.team2.players = players2
+    }
     
-    // const leaguesWithdetails = await Promise.all(promises);
     response.requestStatus = "ACTC"
-    response.details = leagueMatch
+    response.details = matchDetails
     return response
 }

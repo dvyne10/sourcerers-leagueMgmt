@@ -273,9 +273,8 @@ export const canUserCreateNewLeague = async function(userId) {
     }    
 }
 
-export const createLeague = async function(data) {
+export const createLeague = async function(userId, data) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    let userId = "648ba154251b78d7946df340"   // temp
 
     let validate = await leagueValidation(data, "NEW", userId)
 
@@ -312,9 +311,8 @@ export const createLeague = async function(data) {
     return response
 }
 
-export const updateLeague = async function(leagueId, data){
+export const updateLeague = async function(userId, leagueId, data){
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    let userId = "648e0a6ff1915e7c19e2303a"   // temp
 
     data.leagueId = leagueId
     let validate = await leagueValidation(data, "CHG", userId)
@@ -351,12 +349,12 @@ export const updateLeague = async function(leagueId, data){
     return response
 }
 
-export const deleteLeague = async function(data) {
+export const deleteLeague = async function(userId, data) {
     // TEMP ONLY
     return ""
 }
 
-export const updateLeagueTeams = async function(data) {
+export const updateLeagueTeams = async function(userId, data) {
     // TEMP ONLY
     return ""
 }
