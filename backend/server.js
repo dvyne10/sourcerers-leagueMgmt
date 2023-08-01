@@ -23,6 +23,7 @@ import {
   getLeagues,
   createLeague,
   isLeagueAdmin,
+  getLeagueDetailsForUpdate,
   updateLeague,
   deleteLeague,
   updateLeagueTeams,
@@ -185,6 +186,13 @@ app.post("/admin", authenticate, (req, res) => {
 
 app.post("/createleague", authenticate, (req, res) => {
   createLeague(req.user._id.toString(), req.body).then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/getleaguedetailsupdate/:leagueid", authenticate, (req, res) => {
+  getLeagueDetailsForUpdate(req.user._id.toString(), req.params.leagueid)
+  .then((data) => {
     res.json(data);
   });
 });

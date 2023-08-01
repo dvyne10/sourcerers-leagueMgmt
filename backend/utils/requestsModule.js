@@ -87,7 +87,7 @@ export const getRequestById = async function(requestId) {
 
 export const hasPendingRequest = async function(notifId, userId, playerId, teamId, leagueId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    if (!mongoose.isValidObjectId(notifId.trim()) || (userId === "" && playerId === "" && teamId === "" && leagueId === "")) {
+    if (!mongoose.isValidObjectId(notifId.trim()) || !mongoose.isValidObjectId(userId.trim())) {
         response.requestStatus = "RJCT"
         response.errMsg = "Entry parameters are required"
         return response
@@ -707,7 +707,6 @@ export const cancelRequest = async function(userId, requestId) {
         }
     })
 
-    console.log(req.details.requestType)
     let index = await cancellableNotifDetails.findIndex(i => i.parmId.equals(req.details.requestType))
     if (index === -1) {
         response.requestStatus = "RJCT"

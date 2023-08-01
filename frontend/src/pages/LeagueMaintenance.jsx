@@ -3,7 +3,7 @@ import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import useAuth from "../hooks/auth";
 
-const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://playpal.netlify.app";
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
 
 const LeagueMaintenance = () => {
   
@@ -23,6 +23,7 @@ const LeagueMaintenance = () => {
     const [selectedBanner, setSelectedBanner] = useState(null);
     const [bannerURL, setBannerURL] = useState(null);
     const [disableDelete, setDeleteButton] = useState(true)
+    const [allowTeamRemoval, setTeamRemoval] = useState(false)
     const [oldValues, setOldValues] = useState(null)
     const [errorMessage, setErrorMessage] = useState([]);
 
@@ -32,28 +33,40 @@ const LeagueMaintenance = () => {
             handleAction({type: "Creation", title: "Create League"})
         } else {
             handleAction({type: "Update", title: "Update League", protectSport: false, protectRounds: false})
-            // cannot amend sport if it has team/s
-            // cannot amend number of rounds is status is ST/EN.
-            setCurrentValues({leagueName: "York League 2023", sportsTypeId: sportsOptions[0].value, description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
-                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", numberOfTeams: 15, numberOfRounds: 2, leagueStatus: "ST"
+            fetch(`${backend}/getleaguedetailsupdate/${routeParams.leagueid}`, {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "Application/JSON"
+                }
             })
-            setTeamsList([
-                { teamId: 1, teamName: "Vikings", approvedBy: "Hayes Lawson", joinedOn: "2022-07-01", action: "Remove", toRemove: false },
-                { teamId: 2, teamName: "Dodgers", approvedBy: "Cain Nunez", joinedOn: "2022-07-02", action: "Remove", toRemove: false  },
-                { teamId: 3, teamName: "Warriors", approvedBy: "Heidi Trevino", joinedOn: "2022-07-03", action: "Remove", toRemove: false  },
-                { teamId: 4, teamName: "Tigers", approvedBy: "Timon Kane", joinedOn: "2022-07-04", action: "Remove", toRemove: false  },
-                { teamId: 5, teamName: "Giants", approvedBy: "Tim Gibson", joinedOn: "2022-07-05", action: "Remove", toRemove: false  },
-            ])
-            setLogoURL("https://images.unsplash.com/photo-1685115560482-7ec4fb23414c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=881&q=80")
-            setSelectedLogo("x")
-            setBannerURL("https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW1lcmljYW4lMjBmb290YmFsbHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80")
-            setSelectedBanner("x")
-            // if (currValues.leagueStatus !== 'EN' && currValues.teamsList == null) {
-            //     setDeleteButton(false)
-            // }
-            setOldValues({ leagueName: "York League 2023", description: "A community league aimed to build solidarity.", location: "York, Ontario, CA",
-                division: "mixed", startDate: "2023-07-08", endDate: "2023-07-31", ageGroup: "18-25", numberOfTeams: "15", numberOfRounds: "2", 
-                sportsTypeId: "648ba153251b78d7946df311", logo: "x", banner: "x" })
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                    if (data.errField !== "") {
+                        document.getElementById(data.errField).focus()
+                    }
+                } else {
+                    setCurrentValues({leagueName: data.details.leagueName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, 
+                        location: data.details.location, division: data.details.division, startDate: dateFormat(data.details.startDate, "ISO"), endDate: dateFormat(data.details.endDate, "ISO"), 
+                        ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, leagueStatus: data.details.status
+                    })
+                    setTeamsList(data.details.teams)
+                    setLogoURL(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`)
+                    setSelectedLogo("x")
+                    setBannerURL(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
+                    setSelectedBanner("x")
+                    setDeleteButton(!data.details.allowDelete)
+                    setTeamRemoval(data.details.allowTeamRemoval)
+                    setOldValues({ leagueName: data.details.leagueName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, location: data.details.location,
+                        division: data.details.division, startDate: dateFormat(data.details.startDate, "ISO"), endDate: dateFormat(data.details.endDate, "ISO"), 
+                        ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, 
+                        logo: "x", banner: "x" })
+                }
+            }).catch((error) => {
+                console.log(error)
+            })
         }
     }, []);
 
@@ -110,6 +123,16 @@ const LeagueMaintenance = () => {
             newList[index].action = "Remove"
         }
         setTeamsList(newList)
+    }
+
+    const dateFormat = (date, type) => {
+        let dateIn = new Date(date)
+        if (type === "ISO") {
+            return dateIn.toISOString().substring(0,10)
+        } else {
+            return dateIn.toDateString()
+        }
+        
     }
 
     const navigate = useNavigate(); 
@@ -502,7 +525,7 @@ const LeagueMaintenance = () => {
             <div>
                 <div>
                     <br/><br/>
-                    {currValues.leagueStatus === "NS" && (
+                    {currValues.leagueStatus === "NS" && allowTeamRemoval && (
                         <h5 className="mt-5 text-center"><u>Submit Request to Remove Teams</u></h5>
                     )}
                     <table className="table table-hover text-center mt-2">
@@ -511,7 +534,7 @@ const LeagueMaintenance = () => {
                                 <th>Team Name</th>
                                 <th>Approved By</th>
                                 <th>Date Joined</th>
-                                {currValues.leagueStatus === "NS" && (
+                                {currValues.leagueStatus === "NS" && allowTeamRemoval && (
                                     <th>Action</th>
                                 )}
                             </tr>
@@ -521,8 +544,8 @@ const LeagueMaintenance = () => {
                                 <tr key={team.teamId}>
                                     <td>{team.teamName}</td>
                                     <td>{team.approvedBy}</td>
-                                    <td>{team.joinedOn}</td>
-                                    {currValues.leagueStatus === "NS" && (
+                                    <td>{dateFormat(team.joinedTimestamp, "String")}</td>
+                                    {currValues.leagueStatus === "NS" && allowTeamRemoval && (
                                         <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemoveTeams(index)}>{team.action}</button></td>
                                     )}
                                 </tr>) 
@@ -530,7 +553,7 @@ const LeagueMaintenance = () => {
                         </tbody>
                     </table>
                 </div>
-                {currValues.leagueStatus === "NS" && (
+                {currValues.leagueStatus === "NS" && allowTeamRemoval && (
                 <div className="row justify-content-center mt-5">
                     <button className="btn btn-warning col-3 mx-5" type="button" onClick={navigateSubmitRequest}>
                         Submit Removal Request

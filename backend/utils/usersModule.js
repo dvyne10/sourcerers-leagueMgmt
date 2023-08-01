@@ -563,3 +563,46 @@ export const getUsersTeamsAndLeagues = async function(userId) {
     }
     return { activeTeams, activeLeagues }
 }
+
+export const getUserFullname = async function(playerId, userName) {
+
+    if (!mongoose.isValidObjectId(playerId.trim()) || userName.trim() === " ") {
+        return {playerId: "", userName: "", fullName: ""}
+    }
+
+    let user = await UserModel.aggregate([
+        {
+            $match: { $or : [
+                { _id : new ObjectId(playerId) },
+                { userName: new RegExp(`^${userName}$`, "i") }
+                ]
+            }
+        },
+        {
+            $addFields: {
+                playerId: "$_id",
+                fullName: {
+                    $reduce: {
+                        input: [ "$firstName", " ", "$lastName" ],
+                        initialValue: "",
+                        in: {
+                            $concat: [ "$$value", "$$this"]
+                        }
+                    }
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0, playerId: 1, fullName: 1, userName: 1
+            }
+        }
+    ]).limit(1)
+
+
+    if (user.length === 0) {
+        return {playerId: "", userName: "", fullName: ""}
+    } else {
+        return {playerId: user[0].playerId, userName: user[0].userName, fullName: user[0].fullName}
+    }
+}

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
+import { getUserFullname } from "./usersModule.js";
 import { getManyTeamNames, getTeamsCreated, getTeamAdmin } from "./teamsModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
 import { getSportsList, getSportName } from "./sysParmModule.js";
@@ -309,6 +310,65 @@ export const createLeague = async function(userId, data) {
         });
     }
     return response
+}
+
+export const getLeagueDetailsForUpdate = async function(userId, leagueId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    if (!mongoose.isValidObjectId(userId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "User Id is required."
+        return response
+    }
+    if (!mongoose.isValidObjectId(leagueId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "League Id is required."
+        return response
+    }
+    let isLeagueAdminInd =  await isLeagueAdmin(userId, leagueId)
+    if (!isLeagueAdminInd) {
+        response.requestStatus = 'RJCT'
+        response.errMsg = 'Not authorized to this page !!!'
+        return response
+    }
+    let resp1 = getLeagueDetails(leagueId)
+    let resp2 = getSportsList()
+    let [leagueDetails, sportOptions] = await Promise.all([resp1, resp2])
+
+    if (leagueDetails.requestStatus !== "ACTC") {
+        response.requestStatus = "RJCT"
+        response.errMsg = "League is not found."
+        return response
+    } else {
+        let detailsForUpdate = leagueDetails.details
+        let teamHasPending, approverName
+        let teamsForUpdate = []
+        let allowTeamRemoval = false //TEMP
+        if (detailsForUpdate.status === "NS" && allowTeamRemoval) {
+            let promise = detailsForUpdate.teams.map(async function(team) { 
+                teamHasPending = await hasPendingRequest("APLGR", userId, "", team.teamId.toString(), leagueId)
+                if (teamHasPending.requestStatus === "ACTC" && teamHasPending.hasPending === true) {
+                    return {teamId: team.teamId, teamName:team.teamName, joinedTimestamp: team.joinedTimestamp, approvedBy: team.approvedBy, action: null}
+                } else {
+                    return {teamId: team.teamId, teamName:team.teamName, joinedTimestamp: team.joinedTimestamp, approvedBy: team.approvedBy, action: "Remove"}
+                }
+            })
+            teamsForUpdate = await Promise.all(promise)
+        }
+        let promise2 = detailsForUpdate.teams.map(async function(team) { 
+            approverName = await getUserFullname(team.approvedBy.toString(), "")
+            teamsForUpdate.push({teamId: team.teamId, teamName:team.teamName, joinedTimestamp: team.joinedTimestamp, approvedBy: approverName.fullName})
+        })
+        await Promise.all(promise2)
+        
+        response.requestStatus = "ACTC"
+        if (detailsForUpdate.status !== "NS" || detailsForUpdate.teams.length > 0 || 
+            detailsForUpdate.matches.length > 0 || !detailsForUpdate.createdBy.equals(userId)) {
+                response.details = {...detailsForUpdate, matches: null, teams: teamsForUpdate, sportOptions: sportOptions.data, allowDelete: false, allowTeamRemoval}
+        } else {
+            response.details = {...detailsForUpdate, matches: null, teams: teamsForUpdate, sportOptions: sportOptions.data, allowDelete: true, allowTeamRemoval}
+        }
+        return response
+    }
 }
 
 export const updateLeague = async function(userId, leagueId, data){
