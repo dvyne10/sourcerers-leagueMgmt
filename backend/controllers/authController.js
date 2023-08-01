@@ -17,13 +17,6 @@ export const login = async (req, res) => {
       { email: new RegExp(`^${email}$`, "i") },
     ],
   });
-  // if (email.includes("@")) {
-  //   user = await UserModel.findOne({ email });
-  // } else {
-  //   user = await UserModel.findOne({ userName: email });
-  // }
-
-  // compare hash password to the user password in the database
   if (!user) {
     res.status(200).send({
       requestStatus: "RJCT",
@@ -52,7 +45,7 @@ export const login = async (req, res) => {
           } else {
             succLogin = [{sourceIPAddress: "IPtemp", timestamp: new Date()}]
           }
-            await UserModel.updateOne({ _id: user._id}, {     //update also to log token and timestamp
+            await UserModel.updateOne({ _id: user._id}, {    
               $set: { 
                 successfulLoginDetails : succLogin,
                 failedLoginDetails : null
@@ -94,7 +87,7 @@ export const login = async (req, res) => {
             failedLogins = [{sourceIPAddress: "IPtemp", timestamp: new Date()}]
           }
           if (maxFailedReached === false) {
-            await UserModel.updateOne({ _id: user._id}, {     //update also to log token and timestamp
+            await UserModel.updateOne({ _id: user._id}, {    
               $set: { failedLoginDetails : {
                 numberOfLoginTries: maxLogins,
                 numberOfFailedLogins: ( user.failedLoginDetails.numberOfFailedLogins ? user.failedLoginDetails.numberOfFailedLogins + 1 : 1 ),
@@ -106,7 +99,7 @@ export const login = async (req, res) => {
               message: "Incorrect email/username or password",
             });
           } else {
-            await UserModel.updateOne({ _id: user._id}, {     //update also to log token and timestamp
+            await UserModel.updateOne({ _id: user._id}, {
               $set: { 
                 status : "LOCK",
                 "failedLoginDetails.consecutiveLockedOuts" : ( user.failedLoginDetails.consecutiveLockedOuts ? user.failedLoginDetails.consecutiveLockedOuts + 1 : 1 ),

@@ -62,6 +62,7 @@ const LeagueMaintenance = () => {
         if (url === "update" && isSignedIn) {
             fetch(`${backend}/admin?league=${routeParams.leagueid}`, {
                 method: "POST",
+                credentials: 'include',
                 body: JSON.stringify(currValues),   // temp
                 headers: {
                     "Content-Type": "Application/JSON"
@@ -131,6 +132,7 @@ const LeagueMaintenance = () => {
                 //data.banner = selectedBanner
                 fetch(`${backend}/createleague`, {
                     method: "POST",
+                    credentials: 'include',
                     body: JSON.stringify(data),
                     headers: {
                         "Content-Type": "Application/JSON"
@@ -170,6 +172,7 @@ const LeagueMaintenance = () => {
                     //data.banner = selectedBanner
                     fetch(`${backend}/updateleague/${routeParams.leagueid}`, {
                         method: "POST",
+                        credentials: 'include',
                         body: JSON.stringify(data),
                         headers: {
                             "Content-Type": "Application/JSON"

@@ -35,7 +35,17 @@ const registerUser = async (req, res) => {
   if (existingUser) {
     res.status(200).send({
       requestStatus: "RJCT",
-      errMsg: "A user with this email already exits",
+      errMsg: "The email is not available.",
+    });
+    return;
+  }
+
+  const existingUsername = await User.findOne({ userName });
+
+  if (existingUsername) {
+    res.status(200).send({
+      requestStatus: "RJCT",
+      errMsg: "The username is not available.",
     });
     return;
   }

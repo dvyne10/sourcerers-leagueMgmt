@@ -7,7 +7,7 @@ import useAuth from "../hooks/auth";
 
 const AccountMaintenance = () => {
   //hooks
-  const { registerUser } = useAuth();
+  const { isSignedIn, registerUser, registrationError } = useAuth()
 
   const location = useLocation();
   const routeParams = useParams();
@@ -32,8 +32,8 @@ const AccountMaintenance = () => {
   const [imageURL, setImageURL] = useState(null);
   const [oldValues, setOldValues] = useState(null);
   const sportsOptions = [
-    { label: "Soccer", value: "soccerId" },
-    { label: "Basketball", value: "basketId" },
+    { label: "Soccer", value: "648ba153251b78d7946df311" },
+    { label: "Basketball", value: "648ba153251b78d7946df322" },
   ];
   const [countries, setCountries] = useState([{ name: null, states: [] }]);
   const [states, setStates] = useState([]);
@@ -82,7 +82,7 @@ const AccountMaintenance = () => {
           city: "N/A",
         });
       });
-      setSportsSelected([{ label: "Basketball", value: "basketId" }]);
+      setSportsSelected([{ label: "Basketball", value: "648ba153251b78d7946df322" }]);
       setImageURL(
         "https://images.lifestyleasia.com/wp-content/uploads/sites/3/2022/12/31011513/harry-potter-films.jpeg"
       );
@@ -201,7 +201,10 @@ const AccountMaintenance = () => {
     }
     setFormError(false);
     setFormErrorArray("");
+    currValues.sportsOfInterest = []
+    sportsSelected.map((i) => (currValues.sportsOfInterest.push(i.value)));
     if (action.type === "Register") {
+      
       registerUser(currValues, navigate);
     } else {
       let sportsSelectedValues = "";
@@ -250,6 +253,21 @@ const AccountMaintenance = () => {
               aria-label="Close"
             ></button>
           </div>
+        )}
+        {registrationError && registrationError !== "" &&(
+          <div className="alert alert-danger mb-3 p-1">
+            <p className="mb-0">{registrationError}</p>
+          </div>
+        )}
+        { !isSignedIn && action.type === "Update" && (
+            <div>
+                {navigate('/signin')}
+            </div>
+        )}
+        { isSignedIn && action.type === "Register" && (
+            <div>
+                {navigate('/')}
+            </div>
         )}
         <form
           onSubmit={(e) => {
