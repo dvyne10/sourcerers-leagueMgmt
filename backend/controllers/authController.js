@@ -164,11 +164,9 @@ export const verifyOTP = async (req, res) => {
         .status(200)
         .send({ requestStatus: "RJCT", message: "User not found" });
     }
-  } catch (error) {}
-
-  res.status(200).json({
-    message: currentTime,
-  });
+  } catch (error) {
+    res.status(404).send({ requestStatus: "RJCT", message: "OTP verification failed." });
+  }
 };
 
 const authenticateUser = () => {};
