@@ -53,10 +53,20 @@ const LeagueMaintenance = () => {
                         ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, leagueStatus: data.details.status
                     })
                     setTeamsList(data.details.teams)
-                    setLogoURL(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`)
-                    setSelectedLogo("x")
-                    setBannerURL(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
-                    setSelectedBanner("x")
+                    fetch(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`)
+                    .then(res=>{
+                        if (res.ok) {
+                            setLogoURL(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`)
+                            setSelectedLogo("x")
+                        }
+                    })
+                    fetch(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
+                    .then(res=>{
+                        if (res.ok) {
+                            setBannerURL(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
+                            setSelectedBanner("x")
+                        }
+                    })
                     setDeleteButton(!data.details.allowDelete)
                     setTeamRemoval(data.details.allowTeamRemoval)
                     setOldValues({ leagueName: data.details.leagueName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, location: data.details.location,
