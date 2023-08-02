@@ -44,6 +44,7 @@ import {
   getSysParmList,
   getPosnAndStatBySport,
 } from "./utils/sysParmModule.js";
+import { authenticate } from "./middlewares/authMiddleware.js";
 
 dotenv.config();
 connectDB();

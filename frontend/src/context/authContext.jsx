@@ -36,7 +36,7 @@ const AuthContextProvider = ({ children }) => {
         setOTPError,
         otpErrorMessage,
         registrationError,
-        setOTPErrorMessage
+        setOTPErrorMessage,
       }}
     >
       {children}
@@ -154,7 +154,14 @@ const AuthContextProvider = ({ children }) => {
   async function signOut() {
     setSignedIn(false);
     setAdmin(false);
+    const data = await loginService.logout();
+    console.log(data);
+
     await localStorage.clear();
+    console.log('signe out')
+
+    // const data = await loginService.logout();
+    // console.log(data);
   }
 };
 

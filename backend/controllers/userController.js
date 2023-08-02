@@ -20,6 +20,7 @@ import {
 import handlebars from "handlebars";
 
 const registerUser = async (req, res) => {
+  console.log(req,'this is the request')
   const {
     firstName,
     lastName,
@@ -94,18 +95,18 @@ const registerUser = async (req, res) => {
       const html = generateOTPEmail(otp, userName, email);
 
       // sending the otp through the provided email for verification
-      // await sendEmail({
-      //   subject: "Verification OTP for PlayPal",
-      //   html: html,
-      //   to: email,
-      //   from: process.env.EMAIL,
-      // })
-      //   .then(() => {
-      //     console.log("email has been sent");
-      //   })
-      //   .catch((e) => {
-      //     console.log(`email could not be sent ${e}`);
-      //   });
+      await sendEmail({
+        subject: "Verification OTP for PlayPal",
+        html: html,
+        to: email,
+        from: process.env.EMAIL,
+      })
+        .then(() => {
+          console.log("email has been sent");
+        })
+        .catch((e) => {
+          console.log(`email could not be sent ${e}`);
+        });
 
       res.status(201).send({ requestStatus: "ACTC", user });
     } else {
