@@ -20,7 +20,6 @@ const Home = () => {
     try {
       const response = await fetch('http://localhost:8000/');
       const data = await response.json();
-      console.log(data); // Log the data received from the backend
       setTopLeagues(data.details.topLeagues);
       setAnnouncements(data.details.announcements);
     } catch (error) {

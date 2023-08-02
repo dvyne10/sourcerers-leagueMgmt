@@ -271,7 +271,7 @@ export const getUserWinsCount = async function(playerId) {
             wins += match
         })
     })
-    //wins = await Promise.all(promises);
+    
     return wins
 }
 
@@ -566,7 +566,7 @@ export const getUsersTeamsAndLeagues = async function(userId) {
 
 export const getUserFullname = async function(playerId, userName) {
 
-    if (!mongoose.isValidObjectId(playerId.trim()) || userName.trim() === " ") {
+    if ((playerId !== "" && !mongoose.isValidObjectId(playerId.trim())) || (playerId == "" && userName.trim() === "")) {
         return {playerId: "", userName: "", fullName: ""}
     }
 

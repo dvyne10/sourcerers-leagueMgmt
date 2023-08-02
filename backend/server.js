@@ -79,7 +79,6 @@ app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   getHomeDetails().then((data) => {
-    console.log(data.details.topLeagues.teams); 
     res.json(data);
   });
 });
@@ -141,7 +140,6 @@ app.post("/startleague/:leagueid", authenticate, (req, res) => {
 });
 
 app.get("/players", (req, res) => {
-  console.log("called"); 
   getPlayers().then((data) => {
     res.json(data);
   });
@@ -161,9 +159,16 @@ app.post("/invitetoteam/:playerid", authenticate, (req, res) => {
   });
 });
 
+app.post("/match/:matchid", getTokenFromCookies, (req, res) => {
+  getMatchDetails(req.userId, req.params.matchid).then((data) => {
+    res.json(data);
+  });
+});
+
 app.get("/testing", (req, res) => {  //TEMP ONLY FOR TESTING PURPOSES
-  //getMatchDetails("648ba154251b78d7946df33c", "64c3deff7ac9bd6a6d2daa4e")
-  isValidPassword("a%cdef3hikA")
+  //getOtherTwoMatches("64c3deff7ac9bd6a6d2daa4e", "648e224f91a1a82229a6c11f", "648e73a55b8b7790abd4856e")
+  //isValidPassword("a%cdef3hikA")
+  getMatchDetails("", "64c0471c9a5c94879dbee3cf")
   .then((data) => {
     res.json(data);
   });
