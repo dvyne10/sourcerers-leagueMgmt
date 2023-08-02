@@ -205,11 +205,7 @@ const LeagueMaintenance = () => {
                     //data.banner = selectedBanner
                     fetch(`${backend}/updateleague/${routeParams.leagueid}`, {
                         method: "POST",
-<<<<<<< HEAD
                         credentials: 'include',
-=======
-                        credentials:'include',
->>>>>>> 9aa95e2 (fixed otp error)
                         body: JSON.stringify(data),
                         headers: {
                             "Content-Type": "Application/JSON"

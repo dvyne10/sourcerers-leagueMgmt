@@ -20,7 +20,7 @@ import {
 import handlebars from "handlebars";
 
 const registerUser = async (req, res) => {
-  console.log(req,'this is the request')
+  // console.log(req,'this is the request')
   const {
     firstName,
     lastName,
@@ -149,4 +149,10 @@ const checkPasswordChar = (password, charsToCheck) => {
     }
   }
   return false
+}
+
+const forgotPassword = (req,res) =>{
+  const {email} = req.body
+  const otp = generateOTP();
+  const otpDate = new Date();
 }
