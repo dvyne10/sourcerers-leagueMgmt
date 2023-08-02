@@ -1,11 +1,26 @@
 import '../App.css'; 
-import {Link} from 'react-router-dom'; 
+import {Link, useNavigate} from 'react-router-dom'; 
+import useAuth from "../hooks/auth";
+import {useEffect} from 'react'
 
 const Notification = () => {
 
+  const { isSignedIn } = useAuth()
+  const navigate = useNavigate(); 
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      navigate('/signin')
+    }
+  })
+
   return (
     <>
-  
+  { !isSignedIn && (
+            <div>
+                {navigate('/signin')}
+            </div>
+  )}
   <section className="section-50">
       <div className="container">
         <h1 className="m-b-50 heading-line">Announcements <i className="fa fa-bell text-muted"></i></h1>

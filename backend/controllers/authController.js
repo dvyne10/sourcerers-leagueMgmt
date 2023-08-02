@@ -144,9 +144,10 @@ export const verifyOTP = async (req, res) => {
               generateToken(res, user._id);
               user.status = "ACTV";
               user.detailsOTP = null
+              let newLogin = [{sourceIPAddress: "IPtemp", timestamp: new Date()}]
+              user.successfulLoginDetails = newLogin
               await user.save();
             }
-            
             return res.status(200).send({
               requestStatus: 'ACTC',
               message: "OTP verified",

@@ -106,7 +106,7 @@ const AuthContextProvider = ({ children }) => {
           setRegistrationError(response.data.errMsg);
         } else {
           await localStorage.setItem(
-            "login",
+            "otp",
             JSON.stringify(response.data.user)
           );
           navigate("/inputotp", { state: { fromPage: "Register" } });
@@ -119,13 +119,15 @@ const AuthContextProvider = ({ children }) => {
 
   async function verifyOTP(otp, navigate) {
     try {
-      let user = await JSON.parse(localStorage.getItem("login"));
+      let user = await JSON.parse(localStorage.getItem("otp"));
       const email = user.email;
       const data = { email, otp };
       const response = await loginService.verifyOTP(data);
       if (response.data) {
         const { requestStatus } = response.data;
         if (requestStatus === "ACTC") {
+          await localStorage.setItem("login", JSON.stringify(user.userName));
+          await localStorage.removeItem("otp")
           setSignedIn(true);
           navigate("/");
         } else {

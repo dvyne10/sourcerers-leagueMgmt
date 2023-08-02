@@ -7,6 +7,7 @@ import connectDB from "./config/db.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import { authenticate, getTokenFromCookies } from "./middlewares/authMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
+import { isValidPassword } from "./controllers/userController.js";
 
 import { getHomeDetails} from "./utils/homePageModule.js";
 import {
@@ -161,8 +162,8 @@ app.post("/invitetoteam/:playerid", authenticate, (req, res) => {
 });
 
 app.get("/testing", (req, res) => {  //TEMP ONLY FOR TESTING PURPOSES
-  getMatchDetails("648ba154251b78d7946df33c", "64c3deff7ac9bd6a6d2daa4e")
-  //getPosnAndStatBySport("648ba153251b78d7946df311")
+  //getMatchDetails("648ba154251b78d7946df33c", "64c3deff7ac9bd6a6d2daa4e")
+  isValidPassword("a%cdef3hikA")
   .then((data) => {
     res.json(data);
   });
