@@ -100,7 +100,6 @@ const AuthContextProvider = ({ children }) => {
   async function registerUser(currentValues, navigate) {
     try {
       const response = await loginService.registerUser(currentValues);
-      console.log(response);
       if (response) {
         const { requestStatus } = response.data;
         if (requestStatus === "RJCT") {
@@ -124,16 +123,16 @@ const AuthContextProvider = ({ children }) => {
       const email = user.email;
       const data = { email, otp };
       const response = await loginService.verifyOTP(data);
-      if (response) {
+      if (response.data) {
         const { requestStatus } = response.data;
-        if (requestStatus === "RJCT") {
+        if (requestStatus === "ACTC") {
+          setSignedIn(true);
+          navigate("/");
+        } else {
           setOTPError(true);
           setOTPErrorMessage(response.data.message);
           return;
         }
-        setSignedIn(true);
-
-        navigate("/");
       }
     } catch (error) {
       console.log(error);

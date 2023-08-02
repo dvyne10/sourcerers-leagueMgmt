@@ -78,7 +78,7 @@ const registerUser = async (req, res) => {
       console.log(otp, otpDate);
 
       user.detailsOTP.OTP = parseInt(otp);
-      user.detailsOTP.expiryTimeOTP = otpDate;
+      user.detailsOTP.expiryTimeOTP = otpDate.setMinutes(otpDate.getMinutes() + 5);
       await user.save();
 
       // generating email
