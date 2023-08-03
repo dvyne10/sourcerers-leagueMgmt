@@ -78,7 +78,8 @@ app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   getHomeDetails().then((data) => {
-    console.log(data.details.topLeagues.teams); 
+
+
     res.json(data);
   });
 });

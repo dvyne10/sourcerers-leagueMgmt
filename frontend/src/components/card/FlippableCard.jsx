@@ -1,10 +1,10 @@
 import './flippableCard.css'; 
 import FlipCard from './FlipCard'; 
 import { CSSTransition } from 'react-transition-group'; 
-import {useState} from 'react'; 
+import { useState } from 'react'; 
 import PropTypes from 'prop-types'; 
 
-const FlippableCard = ({imageUrl, cardText}) => {
+const FlippableCard = ({ imageUrl, cardText, teams }) => {
     const [showFront, setShowFront] = useState(true);
 
     return (
@@ -14,16 +14,18 @@ const FlippableCard = ({imageUrl, cardText}) => {
                 timeout={300}
                 classNames='flip'
             > 
-                <FlipCard onClick={()=> {
-                    setShowFront((v) => !v);
-                }}
-                imageUrl={imageUrl}
-                cardText={cardText}
-                style={{
-                    width: '100%',  // Set width as needed
-                    height: 'auto', // Maintain aspect ratio
-                    borderRadius: '50%',
-                  }}
+                <FlipCard
+                    onClick={() => {
+                        setShowFront((v) => !v);
+                    }}
+                    imageUrl={imageUrl}
+                    cardText={cardText}
+                    teams={teams}
+                    style={{
+                        width: '100%',  // Set width as needed
+                        height: 'auto', // Maintain aspect ratio
+                        borderRadius: '50%',
+                    }}
                 />
             </CSSTransition>
         </div>
@@ -33,5 +35,12 @@ const FlippableCard = ({imageUrl, cardText}) => {
 FlippableCard.propTypes = {
     imageUrl: PropTypes.string,
     cardText: PropTypes.string,
+    teams: PropTypes.arrayOf(
+        PropTypes.shape({
+            teamId: PropTypes.string.isRequired,
+            teamName: PropTypes.string.isRequired,
+        })
+    ).isRequired,
 };
-export default FlippableCard; 
+
+export default FlippableCard;
