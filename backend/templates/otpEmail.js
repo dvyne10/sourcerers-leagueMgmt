@@ -42,14 +42,14 @@ export const generateOTPEmail = (otp, userName, email) => {
             <body>
                 <div class="wrapper">
                     <p>Hello ${userName},</p>
-                    <p>Your One-Time(OTP) is</p>
+                    <p>Your One-Time Password (OTP) is</p>
                     <div class="otp-wrapper">
                         <p class="otp"><b>${otp}</b></p>
                     </div>
-                    <p>This OTP will expire in 5 mins</p>
+                    <p>This OTP will expire in 5 mins.</p>
                     <p>
                         <span>NOTE:</span>
-                         this message was intended for ${email}
+                         This message was intended for ${email}.
                     </p>
                 </div>
             </body>
