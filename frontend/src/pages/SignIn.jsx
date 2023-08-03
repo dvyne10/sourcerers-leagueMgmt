@@ -112,12 +112,12 @@ const SignIn = () => {
             />
             {error.password && <span className="err">{error.password}</span>}
           </div>
-          <Form.Check
+          {/* <Form.Check
             type={"checkbox"}
             id={`default-checkbox`}
             label={`Remember me`}
             className="mb-4 "
-          />
+          /> */}
           <div className="d-flex justify-content-evenly width:100% mb-4">
             <button
               className="btn btn-primary sign-in-btn"
