@@ -1,13 +1,20 @@
 import Card from "react-bootstrap/Card";
 import { useNavigate } from 'react-router-dom';
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
+import useAuth from "../hooks/auth";
 
 const ChangePassword = () => {
 
   const navigate = useNavigate(); 
+  const { isSignedIn } = useAuth()
   const navigateReturn = () => { navigate(-1) }
   const navigateSubmitChange = () => { navigate(-1) }
 
+  useEffect(() => {
+    if (!isSignedIn) {
+      navigate('/signin')
+    }
+  })
 
   const [input, setInput] = useState({
     currentPassword: '',

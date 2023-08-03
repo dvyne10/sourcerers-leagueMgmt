@@ -307,6 +307,11 @@ const MatchUpdate = () => {
                 ))}
             </div>
         )}
+        { !isSignedIn && (
+            <div>
+                {navigate('/signin')}
+            </div>
+        )}
         <form action="">
             <div className="col mb-3 text-center">
                 <div className="row justify-content-center mb-3">

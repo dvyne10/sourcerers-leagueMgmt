@@ -70,6 +70,11 @@ const SignIn = () => {
   return (
     <div className="card-wrapper">
       <Card style={{ width: "25rem", padding: 20 }}>
+        { isSignedIn && (
+            <div>
+                {navigate('/')}
+            </div>
+        )}
         {isLoginError && (
           <div className="alert alert-danger mb-3 p-1">
             <p className="mb-0">{loginError}</p>

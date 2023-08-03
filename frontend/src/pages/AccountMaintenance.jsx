@@ -188,7 +188,7 @@ const AccountMaintenance = () => {
     setFormError(false);
     if (sportsSelected.length < 1) {
       setFormError(true);
-      setFormErrorArray("select at least one sport of interest");
+      setFormErrorArray("Select at least one sport of interest.");
       return;
     }
 
@@ -196,7 +196,7 @@ const AccountMaintenance = () => {
       setFormError(true);
       setFormErrorArray([]);
 
-      setFormErrorArray("enter a valid email");
+      setFormErrorArray("Enter a valid email");
       return;
     }
     setFormError(false);
@@ -204,7 +204,6 @@ const AccountMaintenance = () => {
     currValues.sportsOfInterest = []
     sportsSelected.map((i) => (currValues.sportsOfInterest.push(i.value)));
     if (action.type === "Register") {
-      
       registerUser(currValues, navigate);
     } else {
       let sportsSelectedValues = "";

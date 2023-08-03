@@ -2,28 +2,34 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
 export const authenticate = async (req, res, next) => {
+  console.log("working");
   let token;
   token = req.cookies.jwt;
 
-  if (token) {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
-      if (err) {
-        res.status(404).send({ message: "Invalid token" });
+  try {
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
+        console.log(err, data);
+        if (err) {
+          console.log(err);
+          // res.status(401).send({ message: "Invalid token" });
+        } else {
+          return data;
+        }
+      });
+
+      console.log(decoded);
+
+      if (decoded) {
+        const user = await User.findById(decoded.userId);
+        req.user = user;
       }
-
-      return data;
-    });
-
-    const user = await User.findById(decoded.userId);
-
-    req.user = user;
-    next();
-    try {
-    } catch (error) {
-      res.status(404).send({ message: "Invalid token" });
+      next();
+    } else {
+      res.status(404).send({ message: "not Authorized" });
     }
-  } else {
-    res.status(404).send({ message: "not Authorized" });
+  } catch (error) {
+    res.status(401).send({ message: "Invalid token!" });
   }
 };
 

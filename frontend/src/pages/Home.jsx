@@ -27,7 +27,10 @@ const Home = () => {
     try {
       const response = await fetch(`${backend}`);
       const data = await response.json();
+<<<<<<< HEAD
 
+=======
+>>>>>>> fc0ac76d3c5e7f56f7a15a39aa5a43482183339b
       setTopLeagues(data.details.topLeagues);
       setAnnouncements(data.details.announcements);
     } catch (error) {
