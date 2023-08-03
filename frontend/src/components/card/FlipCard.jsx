@@ -13,7 +13,8 @@ const FlipCard = ({ onClick, imageUrl, cardText, teams }) => {
         <div className="scrollable-container">
           <table>
             <tbody>
-              {teams.map((team) => (
+              
+              {teams && teams.map((team) => (
                 <tr className="team-row" key={team.teamId}>
                   <td className="logo-container">
                     <img
@@ -29,6 +30,7 @@ const FlipCard = ({ onClick, imageUrl, cardText, teams }) => {
                   </td>
                 </tr>
               ))}
+
             </tbody>
           </table>
         </div>

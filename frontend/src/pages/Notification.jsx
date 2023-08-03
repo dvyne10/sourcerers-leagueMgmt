@@ -5,22 +5,22 @@ import {useEffect} from 'react'
 
 const Notification = () => {
 
-  const { isSignedIn } = useAuth()
-  const navigate = useNavigate(); 
+  // const { isSignedIn } = useAuth()
+  // const navigate = useNavigate(); 
 
-  useEffect(() => {
-    if (!isSignedIn) {
-      navigate('/signin')
-    }
-  })
+  // useEffect(() => {
+  //   if (!isSignedIn) {
+  //     navigate('/signin')
+  //   }
+  // })
 
   return (
     <>
-  { !isSignedIn && (
+  {/* { !isSignedIn && (
             <div>
                 {navigate('/signin')}
             </div>
-  )}
+  )} */}
   <section className="section-50">
       <div className="container">
         <h1 className="m-b-50 heading-line">Notifications </h1>

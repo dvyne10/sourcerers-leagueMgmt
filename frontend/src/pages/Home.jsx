@@ -165,8 +165,7 @@ const Home = () => {
           <div className="slider-wrapper" style={{ paddingLeft: '5%', paddingRight: '5%' }}>
             <Slider key={sliderSettingsToUse.slidesToShow} {...sliderSettingsToUse}>
               {topLeagues.map((league, index) => (
-                <div key={index}>
-           
+                <div key={index}>           
                   <FlippableCard imageUrl={`${backend}/leaguelogos/${league.leagueId}.jpeg`} cardText={league.leagueName} teams={league.teams} />
                 </div>
               ))}

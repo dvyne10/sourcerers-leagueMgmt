@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "https://panicky-robe-mite.cyclic.app/api/users";
-//const BASE_URL = "http://localhost:8000/api/users";
+// const BASE_URL = "https://panicky-robe-mite.cyclic.app/api/users";
+const BASE_URL = "http://localhost:8000/api/users";
 
 // const headers = {
 //   "Access-Control-Allow-Origin": "http://localhost:8000",
