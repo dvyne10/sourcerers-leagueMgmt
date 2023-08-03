@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = "https://panicky-robe-mite.cyclic.app/api/users";
-// const BASE_URL = "http://localhost:8000/api/users";
+//const BASE_URL = "http://localhost:8000/api/users";
 
 // const headers = {
 //   "Access-Control-Allow-Origin": "http://localhost:8000",
@@ -18,7 +18,7 @@ async function login(email, password) {
         email,
         password,
       },
-      { withCredentials: true }
+      {withCredentials: true}
     );
 
     return response;
@@ -51,21 +51,21 @@ async function verifyOTP(data) {
   }
 }
 
-async function logout(){
-    try {
-        const response = await axios.post(`${BASE_URL}/logout`,{
-            withCredentials: true,
-          });
-        console.log(response)
-        return response
-    } catch (error) {
-        console.log(error)
-    }
+async function logout() {
+  try {
+    const response = await axios.post(`${BASE_URL}/logout`, {
+      withCredentials: true,
+    });
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export default {
   login,
   registerUser,
   verifyOTP,
-  logout
+  logout,
 };
