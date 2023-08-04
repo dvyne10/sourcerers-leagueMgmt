@@ -154,7 +154,7 @@ const AuthContextProvider = ({ children }) => {
   async function signOut() {
     setSignedIn(false);
     setAdmin(false);
-    const data = await loginService.logout();
+    // const data = await loginService.logout(); //TEMP
     await localStorage.clear();
   }
 };
