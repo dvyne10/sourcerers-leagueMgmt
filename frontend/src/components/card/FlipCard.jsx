@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './flipCard.css';
 import './flipTransition.css';
 
-const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const FlipCard = ({ onClick, imageUrl, cardText, teams }) => {
   return (

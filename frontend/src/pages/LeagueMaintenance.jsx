@@ -3,7 +3,7 @@ import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import useAuth, {checkIfSignedIn} from "../hooks/auth";
 
-const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const LeagueMaintenance = () => {
   
