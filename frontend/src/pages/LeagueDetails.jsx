@@ -5,10 +5,12 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './teamdetails.css'
 import { BsGearFill } from "react-icons/bs";
+import useAuth from "../hooks/auth";
 
 const LeagueDetails = () => {
 
   const navigate = useNavigate(); 
+  const {isSignedIn} = useAuth();
   const routeParams = useParams();
   const navigateUpdateLeague = () => { navigate(`/updateleague/${routeParams.leagueid}`) }   // temp id only
 
@@ -40,11 +42,13 @@ function changeJoinShow(){
   };
   return (
     <>
-    <h1>{data.map(league=>(
+    {isSignedIn && (
+
+     <div className='d-flex w-100 position-absolute w-75 justify-content-end p-5' style={{zIndex:"20"}}><Button onClick={navigateUpdateLeague} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
+    )}  
+        <h1>{data.map(league=>(
       league.status
-    ))}</h1>
-     <div className='d-flex w-100 position-absolute w-75 justify-content-end p-5' style={{zIndex:"99999"}}><Button onClick={navigateUpdateLeague} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
-        
+    ))}</h1>  
     <div className="App" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
       
   
@@ -67,8 +71,9 @@ function changeJoinShow(){
         
       </Row>
       <Row>
+      {isSignedIn && (
         <Col className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>{join===false ? "Join" : "Unjoin"}</Button></Col>
-
+      )}
       </Row>
     </Container>
     </div>

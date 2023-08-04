@@ -2,7 +2,7 @@ import { useState, useEffect }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaTrash, FaSearchPlus } from 'react-icons/fa';
-import useAuth from "../hooks/auth";
+import useAuth, {checkIfSignedIn} from "../hooks/auth";
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://playpal.netlify.app";
 
@@ -136,6 +136,15 @@ const MatchUpdate = () => {
             setMatchDetailsChanged(true)
         }
     }
+
+    const checkIfUserIsSignedIn = () => {
+        checkIfSignedIn()
+        .then((user) => {
+          if (!user.isSignedIn) {
+            navigate("/signin");
+          }
+        })
+      }
 
       
     const navigate = useNavigate(); 
@@ -309,7 +318,7 @@ const MatchUpdate = () => {
         )}
         { !isSignedIn && (
             <div>
-                {navigate('/signin')}
+                {checkIfUserIsSignedIn()}
             </div>
         )}
         <form action="">

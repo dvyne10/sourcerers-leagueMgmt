@@ -6,12 +6,13 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './teamdetails.css'
 import ListGroup from 'react-bootstrap/ListGroup';
-
+import useAuth from "../hooks/auth";
 
 
 
 function TeamDetails() {
     const navigate = useNavigate(); 
+    const {isSignedIn} = useAuth();
     const navigateUpdateTeam = () => { navigate('/updateteam/648e9013466c1c995745907c') }
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -71,7 +72,9 @@ const [data, setData] = useState([]);
 
     return (
       <>
+      {isSignedIn && (
       <div className='d-flex w-100 position-absolute justify-content-end p-4'><Button variant='transparent' onClick={navigateUpdateTeam} className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
+      )}
         <div className='bg-light container justify-content-center text-center'>
         {/* Here is the team header, with background and info */}
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white"
@@ -87,9 +90,10 @@ const [data, setData] = useState([]);
         <p className='mt-5'>Team description here.</p></Col>
       </Row>
       <Row>
+      {isSignedIn && (
         <Col lg="2" className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>{join===false ? "Join" : "Unjoin"}</Button>
         <Button className='mt-2 ms-2 mb-2 btn-success rounded-pill' onClick={handleShowInvite}>{invite===false ? "Invite to League" : "Uninvite to League"}</Button></Col>
-
+      )}
       </Row>
     </Container>
     

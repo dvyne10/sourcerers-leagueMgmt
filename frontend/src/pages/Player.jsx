@@ -6,9 +6,12 @@ import { useState, useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import useAuth from "../hooks/auth";
+<<<<<<< HEAD
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
 
+=======
+>>>>>>> 47fbafc44da0238d412468ed67d259b1b2caceeb
 
 const Player = () => {
 
@@ -19,10 +22,15 @@ const Player = () => {
     const handleClose = () => setShowInvite(false);
     const handleShow = () => setShowInvite(true);
     const [invite, setInvite] = useState(false);
+<<<<<<< HEAD
     const [errorMessage, setErrorMessage] = useState([]);
     
     const [action, handleAction] = useState({type: "userprofile", title: "Profile"});
     const navigate = useNavigate();
+=======
+    const {isSignedIn} = useAuth();
+
+>>>>>>> 47fbafc44da0238d412468ed67d259b1b2caceeb
     function changeInviteShow(){
     
       setInvite(!invite);
@@ -69,6 +77,7 @@ const Player = () => {
                     Toronto, CA
                   </p>
                   <p className="text-secondary font-size-sm mb-2"><a href={"mailto:"} className="text-secondary text-decoration-none">hpotter@hogwarts.gr</a></p>
+<<<<<<< HEAD
                   <p className="text-secondary font-size-sm mb-2">+143782838475</p>
                   {action.type==="myprofile" ? (
                     <Button href="/sos">Settings</Button>
@@ -77,6 +86,13 @@ const Player = () => {
                   )
                   }
                             
+=======
+                  {isSignedIn && (
+                  <Button variant={invite === false ? "btn btn-outline-success" : "btn btn-outline-danger"} onClick={handleShow}>{invite === false ? "Invite" : "Uninvite"}</Button>
+                  )}
+                  {" "}
+                
+>>>>>>> 47fbafc44da0238d412468ed67d259b1b2caceeb
                 </div>
               </div>
             </Card.Body>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import useAuth from "../hooks/auth";
+import useAuth, {checkIfSignedIn} from "../hooks/auth";
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
 
@@ -144,6 +144,15 @@ const LeagueMaintenance = () => {
         }
         
     }
+
+    const checkIfUserIsSignedIn = () => {
+        checkIfSignedIn()
+        .then((user) => {
+          if (!user.isSignedIn) {
+            navigate("/signin");
+          }
+        })
+      }
 
     const navigate = useNavigate(); 
     const navigateCancel = () => {
@@ -373,12 +382,12 @@ const LeagueMaintenance = () => {
 
   return (
     <div className="d-flex container mt-2 justify-content-center">
-        { !isSignedIn ? (
+        { !isSignedIn && (
             <div>
-                {navigate('/signin')}
+                {checkIfUserIsSignedIn()}
             </div>
-        ) : (
-        ( action.type == "Update" && !isLeagueAdmin ? (
+        )}
+        { action.type == "Update" && !isLeagueAdmin ? (
             <div>
                 <h1>Not authorized to this page !!!</h1>
             </div>
@@ -576,7 +585,6 @@ const LeagueMaintenance = () => {
             </div>
             )}
       </Card>
-        ))
         )}
     </div>
   );

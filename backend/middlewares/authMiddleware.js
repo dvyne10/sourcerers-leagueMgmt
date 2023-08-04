@@ -2,10 +2,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
 export const authenticate = async (req, res, next) => {
-  console.log("working");
   let token;
   token = req.cookies.jwt;
-
   try {
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
@@ -17,8 +15,6 @@ export const authenticate = async (req, res, next) => {
           return data;
         }
       });
-
-      console.log(decoded);
 
       if (decoded) {
         const user = await User.findById(decoded.userId);

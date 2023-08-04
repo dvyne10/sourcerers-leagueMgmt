@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import useAuth from "../hooks/auth";
+import useAuth, {checkIfSignedIn} from "../hooks/auth";
 import {Form} from 'react-bootstrap/';
 
 
@@ -108,6 +108,15 @@ const TeamMaintenance = () => {
         } 
     }
 
+    const checkIfUserIsSignedIn = () => {
+        checkIfSignedIn()
+        .then((user) => {
+          if (!user.isSignedIn) {
+            navigate("/signin");
+          }
+        })
+      }
+
     const navigate = useNavigate(); 
     const navigateCancel = () => {
         if (action.type === "Creation") {
@@ -194,11 +203,11 @@ const validateInput = () => {
 
   return (
     <div className="d-flex container mt-2 justify-content-center">
-        { !isSignedIn ? (
-            <div>
-                {navigate('/signin')}
-            </div>
-        ) : (
+        { !isSignedIn && (
+        <div>
+          {checkIfUserIsSignedIn()}
+        </div>
+      )}
         <Card style={{ width: "60rem", padding: 20 }}>
         {errorMessage.length > 0 && (
             <div className="alert alert-danger mb-3 p-1">
@@ -386,7 +395,6 @@ const validateInput = () => {
                 </div>
 
       </Card>
-      )}
     </div>
   );
 };

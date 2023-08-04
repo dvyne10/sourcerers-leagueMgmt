@@ -93,7 +93,7 @@ export default function Leagues() {
       </div>
       <div>
         <LeagueCard
-          name={"First league"}
+          name={"York League 2023"}
           status={"ongoing"}
           totalTeams={12}
           teamsJoined={12}
@@ -103,7 +103,7 @@ export default function Leagues() {
           }}
         />
         <LeagueCard
-          name={"Second league"}
+          name={"Mississauga League 2023"}
           status={"finished"}
           totalTeams={12}
           teamsJoined={6}
@@ -112,12 +112,12 @@ export default function Leagues() {
           }}
         />
         <LeagueCard
-          name={"Third league"}
+          name={"Hogsmeade League 2023"}
           status={"open"}
           totalTeams={12}
           teamsJoined={9}
           onClick={() => {
-            navigate("/league/123");
+            navigate("/league/648ba154251b78d7946df35d");
           }}
         />
       </div>

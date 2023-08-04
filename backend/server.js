@@ -7,7 +7,6 @@ import connectDB from "./config/db.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import { authenticate, getTokenFromCookies } from "./middlewares/authMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
-import { isValidPassword } from "./controllers/userController.js";
 
 import { getHomeDetails} from "./utils/homePageModule.js";
 import {
@@ -39,6 +38,7 @@ import {
   startLeague,
   cancelRequest,
   inviteToTeam,
+  getRequestStatus
 } from "./utils/requestsModule.js";
 import {
   getSysParmList,
@@ -54,14 +54,14 @@ const port = process.env.PORT || 8000;
 app.use(
   cors({
     credentials: true,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET","HEAD","PUT","PATCH","POST","DELETE","OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token"],
     origin: [
       "http://127.0.0.1:5173",
       "https://playpal.netlify.app/",
       "http://localhost:5173",
     ],
-    // exposedHeaders: ["set-cookie"],
+    exposedHeaders: ['*', 'Authorization', ]
   })
 );
 
@@ -79,8 +79,6 @@ app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   getHomeDetails().then((data) => {
-    console.log(JSON.stringify(data.details.topLeagues, null, 2));
-
     res.json(data);
   });
 });
@@ -170,7 +168,7 @@ app.post("/match/:matchid", getTokenFromCookies, (req, res) => {
 app.get("/testing", (req, res) => {  //TEMP ONLY FOR TESTING PURPOSES
   //getOtherTwoMatches("64c3deff7ac9bd6a6d2daa4e", "648e224f91a1a82229a6c11f", "648e73a55b8b7790abd4856e")
   //isValidPassword("a%cdef3hikA")
-  getMatchDetails("", "64c0471c9a5c94879dbee3cf")
+  getRequestStatus("64bf3a1e812301f22152f0e8")
   .then((data) => {
     res.json(data);
   });

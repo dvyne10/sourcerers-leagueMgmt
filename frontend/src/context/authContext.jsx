@@ -155,13 +155,7 @@ const AuthContextProvider = ({ children }) => {
     setSignedIn(false);
     setAdmin(false);
     const data = await loginService.logout();
-    console.log(data);
-
     await localStorage.clear();
-    console.log('signe out')
-
-    // const data = await loginService.logout();
-    // console.log(data);
   }
 };
 
