@@ -61,6 +61,7 @@ app.use(
       "https://playpal.netlify.app/",
       "http://localhost:5173",
     ],
+    preflightContinue:true,
     exposedHeaders: ['*', 'Authorization', ]
   })
 );
