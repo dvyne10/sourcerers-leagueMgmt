@@ -1,13 +1,23 @@
 import Card from "react-bootstrap/Card";
 import { useNavigate } from 'react-router-dom';
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
+import useAuth, {checkIfSignedIn} from "../hooks/auth";
 
 const ChangePassword = () => {
 
   const navigate = useNavigate(); 
+  const { isSignedIn } = useAuth()
   const navigateReturn = () => { navigate(-1) }
   const navigateSubmitChange = () => { navigate(-1) }
 
+  const checkIfUserIsSignedIn = () => {
+    checkIfSignedIn()
+    .then((user) => {
+      if (!user.isSignedIn) {
+        navigate("/signin");
+      }
+    })
+  }
 
   const [input, setInput] = useState({
     currentPassword: '',
@@ -78,6 +88,11 @@ const ChangePassword = () => {
 
   return (
     <div className="card-wrapper">
+      { !isSignedIn && (
+        <div>
+          {checkIfUserIsSignedIn()}
+        </div>
+      )}
       <Card style={{ width: "25rem", padding: 20 }}>
         <h2 className="mb-4 center-text">Change Password</h2>
         <form action="">

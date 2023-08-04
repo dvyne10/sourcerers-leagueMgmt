@@ -7,14 +7,14 @@ import useAuth from "../hooks/auth";
 const InputOTP = () => {
   const [otp, setOTP] = useState("");
 
-  const { verifyOTP, otpError, setOTPError, setOTPErrorMessage } = useAuth();
+  const { verifyOTP, otpError, setOTPError, setOTPErrorMessage, otpErrorMessage } = useAuth();
 
   const location = useLocation();
   const fromPage = location.state.fromPage;
   const navigate = useNavigate();
   const navigateResetPassword = () => {
     if (fromPage === "Register") {
-      verifyOTP(otp,navigate)
+      verifyOTP(Number(otp),navigate)
     } else {
       navigate("/resetpassword");
     }
@@ -24,6 +24,11 @@ const InputOTP = () => {
     <div className="card-wrapper">
       <Card style={{ width: "25rem", padding: 20 }}>
         <h2 className="mb-4 center-text">Enter Verification Code</h2>
+        {otpError && otpError !== "" &&(
+          <div className="alert alert-danger mb-3 p-1">
+            <p className="mb-0">{otpErrorMessage}</p>
+          </div>
+        )}
         <form action="">
           <div className="mb-3">
             <input

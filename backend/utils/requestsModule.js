@@ -85,9 +85,48 @@ export const getRequestById = async function(requestId) {
     }
 }
 
+export const getRequestStatus = async function(requestId) {
+
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    if (!mongoose.isValidObjectId(requestId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Request id required"
+        return response
+    }
+    let req = await UserModel.aggregate([ 
+        { 
+            $match: { 
+                "requestsSent._id" : new ObjectId(requestId)
+            } 
+        }, 
+        { 
+            $project: {
+                requestsSent: {
+                    $filter: {
+                        input: "$requestsSent",
+                        as: "req",
+                        cond: { 
+                            $eq: [ "$$req._id", new ObjectId(requestId) ]
+                        }
+                    }
+                }, _id : 1
+            }
+        }
+    ]).limit(1)
+    if (req === null || req.length === 0) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Request is not found."
+        return response
+    }
+    req = req[0].requestsSent[0]
+    response.requestStatus = "ACTC"
+    response.details = req
+    return response
+}
+
 export const hasPendingRequest = async function(notifId, userId, playerId, teamId, leagueId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    if (!mongoose.isValidObjectId(notifId.trim()) || (userId === "" && playerId === "" && teamId === "" && leagueId === "")) {
+    if (!mongoose.isValidObjectId(notifId.trim()) || !mongoose.isValidObjectId(userId.trim())) {
         response.requestStatus = "RJCT"
         response.errMsg = "Entry parameters are required"
         return response
@@ -707,7 +746,6 @@ export const cancelRequest = async function(userId, requestId) {
         }
     })
 
-    console.log(req.details.requestType)
     let index = await cancellableNotifDetails.findIndex(i => i.parmId.equals(req.details.requestType))
     if (index === -1) {
         response.requestStatus = "RJCT"

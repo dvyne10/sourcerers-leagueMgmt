@@ -17,13 +17,6 @@ export const login = async (req, res) => {
       { email: new RegExp(`^${email}$`, "i") },
     ],
   });
-  // if (email.includes("@")) {
-  //   user = await UserModel.findOne({ email });
-  // } else {
-  //   user = await UserModel.findOne({ userName: email });
-  // }
-
-  // compare hash password to the user password in the database
   if (!user) {
     res.status(200).send({
       requestStatus: "RJCT",
@@ -52,7 +45,7 @@ export const login = async (req, res) => {
           } else {
             succLogin = [{sourceIPAddress: "IPtemp", timestamp: new Date()}]
           }
-            await UserModel.updateOne({ _id: user._id}, {     //update also to log token and timestamp
+            await UserModel.updateOne({ _id: user._id}, {    
               $set: { 
                 successfulLoginDetails : succLogin,
                 failedLoginDetails : null
@@ -94,7 +87,7 @@ export const login = async (req, res) => {
             failedLogins = [{sourceIPAddress: "IPtemp", timestamp: new Date()}]
           }
           if (maxFailedReached === false) {
-            await UserModel.updateOne({ _id: user._id}, {     //update also to log token and timestamp
+            await UserModel.updateOne({ _id: user._id}, {    
               $set: { failedLoginDetails : {
                 numberOfLoginTries: maxLogins,
                 numberOfFailedLogins: ( user.failedLoginDetails.numberOfFailedLogins ? user.failedLoginDetails.numberOfFailedLogins + 1 : 1 ),
@@ -106,7 +99,7 @@ export const login = async (req, res) => {
               message: "Incorrect email/username or password",
             });
           } else {
-            await UserModel.updateOne({ _id: user._id}, {     //update also to log token and timestamp
+            await UserModel.updateOne({ _id: user._id}, {
               $set: { 
                 status : "LOCK",
                 "failedLoginDetails.consecutiveLockedOuts" : ( user.failedLoginDetails.consecutiveLockedOuts ? user.failedLoginDetails.consecutiveLockedOuts + 1 : 1 ),
@@ -136,66 +129,45 @@ export const logout = async (req, res) => {
 export const verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
   const currentTime = Date.now();
-
+  
   try {
     const user = await UserModel.findOne({ email });
-
+    
     if (user) {
       //check the otp
       if (otp === user.detailsOTP.OTP) {
         //check the dates
-        const otpDate = new Date(user.detailsOTP.expiryTimeOTP).getDate();
-        const currentTimeDate = new Date(currentTime).getDate();
-        if (otpDate === currentTimeDate) {
-          //check the time
-          const otpTime = new Date(user.detailsOTP.expiryTimeOTP).getTime();
-          const currentOtpTime = new Date(currentTime).getTime();
-
-          const minutes = Math.floor((currentOtpTime - otpTime) / 60000);
-
-          //   const secondsOnTime = (
-          //     ((currentOtpTime - otpTime) % 60000) /
-          //     1000
-          //   ).toFixed(0);
-          console.log(minutes);
-          const secondsRemaining =
-            300 - ((currentOtpTime - otpTime) / 1000).toFixed(0);
-
-          if (minutes < 5 && secondsRemaining > 0) {
-            // generate token
-            generateToken(res, user._id);
-
-            user.status = "ACTV";
-            await user.save();
-
+        const otpDate = new Date(user.detailsOTP.expiryTimeOTP);
+        const currentTimeDate = new Date(currentTime);
+        if (otpDate.toISOString() > currentTimeDate.toISOString()) {
+            if (user.status === "PEND") {
+              generateToken(res, user._id);
+              user.status = "ACTV";
+              user.detailsOTP = null
+              let newLogin = [{sourceIPAddress: "IPtemp", timestamp: new Date()}]
+              user.successfulLoginDetails = newLogin
+              await user.save();
+            }
             return res.status(200).send({
               requestStatus: 'ACTC',
               message: "OTP verified",
-              remainingTime: `${secondsRemaining}s`,
             });
-          } else {
-            return res
-              .status(401)
-              .send({ requestStatus: "RJCT", message: "OTP has expired" });
-          }
         } else {
           return res
-            .status(401)
+            .status(200)
             .send({ requestStatus: "RJCT", message: "OTP has expired" });
         }
       } else {
-        return res.status(401).send({ requestStatus: "RJCT", message: "Invalid OTP" });
+        return res.status(200).send({ requestStatus: "RJCT", message: "Invalid OTP" });
       }
     } else {
       return res
-        .status(401)
+        .status(200)
         .send({ requestStatus: "RJCT", message: "User not found" });
     }
-  } catch (error) {}
-
-  res.status(200).json({
-    message: currentTime,
-  });
+  } catch (error) {
+    res.status(404).send({ requestStatus: "RJCT", message: "OTP verification failed." });
+  }
 };
 
 const authenticateUser = () => {};

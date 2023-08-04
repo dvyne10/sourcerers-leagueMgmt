@@ -23,6 +23,11 @@
     transform: rotateY(180deg); 
 } */
 
+.scrollable-container {
+    max-height: 150px; /* Adjust this value as needed */
+    overflow-y: auto;
+  }
+
 .card-front,
 .card-back {    
     /* Sizing */ 
@@ -88,10 +93,9 @@
 }
 
 .team-logo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    
+  width: 25px; /* Adjust logo size as needed */
+  height: 25px;
+  object-fit: cover;
 }
 
 .team-row {

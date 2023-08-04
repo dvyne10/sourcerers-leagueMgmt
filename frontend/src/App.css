@@ -470,6 +470,49 @@ body {
   /* Removed margin-left */
 }
 
+/* Add styles for the approval and decline buttons */
+.approval-button,
+.decline-button {
+  background-color: transparent;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.approval-button {
+  background-color: green;
+  margin-right: 5px;
+}
+
+.decline-button {
+  background-color: red;
+}
+
+/* Improve text visibility */
+.approval-button span,
+.decline-button span {
+  display: inline-block;
+  width: 100%; /* Full width of the button */
+  text-align: center;
+}
+.read-notification {
+  color: lightgrey; /* Change the color to your preference */
+  font-weight: normal;
+}
+/* Change background color on hover */
+.approval-button:hover {
+  background-color: darkgreen; /* Change to a different color when hovering */
+}
+
+.decline-button:hover {
+  background-color: darkred; /* Change to a different color when hovering */
+}
+
+
+
 /* Match details css */
 @media (max-width: 1300px) {
   .team-names {

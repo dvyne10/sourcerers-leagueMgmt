@@ -36,7 +36,7 @@ const AuthContextProvider = ({ children }) => {
         setOTPError,
         otpErrorMessage,
         registrationError,
-        setOTPErrorMessage
+        setOTPErrorMessage,
       }}
     >
       {children}
@@ -100,14 +100,13 @@ const AuthContextProvider = ({ children }) => {
   async function registerUser(currentValues, navigate) {
     try {
       const response = await loginService.registerUser(currentValues);
-      console.log(response);
       if (response) {
         const { requestStatus } = response.data;
         if (requestStatus === "RJCT") {
           setRegistrationError(response.data.errMsg);
         } else {
           await localStorage.setItem(
-            "login",
+            "otp",
             JSON.stringify(response.data.user)
           );
           navigate("/inputotp", { state: { fromPage: "Register" } });
@@ -120,20 +119,22 @@ const AuthContextProvider = ({ children }) => {
 
   async function verifyOTP(otp, navigate) {
     try {
-      let user = await JSON.parse(localStorage.getItem("login"));
+      let user = await JSON.parse(localStorage.getItem("otp"));
       const email = user.email;
       const data = { email, otp };
       const response = await loginService.verifyOTP(data);
-      if (response) {
+      if (response.data) {
         const { requestStatus } = response.data;
-        if (requestStatus === "RJCT") {
+        if (requestStatus === "ACTC") {
+          await localStorage.setItem("login", JSON.stringify(user.userName));
+          await localStorage.removeItem("otp")
+          setSignedIn(true);
+          navigate("/");
+        } else {
           setOTPError(true);
           setOTPErrorMessage(response.data.message);
           return;
         }
-        setSignedIn(true);
-
-        navigate("/");
       }
     } catch (error) {
       console.log(error);
@@ -153,6 +154,7 @@ const AuthContextProvider = ({ children }) => {
   async function signOut() {
     setSignedIn(false);
     setAdmin(false);
+    const data = await loginService.logout();
     await localStorage.clear();
   }
 };

@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import LeagueCard from "../components/LeagueCard";
+import useAuth from "../hooks/auth";
+
 
 export default function Leagues() {
   const navigate = useNavigate();
+  const { isSignedIn  } = useAuth()
   const navigateCreateLeague = () => {
     navigate("/createleague");
   };
@@ -21,22 +24,24 @@ export default function Leagues() {
       >
         <div className="d-flex justify-content-between w-100  align-items-end">
           <div className="d-flex ">
-            <i className="bi bi-filter"></i>
-            <p>Filter</p>
+            {/* <i className="bi bi-filter"></i>
+            <p>Filter</p> */}
           </div>
           <div>
             <h1>LEAGUES</h1>
           </div>
           <div className="d-flex">
-            <div className="d-flex align-items-end">
-              <button
-                type="button mh-25"
-                className="btn  btn-secondary"
-                onClick={navigateCreateLeague}
-              >
-                <i className="bi bi-plus">Create League</i>
-              </button>
-            </div>
+            { isSignedIn && (
+              <div className="d-flex align-items-end">
+                <button
+                  type="button mh-25"
+                  className="btn  btn-secondary"
+                  onClick={navigateCreateLeague}
+                >
+                  <i className="bi bi-plus">Create League</i>
+                </button>
+              </div>
+            )}
             <div
               style={{ width: 1, marginInline: 5, backgroundColor: "#666869" }}
             ></div>
@@ -88,7 +93,7 @@ export default function Leagues() {
       </div>
       <div>
         <LeagueCard
-          name={"first league"}
+          name={"York League 2023"}
           status={"ongoing"}
           totalTeams={12}
           teamsJoined={12}
@@ -98,7 +103,7 @@ export default function Leagues() {
           }}
         />
         <LeagueCard
-          name={"second league"}
+          name={"Mississauga League 2023"}
           status={"finished"}
           totalTeams={12}
           teamsJoined={6}
@@ -107,12 +112,12 @@ export default function Leagues() {
           }}
         />
         <LeagueCard
-          name={"third league"}
+          name={"Hogsmeade League 2023"}
           status={"open"}
           totalTeams={12}
           teamsJoined={9}
           onClick={() => {
-            navigate("/league/123");
+            navigate("/league/648ba154251b78d7946df35d");
           }}
         />
       </div>

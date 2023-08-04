@@ -54,15 +54,6 @@ const SignIn = () => {
   const navigateForgotPassword = () => {
     navigate("/forgotpassword");
   };
-  // const navigateProfile = () => {
-  //   if (input.username.toLowerCase() === "admin") {    // TEMP ONLY
-  //     signIn("ADMIN")
-  //     navigate('/adminusers')
-  //   } else {
-  //     signIn()
-  //     navigate('/myprofile')
-  //   }
-  // }
   const navigateRegister = () => {
     navigate("/register");
   };
@@ -70,6 +61,11 @@ const SignIn = () => {
   return (
     <div className="card-wrapper">
       <Card style={{ width: "25rem", padding: 20 }}>
+        { isSignedIn && (
+            <div>
+                {navigate('/')}
+            </div>
+        )}
         {isLoginError && (
           <div className="alert alert-danger mb-3 p-1">
             <p className="mb-0">{loginError}</p>
@@ -107,12 +103,12 @@ const SignIn = () => {
             />
             {error.password && <span className="err">{error.password}</span>}
           </div>
-          <Form.Check
+          {/* <Form.Check
             type={"checkbox"}
             id={`default-checkbox`}
             label={`Remember me`}
             className="mb-4 "
-          />
+          /> */}
           <div className="d-flex justify-content-evenly width:100% mb-4">
             <button
               className="btn btn-primary sign-in-btn"

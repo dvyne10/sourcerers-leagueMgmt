@@ -46,16 +46,10 @@ const userSchema = Schema(
       {
         _id: false,
         sourceIPAddress: {
-          type: String,
-          required: () => {
-            return this.status != "PEND" ? true : false;
-          },
+          type: String
         },
         timestamp: {
-          type: Date,
-          required: () => {
-            return this.status != "PEND" ? true : false;
-          },
+          type: Date
         },
       },
     ],

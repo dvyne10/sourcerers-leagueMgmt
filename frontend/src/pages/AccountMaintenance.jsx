@@ -3,11 +3,11 @@ import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
 import validator from "validator";
-import useAuth from "../hooks/auth";
+import useAuth, {checkIfSignedIn} from "../hooks/auth";
 
 const AccountMaintenance = () => {
   //hooks
-  const { registerUser } = useAuth();
+  let { isSignedIn, registerUser, registrationError } = useAuth()
 
   const location = useLocation();
   const routeParams = useParams();
@@ -32,8 +32,8 @@ const AccountMaintenance = () => {
   const [imageURL, setImageURL] = useState(null);
   const [oldValues, setOldValues] = useState(null);
   const sportsOptions = [
-    { label: "Soccer", value: "soccerId" },
-    { label: "Basketball", value: "basketId" },
+    { label: "Soccer", value: "648ba153251b78d7946df311" },
+    { label: "Basketball", value: "648ba153251b78d7946df322" },
   ];
   const [countries, setCountries] = useState([{ name: null, states: [] }]);
   const [states, setStates] = useState([]);
@@ -82,7 +82,7 @@ const AccountMaintenance = () => {
           city: "N/A",
         });
       });
-      setSportsSelected([{ label: "Basketball", value: "basketId" }]);
+      setSportsSelected([{ label: "Basketball", value: "648ba153251b78d7946df322" }]);
       setImageURL(
         "https://images.lifestyleasia.com/wp-content/uploads/sites/3/2022/12/31011513/harry-potter-films.jpeg"
       );
@@ -108,6 +108,17 @@ const AccountMaintenance = () => {
   useEffect(() => {
     getCities(currValues.country, currValues.province);
   }, [currValues.province]);
+
+  const checkIfUserIsSignedIn = () => {
+    checkIfSignedIn()
+    .then((user) => {
+      if (!user.isSignedIn && action.type === "Update") {
+        navigate("/signin");
+      } else if (user.isSignedIn && action.type === "Register") {
+        navigate("/");
+      }
+    })
+  }
 
   const handlePhotoChange = (event) => {
     if (event.target.files.length > 0) {
@@ -188,7 +199,7 @@ const AccountMaintenance = () => {
     setFormError(false);
     if (sportsSelected.length < 1) {
       setFormError(true);
-      setFormErrorArray("select at least one sport of interest");
+      setFormErrorArray("Select at least one sport of interest.");
       return;
     }
 
@@ -196,11 +207,13 @@ const AccountMaintenance = () => {
       setFormError(true);
       setFormErrorArray([]);
 
-      setFormErrorArray("enter a valid email");
+      setFormErrorArray("Enter a valid email");
       return;
     }
     setFormError(false);
     setFormErrorArray("");
+    currValues.sportsOfInterest = []
+    sportsSelected.map((i) => (currValues.sportsOfInterest.push(i.value)));
     if (action.type === "Register") {
       registerUser(currValues, navigate);
     } else {
@@ -250,6 +263,21 @@ const AccountMaintenance = () => {
               aria-label="Close"
             ></button>
           </div>
+        )}
+        {registrationError && registrationError !== "" &&(
+          <div className="alert alert-danger mb-3 p-1">
+            <p className="mb-0">{registrationError}</p>
+          </div>
+        )}
+        { !isSignedIn && action.type === "Update" && (
+            <div>
+                {checkIfUserIsSignedIn()}
+            </div>
+        )}
+        { isSignedIn && action.type === "Register" && (
+            <div>
+                {checkIfUserIsSignedIn()}
+            </div>
         )}
         <form
           onSubmit={(e) => {
