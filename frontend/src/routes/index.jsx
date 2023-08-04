@@ -155,7 +155,7 @@ const routes = createBrowserRouter([
   {
     path: "/myprofile",
     exact: true,
-    element: <MyProfile />,
+    element: <Player />,
   },
   {
     path: "/search",

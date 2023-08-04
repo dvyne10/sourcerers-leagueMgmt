@@ -1,5 +1,5 @@
 import {Container,Row,Col, Image, Button} from 'react-bootstrap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
 import Form from 'react-bootstrap/Form';
@@ -51,6 +51,23 @@ function TeamDetails() {
     setInvite(!invite);
     setShowInvite(false);
 }
+
+
+const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetchTeams();
+  }, []);
+
+  const fetchTeams = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/teams');
+      const data = await response.json();
+      setData(data.details);
+    } catch (error) {
+      console.error('Error fetching teams data:', error);
+    }
+  };
 
     return (
       <>

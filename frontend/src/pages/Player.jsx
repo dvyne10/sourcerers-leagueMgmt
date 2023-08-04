@@ -2,26 +2,55 @@ import { Container, Row, Col, Card, Button, Stack } from "react-bootstrap";
 import FlippableCard from '../components/card/FlippableCard'; 
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
+import useAuth from "../hooks/auth";
+
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
 
 
 const Player = () => {
 
+    
+  const {isSignedIn} = useAuth()
+  const routeParams = useParams();
   const [showInvite, setShowInvite] = useState(false);
     const handleClose = () => setShowInvite(false);
     const handleShow = () => setShowInvite(true);
     const [invite, setInvite] = useState(false);
-
-
+    const [errorMessage, setErrorMessage] = useState([]);
+    
+    const [action, handleAction] = useState({type: "userprofile", title: "Profile"});
+    const navigate = useNavigate();
     function changeInviteShow(){
     
       setInvite(!invite);
       setShowInvite(false);
   }
+
+
+  useEffect(() => {
+    const url = window.location.pathname.substring(1,10).toLowerCase()
+    if (url === "myprofile") {
+        handleAction({type: "myprofile", title: "My Profile"})
+    } else {
+        handleAction({type: "usprofile", title: "Profile"})
+    }},[]);
+
+
+
     return (
         <>
+
         <Container className="mt-5" >
+        { !isSignedIn && action.type==="myprofile" ? (
+            <div>
+                {navigate('/signin')}
+            </div>
+        ) : ( 
+
+        
       <Row className="gutters-sm">
         <Col md={4} className="mb-3">
           <Card>
@@ -40,9 +69,14 @@ const Player = () => {
                     Toronto, CA
                   </p>
                   <p className="text-secondary font-size-sm mb-2"><a href={"mailto:"} className="text-secondary text-decoration-none">hpotter@hogwarts.gr</a></p>
-                  
-                  <Button variant={invite === false ? "btn btn-outline-success" : "btn btn-outline-danger"} onClick={handleShow}>{invite === false ? "Invite" : "Uninvite"}</Button>{" "}
-                
+                  <p className="text-secondary font-size-sm mb-2">+143782838475</p>
+                  {action.type==="myprofile" ? (
+                    <Button href="/sos">Settings</Button>
+                  ) : (
+                    <Button variant={invite === false ? "btn btn-outline-success" : "btn btn-outline-danger"} onClick={handleShow}>{invite === false ? "Invite" : "Uninvite"}</Button>
+                  )
+                  }
+                            
                 </div>
               </div>
             </Card.Body>
@@ -58,22 +92,17 @@ const Player = () => {
                     Soccer Team
                   </h6>
                   <a href="/team/1">
-                  <span className="text-secondary">Chelsea</span></a>
+                  <span className="text-secondary">Chelsea/47</span></a>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                   <h6 className="mb-0">
                     
-                    Jersey Number
+                    Basketball Team
                   </h6>
-                  <span className="text-secondary">47</span>
+                  <a href="/team/1">
+                  <span className="text-secondary">Lakers/23</span></a>
                 </li>
-                <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                  <h6 className="mb-0">
-                    
-                    Status
-                  </h6>
-                  <span className="text-secondary">Active</span>
-                </li>
+
                 
               </ul>
             </Card.Body>
@@ -154,8 +183,9 @@ const Player = () => {
             <h4 className="center-header">Active Leagues</h4>
               <Row ><Col>
               <div className="col d-flex flex-column flex-md-row justify-content-around align-items-center mx-5 mb-5">
-            <FlippableCard imageUrl="/basketball_pic2.jpg" cardText="Jordan Warriors"/>
-            <FlippableCard imageUrl="/basketball_pic2.jpg" cardText="Jordan Warriors"/>
+              <FlippableCard imageUrl="/images/mainPage/basketball_pic1.jpg" cardText="BasketBall Club" />
+
+              <FlippableCard imageUrl="/images/mainPage/basketball_pic2.jpg" cardText="Jordan Warriors" />
           </div>
     </Col>
           <hr />      
@@ -163,24 +193,35 @@ const Player = () => {
 
               <h4 className="center-header">Past Leagues</h4>
               <Row className="justify-content-center">
-              <Row>
+              
         <Col sm={12} >
           <ListGroup>
-            <ListGroup.Item action href="/league/1"  className='mt-2'>
+          <Row className='text-center mb-3  '>
+              <Col md={3}>
+                Name
+              </Col>
+              <Col md={3}>
+              Start Date
+              </Col>
+              <Col md={3}>
+              End Date
+              </Col>
+              <Col md={3}>
+              Location
+              </Col>
+              </Row>  
+            <ListGroup.Item action href="/league/1">
               <Row className='text-center'>
-              <Col md={2}>
+              <Col md={3}>
                 Do or Do not
               </Col>
-              <Col md={2}>
+              <Col md={3}>
               20.06.23
               </Col>
               <Col md={3}>
-              2nd Place
+              15.09.23
               </Col>
               <Col md={3}>
-              6 Wins
-              </Col>
-              <Col md={2}>
               Toronto
               </Col>
               </Row>
@@ -193,13 +234,13 @@ const Player = () => {
                 
             
                 
-              </Row>
-             
+              
             </Card.Body>
           </Card>
         </Col>
         
       </Row>
+      )}
     </Container>
 
 

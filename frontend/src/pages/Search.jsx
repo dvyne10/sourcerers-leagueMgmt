@@ -1,7 +1,9 @@
 import {Button, Row, Col} from 'react-bootstrap'; 
 //import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import {FaSearch } from 'react-icons/fa';
+import {FaSearch, FaFilter } from 'react-icons/fa';
+import { func } from 'prop-types';
+
 
 
 const Search = () => {
@@ -12,9 +14,21 @@ const Search = () => {
     const [teamButton, handleTeamButton] = useState("secondary");
     const [playerButton, handlePlayerButton] = useState("secondary");
     const [leagueButton, handleLeagueButton] = useState("secondary");
+    const [filterButton, handleFilterButton] = useState("secondary");
+    const [teamResultsFilter, handleTeamResultsFilter] = useState(false);
+    const [playerResultsFilter, handlePlayerResultsFilter] = useState(false);
+    const [leagueResultsFilter, handleLeagueResultsFilter] = useState(false);
+    const [sportBResultsFilter, handleSportBResultsFilter] = useState(false);
+    const [sportSResultsFilter, handleSportSResultsFilter] = useState(false);
+    const [teamResultsButton, handleTeamResultsButton] = useState("outline-secondary");
+    const [playerResultsButton, handlePlayerResultsButton] = useState("outline-secondary");
+    const [leagueResultsButton, handleLeagueResultsButton] = useState("outline-secondary");
+    const [sportBResultsButton, handleSportBResultsButton] = useState("outline-secondary");
+    const [sportSResultsButton, handleSportSResultsButton] = useState("outline-secondary");
     const [searchText, changeText] = useState("");
     const [searchLocation, changeLocation] = useState("");
     const [searchActive, setSearchActive] = useState(false);
+    const [filterShow, setFilterShow] = useState(false);
 
     const handleFilter = (filter) => {
       if (filter === "Teams") {
@@ -41,12 +55,60 @@ const Search = () => {
       }
     };
 
+    const handleResultFilter = (filter) =>{
+      if (filter === "Teams") {
+        handleTeamResultsFilter(!teamResultsFilter);
+        if (teamResultsFilter === true) {
+            handleTeamResultsButton("outline-secondary")
+        } else {
+          handleTeamResultsButton("secondary")
+        }
+      } else if (filter === "Players") {
+        handlePlayerResultsFilter(!playerResultsFilter);
+        if (playerResultsFilter === true) {
+            handlePlayerResultsButton("outline-secondary")
+        } else {
+            handlePlayerResultsButton("secondary")
+        }
+        
+      }
+      else if (filter === "Basketball") {
+        handleSportBResultsFilter(!sportBResultsFilter);
+        if (sportBResultsFilter === true) {
+          handleSportBResultsButton("outline-secondary")
+        } else {
+          handleSportBResultsButton("secondary")
+        }
+        
+      }
+      else if (filter === "Soccer") {
+        handleSportSResultsFilter(!sportSResultsFilter);
+        if (sportSResultsFilter === true) {
+          handleSportSResultsButton("outline-secondary")
+        } else {
+          handleSportSResultsButton("secondary")
+        }
+        
+      }
+       else {
+        handleLeagueResultsFilter(!leagueResultsFilter);
+        if (leagueResultsFilter === true) {
+            handleLeagueResultsButton("outline-secondary")
+        } else {
+            handleLeagueResultsButton("secondary")
+        }
+      }
+    };
+    const setFilterButton = () =>{
+      setFilterShow(!filterShow)
+    }
+
 
     const handleSearchText = (input) => {changeText(input.target.value)}
     const handleSearchLocation = (input) => {changeLocation(input.target.value)}
     const data = [
         {
-      id:1,
+      rowid:1,
       type: "Team",
       name: "Real Madrid",
       numberOfPlayers: 23,
@@ -55,7 +117,7 @@ const Search = () => {
       lookingForPlayers: true
       
     },{
-      id:2,
+      rowid:2,
       type: "Team",
       name: "Barcelona",
       numberOfPlayers: 23,
@@ -64,7 +126,7 @@ const Search = () => {
       lookingForPlayers: false
       
     },{
-      id:3,
+      rowid:3,
       type: "Team",
       name: "Lakers",
       numberOfPlayers: 11,
@@ -73,7 +135,7 @@ const Search = () => {
       lookingForPlayers: false
       
     },{
-      id:4,
+      rowid:4,
       type: "Team",
       name: "Bulls",
       numberOfPlayers: 123,
@@ -82,7 +144,7 @@ const Search = () => {
       lookingForPlayers: false
       
     },{
-      id:5,
+      rowid:5,
       type: "Team",
       name: "No Name Team",
       numberOfPlayers: 15,
@@ -93,56 +155,60 @@ const Search = () => {
     },
       
    {
-      id:1,
+      rowid:6,
       type: "League",
       name: "Play or Don't, just live.",
-      lookingForTeams: true
+      lookingForTeams: true,
+      sportsType : "Soccer"
       
     },{
-      id:2,
+      rowid:7,
       type: "League",
       name: "Winner gets the girl",
-      lookingForTeams: false
+      lookingForTeams: false,
+      sportsType : "Soccer"
       
       
     },{
-      id:3,
+      rowid:8,
       type: "League",
       name: "Winner gets the boy",
-      lookingForTeams: true
+      lookingForTeams: true,
+      sportsType : "Basketball"
       
     },{
-      id:4,
+      rowid:9,
       type: "League",
       name: "Winner gets nothing",
-      lookingForTeams: true
+      lookingForTeams: true,
+      sportsType : "Basketball"
     },
     {
     
-      id:1,
+      rowid:10,
       type: "Player",
       name: "Baris Berber"
       
     },{
-      id:2,
+      rowid:11,
       type: "Player",
       name: "Jemma MatchPlay"
       
     },{
-      id:3,
+      rowid:12,
       type: "Player",
       name: "Hyun LEEgue"
       
     },{
-      id:4,
+      rowid:13,
       type: "Player",
       name: "Jinny Leegue"
       
     },{
-      id:5,
+      rowid:14,
       type: "Player",
       name: "Divine TheGodOu(dagadu)"
-      
+
     }
     
 ];
@@ -159,6 +225,12 @@ const filteredTeam = data.filter(filteredData=>{
     if(filteredData.type === "Player"){
       return filteredData;
     }})
+  const filteredSportsB = data.filter(filteredData=>{
+    if(filteredData.sportsType==="Basketball") return filteredData;
+  })
+  const filteredSportsS = data.filter(filteredData=>{
+    if(filteredData.sportsType==="Soccer") return filteredData;
+  })
       
 
   return (
@@ -190,7 +262,24 @@ const filteredTeam = data.filter(filteredData=>{
 { searchActive === true &&
       
             <div className='search-list'> 
-            <h2 className='text-center mt-3'>Results</h2>
+            <Row>
+            <Col><h2 className='text-center mt-3'><Button size="sm" variant="outline-secondary" onClick={setFilterButton}>
+                <FaFilter></FaFilter>Filter Results
+              </Button></h2>
+              {filterShow &&
+                <Col className='text-center'>
+                <Button size="sm" className='me-2' onClick={()=>{handleResultFilter("Teams")}} variant={teamResultsButton}>Teams</Button>
+                <Button size="sm" className='me-2' onClick={()=>{handleResultFilter("Leagues")}} variant={leagueResultsButton}>Leagues</Button>
+                <Button size="sm" className='me-2' onClick={()=>{handleResultFilter("Players")}} variant={playerResultsButton}>Players</Button>
+                <Button size="sm" className='me-2' onClick={()=>{handleResultFilter("Basketball")}} variant={sportBResultsButton}>Basketball</Button>
+                <Button size="sm" className='me-2' onClick={()=>{handleResultFilter("Soccer")}} variant={sportSResultsButton}>Soccer</Button>
+                </Col>
+              }
+              
+              </Col>
+            <Col><h2 className='text-center mt-3'>Results</h2></Col>
+            <Col></Col>
+            </Row>
             <ul>
           <Row className='mb-5 mt-5'>
             <Col>Name</Col>
@@ -198,25 +287,27 @@ const filteredTeam = data.filter(filteredData=>{
             <Col>Status</Col>
             <Col>Looking for Teams</Col>
             <Col>Looking for Players</Col>
+            <Col>Sports Type</Col>
           </Row>
           {/* Team Listing */}
-          {!teamFilter && !leagueFilter && !playerFilter &&
+          {!teamResultsFilter && !leagueResultsFilter && !playerResultsFilter && !sportBResultsFilter && !sportSResultsFilter &&
           data.map(list => 
             <li key={list.id} className='border'>
-            <a href={"team/"+ list.id} >
+            <a href={list.type + "/" + list.rowid} >
             <Row className='search-list p-2'>
             <Col> {list.name}</Col>
             <Col>{list.location}</Col>
             <Col>Status</Col>
             <Col>{(list.lookingForTeams === undefined ? "N/A" : (list.lookingForTeams ? "Yes" : "No"))}</Col>
             <Col>{(list.lookingForTeams === undefined ? "N/A" : (list.lookingForTeams ? "Yes" : "No"))}</Col>
+            <Col>{(list.sportsType === undefined ? "N/A" : list.sportsType)}</Col>
           </Row>
           </a>
           
           </li>
             )}
             
-                    {leagueFilter === true &&
+                    {leagueResultsFilter === true &&
                     filteredLeague.map(league=>
          <li key={league.id} className='border'>
             <a href={"league/"+ league.id} >
@@ -226,13 +317,14 @@ const filteredTeam = data.filter(filteredData=>{
             <Col>Status</Col>
             <Col>{}</Col>
             <Col>{league.lookingForTeams ? "Yes" : "No"} </Col>
+            <Col>{(league.sportsType === undefined ? "N/A" : league.sportsType)}</Col>
           </Row>
           </a>
           
           </li>
          
          )}
-                    {playerFilter === true &&
+                    {playerResultsFilter === true &&
           filteredPlayers.map(player => 
           
             <li key={player.id} className='border'>
@@ -243,6 +335,7 @@ const filteredTeam = data.filter(filteredData=>{
             <Col>Status</Col>
             <Col>N/A</Col>
             <Col>{player.lookingForTeams ? "Yes" : "No"} </Col>
+            <Col>{(player.sportsType === undefined ? "N/A" : player.sportsType)}</Col>
           </Row>
           </a>
           
@@ -250,7 +343,7 @@ const filteredTeam = data.filter(filteredData=>{
           
           
           )}
- {teamFilter === true &&
+ {teamResultsFilter === true &&
                     filteredTeam.map(team=>
          <li key={team.id} className='border'>
             <a href={"league/"+ team.id} >
@@ -260,6 +353,43 @@ const filteredTeam = data.filter(filteredData=>{
             <Col>Status</Col>
             <Col>N/A</Col>
             <Col>{team.lookingForTeams ? "Yes" : "No"} </Col>
+            <Col>{(team.sportsType === undefined ? "N/A" : team.sportsType)}</Col>
+          </Row>
+          </a>
+          
+          </li>
+         
+         )}
+
+{sportBResultsFilter === true &&
+                    filteredSportsB.map(sport=>
+         <li key={sport.id} className='border'>
+            <a href={"league/"+ sport.id} >
+            <Row className='search-list p-2'>
+            <Col> {sport.name}</Col>
+            <Col>{sport.location}</Col>
+            <Col>Status</Col>
+            <Col>N/A</Col>
+            <Col>{sport.lookingForTeams ? "Yes" : "No"} </Col>
+            <Col>{(sport.sportsType === undefined ? "N/A" : sport.sportsType)}</Col>
+          </Row>
+          </a>
+          
+          </li>
+         
+         )}
+
+{sportSResultsFilter === true &&
+                    filteredSportsS.map(sport=>
+         <li key={sport.id} className='border'>
+            <a href={"league/"+ sport.id} >
+            <Row className='search-list p-2'>
+            <Col> {sport.name}</Col>
+            <Col>{sport.location}</Col>
+            <Col>Status</Col>
+            <Col>N/A</Col>
+            <Col>{sport.lookingForTeams ? "Yes" : "No"} </Col>
+            <Col>{(sport.sportsType === undefined ? "N/A" : sport.sportsType)}</Col>
           </Row>
           </a>
           
