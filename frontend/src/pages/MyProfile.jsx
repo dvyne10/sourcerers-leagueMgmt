@@ -2,16 +2,32 @@ import { Container, Row, Col, Card,Stack } from "react-bootstrap";
 import FlippableCard from '../components/card/FlippableCard'; 
 import ListGroup from 'react-bootstrap/ListGroup';
 import { BsGearFill } from "react-icons/bs";
-
-
+import useAuth, {checkIfSignedIn} from "../hooks/auth";
+import { useNavigate } from 'react-router-dom';
 
 
 const Player = () => {
 
-  
+  const navigate = useNavigate(); 
+  const {isSignedIn} = useAuth();
+
+  const checkIfUserIsSignedIn = () => {
+    checkIfSignedIn()
+    .then((user) => {
+      if (!user.isSignedIn) {
+        navigate("/signin");
+      }
+    })
+  }
 
     return (
+      
         <>
+        { !isSignedIn && (
+            <div>
+                {checkIfUserIsSignedIn()}
+            </div>
+        )}
         <Container className="mt-5" >
       <Row className="gutters-sm">
         <Col md={4} className="mb-3">
@@ -204,7 +220,6 @@ const Player = () => {
         
       </Row>
     </Container>
-
         </>
     )
 }

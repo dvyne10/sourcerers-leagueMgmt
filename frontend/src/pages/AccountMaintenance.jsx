@@ -3,11 +3,11 @@ import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
 import validator from "validator";
-import useAuth from "../hooks/auth";
+import useAuth, {checkIfSignedIn} from "../hooks/auth";
 
 const AccountMaintenance = () => {
   //hooks
-  const { isSignedIn, registerUser, registrationError } = useAuth()
+  let { isSignedIn, registerUser, registrationError } = useAuth()
 
   const location = useLocation();
   const routeParams = useParams();
@@ -108,6 +108,17 @@ const AccountMaintenance = () => {
   useEffect(() => {
     getCities(currValues.country, currValues.province);
   }, [currValues.province]);
+
+  const checkIfUserIsSignedIn = () => {
+    checkIfSignedIn()
+    .then((user) => {
+      if (!user.isSignedIn && action.type === "Update") {
+        navigate("/signin");
+      } else if (user.isSignedIn && action.type === "Register") {
+        navigate("/");
+      }
+    })
+  }
 
   const handlePhotoChange = (event) => {
     if (event.target.files.length > 0) {
@@ -260,12 +271,12 @@ const AccountMaintenance = () => {
         )}
         { !isSignedIn && action.type === "Update" && (
             <div>
-                {navigate('/signin')}
+                {checkIfUserIsSignedIn()}
             </div>
         )}
         { isSignedIn && action.type === "Register" && (
             <div>
-                {navigate('/')}
+                {checkIfUserIsSignedIn()}
             </div>
         )}
         <form

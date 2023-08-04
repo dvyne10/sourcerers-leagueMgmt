@@ -76,9 +76,9 @@ export default function Players() {
         <Container>
           <Row className="align-items-end">
             <Col className="text-start">
-              <Button size="sm" variant="outline-secondary">
+              {/* <Button size="sm" variant="outline-secondary">
                 <FaFilter></FaFilter>Filter
-              </Button>
+              </Button> */}
             </Col>
             <Col>
               <h1 className="center-header">PLAYERS</h1>
