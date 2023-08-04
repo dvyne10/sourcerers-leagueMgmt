@@ -83,25 +83,25 @@ app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   getHomeDetails().then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
 app.get("/leagues", (req, res) => {
   getLeagues().then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
 app.post("/canusercreatenewleague", authenticate, (req, res) => {
   canUserCreateNewLeague(req.user._id.toString()).then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
 app.post("/league/:leagueid", getTokenFromCookies, (req, res) => {
   getLeagueDetailsAndButtons(req.userId, req.params.leagueid).then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
@@ -111,7 +111,7 @@ app.post("/lookingforteamson/:leagueid", authenticate, (req, res) => {
     req.params.leagueid,
     true
   ).then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
@@ -121,7 +121,7 @@ app.post("/lookingforteamsoff/:leagueid", authenticate, (req, res) => {
     req.params.leagueid,
     false
   ).then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
@@ -130,40 +130,40 @@ app.post("/joinleague/:leagueid", authenticate, (req, res) => {
   let msg = "This is a msg from the team to join league"; //TEMP ONLY
   joinLeague(req.user._id.toString(), teamId, req.params.leagueid, msg).then(
     (data) => {
-      res.json(data);
+      res.status(200).json(data);
     }
   );
 });
 
 app.post("/unjoinleague/:leagueid", authenticate, (req, res) => {
   unjoinLeague(req.user._id.toString(), req.params.leagueid).then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
 app.post("/cancelrequest/:pendingrequestid", authenticate, (req, res) => {
   cancelRequest(req.user._id.toString(), req.params.pendingrequestid).then(
     (data) => {
-      res.json(data);
+      res.status(200).json(data);
     }
   );
 });
 
 app.post("/startleague/:leagueid", authenticate, (req, res) => {
   startLeague(req.user._id.toString(), req.params.leagueid).then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
 app.get("/players", (req, res) => {
   getPlayers().then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
 app.post("/player/:playerid", getTokenFromCookies, (req, res) => {
   getPlayerDetailsAndButtons(req.userId, req.params.playerid).then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
@@ -172,14 +172,14 @@ app.post("/invitetoteam/:playerid", authenticate, (req, res) => {
   let msg = "This is a msg from the admin to join team."; //TEMP ONLY
   inviteToTeam(req.user._id.toString(), teamId, req.params.playerid, msg).then(
     (data) => {
-      res.json(data);
+      res.status(200).json(data);
     }
   );
 });
 
 app.post("/match/:matchid", getTokenFromCookies, (req, res) => {
   getMatchDetails(req.userId, req.params.matchid).then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
@@ -188,7 +188,7 @@ app.get("/testing", (req, res) => {
   //getOtherTwoMatches("64c3deff7ac9bd6a6d2daa4e", "648e224f91a1a82229a6c11f", "648e73a55b8b7790abd4856e")
   //isValidPassword("a%cdef3hikA")
   getRequestStatus("64bf3a1e812301f22152f0e8").then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
@@ -198,29 +198,29 @@ app.post("/admin", authenticate, (req, res) => {
   let matchId = req.query.match;
   if (leagueId) {
     isLeagueAdmin(req.user._id.toString(), leagueId).then((data) => {
-      res.json(data);
+      res.status(200).json(data);
     });
   } else if (teamId) {
     isTeamAdmin(req.user._id.toString(), teamId).then((data) => {
-      res.json(data);
+      res.status(200).json(data);
     });
   } else if (matchId) {
     isMatchAdmin(req.user._id.toString(), matchId).then((data) => {
-      res.json(data);
+      res.status(200).json(data);
     });
   }
 });
 
 app.post("/createleague", authenticate, (req, res) => {
   createLeague(req.user._id.toString(), req.body).then((data) => {
-    res.json(data);
+    res.status(200).json(data);
   });
 });
 
 app.post("/getleaguedetailsupdate/:leagueid", authenticate, (req, res) => {
   getLeagueDetailsForUpdate(req.user._id.toString(), req.params.leagueid).then(
     (data) => {
-      res.json(data);
+      res.status(200).json(data);
     }
   );
 });
@@ -228,7 +228,7 @@ app.post("/getleaguedetailsupdate/:leagueid", authenticate, (req, res) => {
 app.post("/updateleague/:leagueid", authenticate, (req, res) => {
   updateLeague(req.user._id.toString(), req.params.leagueid, req.body).then(
     (data) => {
-      res.json(data);
+      res.status(200).json(data);
     }
   );
 });
@@ -236,7 +236,7 @@ app.post("/updateleague/:leagueid", authenticate, (req, res) => {
 app.delete("/updateleague/:leagueid", authenticate, (req, res) => {
   updateLeague(req.user._id.toString(), req.params.leagueid, req.body).then(
     (data) => {
-      res.json(data);
+      res.status(200).json(data);
     }
   );
 });
