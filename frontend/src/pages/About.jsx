@@ -35,73 +35,60 @@ const About = () => {
             src="/images/aboutus/jem.jpeg"
           />
           <Card.Body>
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam.
+            <Card.Title>Jemma</Card.Title>
+            <Card.Text className="text-dark">
+            I'm Jem, and I'm from the Philippines. I have a degree in Applied Mathematics, but I fell in love with programming the moment I first tried it. Coding makes me feel alive, so I never regretted this path since.
             </Card.Text>
-            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
+            
           </Card.Body>
         </Card>
         <Card>
           <Card.Img
             variant="top"
-            src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
+            src="/images/aboutus/hs.jpg"
           />
           <Card.Body>
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam.
-            </Card.Text>
-            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
+            <Card.Title>HyunSung</Card.Title>
+            <Card.Text className="text-dark">
+            I am a passionate junior programmer, fueled by an insatiable curiosity for all things code. With each line I write, I am weaving my aspirations into reality, eager to contribute to the ever-evolving tech landscape. </Card.Text>
+            
           </Card.Body>
         </Card>
         <Card>
           <Card.Img
             variant="top"
-            src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
+            src="/images/aboutus/jinny.jpeg"
           />
           <Card.Body>
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam.
+            <Card.Title>Jinny</Card.Title>
+            <Card.Text className="text-dark">
+            I'm Jinny. I used to work as a data analyst and am passionate about data and technology solutions, with a specific focus on marketing automation. Participating in this program has been an absolute joy.
             </Card.Text>
-            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
+            
           </Card.Body>
         </Card>
         <Card>
           <Card.Img
             variant="top"
-            src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
+            src="/images/aboutus/jem.jpeg"
           />
           <Card.Body>
             <Card.Title>Card Title</Card.Title>
-            <Card.Text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam.
-            </Card.Text>
-            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
+            <Card.Text className="text-dark">
+            I'm Jem, and I'm from the Philippines. I have a degree in Applied Mathematics, but I fell in love with programming the moment I first tried it. Coding makes me feel alive, so I never regretted this path since.</Card.Text>
+            
           </Card.Body>
         </Card>
         <Card>
           <Card.Img
             variant="top"
-            src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
+            src="/images/aboutus/jem.jpeg"
           />
           <Card.Body>
             <Card.Title>Card Title</Card.Title>
-            <Card.Text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam.
-            </Card.Text>
-            <Button variant="primary" style={{backgroundColor: '#116466'}}>URL</Button>
+            <Card.Text className="text-dark">
+            I'm Jem, and I'm from the Philippines. I have a degree in Applied Mathematics, but I fell in love with programming the moment I first tried it. Coding makes me feel alive, so I never regretted this path since.</Card.Text>
+            
           </Card.Body>
         </Card>
   
