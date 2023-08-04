@@ -32,7 +32,7 @@ const About = () => {
         <Card>
           <Card.Img
             variant="top"
-            src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200"
+            src="/images/aboutus/jem.jpeg"
           />
           <Card.Body>
             <Card.Title>Card Title</Card.Title>
