@@ -59,7 +59,7 @@ app.use(
     credentials: true,
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token"],
-    origin: "https://playpal.netlify.app/",
+    origin: "https://playpal.netlify.app",
     // origin: [
     //   "http://127.0.0.1:5173",
     //   "https://playpal.netlify.app/",
