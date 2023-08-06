@@ -229,15 +229,15 @@ app.get("/search", (req, res) => {
     location = ""
   }
   let playerFilter = false
-  if (req.query.playerfilter && req.query.playerfilter === true) {
+  if (req.query.playerfilter && req.query.playerfilter.toLocaleLowerCase() === "true") {
       playerFilter = true
   }
   let teamFilter = false
-  if (req.query.teamfilter && req.query.teamfilter === true) {
+  if (req.query.teamfilter && req.query.teamfilter.toLocaleLowerCase() === "true") {
       teamFilter = true
   }
   let leagueFilter = false
-  if (req.query.leaguefilter && req.query.leaguefilter === true) {
+  if (req.query.leaguefilter && req.query.leaguefilter.toLocaleLowerCase() === "true") {
       leagueFilter = true
   }
   getSearchResults(findText, location, playerFilter, teamFilter, leagueFilter)
@@ -248,7 +248,7 @@ app.get("/search", (req, res) => {
 });
 
 app.get("/testing", (req, res) => {
-  searchTeams("A", "")
+  searchTeams("o", "")
   .then((data) => {
     res.json(data);
   });
