@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { BsQuestionCircle } from 'react-icons/bs'; 
 import './flipCard.css';
 import './flipTransition.css';
 
-const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const FlipCard = ({ onClick, imageUrl, cardText, teams }) => {
+  const handleImageError = (event) => {
+    event.target.style.display = 'none'; // Hide the image
+  };
+
   return (
     <div className="card-wrapper" onClick={onClick}>
       <div className="card-back">
@@ -21,7 +26,9 @@ const FlipCard = ({ onClick, imageUrl, cardText, teams }) => {
                       className="team-logo"
                       src={`${backend}/teamlogos/${team.teamId}.jpeg`}
                       alt={team.teamName}
+                      onError={handleImageError}
                     />
+                    <BsQuestionCircle className="team-logo default-icon" />
                   </td>
                   <td className="team-link">
                     <Link className="team-link" to={`/team/${team.teamId}`}>
