@@ -68,17 +68,19 @@ export const getMatchDetails = async function(userId, matchId) {
         matchDetails.team2.teamName = team2Details.details.teamName
         matchDetails.sportsName = sportDetails.sport.sportsName
         matchDetails.displayUpdateButton = false
-        if (mongoose.isValidObjectId(userId.trim()) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
-            matchDetails.team1.isTeamAdmin = true
-            matchDetails.displayUpdateButton = true
-        } else {
-            matchDetails.team1.isTeamAdmin = false
-        }
-        if (mongoose.isValidObjectId(userId.trim()) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
-            matchDetails.team2.isTeamAdmin = true
-            matchDetails.displayUpdateButton = true
-        } else {
-            matchDetails.team2.isTeamAdmin = false
+        if (matchDetails.leagueStatus === 'ST') {
+            if (mongoose.isValidObjectId(userId.trim()) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
+                matchDetails.team1.isTeamAdmin = true
+                matchDetails.displayUpdateButton = true
+            } else {
+                matchDetails.team1.isTeamAdmin = false
+            }
+            if (mongoose.isValidObjectId(userId.trim()) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
+                matchDetails.team2.isTeamAdmin = true
+                matchDetails.displayUpdateButton = true
+            } else {
+                matchDetails.team2.isTeamAdmin = false
+            }
         }
         promisea = matchDetails.team1.players.map(async (player) => {
             promisec = player.statistics.map(async (stat) => {

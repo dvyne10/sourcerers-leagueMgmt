@@ -116,6 +116,26 @@ export const getPlayerDetailsAndButtons = async function(userId, playerId) {
     return playerDetails
 }
 
+export const getMyProfile = async function(userId) {
+
+    let playerDetails = await getPlayerDetails(userId)
+    if (playerDetails.requestStatus !== "ACTC") {
+        return playerDetails
+    }
+    
+    let resp1 = getUsersTeamsAndLeagues(userId)  // returns an array
+    let resp2 = getTeamsCreated(userId)   // returns an array
+    let resp3 = getUserGamesWinsChamps(userId)
+    let resp4 = getUserStatsTotal(userId)  //returns an array
+    let resp5 = getLeaguesCreated(userId) //returns an array
+
+    let [activeTeamsLeagues, teamsCreated, playerMatches, statistics, leaguesCreated] = await Promise.all([resp1, resp2, resp3, resp4, resp5])
+    playerDetails = {...playerDetails, activeTeams: activeTeamsLeagues.activeTeams, teamsCreated, matches: playerMatches.matches, 
+            pastLeagues: playerMatches.pastLeagues, totalGamesPlayed: playerMatches.totalGamesPlayed, wins: playerMatches.wins, 
+            championships: playerMatches.championships, activeLeagues: activeTeamsLeagues.activeLeagues, statistics, leaguesCreated}
+    return playerDetails
+}
+
 export const getPlayerDetails = async function(playerId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
 

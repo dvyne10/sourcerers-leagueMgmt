@@ -10,9 +10,9 @@ import { getNotifParmByNotifId, getSysParmByParmId, getSysParmList } from "./sys
 let ObjectId = mongoose.Types.ObjectId;
 
 // export const deleteNotifs = async function() {
-//     let test = await UserModel.updateMany({ "notifications.forAction.requestId" : new ObjectId("64c57337844dadcb9f016316") }, { 
+//     let test = await UserModel.updateMany({ "notifications.forAction.requestId" : new ObjectId("64cdb3ce5720653a38768756") }, { 
 //         $pull: { notifications : {
-//             "forAction.requestId": new ObjectId("64c57337844dadcb9f016316")
+//             "forAction.requestId": new ObjectId("64cdb3ce5720653a38768756")
 //         } }
 //     })
 // }
@@ -126,7 +126,7 @@ export const getRequestStatus = async function(requestId) {
 
 export const hasPendingRequest = async function(notifId, userId, playerId, teamId, leagueId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
-    if (!mongoose.isValidObjectId(notifId.trim()) || !mongoose.isValidObjectId(userId.trim())) {
+    if (notifId.trim() === "" || !mongoose.isValidObjectId(userId.trim())) {
         response.requestStatus = "RJCT"
         response.errMsg = "Entry parameters are required"
         return response
@@ -567,6 +567,7 @@ export const joinLeague = async function(userId, teamId, leagueId, msg) {
                     notificationType: notif.data._id,
                     senderUserId: new ObjectId(userId),
                     senderTeamId: new ObjectId(teamId),
+                    senderLeagueId: new ObjectId(leagueId),
                     forAction: {
                         requestId: pendingRequestId,
                         actionDone: null,
@@ -855,3 +856,9 @@ export const inviteToTeam = async function(userId, teamId, playerId, msg) {
     }
     return response
 }
+
+const getTimestamp = (daysToAdd) => {
+    let date = new Date();
+    date.setDate(date.getDate() + daysToAdd);
+    return date;
+  }
