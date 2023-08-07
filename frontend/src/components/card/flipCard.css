@@ -98,6 +98,9 @@
   object-fit: cover;
 }
 
+.default-icon {
+    margin-bottom: 50px;
+}
 .team-row {
     display: flex;
     align-items: center;

@@ -388,6 +388,58 @@ body {
 }
 
 
+/* Notification page */
+.icon-button {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  display: inline;
+  border-radius: 50%;
+  transition: background-color 0.3s, box-shadow 0.3s; /* Add box-shadow to the transition */
+}
+
+.icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  border: none;
+  background-color: transparent;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
+.pagination-button:hover {
+  background-color: #f1f1f1;
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.pagination-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .section-50 {
   padding: 50px 0;
 }
@@ -395,6 +447,22 @@ body {
 .m-b-50 {
   margin-bottom: 50px;
   text-align: center;
+}
+.notification-list_img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+}
+
+.notification-checkbox {
+  width: 15px; 
+  height: 15px; 
+}
+
+
+.notification-list.selected {
+  background-color: #f2f2f2;
 }
 
 .dark-link {
@@ -446,6 +514,7 @@ body {
   flex: 1; /* Take the remaining width */
 }
 
+
 .notification-list .notification-list_content .notification-list_img img {
   height: 48px;
   width: 48px;
@@ -453,10 +522,6 @@ body {
   margin-right: 20px;
 }
 
-.notification-list .notification-list_content .notification-list_detail p {
-  margin-bottom: 5px;
-  line-height: 1.2;
-}
 
 .notification-list .notification-list_feature-img {
   flex: 1; /* Take the remaining width */
@@ -470,6 +535,27 @@ body {
   /* Removed margin-left */
 }
 
+.notification-list_detail {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 10px;
+}
+.text-muted {
+  padding-left: 60px;
+  margin-top: 10px;
+}
+
+.notification-list_content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.notification-date {
+  margin-left: auto;
+  text-align: right;
+}
 /* Add styles for the approval and decline buttons */
 .approval-button,
 .decline-button {
@@ -498,10 +584,7 @@ body {
   width: 100%; /* Full width of the button */
   text-align: center;
 }
-.read-notification {
-  color: lightgrey; /* Change the color to your preference */
-  font-weight: normal;
-}
+
 /* Change background color on hover */
 .approval-button:hover {
   background-color: darkgreen; /* Change to a different color when hovering */

@@ -779,7 +779,7 @@ export const getLeagueMajorDetails = async function(leagueId){
     if (!mongoose.isValidObjectId(leagueId.trim())) {
         return null
     }
-    let leagueDetails = await LeagueModel.findOne({ _id: new ObjectId(teamId) }, 
+    let leagueDetails = await LeagueModel.findOne({ _id: new ObjectId(leagueId) }, 
         { teams: 0, matches: 0 })
     return leagueDetails
 }

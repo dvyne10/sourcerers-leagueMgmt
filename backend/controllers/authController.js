@@ -38,7 +38,7 @@ export const login = async (req, res) => {
           let succLogin
           if (user.successfulLoginDetails) {
             if (user.successfulLoginDetails.length >= loginParm.numberOfLoginDtlsToKeep) {
-              user.successfulLoginDetails.slice(0, user.successfulLoginDetails.length - loginParm.numberOfLoginDtlsToKeep + 1)
+              user.successfulLoginDetails = user.successfulLoginDetails.slice(user.successfulLoginDetails.length - loginParm.numberOfLoginDtlsToKeep + 1)
             }
             user.successfulLoginDetails.push({sourceIPAddress: "IPtemp", timestamp: new Date()})
             succLogin = user.successfulLoginDetails
@@ -121,6 +121,8 @@ export const logout = async (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,
     expires: new Date(0),
+    secure: true,
+    sameSite: 'none',
   });
 
   res.status(200).send({ message: "User successfully logged out" });

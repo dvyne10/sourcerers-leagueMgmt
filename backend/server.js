@@ -15,7 +15,7 @@ import { getHomeDetails } from "./utils/homePageModule.js";
 import {
   getPlayers,
   getPlayerDetailsAndButtons,
-  getUserWinsCount,
+  getMyProfile,
 } from "./utils/usersModule.js";
 import {
   getTeamDetails,
@@ -41,12 +41,12 @@ import {
   startLeague,
   cancelRequest,
   inviteToTeam,
-  getRequestStatus,
 } from "./utils/requestsModule.js";
 import {
-  getSysParmList,
   getPosnAndStatBySport,
 } from "./utils/sysParmModule.js";
+import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest} from "./utils/notificationsModule.js";
+import {getSearchResults, searchTeams} from "./utils/searchModule.js";
 
 dotenv.config();
 connectDB();
@@ -58,15 +58,11 @@ app.use(
   cors({
     credentials: true,
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token", "Origin", "X-Api-Key", "X-Requested-With", "Accept", "X-XSRF-TOKEN", "XSRF-TOKEN"],
     origin: "https://playpal.netlify.app",
-    // origin: [
-    //   "http://127.0.0.1:5173",
-    //   "https://playpal.netlify.app/",
-    //   "http://localhost:5173",
-    // ],
     preflightContinue: true,
     exposedHeaders: ["*", "Authorization"],
+    optionsSuccessStatus: 200
   })
 );
 
@@ -105,7 +101,7 @@ app.post("/league/:leagueid", getTokenFromCookies, (req, res) => {
   });
 });
 
-app.post("/lookingforteamson/:leagueid", authenticate, (req, res) => {
+app.put("/lookingforteamson/:leagueid", authenticate, (req, res) => {
   updateLookingForTeams(
     req.user._id.toString(),
     req.params.leagueid,
@@ -115,7 +111,7 @@ app.post("/lookingforteamson/:leagueid", authenticate, (req, res) => {
   });
 });
 
-app.post("/lookingforteamsoff/:leagueid", authenticate, (req, res) => {
+app.put("/lookingforteamsoff/:leagueid", authenticate, (req, res) => {
   updateLookingForTeams(
     req.user._id.toString(),
     req.params.leagueid,
@@ -183,11 +179,77 @@ app.post("/match/:matchid", getTokenFromCookies, (req, res) => {
   });
 });
 
+app.post("/notifications", authenticate, (req, res) => {
+  getUserNotifications(req.user._id.toString())
+  .then((data) => {
+      res.json(data);
+    }
+  );
+});
+
+app.put("/notificationsread/:notifid", authenticate, (req, res) => {
+  readUnreadNotif(req.user._id.toString(), req.params.notifid)
+  .then((data) => {
+      res.json(data);
+    }
+  );
+});
+
+app.put("/approverequest/:notifid", authenticate, (req, res) => {
+  approveRequest(req.user._id.toString(), req.params.notifid)
+  .then((data) => {
+      res.json(data);
+    }
+  );
+});
+
+app.put("/rejectrequest/:notifid", authenticate, (req, res) => {
+  rejectRequest(req.user._id.toString(), req.params.notifid)
+  .then((data) => {
+      res.json(data);
+    }
+  );
+});
+
+app.put("/myprofile", authenticate, (req, res) => {
+  getMyProfile(req.user._id.toString())
+  .then((data) => {
+      res.json(data);
+    }
+  );
+});
+
+app.get("/search", (req, res) => {
+  let findText = req.query.findtext
+  if (!findText) {
+    findText = ""
+  }
+  let location = req.query.location
+  if (!location) {
+    location = ""
+  }
+  let playerFilter = false
+  if (req.query.playerfilter && req.query.playerfilter.toLocaleLowerCase() === "true") {
+      playerFilter = true
+  }
+  let teamFilter = false
+  if (req.query.teamfilter && req.query.teamfilter.toLocaleLowerCase() === "true") {
+      teamFilter = true
+  }
+  let leagueFilter = false
+  if (req.query.leaguefilter && req.query.leaguefilter.toLocaleLowerCase() === "true") {
+      leagueFilter = true
+  }
+  getSearchResults(findText, location, playerFilter, teamFilter, leagueFilter)
+  .then((data) => {
+      res.json(data);
+    }
+  );
+});
+
 app.get("/testing", (req, res) => {
-  //TEMP ONLY FOR TESTING PURPOSES
-  //getOtherTwoMatches("64c3deff7ac9bd6a6d2daa4e", "648e224f91a1a82229a6c11f", "648e73a55b8b7790abd4856e")
-  //isValidPassword("a%cdef3hikA")
-  getRequestStatus("64bf3a1e812301f22152f0e8").then((data) => {
+  searchTeams("o", "")
+  .then((data) => {
     res.json(data);
   });
 });
