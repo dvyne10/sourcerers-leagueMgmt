@@ -20,8 +20,9 @@ const About = () => {
       <div
         className="d-flex justify-content-center"
         style={{
-          alignItems: "center",
+          alignItems: "stretch",
           backgroundColor: "#D1E8E2",
+          hegiht: "100%",
           paddingTop: "5rem",
           paddingLeft: "5rem",
           paddingRight: "5rem",
@@ -45,7 +46,7 @@ const About = () => {
         <Card>
           <Card.Img
             variant="top"
-            src="/images/aboutus/hs.jpg"
+            src="/images/aboutus/hs.jpeg"
           />
           <Card.Body>
             <Card.Title>HyunSung</Card.Title>
@@ -70,19 +71,19 @@ const About = () => {
         <Card>
           <Card.Img
             variant="top"
-            src="/images/aboutus/jem.jpeg"
+            src="/images/aboutus/baris.jpeg"
           />
           <Card.Body>
-            <Card.Title>Card Title</Card.Title>
+            <Card.Title>Baris</Card.Title>
             <Card.Text className="text-dark">
-            I'm Jem, and I'm from the Philippines. I have a degree in Applied Mathematics, but I fell in love with programming the moment I first tried it. Coding makes me feel alive, so I never regretted this path since.</Card.Text>
+            A full-stack developer who is astonished by the development of technology, eager to learn and stay up-to-date with the latest languages and trends, constantly explores new apps and devices to expand their skill set.</Card.Text>
             
           </Card.Body>
         </Card>
         <Card>
           <Card.Img
             variant="top"
-            src="/images/aboutus/jem.jpeg"
+            src="/images/aboutus/baris.jpeg"
           />
           <Card.Body>
             <Card.Title>Card Title</Card.Title>
