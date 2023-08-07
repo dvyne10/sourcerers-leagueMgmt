@@ -46,7 +46,7 @@ import {
   getPosnAndStatBySport,
 } from "./utils/sysParmModule.js";
 import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest} from "./utils/notificationsModule.js";
-import {getSearchResults, searchTeams} from "./utils/searchModule.js";
+import {getSearchResults} from "./utils/searchModule.js";
 
 dotenv.config();
 connectDB();
@@ -234,15 +234,15 @@ app.get("/search", (req, res) => {
     location = ""
   }
   let playerFilter = false
-  if (req.query.playerfilter && req.query.playerfilter === true) {
+  if (req.query.playerfilter && req.query.playerfilter.toLocaleLowerCase() === "true") {
       playerFilter = true
   }
   let teamFilter = false
-  if (req.query.teamfilter && req.query.teamfilter === true) {
+  if (req.query.teamfilter && req.query.teamfilter.toLocaleLowerCase() === "true") {
       teamFilter = true
   }
   let leagueFilter = false
-  if (req.query.leaguefilter && req.query.leaguefilter === true) {
+  if (req.query.leaguefilter && req.query.leaguefilter.toLocaleLowerCase() === "true") {
       leagueFilter = true
   }
   getSearchResults(findText, location, playerFilter, teamFilter, leagueFilter)
@@ -253,7 +253,7 @@ app.get("/search", (req, res) => {
 });
 
 app.get("/testing", (req, res) => {
-  searchTeams("A", "")
+  getSearchResults("ORK", "ORTH")
   .then((data) => {
     res.json(data);
   });

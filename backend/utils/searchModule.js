@@ -26,29 +26,38 @@ export const getSearchResults = async function(findText, location, playerFilter,
         [playerResults, teamResults, leagueResults] = await Promise.all([resp1, resp2, resp3]);
     } else {
         if (playerFilter) {
-            resp1 = searchPlayers(findText, location);
+            
             if (teamFilter) {
+                resp1 = searchPlayers(findText, location);
                 resp2 = searchTeams(findText, location);
                 [playerResults, teamResults ] = await Promise.all([resp1, resp2]);
             } else if (leagueFilter) {
+                resp1 = searchPlayers(findText, location);
                 resp2 = searchLeagues(findText, location);
                 [playerResults, leagueResults ] = await Promise.all([resp1, resp2]);
             } else {
-                playerResults = await Promise.all(resp1);
+                playerResults = await searchPlayers(findText, location);
             }
         } else if (teamFilter) {
-            resp1 = searchTeams(findText, location);
             if (leagueFilter) {
+                resp1 = searchTeams(findText, location);
                 resp2 = searchLeagues(findText, location);
                 [teamResults, leagueResults ] = await Promise.all([resp1, resp2]);
             } else {
-                teamResults = await Promise.all(resp1);
+                teamResults = await searchTeams(findText, location);
             }
         } else if (leagueFilter) {
             leagueResults = await searchLeagues(findText, location);
         }
-    } 
+    }
+    
+    let searchResults = []
+    playerResults.map(player => searchResults.push(player))
+    teamResults.map(team => searchResults.push(team))
+    leagueResults.map(league => searchResults.push(league))
+
     response.requestStatus = "ACTC"
+    response.details = searchResults
     return response
 }
 
@@ -210,3 +219,65 @@ export const searchTeams = async function(findText, location) {
     return teamResults
 }
 
+export const searchLeagues = async function(findText, location) {
+    
+    let leagues = await LeagueModel.aggregate([ 
+        { 
+            $match : { 
+                leagueName: new RegExp(`${findText}`, "i")
+            } 
+        },
+        { 
+          $addFields: {
+                name: "$leagueName",
+                type: "League",
+                rowId: "$_id", 
+                sports: ["$sportsTypeId"],
+                location: "$location",
+                status: "$status",
+                statusDesc: 
+                {
+                    $switch:
+                      {
+                        branches: [
+                          {
+                            case: { $eq : [ "$status", "NS" ] },
+                            then: "Open"
+                          },
+                          {
+                            case: { $eq : [ "$status", "ST" ] },
+                            then: "Ongoing"
+                          },
+                        ],
+                        default: "Finished"
+                      }
+                   },
+                lookingForTeams: "$lookingForTeams",
+                lookingForPlayers: "N/A"
+          }, 
+      }, { $project: { _id: 0, name: 1, type: 1, rowId: 1, sports: 1, location: 1, status: 1, statusDesc: 1, lookingForTeams: 1, lookingForPlayers: 1 } }
+    ])
+
+    if (leagues.length === 0) {
+        return []
+    }
+
+    let sports = []
+    let sportsParms = await getSportsList()
+    if (sportsParms.requestStatus === 'ACTC') {
+        sports = sportsParms.data
+    }
+
+    let sportIndex, sportsName, sportsDetails
+    let leagueResults = []
+    let promises = leagues.map((league) => {
+        if (location !== "" && league.location.toLowerCase().indexOf(location.toLowerCase()) === -1) {
+            return
+        }
+        sportIndex = sports.findIndex((i) => i.sportsId.equals(league.sports[0]))
+        sportsName = sportIndex === -1 ? "" : sports[sportIndex].sportsName
+        leagueResults.push({...league, sports: [{sportsTypeId: league.sports[0], sportsName}]})
+    })
+    await Promise.all(promises)  
+    return leagueResults
+}
