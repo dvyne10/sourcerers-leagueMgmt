@@ -14,7 +14,7 @@ import Button from 'react-bootstrap/Button';
 import { Image }  from 'react-bootstrap'; 
 import { useParams, useNavigate } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
-
+import useAuth from "../hooks/auth";
 
 const MatchDetails = () => {
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
@@ -23,6 +23,7 @@ const MatchDetails = () => {
   const [displayedTeam, setDisplayedTeam] = useState(1); // 1 for Team 1, 2 for Team 2
 
   const navigate = useNavigate(); 
+  const { isSignedIn } = useAuth()
   const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
   let { sport } = useParams();
   sport = sport || '1'; 
@@ -90,9 +91,13 @@ const MatchDetails = () => {
     zIndex: -1
   }}/>
  
-
- <div style={{marginLeft: '95%',  transform: 'translateY(15px)'}}><Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
-
+ 
+ <div style={{marginLeft: '95%',  transform: 'translateY(15px)'}}>
+ {isSignedIn && (
+  <Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button>
+  )}
+  </div>
+ 
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         
         <div className="team-logo-container" onClick={() => navigate('/team/:teamid')}

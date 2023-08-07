@@ -20,7 +20,7 @@ const FooterComponent = () => {
             className="mx-auto my-lg-3 justify-content-center"
             style={{ maxHeight: '100px' }}
           >
-            <Nav.Link href="/about">About</Nav.Link>
+            <Nav.Link href="/about">About Us</Nav.Link>
             <Nav.Link href="/privacy">Privacy</Nav.Link>
             <Nav.Link href="/terms">Terms</Nav.Link>
             <Nav.Link href="/contact">Contact Us</Nav.Link>

@@ -775,6 +775,15 @@ export const getTeamActiveLeagues = async function(teamId){
     return leaguesWithTeamNames
 }
 
+export const getLeagueMajorDetails = async function(leagueId){
+    if (!mongoose.isValidObjectId(leagueId.trim())) {
+        return null
+    }
+    let leagueDetails = await LeagueModel.findOne({ _id: new ObjectId(leagueId) }, 
+        { teams: 0, matches: 0 })
+    return leagueDetails
+}
+
 const getTimestamp = (daysToAdd) => {
     let date = new Date();
     date.setDate(date.getDate() + daysToAdd);

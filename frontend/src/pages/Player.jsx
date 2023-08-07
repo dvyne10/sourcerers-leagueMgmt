@@ -4,7 +4,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import { useState } from 'react';
 import Form from 'react-bootstrap/Form';
-
+import useAuth from "../hooks/auth";
 
 const Player = () => {
 
@@ -12,7 +12,7 @@ const Player = () => {
     const handleClose = () => setShowInvite(false);
     const handleShow = () => setShowInvite(true);
     const [invite, setInvite] = useState(false);
-
+    const {isSignedIn} = useAuth();
 
     function changeInviteShow(){
     
@@ -40,8 +40,10 @@ const Player = () => {
                     Toronto, CA
                   </p>
                   <p className="text-secondary font-size-sm mb-2"><a href={"mailto:"} className="text-secondary text-decoration-none">hpotter@hogwarts.gr</a></p>
-                  
-                  <Button variant={invite === false ? "btn btn-outline-success" : "btn btn-outline-danger"} onClick={handleShow}>{invite === false ? "Invite" : "Uninvite"}</Button>{" "}
+                  {isSignedIn && (
+                  <Button variant={invite === false ? "btn btn-outline-success" : "btn btn-outline-danger"} onClick={handleShow}>{invite === false ? "Invite" : "Uninvite"}</Button>
+                  )}
+                  {" "}
                 
                 </div>
               </div>

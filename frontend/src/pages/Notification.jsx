@@ -1,12 +1,33 @@
-import '../App.css';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 import { BiEnvelopeOpen, BiEnvelope, BiChevronLeft, BiChevronRight } from 'react-icons/bi';
+
+const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app/';
 
 const Notification = () => {
   const [selectedStates, setSelectedStates] = useState(Array(20).fill(false));
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [notifications, setNotifications] = useState([]); 
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch(`${backend}/notifications`);
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setNotifications(data); 
+      } else {
+        console.log('No notifications found.');
+      }
+    } catch (error) {
+      console.error('Error fetching top leagues data:', error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchNotifications(); 
+  }, []);
 
   const notificationsPerPage = 5;
 
@@ -17,14 +38,15 @@ const Notification = () => {
   };
 
   const toggleEnvelope = () => {
+    if (envelopeOpen) {
+      const updatedNotifications = notifications.map((notification, index) => ({
+        ...notification,
+        read: selectedStates[index] || notification.read,
+      }));
+      setNotifications(updatedNotifications);
+    }
     setEnvelopeOpen(!envelopeOpen);
   };
-
-  const notifications = Array.from({ length: 20 }, (_, index) => ({
-    sender: `Sender ${index + 1}`,
-    message: `Example message ${index + 1}`,
-    read: index % 2 === 0,
-  }));
 
   const totalPages = Math.ceil(notifications.length / notificationsPerPage);
 
@@ -43,29 +65,29 @@ const Notification = () => {
             {notifications
               .slice((currentPage - 1) * notificationsPerPage, currentPage * notificationsPerPage)
               .map((notification, index) => (
-                <Link
+                <div
                   key={index}
-                  to="/team/1"
                   className={`notification-list notification-list--unread ${
                     selectedStates[index] ? 'selected' : ''
                   }`}
                 >
-                  <div className="notification-list_content" onClick={(e) => e.stopPropagation()}>
+                  <div className="notification-list_content">
                     <div className="notification-list_img">
                       <input
                         type="checkbox"
                         className="notification-checkbox"
+                        checked={selectedStates[index]}
                         onChange={() => toggleSelectedState(index)}
                       />
                     </div>
                     <div className="notification-list_detail">
-                      <p className={`notification-sender ${notification.read ? '' : 'bold'}`}>
-                        {notification.sender}
+                      <p className={`notification-sender ${notification.read || envelopeOpen ? '' : 'bold'}`}>
+                        {notification.read || envelopeOpen ? notification.sender : <b>{notification.sender}</b>}
                       </p>
                     </div>
                     <div className="text-muted">
-                      <p className={`notification-message ${notification.read ? '' : 'bold'}`}>
-                        {notification.message}
+                      <p className={`notification-message ${notification.read || envelopeOpen ? '' : 'bold'}`}>
+                        {notification.read || envelopeOpen ? notification.message : <b>{notification.message}</b>}
                       </p>
                     </div>
                   </div>
@@ -73,11 +95,10 @@ const Notification = () => {
                     <button className="approval-button">Approve</button>
                     <button className="decline-button">Reject</button>
                   </div>
-                </Link>
+                </div>
               ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="pagination">
               <button

@@ -34,10 +34,6 @@ const Contact = () => {
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2879.9065880064295!2d-79.35086585076594!3d43.795551329859535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d4d3d4f601a36b%3A0x5761022224071df1!2sSeneca%20College%20(Newnham%20Campus)!5e0!3m2!1sen!2sca!4v1579279623387!5m2!1sen!2sca"
           width="50%"
           height="400px"
-          scrolling="no"
-          marginwidth="0"
-          marginheight="0"
-          frameborder="0"
           title="Newnham Campus Google Map"
         ></iframe>
       </div>
@@ -55,17 +51,16 @@ const Contact = () => {
           <h2 className="mb-4 center-text">Send Us a Message</h2>
           <h8 className="mb-4 center-text">
             {" "}
-            Send us a message and we will respond within 24 hours.
+            Send us a message and we will respond within 3 business days.
           </h8>
           <Form>
             <Row className="mb-3">
               <Form.Group as={Col}>
-                <Form.Label>First name</Form.Label>
+                <Form.Label>Full name</Form.Label>
                 <Form.Control
                   required
                   type="text"
-                  placeholder="First name"
-                  defaultValue="Mark"
+                  placeholder="Input your name here."
                 />
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               </Form.Group>
@@ -75,7 +70,6 @@ const Contact = () => {
                   required
                   type="text"
                   placeholder="Email"
-                  defaultValue="test@gmail.com"
                 />
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               </Form.Group>
@@ -86,7 +80,7 @@ const Contact = () => {
                 required
                 as="textarea"
                 rows={3}
-                placeholder="Can I join ?"
+                placeholder="Please type your message to Playpal here."
               />
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             </Form.Group>

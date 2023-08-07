@@ -33,22 +33,22 @@ const registerUser = async (req, res) => {
     password,
   } = req.body;
 
-  const existingUser = await User.findOne({ email });
-
-  if (existingUser) {
-    res.status(200).send({
-      requestStatus: "RJCT",
-      errMsg: "The email is not available.",
-    });
-    return;
-  }
-
-  const existingUsername = await User.findOne({ userName });
+  const existingUsername = await User.findOne({ userName: new RegExp(`^${userName}$`, "i") });
 
   if (existingUsername) {
     res.status(200).send({
       requestStatus: "RJCT",
       errMsg: "The username is not available.",
+    });
+    return;
+  }
+
+  const existingUser = await User.findOne({ email: new RegExp(`^${email}$`, "i") });
+
+  if (existingUser) {
+    res.status(200).send({
+      requestStatus: "RJCT",
+      errMsg: "The email is not available.",
     });
     return;
   }

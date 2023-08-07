@@ -1,25 +1,18 @@
 import axios from "axios";
 
-// const BASE_URL = "https://panicky-robe-mite.cyclic.app/api/users";
-const BASE_URL = "http://localhost:8000/api/users";
-
-// const headers = {
-//   "Access-Control-Allow-Origin": "http://localhost:8000",
-//   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-//   "Access-Control-Allow-Headers":
-//     "append,delete,entries,foreach,get,has,keys,set,values,Authorization",
-// };
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:8000/api/users" : "https://panicky-robe-mite.cyclic.app/api/users";
 
 async function login(email, password) {
   try {
+    console.log(BASE_URL)
     const response = await axios.post(
-      `${BASE_URL}/login`,
-      {
-        email,
-        password,
-      },
-      {withCredentials: true}
-    );
+        `${BASE_URL}/login`,
+        {
+          email,
+          password,
+        }, 
+        { withCredentials: true, credentials: 'include' }
+      )
 
     return response;
   } catch (error) {
@@ -30,7 +23,7 @@ async function login(email, password) {
 async function registerUser(data) {
   try {
     const response = await axios.post(`${BASE_URL}/register`, data, {
-      withCredentials: true,
+      withCredentials: true, credentials: 'include'
     });
 
     return response;
@@ -42,7 +35,7 @@ async function registerUser(data) {
 async function verifyOTP(data) {
   try {
     const response = await axios.post(`${BASE_URL}/verifyotp`, data, {
-      withCredentials: true,
+      withCredentials: true, credentials: 'include'
     });
 
     return response;
@@ -54,7 +47,7 @@ async function verifyOTP(data) {
 async function logout() {
   try {
     const response = await axios.post(`${BASE_URL}/logout`, {
-      withCredentials: true,
+      withCredentials: true, credentials: 'include'
     });
     console.log(response);
     return response;

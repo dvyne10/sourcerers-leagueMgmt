@@ -3,11 +3,12 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
 import FlippableCard from '../components/card/FlippableCard';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import '../App.css';
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app/';
+
 
 const Home = () => {
   const [topLeagues, setTopLeagues] = useState([]);
