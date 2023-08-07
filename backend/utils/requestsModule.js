@@ -16,6 +16,11 @@ let ObjectId = mongoose.Types.ObjectId;
 //         } }
 //     })
 // }
+export const updateManyAccounts = async function() {
+    let test = await UserModel.updateMany({ province : "ON" }, { 
+        $set: { province : "Ontario"}
+    })
+}
 // export const deleteLeagues = async function() {
 //     let test = await LeagueModel.deleteMany({ leagueName : "Mississauga League 2023 V2" })
 // }

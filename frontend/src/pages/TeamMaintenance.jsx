@@ -4,6 +4,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import useAuth, {checkIfSignedIn} from "../hooks/auth";
 import {Form} from 'react-bootstrap/';
 
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const TeamMaintenance = () => {
     const [validated, setValidated] = useState(false);
@@ -12,64 +13,118 @@ const TeamMaintenance = () => {
     const routeParams = useParams();
     const inputFileBanner = useRef(null);
     const inputFileLogo = useRef(null);
+    const [isTeamAdmin, setTeamAdmin] = useState(false)
     const [action, handleAction] = useState({type: "Creation", title: "CREATE TEAM"});
-    const [currValues, setCurrentValues] = useState({teamName: null, description: null, location: null,
-        division: null, email: null 
-    })
     const [playersList, setPlayersList] = useState(null)
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
-    const [sportSelected, setSportSelected] = useState(sportsOptions[0].value)
+    const [sportsOptions, setSportsOptions] = useState([{ label: "Soccer", value: "648ba153251b78d7946df311" }, { label: "Basketball", value: "648ba153251b78d7946df322" }]);
+    const [currValues, setCurrentValues] = useState({teamName: null, description: null, location: null,
+        division: null, teamContactEmail: null,  sportsTypeId: "648ba153251b78d7946df322"
+    })
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
     const [bannerURL, setBannerURL] = useState(null);
+    const [logoChanged, setLogoChanged] = useState(false)
+    const [bannerChanged, setBannerChanged] = useState(false)
     const [disableDelete, setDeleteButton] = useState(true)
     const [oldValues, setOldValues] = useState(null)
     const [didPlayersChange, setPlayersChanged] = useState(false)
     const [errorMessage, setErrorMessage] = useState([]);
-    
-    const positionOptions = [ {label: "Team Captain", value: "SCP01"}, {label: "Goalkeeper", value: "SCP02"}, {label: "Defender", value: "SCP03"} ]
-
+    const [positionOptions, setPositionOptions] = useState([ {label: "Team Captain", value: "SCP01"}, {label: "Goalkeeper", value: "SCP02"}, {label: "Defender", value: "SCP03"} ])
 
     useEffect(() => {
+        fetch(`${backend}/getsportslist`)
+            .then(response => response.json())
+            .then(resp => {
+            if (resp.requestStatus === 'ACTC') {
+                let newSportsList = resp.data.map(sport => {
+                    return {label: sport.sportsName, value: sport.sportsId}
+                })
+                setSportsOptions(newSportsList.sort((a,b) => a.label > b.label ? 1 : -1))
+            }
+        })
         const url = window.location.pathname.substring(1,7).toLowerCase()
         if (url === "create") {
             handleAction({type: "Creation", title: "Create Team"})
         } else {
             handleAction({type: "Update", title: "Update Team", protectSport: true })
-            // cannot amend sport if it has player/s or game history
-            setCurrentValues({teamName: "Vikings", description: "A team of soccer enthusiasts.", location: "York, Ontario, CA",
-                division: "mixed", email: "vikingsteam@mail.com"
+            fetch(`${backend}/getteamdetailsupdate/${routeParams.teamid}`, {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "Application/JSON"
+                }
             })
-            setPlayersList([
-                { playerId: 1, username: "sMcdowell", playerName: "Scarlet Mcdowell", position: "SCP01", jerseyNumber: 15, joinedDate: "2022-07-01" },
-                { playerId: 2, username: "uWatts", playerName: "Ursa Watts", position: "SCP02", jerseyNumber: 87, joinedDate: "2022-07-02" },
-                { playerId: 3, username: "pRodriguez", playerName: "Phoebe Rodriguez", position: "SCP03", jerseyNumber: 12, joinedDate: "2022-07-03" },
-                { playerId: 4, username: "zHickman", playerName: "Zachary Hickman", position: "SCP02", jerseyNumber: 74, joinedDate: "2022-07-04" },
-                { playerId: 5, username: "kBall", playerName: "Kylynn Ball", position: "SCP03", jerseyNumber: 69, joinedDate: "2022-07-05" },
-                { playerId: 6, username: "aHorn", playerName: "Athena Horn", position: "SCP02", jerseyNumber: 73, joinedDate: "2022-07-06" },
-                { playerId: 7, username: "bChristian", playerName: "Bruno Christian", position: "SCP03", jerseyNumber: 4, joinedDate: "2022-07-07" },
-                { playerId: 8, username: "mHodge", playerName: "Meghan Hodge", position: "SCP02", jerseyNumber: 26, joinedDate: "2022-07-08" },
-                { playerId: 9, username: "oBurt", playerName: "Olivia Burt", position: "SCP03", jerseyNumber: 27, joinedDate: "2022-07-09" },
-                { playerId: 10, username: "kJustice", playerName: "Katelyn Justice", position: "SCP02", jerseyNumber: 36, joinedDate: "2022-07-10" },
-            ])
-            
-            setSportSelected("soccerId")
-            setLogoURL("https://images.unsplash.com/photo-1511886929837-354d827aae26?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80")
-            setSelectedLogo("x")
-            setBannerURL("https://plus.unsplash.com/premium_photo-1685055940239-21af8b3b0443?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80")
-            setSelectedBanner("x")
-            //setDeleteButton(false)
-            setOldValues({ teamName: "Vikings", description: "A team of soccer enthusiasts.", location: "York, Ontario, CA",
-                division: "mixed", email: "vikingsteam@mail.com", sport: "soccerId", logo: "x", banner: "x"
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                    if (data.errField !== "") {
+                        document.getElementById(data.errField).focus()
+                    }
+                } else {
+                    setCurrentValues({teamName: data.details.teamName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, 
+                        location: data.details.location, division: data.details.division, teamContactEmail: data.details.teamContactEmail, 
+                    })
+                    setPlayersList(data.details.players)
+                    fetch(`${backend}/teamlogos/${routeParams.teamid}.jpeg`)
+                    .then(res=>{
+                        if (res.ok) {
+                            setLogoURL(`${backend}/teamlogos/${routeParams.teamid}.jpeg`) 
+                            setSelectedLogo("x")
+                        }
+                    })
+                    let protectSport = data.details.players.length > 0 ? true : false
+                    handleAction({type: "Update", title: "Update Team", protectSport})
+                    fetch(`${backend}/teambanners/${routeParams.teamid}.jpeg`)
+                    .then(res=>{
+                        if (res.ok) {
+                            setBannerURL(`${backend}/teambanners/${routeParams.teamid}.jpeg`)
+                            setSelectedBanner("x")
+                        }
+                    })
+                    setDeleteButton(protectSport)
+                    setOldValues({ teamName: data.details.teamName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, location: data.details.location,
+                        division: data.details.division, teamContactEmail: data.details.teamContactEmail })
+                    let positionsFromDb = data.details.positionOptions.map(position => {
+                        return {label: position.positionDesc, value: position.positionParmId}
+                    })
+                    setPositionOptions(positionsFromDb.sort((a,b) => a.label > b.label ? 1 : -1))
+                }
+            }).catch((error) => {
+                console.log(error)
             })
         }
-    }, []);
+    }, [location.pathname]);
+
+    useEffect(() => {
+        const url = window.location.pathname.substring(1,7).toLowerCase()
+        if (url === "update" && isSignedIn) {
+            console.log(121)
+            fetch(`${backend}/admin?team=${routeParams.teamid}`, {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "Application/JSON"
+                }
+            })
+            .then(response => response.json())
+            .then(data=>{
+                console.log(131 + JSON.stringify(data))
+                setTeamAdmin(data)
+            }).catch((error) => {
+                console.log(error)
+            })
+            console.log(135 + isTeamAdmin)
+        }
+    }, [location.pathname]);
+
 
     const handleLogoChange = event => {
         if (event.target.files.length > 0) {
             setSelectedLogo(event.target.files[0])
             setLogoURL(URL.createObjectURL(event.target.files[0]))
+            setLogoChanged(true)
         }
     };
 
@@ -77,12 +132,9 @@ const TeamMaintenance = () => {
         if (event.target.files.length > 0) {
             setSelectedBanner(event.target.files[0])
             setBannerURL(URL.createObjectURL(event.target.files[0]))
+            setBannerChanged(true)
         }
     };
-
-    const handleSportChange= event => {
-        setSportSelected(event.target.value);
-    }
 
     const handlePLayerChange = (event, index) => {
         const field = event.target.name
@@ -100,12 +152,41 @@ const TeamMaintenance = () => {
     const handleRemovePlayer = (index) => {
         let newList = [...playersList]
         if (confirm(`Remove ${newList[index].playerName} from the team?\nPlease click on OK if you wish to proceed.`)) {
-            newList.splice(index, 1)
-            setPlayersList(newList)
-            setPlayersChanged(true)
+            fetch(`${backend}/removeplayer/${routeParams.teamid}/${newList[index].playerId}`, {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "Application/JSON"
+                }
+            })
+            .then(response => response.json())
+            .then(data=>{
+                console.log(data)
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                    if (data.errField !== "") {
+                        document.getElementById(data.errField).focus()
+                    }
+                } else {
+                    newList.splice(index, 1)
+                    setPlayersList(newList)
+                }
+            }).catch((error) => {
+                console.log(error)
+            })
         } else {
             console.log("Removal cancelled")
         } 
+    }
+
+    const dateFormat = (date, type) => {
+        let dateIn = new Date(date)
+        if (type === "ISO") {
+            return dateIn.toISOString().substring(0,10)
+        } else {
+            return dateIn.toDateString()
+        }
+        
     }
 
     const checkIfUserIsSignedIn = () => {
@@ -132,25 +213,75 @@ const TeamMaintenance = () => {
           event.stopPropagation();
         }
         setValidated(true);
+        let data = {}
         let error = false
         error = validateInput()
         if (!error) {
         if (action.type === "Creation") {
-            navigate('/team/' + "new team id here")
+            data = {...currValues}
+                //data.logo = selectedLogo
+                //data.banner = selectedBanner
+                fetch(`${backend}/createteam`, {
+                    method: "POST",
+                    credentials: 'include',
+                    body: JSON.stringify(data),
+                    headers: {
+                        "Content-Type": "Application/JSON"
+                    }
+                })
+                .then(response => response.json())
+                .then(data=>{
+                    if (data.requestStatus === 'RJCT') {
+                        setErrorMessage([data.errMsg])
+                        if (data.errField !== "") {
+                            document.getElementById(data.errField).focus()
+                        }
+                    } else {
+                        navigate('/team/' + data.team._id)
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
         } else {
             if ( oldValues.teamName == currValues.teamName 
                 && oldValues.description == currValues.description 
                 && oldValues.location == currValues.location 
                 && oldValues.division == currValues.division
-                && oldValues.email == currValues.email
-                && oldValues.sport == sportSelected
-                && oldValues.logo == selectedLogo
-                && oldValues.banner == selectedBanner
+                && oldValues.teamContactEmail == currValues.teamContactEmail
+                && oldValues.sportsTypeId == currValues.sportsTypeId
+                && logoChanged == false
+                && bannerChanged == false
                 && didPlayersChange == false
             ) {
                 alert("NO CHANGES FOUND!")
             } else {
-                navigate('/team/' + routeParams.teamid)
+                data = {...currValues}
+                data.players = playersList.map(player => {
+                    return {playerId: player.playerId, position: player.position, jerseyNumber: player.jerseyNumber, joinedTimestamp: player.joinedTimestamp}
+                })
+                //data.logo = selectedLogo
+                //data.banner = selectedBanner
+                fetch(`${backend}/updateteam/${routeParams.teamid}`, {
+                    method: "POST",
+                    credentials: 'include',
+                    body: JSON.stringify(data),
+                    headers: {
+                        "Content-Type": "Application/JSON"
+                    }
+                })
+                .then(response => response.json())
+                .then(data=>{
+                    if (data.requestStatus === 'RJCT') {
+                        setErrorMessage([data.errMsg])
+                        if (data.errField !== "") {
+                            document.getElementById(data.errField).focus()
+                        }
+                    } else {
+                        navigate('/team/' + routeParams.teamid)
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
             } 
         }
     }
@@ -172,15 +303,14 @@ const validateInput = () => {
             focusON = true
         }
     }
-    if (currValues.email.trim() === "") {
+    if (currValues.teamContactEmail.trim() === "") {
         errMsgs.push('Email is required.');
         if (!focusON) {
-            document.getElementById("email").focus()
+            document.getElementById("teamContactEmail").focus()
             focusON = true
         }
     }
     
-
     setErrorMessage(errMsgs)
     if (errMsgs.length > 0) {
         errResp = true
@@ -189,12 +319,31 @@ const validateInput = () => {
 }
 
     const navigateDelete = () => {
-        let count = (playersList === null ? 0 : 1)
+        let count = (playersList.length === 0 ? 0 : 1)
         if (count !== 0) {
             alert("You cannot delete a team that has player/s or game history.")
         } else {
             if (confirm("Please confirm if you want to proceed with deletion of this team.")) {
-                navigate('/teams')
+                fetch(`${backend}/deleteteam/${routeParams.teamid}`, {
+                    method: "DELETE",
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "Application/JSON"
+                    }
+                })
+                .then(response => response.json())
+                .then(data=>{
+                    if (data.requestStatus === 'RJCT') {
+                        setErrorMessage([data.errMsg])
+                        if (data.errField !== "") {
+                            document.getElementById(data.errField).focus()
+                        }
+                    } else {
+                        navigate('/teams')
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
             } else {
                 console.log("Deletion cancelled")
             }
@@ -204,10 +353,15 @@ const validateInput = () => {
   return (
     <div className="d-flex container mt-2 justify-content-center">
         { !isSignedIn && (
-        <div>
-          {checkIfUserIsSignedIn()}
-        </div>
-      )}
+            <div>
+                {checkIfUserIsSignedIn()}
+            </div>
+        )}
+        { action.type === "Update" && !isTeamAdmin ? (
+            <div>
+                <h1>Not authorized to this page !!!</h1>
+            </div>
+        ) : (
         <Card style={{ width: "60rem", padding: 20 }}>
         {errorMessage.length > 0 && (
             <div className="alert alert-danger mb-3 p-1">
@@ -257,7 +411,7 @@ const validateInput = () => {
             // pattern="^(?!.*\s)[^']*$" --this is for avoiding ' as well.
             type="text"
             placeholder="Team name"
-            defaultValue="Otto" id="teamName" name="teamName" className="form-control" value={currValues.teamName} onChange={handleTeamDetails} />
+            id="teamName" name="teamName" className="form-control" value={currValues.teamName} onChange={handleTeamDetails} />
             
             <Form.Control.Feedback htmlFor="teamName" type="invalid">
             Please provide a valid team name.
@@ -272,15 +426,15 @@ const validateInput = () => {
         </Form.Group> */}
             </div>
             <div className="col-sm-4 mb-3">
-                <Form.Label htmlFor="sport" className="form-label">
+                <Form.Label htmlFor="sportsTypeId" className="form-label">
                     Sport*
                 </Form.Label>
-                <Form.Select id="sport" name="sport" className="form-control" value={sportSelected} onChange={handleSportChange} disabled={action.protectSport}>
+                <Form.Select id="sportsTypeId" name="sportsTypeId" className="form-control" value={currValues.sportsTypeId} onChange={handleTeamDetails} disabled={action.protectSport}>
                     {sportsOptions.map((option) => (
                         <option value={option.value} key={option.value}>{option.label}</option>
                     ))}
                 </Form.Select>
-                <Form.Control.Feedback htmlFor="sport" type="invalid">
+                <Form.Control.Feedback htmlFor="sportsTypeId" type="invalid">
             Please select a sport.
           </Form.Control.Feedback>
             </div>
@@ -308,10 +462,10 @@ const validateInput = () => {
                 <Form.Control id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleTeamDetails} />
             </div>
             <div className="col-sm-4 mb-3">
-                <Form.Label htmlFor="email" className="form-label">
+                <Form.Label htmlFor="teamContactEmail" className="form-label">
                     Email*
                 </Form.Label>
-                <Form.Control required id="email" name="email" type="email" className="form-control" value={currValues.email} onChange={handleTeamDetails} />
+                <Form.Control required id="teamContactEmail" name="teamContactEmail" type="email" className="form-control" value={currValues.teamContactEmail} onChange={handleTeamDetails} />
                 <Form.Control.Feedback htmlFor="location" type="invalid">
             Please provide a valid email.
           </Form.Control.Feedback>
@@ -360,7 +514,7 @@ const validateInput = () => {
                             {playersList.map((player, index) =>       
                                 <tr key={player.playerId}>
                                     <td>{player.playerName}</td>
-                                    <td>{player.username}</td>
+                                    <td>{player.userName}</td>
                                     <td>
                                         <select name="position" className="form-control" value={player.position} onChange={(e) => handlePLayerChange(e, index)}>
                                             {positionOptions.map((option) => (
@@ -371,7 +525,7 @@ const validateInput = () => {
                                     <td>
                                         <input name="jerseyNumber" type="number" value={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
                                     </td>
-                                    <td>{player.joinedDate}</td>
+                                    <td>{dateFormat(player.joinedTimestamp, "String")}</td>
                                     <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemovePlayer(index)}>Remove</button></td>
                                 </tr>) 
                             }
@@ -393,8 +547,8 @@ const validateInput = () => {
                         Cancel
                     </button>
                 </div>
-
       </Card>
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import {Container,Row,Col, Image, Button} from 'react-bootstrap';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -13,7 +13,8 @@ import useAuth from "../hooks/auth";
 function TeamDetails() {
     const navigate = useNavigate(); 
     const {isSignedIn} = useAuth();
-    const navigateUpdateTeam = () => { navigate('/updateteam/648e9013466c1c995745907c') }
+    const routeParams = useParams();
+    const navigateUpdateTeam = () => { navigate(`/updateteam/${routeParams.teamid}`) }
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);

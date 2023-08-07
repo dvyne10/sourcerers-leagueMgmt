@@ -589,40 +589,124 @@ export const getUserFullname = async function(playerId, userName) {
     if ((playerId !== "" && !mongoose.isValidObjectId(playerId.trim())) || (playerId == "" && userName.trim() === "")) {
         return {playerId: "", userName: "", fullName: ""}
     }
-
-    let user = await UserModel.aggregate([
-        {
-            $match: { $or : [
-                { _id : new ObjectId(playerId) },
-                { userName: new RegExp(`^${userName}$`, "i") }
-                ]
-            }
-        },
-        {
-            $addFields: {
-                playerId: "$_id",
-                fullName: {
-                    $reduce: {
-                        input: [ "$firstName", " ", "$lastName" ],
-                        initialValue: "",
-                        in: {
-                            $concat: [ "$$value", "$$this"]
+    let user
+    if (mongoose.isValidObjectId(playerId.trim())) {
+        user = await UserModel.aggregate([
+            {
+                $match: { _id : new ObjectId(playerId) }
+            },
+            {
+                $addFields: {
+                    playerId: "$_id",
+                    fullName: {
+                        $reduce: {
+                            input: [ "$firstName", " ", "$lastName" ],
+                            initialValue: "",
+                            in: {
+                                $concat: [ "$$value", "$$this"]
+                            }
                         }
                     }
-                }
+                },
             },
-        },
-        {
-            $project: {
-                _id: 0, playerId: 1, fullName: 1, userName: 1
+            {
+                $project: {
+                    _id: 0, playerId: 1, fullName: 1, userName: 1
+                }
             }
-        }
-    ]).limit(1)
-
-
+        ]).limit(1)
+    } else {
+        user = await UserModel.aggregate([
+            {
+                $match: { userName: new RegExp(`^${userName}$`, "i") }
+            },
+            {
+                $addFields: {
+                    playerId: "$_id",
+                    fullName: {
+                        $reduce: {
+                            input: [ "$firstName", " ", "$lastName" ],
+                            initialValue: "",
+                            in: {
+                                $concat: [ "$$value", "$$this"]
+                            }
+                        }
+                    }
+                },
+            },
+            {
+                $project: {
+                    _id: 0, playerId: 1, fullName: 1, userName: 1
+                }
+            }
+        ]).limit(1)
+    }
     if (user.length === 0) {
         return {playerId: "", userName: "", fullName: ""}
     } else {
         return {playerId: user[0].playerId, userName: user[0].userName, fullName: user[0].fullName}
     }
+}
+
+export const getAccountDetailsUpdate = async function(userId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(userId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "User Id is required."
+        return response
+    }
+
+    let user = await UserModel.findOne({ _id : new ObjectId(userId), userType : "USER", status : "ACTV"}, {
+        _id: 1, userName: 1, email: 1, phoneNumber: 1, firstName: 1, lastName: 1, country: 1, province: 1, city: 1, sportsOfInterest: 1
+    })
+
+    if (user === null) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "No data found"
+        response.details = {}
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    response.details = user
+    return response
+}
+
+export const updateAccount = async function(userId, details) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(userId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "User Id is required."
+        return response
+    }
+
+    const existingUsername = await UserModel.findOne({ userName: new RegExp(`^${details.userName}$`, "i") });
+    if (existingUsername !== null && !existingUsername._id.equals(new ObjectId(userId))) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "The username is not available"
+        return response
+    }
+
+    let user = await UserModel.updateOne({ _id : new ObjectId(userId), userType : "USER", status : "ACTV"}, {
+        $set: { 
+            userName: details.userName.trim(),
+            phoneNumber: details.phoneNumber.trim(),
+            firstName: details.firstName.trim(),
+            lastName: details.lastName.trim(),
+            country: details.country.trim(),
+            province: details.province.trim(),
+            city: details.city.trim(),
+            sportsOfInterest: details.sportsOfInterest,
+        } 
+    })
+    if (user.modifiedCount !== 1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Account update was not successful"
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    return response
 }
