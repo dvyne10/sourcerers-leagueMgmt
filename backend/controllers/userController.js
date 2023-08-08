@@ -31,6 +31,7 @@ const registerUser = async (req, res) => {
     userName,
     email,
     password,
+    phoneNumber,
   } = req.body;
 
   const existingUsername = await User.findOne({ userName: new RegExp(`^${userName}$`, "i") });
@@ -79,6 +80,7 @@ const registerUser = async (req, res) => {
     city,
     sportsOfInterest,
     salt,
+    phoneNumber,
   }).save();
 
   try {

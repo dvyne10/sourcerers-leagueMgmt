@@ -9,7 +9,6 @@ import '../App.css';
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app/';
 
-
 const Home = () => {
   const [topLeagues, setTopLeagues] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
@@ -26,27 +25,14 @@ const Home = () => {
     try {
       const response = await fetch(`${backend}`);
       const data = await response.json();
-      const allAnnouncements = [...data.details.announcements];
-      
-      // Check if admin announcement is not already added
-      const adminAnnouncementIndex = allAnnouncements.findIndex((announcement) => typeof announcement === 'string');
-      if (adminAnnouncementIndex !== -1) {
-        allAnnouncements.splice(adminAnnouncementIndex, 1);
-      }
-  
-      // Add admin announcement to the beginning of the array
-      if (data.details.adminAnnouncements.length > 0) {
-        allAnnouncements.unshift(data.details.adminAnnouncements[0]);
-      }
-  
+      const allAnnouncements = [...data.details.adminAnnouncements, ...data.details.announcements];
+
       setTopLeagues(data.details.topLeagues);
       setAnnouncements(allAnnouncements);
-      console.log(allAnnouncements);
     } catch (error) {
       console.error('Error fetching top leagues data:', error);
     }
   };
-  
 
   const sliderSettings = {
     dots: false,
@@ -59,11 +45,25 @@ const Home = () => {
     pauseOnHover: true,
   };
 
-  const sliderSettingsFourCards = { ...sliderSettings, slidesToShow: 4 };
-  const sliderSettingsThreeCards = { ...sliderSettings, slidesToShow: 3 };
-  const sliderSettingsTwoCards = { ...sliderSettings, slidesToShow: 2 };
-  const sliderSettingsOneCard = { ...sliderSettings, slidesToShow: 1 };
+  const sliderSettingsFourCards = {
+    ...sliderSettings,
+    slidesToShow: 4,
+  };
 
+  const sliderSettingsThreeCards = {
+    ...sliderSettings,
+    slidesToShow: 3,
+  };
+
+  const sliderSettingsTwoCards = {
+    ...sliderSettings,
+    slidesToShow: 2,
+  };
+
+  const sliderSettingsOneCard = {
+    ...sliderSettings,
+    slidesToShow: 1,
+  };
   const [sliderSettingsToUse, setSliderSettingsToUse] = useState(sliderSettings);
 
   const updateSliderSettings = () => {
@@ -80,6 +80,12 @@ const Home = () => {
     }
   };
 
+  const doesImageExist = (url) => {
+    const img = new Image();
+    img.src = url;
+    return img.complete || (img.width + img.height) > 0;
+  };
+
   useEffect(() => {
     updateSliderSettings();
     window.addEventListener('resize', updateSliderSettings);
@@ -94,7 +100,8 @@ const Home = () => {
   const indexOfFirstAnnouncement = indexOfLastAnnouncement - announcementsPerPage;
   const currentAnnouncements = announcements.slice(indexOfFirstAnnouncement, indexOfLastAnnouncement);
 
-  const adminAnnouncement = currentAnnouncements.find((announcement) => typeof announcement === 'string');
+  const adminAnnouncements = currentAnnouncements.filter((announcement) => typeof announcement === 'string');
+  const regularAnnouncements = currentAnnouncements.filter((announcement) => typeof announcement !== 'string');
 
   return (
     <>
@@ -128,8 +135,8 @@ const Home = () => {
           </h1>
 
           <div className="notification-ui_dd-content">
-            {adminAnnouncement && (
-              <div className="notification-list notification-list--unread" style={{ backgroundColor: '#ffffe0' }}>
+            {adminAnnouncements.map((announcement, index) => (
+              <div key={index} className="notification-list notification-list--unread" style={{ backgroundColor: '#ffffe0' }}>
                 <div className="notification-list_content">
                   <div className="notification-list_img">
                     <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
@@ -139,24 +146,27 @@ const Home = () => {
                       <b>Admin Announcement</b>
                     </p>
                   </div>
-                  <p className="text-muted">{adminAnnouncement}</p>
+                  <p className="text-muted">{announcement}</p>
                 </div>
               </div>
-            )}
+            ))}
 
-            {currentAnnouncements.map((announcement, index) => (
+            {regularAnnouncements.map((announcement, index) => (
               <div key={index}>
                 {announcement.leagueName && (
                   <Link to={`/league/${announcement.leagueId}`} className="notification-list notification-list--unread">
                     <div className="notification-list_content">
                       <div className="notification-list_img">
-                        <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
+                      {doesImageExist(`${backend}/leaguelogos/${announcement.leagueId}.jpeg`) ? (
+                        <img src={`${backend}/leaguelogos/${announcement.leagueId}.jpeg`} alt="user" />
+                      ) : (
+                        <img src={`${backend}/leaguelogos/default-image.jpeg`} alt="user" />
+                      )}
                       </div>
                       <div className="notification-list_detail">
                         <p>
                           <b>{announcement.leagueName}</b>
                         </p>
-
                       </div>
                       <p className="text-muted">{announcement.leagueMsg}</p>
                     </div>
@@ -167,20 +177,23 @@ const Home = () => {
                   <Link to={`/team/${announcement.teamId}`} className="notification-list notification-list--unread">
                     <div className="notification-list_content">
                       <div className="notification-list_img">
-                        <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
+                      {doesImageExist(`${backend}/teamlogos/${announcement.teamId}.jpeg`) ? (
+                        <img src={`${backend}/teamlogos/${announcement.teamId}.jpeg`} alt="user" />
+                      ) : (
+                        <img src={`${backend}/teamlogos/default-image.jpeg`} alt="user" />
+                      )}
                       </div>
                       <div className="notification-list_detail">
                         <p>
                           <b>{announcement.teamName}</b>
                         </p>
-
                       </div>
                       <p className="text-muted">{announcement.teamMsg}</p>
-                        <p className="text-muted notification-date">
-                          <small>
-                            {new Date(announcement.indicatorChgTmst).toLocaleDateString('en-US')}
-                          </small>
-                        </p>
+                      <p className="text-muted notification-date">
+                        <small>
+                          {new Date(announcement.indicatorChgTmst).toLocaleDateString('en-US')}
+                        </small>
+                      </p>
                     </div>
                   </Link>
                 )}

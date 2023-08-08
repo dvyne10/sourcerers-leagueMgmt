@@ -5,6 +5,8 @@ import { MultiSelect } from "react-multi-select-component";
 import validator from "validator";
 import useAuth, {checkIfSignedIn} from "../hooks/auth";
 
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
+
 const AccountMaintenance = () => {
   //hooks
   let { isSignedIn, registerUser, registrationError } = useAuth()
@@ -20,7 +22,7 @@ const AccountMaintenance = () => {
     userName: "",
     password: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     firstName: "",
     lastName: "",
     country: "",
@@ -31,10 +33,7 @@ const AccountMaintenance = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageURL, setImageURL] = useState(null);
   const [oldValues, setOldValues] = useState(null);
-  const sportsOptions = [
-    { label: "Soccer", value: "648ba153251b78d7946df311" },
-    { label: "Basketball", value: "648ba153251b78d7946df322" },
-  ];
+  const [sportsOptions, setSportsOptions] = useState([{ label: "Soccer", value: "648ba153251b78d7946df311" }, { label: "Basketball", value: "648ba153251b78d7946df322" }]);
   const [countries, setCountries] = useState([{ name: null, states: [] }]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -44,6 +43,16 @@ const AccountMaintenance = () => {
   const [formErrorArray, setFormErrorArray] = useState("");
 
   useEffect(() => {
+    fetch(`${backend}/getsportslist`)
+    .then(response => response.json())
+    .then(resp => {
+      if (resp.requestStatus === 'ACTC') {
+        let newSportsList = resp.data.map(sport => {
+          return {label: sport.sportsName, value: sport.sportsId}
+        })
+        setSportsOptions(newSportsList.sort((a,b) => a.label > b.label ? 1 : -1))
+      }
+    })
     const url = location.pathname.substring(1, 4).toLowerCase();
     if (url === "reg") {
       handleAction({
@@ -67,37 +76,49 @@ const AccountMaintenance = () => {
         button2: "Cancel",
         protect: true,
       });
-      getCountries().then((data) => {
-        setPrevCountry("United Kingdom");
-        setPrevState("City of London");
-        setCurrentValues({
-          userName: "hpotter",
-          password: "**********",
-          email: "hpotter@gmail.com",
-          phone: "",
-          firstName: "Harry",
-          lastName: "Potter",
-          country: "United Kingdom",
-          province: "City of London",
-          city: "N/A",
-        });
-      });
-      setSportsSelected([{ label: "Basketball", value: "648ba153251b78d7946df322" }]);
-      setImageURL(
-        "https://images.lifestyleasia.com/wp-content/uploads/sites/3/2022/12/31011513/harry-potter-films.jpeg"
-      );
-      setSelectedImage("x");
-      setOldValues({
-        userName: "hpotter",
-        phone: "",
-        firstName: "Harry",
-        lastName: "Potter",
-        country: "United Kingdom",
-        city: "London",
-        province: "N/A",
-        sports: "basketId",
-        image: "x",
-      });
+      getCountries()
+      fetch(`${backend}/getaccountdetailsupdate`, {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "Application/JSON"
+        }
+      })
+      .then(response => response.json())
+      .then(data=>{
+        if (data.requestStatus === 'RJCT') {
+            setFormError(true);
+            setFormErrorArray(data.errMsg);
+            if (data.errField !== "") {
+                document.getElementById(data.errField).focus()
+            }
+        } else {
+            setPrevCountry(data.details.country);
+            setPrevState(data.details.province);
+            setCurrentValues({ userName: data.details.userName, password: "**********", email: data.details.email, phoneNumber: data.details.phoneNumber ? data.details.phoneNumber : "",
+              firstName: data.details.firstName, lastName: data.details.lastName, country: data.details.country, province: data.details.province, city: data.details.city,
+            });
+            let sportsSelectedValues = "";
+            let sportsInDb = data.details.sportsOfInterest.map(sport => {
+              sportsSelectedValues = sportsSelectedValues + sport
+              let index = sportsOptions.findIndex(option => option.value ===  sport)
+              return {label: sportsOptions[index].label, value: sport}
+            })
+            setSportsSelected(sportsInDb);
+            fetch(`${backend}/profilepictures/${data.details._id}.jpeg`)
+            .then(res=>{
+                if (res.ok) {
+                  setImageURL(`${backend}/profilepictures/${data.details._id}.jpeg`)
+                  setSelectedImage("x")
+                }
+            })
+            setOldValues({ userName: data.details.userName, phoneNumber: data.details.phoneNumber ? data.details.phoneNumber : "", firstName: data.details.firstName, lastName: data.details.lastName, 
+              country: data.details.country, city: data.details.city, province: data.details.province, sports: sportsSelectedValues, image: "x",
+            });
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
     }
   }, [location.pathname]);
 
@@ -223,7 +244,7 @@ const AccountMaintenance = () => {
       );
       if (
         oldValues.userName == currValues.userName &&
-        oldValues.phone == currValues.phone &&
+        oldValues.phoneNumber == currValues.phoneNumber &&
         oldValues.firstName == currValues.firstName &&
         oldValues.lastName == currValues.lastName &&
         oldValues.country == currValues.country &&
@@ -234,7 +255,29 @@ const AccountMaintenance = () => {
       ) {
         alert("NO CHANGES FOUND!");
       } else {
-        navigate(-1); // Validate changes. Once all okay, navigate to user's previous page.
+        let data = {...currValues}
+        fetch(`${backend}/updateaccount`, {
+          method: "POST",
+          credentials: 'include',
+          body: JSON.stringify(data),
+          headers: {
+              "Content-Type": "Application/JSON"
+          }
+        })
+        .then(response => response.json())
+        .then(data=>{
+          if (data.requestStatus === 'RJCT') {
+            setFormError(true);
+            setFormErrorArray(data.errMsg);
+            if (data.errField !== "") {
+                document.getElementById(data.errField).focus()
+            }
+          } else {
+              navigate(-1)
+          }
+        }).catch((error) => {
+          console.log(error)
+        })
       }
     }
   };
@@ -281,9 +324,7 @@ const AccountMaintenance = () => {
         )}
         <form
           onSubmit={(e) => {
-            action.button1
-              ? navigateCreateUpdate(e)
-              : navigateSigninOrCancel(e);
+            navigateCreateUpdate(e)
           }}
           encType="multipart/form-data"
         >
@@ -402,15 +443,15 @@ const AccountMaintenance = () => {
                   </select>
                 </div>
                 <div className="col-5 mb-3">
-                  <label htmlFor="phone" className="form-label">
+                  <label htmlFor="phoneNumber" className="form-label">
                     Phone Number
                   </label>
                   <input
-                    id="phone"
-                    name="phone"
+                    id="phoneNumber"
+                    name="phoneNumber"
                     type="text"
                     className="form-control"
-                    value={currValues.phone}
+                    value={currValues.phoneNumber}
                     onChange={handleAccountDetails}
                   />
                 </div>
@@ -523,14 +564,13 @@ const AccountMaintenance = () => {
             <button
               className="btn btn-dark col-2 mx-5"
               type="submit"
-              //onClick={navigateCreateUpdate}
             >
               {action.button1}
             </button>
             <button
-              type="submit"
+              type="button"
               className="btn btn-outline-secondary col-2"
-              // onClick={navigateSigninOrCancel}
+              onClick={navigateSigninOrCancel}
             >
               {action.button2}
             </button>

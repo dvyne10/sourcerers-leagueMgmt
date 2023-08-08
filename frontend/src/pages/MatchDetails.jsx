@@ -23,10 +23,12 @@ const MatchDetails = () => {
   const [displayedTeam, setDisplayedTeam] = useState(1); // 1 for Team 1, 2 for Team 2
 
   const navigate = useNavigate(); 
+  const routeParams = useParams();
   const { isSignedIn } = useAuth()
-  const navigateUpdateMatch = () => { navigate('/updatematch/648e9013466c1c995745907c') }   // temp id only
-  let { sport } = useParams();
-  sport = sport || '1'; 
+  const navigateUpdateMatch = () => { navigate(`/updatematch/${routeParams.matchid}`) }   // temp id only
+  //let { sport } = useParams();
+  //sport = sport || '1'; 
+  let sport = 1 // JEM : TEMP ONLY!
   const teamLogo1 = sport === '1' ? '/images/matchDetails/madrid.png' : '/images/matchDetails/lakers.png';
   const teamLogo2 = sport === '1' ? '/images/matchDetails/barcelona.png' : '/images/matchDetails/golden.png';
 

@@ -28,8 +28,8 @@ import {
   isLeagueAdmin,
   getLeagueDetailsForUpdate,
   updateLeague,
-  deleteLeague,
-  updateLeagueTeams,
+  // deleteLeague,
+  // updateLeagueTeams,
   canUserCreateNewLeague,
   getLeagueDetailsAndButtons,
   updateLookingForTeams,
@@ -65,7 +65,7 @@ app.use(
       "https://playpal.netlify.app",
       "http://localhost:5173",
     ],
-    preflightContinue: true,
+    // preflightContinue: true,
     exposedHeaders: ["*", "Authorization"],
     optionsSuccessStatus: 200
   })

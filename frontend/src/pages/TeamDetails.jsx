@@ -6,13 +6,12 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './teamdetails.css'
 import ListGroup from 'react-bootstrap/ListGroup';
-import useAuth from "../hooks/auth";
+
 
 
 
 function TeamDetails() {
     const navigate = useNavigate(); 
-    const {isSignedIn} = useAuth();
     const navigateUpdateTeam = () => { navigate('/updateteam/648e9013466c1c995745907c') }
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -72,15 +71,13 @@ const [data, setData] = useState([]);
 
     return (
       <>
-      {isSignedIn && (
       <div className='d-flex w-100 position-absolute justify-content-end p-4'><Button variant='transparent' onClick={navigateUpdateTeam} className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
-      )}
         <div className='bg-light container justify-content-center text-center'>
         {/* Here is the team header, with background and info */}
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white"
   style={{"backgroundImage": "url('https://mdbcdn.b-cdn.net/img/new/slides/003.webp')"}} >
         <Container style={{background:'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg'}}>
-      <Row >
+      <Row>
         <Col lg="2" className='text-center'>
       
         <Image src="https://i.ytimg.com/vi/ghMKmANLr4E/maxresdefault.jpg"  className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
@@ -90,10 +87,9 @@ const [data, setData] = useState([]);
         <p className='mt-5'>Team description here.</p></Col>
       </Row>
       <Row>
-      {isSignedIn && (
         <Col lg="2" className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>{join===false ? "Join" : "Unjoin"}</Button>
         <Button className='mt-2 ms-2 mb-2 btn-success rounded-pill' onClick={handleShowInvite}>{invite===false ? "Invite to League" : "Uninvite to League"}</Button></Col>
-      )}
+
       </Row>
     </Container>
     
@@ -128,7 +124,7 @@ return(
       </a>
       </Col>
       <Col md="auto" className='mx-auto mt-2'>
-        <a href={`/player/${teamMember.id}`} className='player-list-names'>{teamMember.body}</a>
+        <h6>{teamMember.body}</h6>
         <p>{teamMember.position == undefined ? "Not Assigned" : teamMember.position}</p>
         <h6>23</h6>
       </Col>

@@ -389,6 +389,7 @@ body {
 
 
 /* Notification page */
+
 .icon-button {
   background: none;
   border: none;
@@ -535,6 +536,20 @@ body {
   /* Removed margin-left */
 }
 
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.approval-button.disabled {
+  background-color: #cccccc;
+}
+.decline-button.disabled {
+  background-color: #cccccc;
+}
+
 .notification-list_detail {
   display: flex;
   flex-direction: column;
@@ -569,13 +584,35 @@ body {
 }
 
 .approval-button {
-  background-color: green;
-  margin-right: 5px;
+  background-color: #2ecc71;
+  color: #ffffff;
+  border: none;
+  padding: 8px 12px;
+  margin-right: 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s, opacity 0.3s;
 }
 
+/* Style for decline button */
 .decline-button {
-  background-color: red;
+  background-color: #e74c3c;
+  color: #ffffff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s, opacity 0.3s;
 }
+.approve-button.disabled {
+  background-color: #cccccc;
+}
+.decline-button.disabled {
+  background-color: #cccccc;
+}
+
 
 /* Improve text visibility */
 .approval-button span,
