@@ -13,7 +13,7 @@ const LeagueMaintenance = () => {
     const inputFileLogo = useRef(null);
     const [isLeagueAdmin, setLeagueAdmin] = useState(false)
     const [action, handleAction] = useState({type: "Creation", title: "CREATE LEAGUE"});
-    const sportsOptions = [ {label: "Soccer", value: "648ba153251b78d7946df311"}, {label: "Basketball", value: "648ba153251b78d7946df322"} ]
+    const [sportsOptions, setSportsOptions] = useState([{ label: "Soccer", value: "648ba153251b78d7946df311" }, { label: "Basketball", value: "648ba153251b78d7946df322" }]);
     const [currValues, setCurrentValues] = useState({leagueName: "", sportsTypeId: sportsOptions[0].value, description: "", location: "",
         division: "", startDate: null, endDate: null, ageGroup: "", numberOfTeams: 3, numberOfRounds: 1
     })
@@ -28,6 +28,16 @@ const LeagueMaintenance = () => {
     const [errorMessage, setErrorMessage] = useState([]);
 
     useEffect(() => {
+        fetch(`${backend}/getsportslist`)
+            .then(response => response.json())
+            .then(resp => {
+            if (resp.requestStatus === 'ACTC') {
+                let newSportsList = resp.data.map(sport => {
+                    return {label: sport.sportsName, value: sport.sportsId}
+                })
+                setSportsOptions(newSportsList.sort((a,b) => a.label > b.label ? 1 : -1))
+            }
+        })
         const url = window.location.pathname.substring(1,7).toLowerCase()
         if (url === "create") {
             handleAction({type: "Creation", title: "Create League"})
@@ -53,18 +63,25 @@ const LeagueMaintenance = () => {
                         ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, leagueStatus: data.details.status
                     })
                     setTeamsList(data.details.teams)
+                    let oldLogo = ""
+                    let oldBanner = ""
                     fetch(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`)
                     .then(res=>{
                         if (res.ok) {
                             setLogoURL(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`)
                             setSelectedLogo("x")
+                            oldLogo = "x"
                         }
                     })
+                    let protectSport = data.details.teams.length > 0 ? true : false
+                    let protectRounds = data.details.status !== "NS" ? true : false
+                    handleAction({type: "Update", title: "Update League", protectSport, protectRounds})
                     fetch(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
                     .then(res=>{
                         if (res.ok) {
                             setBannerURL(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
                             setSelectedBanner("x")
+                            oldBanner = "x"
                         }
                     })
                     setDeleteButton(!data.details.allowDelete)
@@ -72,13 +89,13 @@ const LeagueMaintenance = () => {
                     setOldValues({ leagueName: data.details.leagueName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, location: data.details.location,
                         division: data.details.division, startDate: dateFormat(data.details.startDate, "ISO"), endDate: dateFormat(data.details.endDate, "ISO"), 
                         ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, 
-                        logo: "x", banner: "x" })
+                        logo: oldLogo, banner: oldBanner })
                 }
             }).catch((error) => {
                 console.log(error)
             })
         }
-    }, []);
+    }, [location.pathname]);
 
     useEffect(() => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
@@ -86,7 +103,6 @@ const LeagueMaintenance = () => {
             fetch(`${backend}/admin?league=${routeParams.leagueid}`, {
                 method: "POST",
                 credentials: 'include',
-                body: JSON.stringify(currValues),   // temp
                 headers: {
                     "Content-Type": "Application/JSON"
                 }
@@ -98,7 +114,7 @@ const LeagueMaintenance = () => {
                 console.log(error)
             })
         }
-    }, []);
+    }, [location.pathname]);
 
     const handleLogoChange = event => {
         if (event.target.files.length > 0) {
@@ -351,12 +367,31 @@ const LeagueMaintenance = () => {
     }
 
     const navigateDelete = () => {
-        let count = (teamsList === null ? 0 : 1)
+        let count = (teamsList.length === 0 ? 0 : 1)
         if (count !== 0) {
             alert("You cannot delete a league that has team/s or game history.")
         } else {
             if (confirm("Please confirm if you want to proceed with deletion of this league.")) {
-                navigate('/leagues')
+                fetch(`${backend}/deleteleague/${routeParams.leagueid}`, {
+                    method: "DELETE",
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "Application/JSON"
+                    }
+                })
+                .then(response => response.json())
+                .then(data=>{
+                    if (data.requestStatus === 'RJCT') {
+                        setErrorMessage([data.errMsg])
+                        if (data.errField !== "") {
+                            document.getElementById(data.errField).focus()
+                        }
+                    } else {
+                        navigate('/leagues')
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
             } else {
                 console.log("Deletion cancelled")
             }
