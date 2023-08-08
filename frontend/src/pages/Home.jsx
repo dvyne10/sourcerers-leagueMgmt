@@ -120,7 +120,15 @@ const Home = () => {
             <Slider key={sliderSettingsToUse.slidesToShow} {...sliderSettingsToUse}>
               {topLeagues.map((league, index) => (
                 <div key={index}>
-                  <FlippableCard imageUrl={`${backend}/leaguelogos/${league.leagueId}.jpeg`} cardText={league.leagueName} teams={league.teams} />
+                  <FlippableCard
+                    imageUrl={
+                      doesImageExist(`${backend}/leaguelogos/${league.leagueId}.jpeg`)
+                        ? `${backend}/leaguelogos/${league.leagueId}.jpeg`
+                        : `${backend}/leaguelogos/default-image-for-league.jpeg`
+                    }
+                    cardText={league.leagueName}
+                    teams={league.teams}
+                  />
                 </div>
               ))}
             </Slider>
@@ -131,7 +139,7 @@ const Home = () => {
       <section className="section-50">
         <div className="container">
           <h1 className="m-b-50 heading-line">
-            Announcements <i className="fa fa-bell text-muted"></i>
+            Announcements 
           </h1>
 
           <div className="notification-ui_dd-content">

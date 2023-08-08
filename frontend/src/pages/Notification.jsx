@@ -23,8 +23,11 @@ const Notification = () => {
   const [envelopeOpen, setEnvelopeOpen] = useState(Array(20).fill(false));
   const [currentPage, setCurrentPage] = useState(1);
   const [notifications, setNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchNotifications = async () => {
+    setIsLoading(true); 
+
     try {
       const response = await fetch(`${backend}/notifications`, {
         method: 'POST',
@@ -44,8 +47,11 @@ const Notification = () => {
       }
     } catch (error) {
       console.error('Error fetching top leagues data:', error);
+    } finally {
+      setIsLoading(false); 
     }
   };
+
 
   useEffect(() => {
     fetchNotifications();
@@ -155,12 +161,18 @@ const Notification = () => {
                 {checkIfUserIsSignedIn()}
             </div>
         )}
+      {isLoading ? (
+        <div className="loading-overlay">
+          <div style={{color: 'black'}}>Loading...</div>
+        <div className="loading-spinner"></div>
+        </div>
+      ): (
       <section className="section-50">
         <div className="container">
           <h1 className="m-b-50 heading-line">Notifications </h1>
 
           <hr />
-
+          
           <div className="notification-ui_dd-content">
             {notifications
               .slice((currentPage - 1) * notificationsPerPage, currentPage * notificationsPerPage)
@@ -252,6 +264,7 @@ const Notification = () => {
           )}
         </div>
       </section>
+      )}
     </>
   );
 };
