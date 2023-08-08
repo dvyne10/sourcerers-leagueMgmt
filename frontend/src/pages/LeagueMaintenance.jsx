@@ -7,7 +7,9 @@ const backend = import.meta.env.MODE === "development" ? "http://localhost:8000"
 
 const LeagueMaintenance = () => {
   
-    const {isSignedIn} = useAuth()
+    const {isSignedIn,responseToken} = useAuth()
+
+    const token = `Bearer ${responseToken}`
     const routeParams = useParams();
     const inputFileBanner = useRef(null);
     const inputFileLogo = useRef(null);
@@ -47,7 +49,8 @@ const LeagueMaintenance = () => {
                 method: "POST",
                 credentials: 'include',
                 headers: {
-                    "Content-Type": "Application/JSON"
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
                 }
             })
             .then(response => response.json())
@@ -104,7 +107,8 @@ const LeagueMaintenance = () => {
                 method: "POST",
                 credentials: 'include',
                 headers: {
-                    "Content-Type": "Application/JSON"
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
                 }
             })
             .then(response => response.json())
@@ -193,7 +197,8 @@ const LeagueMaintenance = () => {
                     credentials: 'include',
                     body: JSON.stringify(data),
                     headers: {
-                        "Content-Type": "Application/JSON"
+                        "Content-Type": "Application/JSON",
+                        "Authorization": token
                     }
                 })
                 .then(response => response.json())
@@ -233,7 +238,8 @@ const LeagueMaintenance = () => {
                         credentials: 'include',
                         body: JSON.stringify(data),
                         headers: {
-                            "Content-Type": "Application/JSON"
+                            "Content-Type": "Application/JSON",
+                            "Authorization": token
                         }
                     })
                     .then(response => response.json())
@@ -376,7 +382,8 @@ const LeagueMaintenance = () => {
                     method: "DELETE",
                     credentials: 'include',
                     headers: {
-                        "Content-Type": "Application/JSON"
+                        "Content-Type": "Application/JSON",
+                        "Authorization": token
                     }
                 })
                 .then(response => response.json())

@@ -13,13 +13,7 @@ const ForgotPassword = () => {
     <div className="card-wrapper">
       <Card style={{ width: "25rem", padding: 20 }}>
         <h2 className="mb-4 center-text">Forgot Password</h2>
-        <form
-          action=""
-          onSubmit={ () => {
-            console.log("working");
-             forgotPassword(email, navigate);
-          }}
-        >
+        <form action="">
           <div className="mb-3">
             <label htmlFor="email" className="form-label">
               Email*
@@ -33,7 +27,13 @@ const ForgotPassword = () => {
             />
           </div>
           <div className="d-flex justify-content-evenly width:100% mb-4">
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={async () => {
+                await forgotPassword(email, navigate);
+              }}
+            >
               Send me my validation code
             </button>
           </div>

@@ -14,7 +14,6 @@ import {
   genHash,
   genSalt,
   generateOTP,
-  generateToken,
   sendEmail,
 } from "../utils/auth.utils.js";
 import handlebars from "handlebars";
@@ -182,6 +181,7 @@ export const forgotPassword = async (req, res) => {
   });
 
   // check if the provided email or userName exists before saving otp to the user object
+  console.log(user);
   if (!user) {
     res.send({
       requestStatus: "RJCT",
@@ -212,7 +212,7 @@ export const forgotPassword = async (req, res) => {
         console.log(`email could not be sent ${e}`);
       });
 
-    res.send({ requestStatus: "ACTC", user });
+    res.send({ requestStatus: "ACTC" });
   }
 };
 

@@ -3,7 +3,8 @@ import User from "../models/user.model.js";
 
 export const authenticate = async (req, res, next) => {
   let token;
-  token = req.cookies.jwt;
+  token = req.header("Authorization").replace("Bearer ", "");
+  console.log(token, "here");
   try {
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
@@ -66,10 +67,10 @@ export const adminAuthenticate = async (req, res, next) => {
         const user = await User.findById(decoded.userId);
         if (user.userType !== "ADMIN") {
           res.status(404).send({ message: "Not authorized" });
-          return
+          return;
         } else {
-          req.user = user
-          next()
+          req.user = user;
+          next();
         }
       }
     } else {

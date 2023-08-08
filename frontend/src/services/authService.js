@@ -14,10 +14,8 @@ async function login(email, password) {
         email,
         password,
       },
-      { withCredentials: true, credentials: 'include' }
+      { withCredentials: true, credentials: "include" }
     );
-
-    console.log(response.headers["Set-Cookie"], "cookies here");
 
     return response;
   } catch (error) {
@@ -28,7 +26,8 @@ async function login(email, password) {
 async function registerUser(data) {
   try {
     const response = await axios.post(`${BASE_URL}/register`, data, {
-      withCredentials: true, credentials: 'include'
+      withCredentials: true,
+      credentials: "include",
     });
 
     return response;
@@ -40,7 +39,8 @@ async function registerUser(data) {
 async function verifyOTP(data) {
   try {
     const response = await axios.post(`${BASE_URL}/verifyotp`, data, {
-      withCredentials: true, credentials: 'include'
+      withCredentials: true,
+      credentials: "include",
     });
 
     return response;
@@ -51,8 +51,21 @@ async function verifyOTP(data) {
 
 async function logout() {
   try {
-    const response = await axios.post(`${BASE_URL}/logout`, {
-      withCredentials: true, credentials: 'include'
+    const response = await axios.post(`${BASE_URL}/logout`);
+
+    console.log(response);
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function forgotPassword() {
+  console.log("forgot pa");
+  try {
+    const response = await axios.post(`${BASE_URL}/forgotpassword`, {
+      withCredentials: true,
     });
     console.log(response);
     return response;
@@ -61,21 +74,10 @@ async function logout() {
   }
 }
 
-async function forgotPassword(){
-  try {
-    const response = await axios.post(`${BASE_URL}/forgotpassword`,{
-      withCredentials: true,
-    })
-    return response
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 export default {
   login,
   registerUser,
   verifyOTP,
   logout,
-  forgotPassword
+  forgotPassword,
 };
