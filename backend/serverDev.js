@@ -65,7 +65,7 @@ app.use(
       "https://playpal.netlify.app",
       "http://localhost:5173",
     ],
-    preflightContinue: true,
+    // preflightContinue: true,
     exposedHeaders: ["*", "Authorization"],
     optionsSuccessStatus: 200
   })
@@ -84,6 +84,7 @@ app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   getHomeDetails().then((data) => {
+    console.log(data); 
     res.json(data);
   });
 });

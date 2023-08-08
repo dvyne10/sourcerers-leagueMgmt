@@ -1,54 +1,147 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { BiEnvelopeOpen, BiEnvelope, BiChevronLeft, BiChevronRight } from 'react-icons/bi';
+import '../App.css'
 
-const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app/';
+const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
 const Notification = () => {
   const [selectedStates, setSelectedStates] = useState(Array(20).fill(false));
-  const [envelopeOpen, setEnvelopeOpen] = useState(false);
+  const [envelopeOpen, setEnvelopeOpen] = useState(Array(20).fill(false));
   const [currentPage, setCurrentPage] = useState(1);
-  const [notifications, setNotifications] = useState([]); 
+  const [notifications, setNotifications] = useState([]);
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch(`${backend}/notifications`);
+      const response = await fetch(`${backend}/notifications`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'Application/JSON',
+        },
+      });
+
       const data = await response.json();
 
-      if (data && data.length > 0) {
-        setNotifications(data); 
+      if (data.requestStatus === 'ACTC') {
+        setNotifications(data.details);
+        setEnvelopeOpen(data.details.map((notification) => !notification.readStatus));
       } else {
-        console.log('No notifications found.');
+        console.log('notification does not exist');
       }
     } catch (error) {
       console.error('Error fetching top leagues data:', error);
     }
   };
-  
+
   useEffect(() => {
-    fetchNotifications(); 
+    fetchNotifications();
   }, []);
 
   const notificationsPerPage = 5;
 
-  const toggleSelectedState = (index) => {
-    const updatedStates = [...selectedStates];
-    updatedStates[index] = !updatedStates[index];
-    setSelectedStates(updatedStates);
-  };
+  const toggleEnvelope = async (index) => {
+    const updatedEnvelopeStates = [...envelopeOpen];
+    updatedEnvelopeStates[index] = !updatedEnvelopeStates[index];
+    setEnvelopeOpen(updatedEnvelopeStates);
 
-  const toggleEnvelope = () => {
-    if (envelopeOpen) {
-      const updatedNotifications = notifications.map((notification, index) => ({
+    const updatedSelectedStates = [...selectedStates];
+    updatedSelectedStates[index] = updatedEnvelopeStates[index];
+    setSelectedStates(updatedSelectedStates);
+
+    if (envelopeOpen[index]) {
+      const updatedNotifications = notifications.map((notification, i) => ({
         ...notification,
-        read: selectedStates[index] || notification.read,
+        read: updatedSelectedStates[i] || notification.read,
       }));
       setNotifications(updatedNotifications);
+      try {
+        const response = await fetch(`${backend}/notificationsread/${notifications[index].notifId}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          // Notification marked as read on the server
+        } else {
+          console.error('Failed to mark notification as read on the server');
+        }
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    } else {
+      try {
+        const response = await fetch(`${backend}/notificationsread/${notifications[index].notifId}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          // Notification marked as read on the server
+        } else {
+          console.error('Failed to mark notification as read on the server');
+        }
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
     }
-    setEnvelopeOpen(!envelopeOpen);
   };
 
   const totalPages = Math.ceil(notifications.length / notificationsPerPage);
+
+  const handleApproveClick = async (notification) => {
+    const confirmed = window.confirm('Are you sure to approve?');
+    if (confirmed) {
+      try {
+        const response = await fetch(`${backend}/approverequest/${notification.notifId}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          // Notification marked as read on the server
+        } else {
+          console.error('Failed to mark notification as read on the server');
+        }
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+
+    }
+  };
+
+  const handleRejectClick = async (notification) => {
+
+    const confirmed = window.confirm('Are you sure to reject?');
+    if (confirmed) {
+      try {
+        console.log(notification.notifId); 
+        const response = await fetch(`${backend}/approverequest/${notification.notifId}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          // Notification marked as read on the server
+        } else {
+          console.error('Failed to mark notification as read on the server');
+        }
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    }
+  };
 
   return (
     <>
@@ -56,9 +149,6 @@ const Notification = () => {
         <div className="container">
           <h1 className="m-b-50 heading-line">Notifications </h1>
 
-          <button className="icon-button" onClick={toggleEnvelope}>
-            {envelopeOpen ? <BiEnvelopeOpen size={25} /> : <BiEnvelope size={25} />}
-          </button>
           <hr />
 
           <div className="notification-ui_dd-content">
@@ -73,27 +163,41 @@ const Notification = () => {
                 >
                   <div className="notification-list_content">
                     <div className="notification-list_img">
-                      <input
-                        type="checkbox"
-                        className="notification-checkbox"
-                        checked={selectedStates[index]}
-                        onChange={() => toggleSelectedState(index)}
-                      />
+                      <button className="icon-button" onClick={() => toggleEnvelope(index)}>
+                        {envelopeOpen[index] ? <BiEnvelope size={25} /> : <BiEnvelopeOpen size={25} />}
+                      </button>
                     </div>
                     <div className="notification-list_detail">
-                      <p className={`notification-sender ${notification.read || envelopeOpen ? '' : 'bold'}`}>
-                        {notification.read || envelopeOpen ? notification.sender : <b>{notification.sender}</b>}
+                      <p className={`notification-sender ${notification.read || envelopeOpen[index] ? '' : 'bold'}`}>
+                        {notification.read || envelopeOpen[index] ? notification.sender : <b>{notification.sender}</b>}
                       </p>
                     </div>
                     <div className="text-muted">
-                      <p className={`notification-message ${notification.read || envelopeOpen ? '' : 'bold'}`}>
-                        {notification.read || envelopeOpen ? notification.message : <b>{notification.message}</b>}
+                      <p className={`notification-message ${notification.read || envelopeOpen[index] ? '' : 'bold'}`}>
+                        {notification.read || envelopeOpen[index] ? notification.message : <b>{notification.message}</b>}
                       </p>
                     </div>
                   </div>
                   <div className="notifcation-list_feature-img">
-                    <button className="approval-button">Approve</button>
-                    <button className="decline-button">Reject</button>
+                    {notification.enableApproveButton ? (
+                      <button
+                        className={`approval-button ${!notification.displayApproveButton ? 'disabled' : ''}`}
+                        disabled={!notification.enableApproveButton}
+                        onClick={() => handleApproveClick(notification)}
+                      >
+                        Approve
+                      </button>
+                    ) : null}
+
+                    {notification.enableRejectButton ? (
+                      <button
+                        className={`decline-button ${!notification.enableRejectButton ? 'disabled' : ''}`}
+                        disabled={!notification.enableRejectButton}
+                        onClick={() => handleRejectClick(notification)}
+                      >
+                        Reject
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               ))}
