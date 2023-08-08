@@ -1,10 +1,24 @@
 import { useState, useEffect } from 'react';
 import { BiEnvelopeOpen, BiEnvelope, BiChevronLeft, BiChevronRight } from 'react-icons/bi';
+import useAuth, {checkIfSignedIn} from "../hooks/auth";
+import { useNavigate } from 'react-router-dom';
 import '../App.css'
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
 const Notification = () => {
+  const navigate = useNavigate(); 
+  const {isSignedIn} = useAuth();
+
+  const checkIfUserIsSignedIn = () => {
+    checkIfSignedIn()
+    .then((user) => {
+      if (!user.isSignedIn) {
+        navigate("/signin");
+      }
+    })
+  }
+
   const [selectedStates, setSelectedStates] = useState(Array(20).fill(false));
   const [envelopeOpen, setEnvelopeOpen] = useState(Array(20).fill(false));
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,7 +35,7 @@ const Notification = () => {
       });
 
       const data = await response.json();
-
+      console.log(data.details);
       if (data.requestStatus === 'ACTC') {
         setNotifications(data.details);
         setEnvelopeOpen(data.details.map((notification) => !notification.readStatus));
@@ -62,12 +76,8 @@ const Notification = () => {
             'Content-Type': 'application/json',
           },
         });
-
-        if (response.ok) {
-          // Notification marked as read on the server
-        } else {
-          console.error('Failed to mark notification as read on the server');
-        }
+        
+       
       } catch (error) {
         console.error('Error marking notification as read:', error);
       }
@@ -81,11 +91,6 @@ const Notification = () => {
           },
         });
 
-        if (response.ok) {
-          // Notification marked as read on the server
-        } else {
-          console.error('Failed to mark notification as read on the server');
-        }
       } catch (error) {
         console.error('Error marking notification as read:', error);
       }
@@ -105,11 +110,11 @@ const Notification = () => {
             'Content-Type': 'application/json',
           },
         });
-
-        if (response.ok) {
-          // Notification marked as read on the server
+        if (response.requestStatus === 'ACTC') {
+          // re-render the page, or update the button 
+          // if it was succesful, I disable both buttons 
         } else {
-          console.error('Failed to mark notification as read on the server');
+          // display error message on the client-side 
         }
       } catch (error) {
         console.error('Error marking notification as read:', error);
@@ -123,19 +128,19 @@ const Notification = () => {
     const confirmed = window.confirm('Are you sure to reject?');
     if (confirmed) {
       try {
-        console.log(notification.notifId); 
-        const response = await fetch(`${backend}/approverequest/${notification.notifId}`, {
+        console.log(notification.notifId);
+        const response = await fetch(`${backend}/rejectrequest/${notification.notifId}`, {
           method: 'PUT',
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
         });
-
-        if (response.ok) {
-          // Notification marked as read on the server
+        if (response.requestStatus === 'ACTC') {
+          // re-render the page, or update the button 
+          // if it was succesful, I disable both buttons 
         } else {
-          console.error('Failed to mark notification as read on the server');
+          // 
         }
       } catch (error) {
         console.error('Error marking notification as read:', error);
@@ -145,6 +150,11 @@ const Notification = () => {
 
   return (
     <>
+       { !isSignedIn && (
+            <div>
+                {checkIfUserIsSignedIn()}
+            </div>
+        )}
       <section className="section-50">
         <div className="container">
           <h1 className="m-b-50 heading-line">Notifications </h1>
@@ -181,9 +191,14 @@ const Notification = () => {
                   <div className="notifcation-list_feature-img">
                     {notification.enableApproveButton ? (
                       <button
-                        className={`approval-button ${!notification.displayApproveButton ? 'disabled' : ''}`}
-                        disabled={!notification.enableApproveButton}
-                        onClick={() => handleApproveClick(notification)}
+                      className="approval-button"
+                      onClick={() => handleApproveClick(notification)}
+                      >
+                        Approve
+                      </button>
+                    ) : notification.displayApproveButton ? (
+                      <button
+                        className="approval-button disabled"
                       >
                         Approve
                       </button>
@@ -191,9 +206,14 @@ const Notification = () => {
 
                     {notification.enableRejectButton ? (
                       <button
-                        className={`decline-button ${!notification.enableRejectButton ? 'disabled' : ''}`}
-                        disabled={!notification.enableRejectButton}
+                        className="decline-button"
                         onClick={() => handleRejectClick(notification)}
+                      >
+                        Reject
+                      </button>
+                    ) : notification.displayRejectButton ? (
+                      <button
+                        className={`decline-button disabled`}
                       >
                         Reject
                       </button>

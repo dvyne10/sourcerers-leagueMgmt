@@ -45,6 +45,25 @@ const Home = () => {
     pauseOnHover: true,
   };
 
+  const sliderSettingsFourCards = {
+    ...sliderSettings,
+    slidesToShow: 4,
+  };
+
+  const sliderSettingsThreeCards = {
+    ...sliderSettings,
+    slidesToShow: 3,
+  };
+
+  const sliderSettingsTwoCards = {
+    ...sliderSettings,
+    slidesToShow: 2,
+  };
+
+  const sliderSettingsOneCard = {
+    ...sliderSettings,
+    slidesToShow: 1,
+  };
   const [sliderSettingsToUse, setSliderSettingsToUse] = useState(sliderSettings);
 
   const updateSliderSettings = () => {
@@ -59,6 +78,12 @@ const Home = () => {
     } else {
       setSliderSettingsToUse(sliderSettingsOneCard);
     }
+  };
+
+  const doesImageExist = (url) => {
+    const img = new Image();
+    img.src = url;
+    return img.complete || (img.width + img.height) > 0;
   };
 
   useEffect(() => {
@@ -132,7 +157,11 @@ const Home = () => {
                   <Link to={`/league/${announcement.leagueId}`} className="notification-list notification-list--unread">
                     <div className="notification-list_content">
                       <div className="notification-list_img">
-                        <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
+                      {doesImageExist(`${backend}/leaguelogos/${announcement.leagueId}.jpeg`) ? (
+                        <img src={`${backend}/leaguelogos/${announcement.leagueId}.jpeg`} alt="user" />
+                      ) : (
+                        <img src={`${backend}/leaguelogos/default-image.jpeg`} alt="user" />
+                      )}
                       </div>
                       <div className="notification-list_detail">
                         <p>
@@ -148,7 +177,11 @@ const Home = () => {
                   <Link to={`/team/${announcement.teamId}`} className="notification-list notification-list--unread">
                     <div className="notification-list_content">
                       <div className="notification-list_img">
-                        <img src="https://i.imgur.com/zYxDCQT.jpg" alt="user" />
+                      {doesImageExist(`${backend}/teamlogos/${announcement.teamId}.jpeg`) ? (
+                        <img src={`${backend}/teamlogos/${announcement.teamId}.jpeg`} alt="user" />
+                      ) : (
+                        <img src={`${backend}/teamlogos/default-image.jpeg`} alt="user" />
+                      )}
                       </div>
                       <div className="notification-list_detail">
                         <p>
