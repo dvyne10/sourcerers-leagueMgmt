@@ -37,6 +37,7 @@ const AuthContextProvider = ({ children }) => {
         otpErrorMessage,
         registrationError,
         setOTPErrorMessage,
+        forgotPassword,
       }}
     >
       {children}
@@ -76,6 +77,8 @@ const AuthContextProvider = ({ children }) => {
           } else if (user.userType === "ADMIN") {
             setAdmin(true);
 
+           
+
             //temporal one
             const adminObject = {
               name: "ADMIN",
@@ -105,10 +108,7 @@ const AuthContextProvider = ({ children }) => {
         if (requestStatus === "RJCT") {
           setRegistrationError(response.data.errMsg);
         } else {
-          await localStorage.setItem(
-            "otp",
-            JSON.stringify(response.data.user)
-          );
+          await localStorage.setItem("otp", JSON.stringify(response.data.user));
           navigate("/inputotp", { state: { fromPage: "Register" } });
         }
       }
@@ -127,7 +127,7 @@ const AuthContextProvider = ({ children }) => {
         const { requestStatus } = response.data;
         if (requestStatus === "ACTC") {
           await localStorage.setItem("login", JSON.stringify(user.userName));
-          await localStorage.removeItem("otp")
+          await localStorage.removeItem("otp");
           setSignedIn(true);
           navigate("/");
         } else {
@@ -156,6 +156,17 @@ const AuthContextProvider = ({ children }) => {
     setAdmin(false);
     // const data = await loginService.logout(); //TEMP
     await localStorage.clear();
+  }
+
+  async function forgotPassword(email, navigate) {
+    try {
+      const res = await loginService.forgotPassword(email);
+
+      console.log(res);
+      // await navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
+    } catch (error) {
+      console.log(error);
+    }
   }
 };
 

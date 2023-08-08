@@ -1,18 +1,23 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:8000/api/users" : "https://panicky-robe-mite.cyclic.app/api/users";
+const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:8000/api/users"
+    : "https://panicky-robe-mite.cyclic.app/api/users";
 
 async function login(email, password) {
   try {
-    console.log(BASE_URL)
+    console.log(BASE_URL);
     const response = await axios.post(
-        `${BASE_URL}/login`,
-        {
-          email,
-          password,
-        }, 
-        { withCredentials: true, credentials: 'include' }
-      )
+      `${BASE_URL}/login`,
+      {
+        email,
+        password,
+      },
+      { withCredentials: true, credentials: 'include' }
+    );
+
+    console.log(response.headers["Set-Cookie"], "cookies here");
 
     return response;
   } catch (error) {
@@ -56,9 +61,21 @@ async function logout() {
   }
 }
 
+async function forgotPassword(){
+  try {
+    const response = await axios.post(`${BASE_URL}/forgotpassword`,{
+      withCredentials: true,
+    })
+    return response
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export default {
   login,
   registerUser,
   verifyOTP,
   logout,
+  forgotPassword
 };
