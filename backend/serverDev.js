@@ -9,42 +9,6 @@ import { authenticate, getTokenFromCookies, adminAuthenticate } from "./middlewa
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
-<<<<<<< HEAD
-import {
-  getPlayers,
-  getPlayerDetailsAndButtons,
-  getMyProfile,
-} from "./utils/usersModule.js";
-import {
-  getTeamDetails,
-  isTeamMember,
-  getUsersTeams,
-} from "./utils/teamsModule.js";
-import {
-  getLeagues,
-  createLeague,
-  isLeagueAdmin,
-  getLeagueDetailsForUpdate,
-  updateLeague,
-  deleteLeague,
-  updateLeagueTeams,
-  canUserCreateNewLeague,
-  getLeagueDetailsAndButtons,
-  updateLookingForTeams,
-} from "./utils/leaguesModule.js";
-import { getMatchDetails } from "./utils/matchModule.js";
-import {
-  joinLeague,
-  unjoinLeague,
-  startLeague,
-  cancelRequest,
-  inviteToTeam,
-} from "./utils/requestsModule.js";
-import {
-  getPosnAndStatBySport,
-} from "./utils/sysParmModule.js";
-import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest} from "./utils/notificationsModule.js";
-=======
 import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, changePassword} from "./utils/usersModule.js";
 import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam,
   removePlayerFromTeam, updateLookingForPlayers} from "./utils/teamsModule.js";
@@ -54,7 +18,6 @@ import { getMatchDetails, getMatchDetailsUpdate, updateMatch } from "./utils/mat
 import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joinTeam, unjoinTeam, inviteToLeague } from "./utils/requestsModule.js";
 import { getSportsList } from "./utils/sysParmModule.js";
 import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
->>>>>>> b1ae744b8dc2aef5b273440d97d554cf8a109568
 import {getSearchResults} from "./utils/searchModule.js";
 
 dotenv.config();
@@ -68,17 +31,13 @@ app.use(
     credentials: true,
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token", "Origin", "X-Api-Key", "X-Requested-With", "Accept", "X-XSRF-TOKEN", "XSRF-TOKEN"],
-    origin: "https://playpal.netlify.app",
+    // origin: "https://playpal.netlify.app",
     origin: [
       "http://127.0.0.1:5173",
       "https://playpal.netlify.app",
       "http://localhost:5173",
     ],
-<<<<<<< HEAD
-    preflightContinue: true,
-=======
     //preflightContinue: true,
->>>>>>> b1ae744b8dc2aef5b273440d97d554cf8a109568
     exposedHeaders: ["*", "Authorization"],
     optionsSuccessStatus: 200
   })

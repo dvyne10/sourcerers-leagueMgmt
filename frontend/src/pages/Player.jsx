@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import { useState, useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
-import useAuth from "../hooks/auth";
+import {useAuth, getToken} from "../hooks/auth";
 
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
@@ -17,6 +17,7 @@ const Player = () => {
     
     const {isSignedIn} = useAuth()
     const routeParams = useParams();
+    const token = `Bearer ${getToken()}`
     const [loading, setLoading] = useState(false);
     const [showInvite, setShowInvite] = useState(false);
     const handleClose = () => setShowInvite(false);
@@ -45,7 +46,8 @@ const Player = () => {
           method: "POST",
           credentials: 'include',
           headers: {
-              "Content-Type": "Application/JSON"
+              "Content-Type": "Application/JSON",
+              "Authorization": token
           }
       })
       .then(response => response.json())
