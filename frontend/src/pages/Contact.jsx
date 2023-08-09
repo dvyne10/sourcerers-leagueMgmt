@@ -4,8 +4,61 @@ import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
+import { useState, useEffect }  from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const Contact = () => {
+
+  const [currValues, setCurrentValues] = useState({fullName: "", email: "", msg: ""})
+  const [errorMessage, setErrorMessage] = useState([]);
+
+  const handleMsg = (e) => {
+    const field = e.target.name
+    setCurrentValues({ ...currValues, [field] : e.target.value.trim() })
+  }
+
+  const navigate = useNavigate();
+  const navigateCreateMsg = (e) => {
+    let errMsgs = []
+    let focusON = false
+    if (currValues.fullName.trim() === "") {
+      errMsgs.push('Please supply your name.');
+      document.getElementById("fullName").focus()
+      focusON = true
+    }
+    if (currValues.email === "") {
+      errMsgs.push('Please supply your email address');
+      if (!focusON) {
+          document.getElementById("email").focus()
+          focusON = true
+      }
+    }
+    if (currValues.msg.trim() === "") {
+      errMsgs.push('Please input your message.');
+      if (!focusON) {
+          document.getElementById("msg").focus()
+          focusON = true
+      }
+    }
+    setErrorMessage(errMsgs)
+    if (errMsgs.length > 0) {
+      return
+    }
+    fetch(`${backend}/contactus`, {
+      method: "POST",
+      body: JSON.stringify(currValues),
+      headers: {
+          "Content-Type": "Application/JSON"
+      }
+    })
+    .then(() => {
+      alert("Thank you for your message.")
+      navigate("/");
+    })
+  }
+
   return (
     <>
       <div
@@ -48,11 +101,19 @@ const Contact = () => {
         <Card
           style={{ width: "60rem", padding: 20, backgroundColor: "#F8F9FA" }}
         >
+          {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+          )}
           <h2 className="mb-4 center-text">Send Us a Message</h2>
           <h8 className="mb-4 center-text">
             {" "}
             Send us a message and we will respond within 3 business days.
           </h8>
+          {/* <Form onSubmit={(e) => { navigateCreateMsg(e)}}> */}
           <Form>
             <Row className="mb-3">
               <Form.Group as={Col}>
@@ -61,6 +122,7 @@ const Contact = () => {
                   required
                   type="text"
                   placeholder="Input your name here."
+                  id="fullName" name="fullName" className="form-control" value={currValues.fullName} onChange={handleMsg}
                 />
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               </Form.Group>
@@ -68,8 +130,9 @@ const Contact = () => {
                 <Form.Label>E-mail</Form.Label>
                 <Form.Control
                   required
-                  type="text"
+                  type="email"
                   placeholder="Email"
+                  id="email" name="email" className="form-control" value={currValues.email} onChange={handleMsg}
                 />
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               </Form.Group>
@@ -81,6 +144,7 @@ const Contact = () => {
                 as="textarea"
                 rows={3}
                 placeholder="Please type your message to Playpal here."
+                id="msg" name="msg" className="form-control" value={currValues.msg} onChange={handleMsg}
               />
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             </Form.Group>
@@ -90,7 +154,8 @@ const Contact = () => {
           </Form>
           <Form.Group as={Row} className="mb-3 text-center">
             <Col>
-              <Button style={{backgroundColor: '#116466'}} type="submit">Submit</Button>
+              {/* <Button style={{backgroundColor: '#116466'}} type="submit">Submit</Button> */}
+              <Button style={{backgroundColor: '#116466'}} type="button" onClick={navigateCreateMsg}>Submit</Button>
             </Col>
           </Form.Group>
         </Card>

@@ -169,6 +169,8 @@ export const getLeagueDetails = async function(leagueId) {
         let idx = teamPoints.findIndex(i => i.teamId.equals(team.teamId))
         if (idx !== -1) {
             return { ...team, totalLeaguePts: teamPoints[idx].points, totalScore: teamPoints[idx].score  }
+        } else {
+            return { ...team, totalLeaguePts : 0, totalScore : 0}
         }
     })
     teamDetails.sort((a, b) => {
@@ -296,8 +298,6 @@ export const createLeague = async function(userId, data) {
             endDate: data.endDate,
             lookingForTeams: false,
             createdBy: new ObjectId(userId)
-            //logo: data.logo
-            //banner: data.selectedBanner
         })
         await newLeague.save()
         .then(() => {
@@ -342,7 +342,7 @@ export const getLeagueDetailsForUpdate = async function(userId, leagueId) {
         let detailsForUpdate = leagueDetails.details
         let teamHasPending, approverName
         let teamsForUpdate = []
-        let allowTeamRemoval = false //TEMP
+        let allowTeamRemoval = false
         if (detailsForUpdate.status === "NS" && allowTeamRemoval) {
             let promise = detailsForUpdate.teams.map(async function(team) { 
                 teamHasPending = await hasPendingRequest("APLGR", userId, "", team.teamId.toString(), leagueId)
@@ -354,6 +354,7 @@ export const getLeagueDetailsForUpdate = async function(userId, leagueId) {
             })
             teamsForUpdate = await Promise.all(promise)
         }
+
         let promise2 = detailsForUpdate.teams.map(async function(team) { 
             approverName = await getUserFullname(team.approvedBy.toString(), "")
             teamsForUpdate.push({teamId: team.teamId, teamName:team.teamName, joinedTimestamp: team.joinedTimestamp, approvedBy: approverName.fullName})
@@ -394,8 +395,6 @@ export const updateLeague = async function(userId, leagueId, data){
                 endDate: data.endDate,
                 lookingForTeams: false,
                 updatedBy: new ObjectId(userId)
-                //logo: data.logo
-                //banner: data.selectedBanner
             } 
         })
         .then(() => {
@@ -409,14 +408,25 @@ export const updateLeague = async function(userId, leagueId, data){
     return response
 }
 
-export const deleteLeague = async function(userId, data) {
-    // TEMP ONLY
-    return ""
-}
+export const deleteLeague = async function(userId, leagueId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
 
-export const updateLeagueTeams = async function(userId, data) {
-    // TEMP ONLY
-    return ""
+    let data = {leagueId}
+    let validate = await leagueValidation(data, "DEL", userId)
+
+    if (validate.requestStatus !== "ACTC") {
+        response = validate
+    } else {
+        await LeagueModel.deleteOne({ _id: new ObjectId(leagueId)})
+        .then(() => {
+            response.requestStatus = "ACTC"
+        })
+        .catch((error) => {
+            response.requestStatus = "RJCT"
+            response.errMsg = error
+        });
+    }
+    return response
 }
 
 export const isLeagueAdmin = async function(userId, leagueId) {
@@ -485,8 +495,8 @@ export const leagueValidation = async function(data, requestType, userId) {
         response.requestStatus = 'RJCT'
         return response
     }
-    if (requestType === "DEL" && (oldLeagueObject.teams.length !== 0 || oldLeagueObject.matches.length !== 0 || !oldLeagueObject.status.equals('EN')) ) {
-        response.errMsg = 'League can not be deleted.'
+    if (requestType === "DEL" && (oldLeagueObject.teams.length !== 0 || oldLeagueObject.matches.length !== 0 || oldLeagueObject.status === "EN") ) {
+        response.errMsg = 'League cannot be deleted.'
         response.requestStatus = 'RJCT'
         return response
     }
@@ -495,13 +505,13 @@ export const leagueValidation = async function(data, requestType, userId) {
         response.requestStatus = 'RJCT'
         return response
     }  
-    if (requestType != "DEL" && data.leagueName.trim() === "") {
+    if (requestType !== "DEL" && data.leagueName.trim() === "") {
         response.errMsg = 'League name is required.'
         response.errField = "leagueName"
         response.requestStatus = 'RJCT'
         return response
     } 
-    if (requestType != "DEL" && data.sportsTypeId.trim() === "") {
+    if (requestType !== "DEL" && data.sportsTypeId.trim() === "") {
         response.errMsg = 'Sport is required.'
         response.errField = "sport"
         response.requestStatus = 'RJCT'
@@ -534,7 +544,7 @@ export const leagueValidation = async function(data, requestType, userId) {
         response.requestStatus = 'RJCT'
         return response
     }
-    if (requestType != "DEL" && data.endDate === null  || data.endDate.trim() === "") {
+    if (requestType != "DEL" && (data.endDate === null  || data.endDate.trim() === "")) {
         response.errMsg = 'End date is required.'
         response.errField = "endDate"
         response.requestStatus = 'RJCT'
@@ -779,7 +789,7 @@ export const getLeagueMajorDetails = async function(leagueId){
     if (!mongoose.isValidObjectId(leagueId.trim())) {
         return null
     }
-    let leagueDetails = await LeagueModel.findOne({ _id: new ObjectId(teamId) }, 
+    let leagueDetails = await LeagueModel.findOne({ _id: new ObjectId(leagueId) }, 
         { teams: 0, matches: 0 })
     return leagueDetails
 }

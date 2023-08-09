@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
 
+import { genHash, genSalt } from "./auth.utils.js";
+import { isValidPassword } from "../controllers/userController.js";
 import { getUsersTeams, getTeamsCreated, } from "./teamsModule.js";
 import { getLeagueDetails, getLeaguesCreated, getTeamActiveLeagues } from "./leaguesModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
@@ -32,7 +33,22 @@ export const getPlayers = async function() {
                             $concat: [ "$$value", "$$this"]
                         }
                     }
-                }
+                }, 
+                location: {
+                    $concat: [ 
+                        {$cond : [
+                            { $eq : [ "$city", "N/A" ] },  "" , "$city"
+                        ]}, 
+                        " ", 
+                        {$cond : [
+                            { $eq : [ "$province", "N/A" ] },  "" , "$province"
+                        ]}, 
+                        " ", 
+                        {$cond : [
+                            { $eq : [ "$country", "N/A" ] },  "" , "$country"
+                        ]}, 
+                    ]
+                },
             },
         },
         {
@@ -113,6 +129,26 @@ export const getPlayerDetailsAndButtons = async function(userId, playerId) {
             pastLeagues: playerMatches.pastLeagues, totalGamesPlayed: playerMatches.totalGamesPlayed, wins: playerMatches.wins, 
             championships: playerMatches.championships, activeLeagues: activeTeamsLeagues.activeLeagues, statistics, leaguesCreated}
     }
+    return playerDetails
+}
+
+export const getMyProfile = async function(userId) {
+
+    let playerDetails = await getPlayerDetails(userId)
+    if (playerDetails.requestStatus !== "ACTC") {
+        return playerDetails
+    }
+    
+    let resp1 = getUsersTeamsAndLeagues(userId)  // returns an array
+    let resp2 = getTeamsCreated(userId)   // returns an array
+    let resp3 = getUserGamesWinsChamps(userId)
+    let resp4 = getUserStatsTotal(userId)  //returns an array
+    let resp5 = getLeaguesCreated(userId) //returns an array
+
+    let [activeTeamsLeagues, teamsCreated, playerMatches, statistics, leaguesCreated] = await Promise.all([resp1, resp2, resp3, resp4, resp5])
+    playerDetails = {...playerDetails, activeTeams: activeTeamsLeagues.activeTeams, teamsCreated, matches: playerMatches.matches, 
+            pastLeagues: playerMatches.pastLeagues, totalGamesPlayed: playerMatches.totalGamesPlayed, wins: playerMatches.wins, 
+            championships: playerMatches.championships, activeLeagues: activeTeamsLeagues.activeLeagues, statistics, leaguesCreated}
     return playerDetails
 }
 
@@ -569,40 +605,205 @@ export const getUserFullname = async function(playerId, userName) {
     if ((playerId !== "" && !mongoose.isValidObjectId(playerId.trim())) || (playerId == "" && userName.trim() === "")) {
         return {playerId: "", userName: "", fullName: ""}
     }
-
-    let user = await UserModel.aggregate([
-        {
-            $match: { $or : [
-                { _id : new ObjectId(playerId) },
-                { userName: new RegExp(`^${userName}$`, "i") }
-                ]
-            }
-        },
-        {
-            $addFields: {
-                playerId: "$_id",
-                fullName: {
-                    $reduce: {
-                        input: [ "$firstName", " ", "$lastName" ],
-                        initialValue: "",
-                        in: {
-                            $concat: [ "$$value", "$$this"]
+    let user
+    if (mongoose.isValidObjectId(playerId.trim())) {
+        user = await UserModel.aggregate([
+            {
+                $match: { _id : new ObjectId(playerId) }
+            },
+            {
+                $addFields: {
+                    playerId: "$_id",
+                    fullName: {
+                        $reduce: {
+                            input: [ "$firstName", " ", "$lastName" ],
+                            initialValue: "",
+                            in: {
+                                $concat: [ "$$value", "$$this"]
+                            }
                         }
                     }
-                }
+                },
             },
-        },
-        {
-            $project: {
-                _id: 0, playerId: 1, fullName: 1, userName: 1
+            {
+                $project: {
+                    _id: 0, playerId: 1, fullName: 1, userName: 1
+                }
             }
-        }
-    ]).limit(1)
-
-
+        ]).limit(1)
+    } else {
+        user = await UserModel.aggregate([
+            {
+                $match: { userName: new RegExp(`^${userName}$`, "i") }
+            },
+            {
+                $addFields: {
+                    playerId: "$_id",
+                    fullName: {
+                        $reduce: {
+                            input: [ "$firstName", " ", "$lastName" ],
+                            initialValue: "",
+                            in: {
+                                $concat: [ "$$value", "$$this"]
+                            }
+                        }
+                    }
+                },
+            },
+            {
+                $project: {
+                    _id: 0, playerId: 1, fullName: 1, userName: 1
+                }
+            }
+        ]).limit(1)
+    }
     if (user.length === 0) {
         return {playerId: "", userName: "", fullName: ""}
     } else {
         return {playerId: user[0].playerId, userName: user[0].userName, fullName: user[0].fullName}
     }
+}
+
+export const getAccountDetailsUpdate = async function(userId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(userId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "User Id is required."
+        return response
+    }
+
+    let user = await UserModel.findOne({ _id : new ObjectId(userId), userType : "USER", status : "ACTV"}, {
+        _id: 1, userName: 1, email: 1, phoneNumber: 1, firstName: 1, lastName: 1, country: 1, province: 1, city: 1, sportsOfInterest: 1
+    })
+
+    if (user === null) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "No data found"
+        response.details = {}
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    response.details = user
+    return response
+}
+
+export const updateAccount = async function(userId, details) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(userId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "User Id is required."
+        return response
+    }
+
+    const existingUsername = await UserModel.findOne({ userName: new RegExp(`^${details.userName}$`, "i") });
+    if (existingUsername !== null && !existingUsername._id.equals(new ObjectId(userId))) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "The username is not available"
+        return response
+    }
+
+    let user = await UserModel.updateOne({ _id : new ObjectId(userId), userType : "USER", status : "ACTV"}, {
+        $set: { 
+            userName: details.userName.trim(),
+            phoneNumber: details.phoneNumber.trim(),
+            firstName: details.firstName.trim(),
+            lastName: details.lastName.trim(),
+            country: details.country.trim(),
+            province: details.province.trim(),
+            city: details.city.trim(),
+            sportsOfInterest: details.sportsOfInterest,
+        } 
+    })
+    if (user.modifiedCount !== 1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Account update was not successful"
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    return response
+}
+
+export const changePassword = async function(userId, details) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(userId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "User Id is required."
+        return response
+    }
+
+    if (details.currentPassword === "") {
+        response.requestStatus = "RJCT"
+        response.errField = "currentPassword"
+        response.errMsg = "Current password is required."
+        return response
+    }
+    if (details.newPassword === "") {
+        response.requestStatus = "RJCT"
+        response.errField = "newPassword"
+        response.errMsg = "New password is required."
+        return response
+    }
+    if (details.currentPassword === details.newPassword) {
+        response.requestStatus = "RJCT"
+        response.errField = "newPassword"
+        response.errMsg = "Current and new passwords cannot be the same."
+        return response
+    }
+    if (details.confirmNewPassword === "") {
+        response.requestStatus = "RJCT"
+        response.errField = "confirmNewPassword"
+        response.errMsg = "Confirm new password is required."
+        return response
+    }
+    if (details.newPassword !== details.confirmNewPassword) {
+        response.requestStatus = "RJCT"
+        response.errField = "confirmNewPassword"
+        response.errMsg = "New password and confirm new password must be the same."
+        return response
+    }
+
+    const userDetails = await UserModel.findOne({ _id : new ObjectId(userId), userType : "USER", status : "ACTV" }, { password: 1, salt: 1});
+    if (userDetails === null) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid user"
+        return response
+    }
+
+    let hashedPassword = genHash(details.currentPassword, userDetails.salt);
+    if (hashedPassword !== userDetails.password) {
+        response.requestStatus = "RJCT"
+        response.errField = "currentPassword"
+        response.errMsg = "Incorrect current password"
+        return response
+    }
+
+    let passwordCheck = await isValidPassword(details.newPassword)
+    if (!passwordCheck.valid) {
+        response.requestStatus = "RJCT"
+        response.errField = "newPassword"
+        response.errMsg = passwordCheck.errMsg
+        return response
+    }
+
+    const newSalt = genSalt();
+    hashedPassword = genHash(details.newPassword, newSalt)
+    let user = await UserModel.updateOne({ _id : new ObjectId(userId), userType : "USER", status : "ACTV"}, {
+        $set: { 
+            password: hashedPassword,
+            salt: newSalt,
+        } 
+    })
+    if (user.modifiedCount !== 1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Password update was not successful"
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    return response
 }

@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import loginService from "../services/authService";
+import axios from "axios";
 
 const AuthContext = createContext({});
 
@@ -13,16 +14,25 @@ const AuthContextProvider = ({ children }) => {
   const [registrationError, setRegistrationError] = useState("");
   const [otpError, setOTPError] = useState(false);
   const [otpErrorMessage, setOTPErrorMessage] = useState("");
+  const [responseToken, setResponseToken] = useState("");
 
   // this useeffect runs each time the value of isSignedIn changes
   useEffect(() => {
     getUserFromLocalStorage();
   }, [isSignedIn]);
 
+  const tokenCheck =
+    responseToken === "" ||
+    responseToken === null ||
+    responseToken === undefined;
+
+  useEffect(() => {
+    getTokenFromLocalStorage();
+  }, [tokenCheck]);
+
   return (
     <AuthContext.Provider
       value={{
-        signIn,
         signOut,
         isSignedIn,
         isAdmin,
@@ -37,26 +47,36 @@ const AuthContextProvider = ({ children }) => {
         otpErrorMessage,
         registrationError,
         setOTPErrorMessage,
+        forgotPassword,
+        responseToken,
+        resetPassword,
       }}
     >
       {children}
     </AuthContext.Provider>
   );
 
-  async function signIn(userType) {
-    setSignedIn(true);
-    if (userType === "ADMIN") {
-      setAdmin(true);
-      const adminObject = {
-        name: "ADMIN",
-        admin: true,
-      };
-      await localStorage.setItem("login", JSON.stringify(adminObject)); // temporarily persisting the user when loged in
-    } else {
-      setAdmin(false);
-      await localStorage.setItem("login", JSON.stringify("user"));
+  async function updateHTTPHeaders(token) {
+    const commons = axios.defaults.headers.common;
+    if (token) {
+      commons["Authorization"] = `Bearer ${token}`;
     }
   }
+
+  // async function signIn(userType) {
+  //   setSignedIn(true);
+  //   if (userType === "ADMIN") {
+  //     setAdmin(true);
+  //     const adminObject = {
+  //       name: "ADMIN",
+  //       admin: true,
+  //     };
+  //     await localStorage.setItem("login", JSON.stringify(adminObject)); // temporarily persisting the user when loged in
+  //   } else {
+  //     setAdmin(false);
+  //     await localStorage.setItem("login", JSON.stringify("user"));
+  //   }
+  // }
 
   async function login(input, navigate) {
     const { username: email, password } = input;
@@ -65,7 +85,12 @@ const AuthContextProvider = ({ children }) => {
       const resp = await loginService.login(email, password);
       if (resp.data) {
         setIsLoading(false);
-        const { requestStatus } = resp.data;
+        const { requestStatus, token } = resp.data;
+
+        updateHTTPHeaders(token);
+        setResponseToken(token);
+        await localStorage.setItem("token", JSON.stringify(token));
+
         if (requestStatus === "ACTC") {
           const { user } = resp.data;
           setSignedIn(true);
@@ -105,10 +130,7 @@ const AuthContextProvider = ({ children }) => {
         if (requestStatus === "RJCT") {
           setRegistrationError(response.data.errMsg);
         } else {
-          await localStorage.setItem(
-            "otp",
-            JSON.stringify(response.data.user)
-          );
+          await localStorage.setItem("otp", JSON.stringify(response.data.user));
           navigate("/inputotp", { state: { fromPage: "Register" } });
         }
       }
@@ -124,10 +146,15 @@ const AuthContextProvider = ({ children }) => {
       const data = { email, otp };
       const response = await loginService.verifyOTP(data);
       if (response.data) {
-        const { requestStatus } = response.data;
+        const { requestStatus, token } = response.data;
+        // setting the token in the headers for every request
+
+        updateHTTPHeaders(token);
+
         if (requestStatus === "ACTC") {
           await localStorage.setItem("login", JSON.stringify(user.userName));
-          await localStorage.removeItem("otp")
+          await localStorage.setItem("token", JSON.stringify(token));
+          await localStorage.removeItem("otp");
           setSignedIn(true);
           navigate("/");
         } else {
@@ -151,11 +178,50 @@ const AuthContextProvider = ({ children }) => {
     }
   }
 
+  async function getTokenFromLocalStorage() {
+    const data = await localStorage.getItem("token");
+    const parsedData = JSON.parse(data);
+    if (parsedData) {
+      setResponseToken(parsedData);
+    }
+  }
+
   async function signOut() {
     setSignedIn(false);
     setAdmin(false);
-    // const data = await loginService.logout(); //TEMP
+    delete axios.defaults.headers.common["Authorization"];
     await localStorage.clear();
+  }
+
+  async function forgotPassword(email, navigate) {
+    try {
+      await localStorage.setItem("email", JSON.stringify(email));
+      const res = await loginService.forgotPassword(email);
+      console.log(res);
+      if (res.data) {
+        await navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function resetPassword(newPassword, confirmNewPassword, navigate) {
+    try {
+      const data = await localStorage.getItem("email");
+
+      const email = JSON.parse(data);
+      console.log(data);
+      const res = await loginService.resetPassword(
+        newPassword,
+        confirmNewPassword,
+        email
+      );
+      console.log(res);
+      navigate("/signin");
+    } catch (error) {
+      console.log(error);
+    }
   }
 };
 

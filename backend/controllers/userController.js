@@ -14,7 +14,6 @@ import {
   genHash,
   genSalt,
   generateOTP,
-  generateToken,
   sendEmail,
 } from "../utils/auth.utils.js";
 import handlebars from "handlebars";
@@ -31,9 +30,12 @@ const registerUser = async (req, res) => {
     userName,
     email,
     password,
+    phoneNumber,
   } = req.body;
 
-  const existingUsername = await User.findOne({ userName: new RegExp(`^${userName}$`, "i") });
+  const existingUsername = await User.findOne({
+    userName: new RegExp(`^${userName}$`, "i"),
+  });
 
   if (existingUsername) {
     res.status(200).send({
@@ -43,7 +45,9 @@ const registerUser = async (req, res) => {
     return;
   }
 
-  const existingUser = await User.findOne({ email: new RegExp(`^${email}$`, "i") });
+  const existingUser = await User.findOne({
+    email: new RegExp(`^${email}$`, "i"),
+  });
 
   if (existingUser) {
     res.status(200).send({
@@ -53,11 +57,11 @@ const registerUser = async (req, res) => {
     return;
   }
 
-  let passwordCheck = await isValidPassword(password)
+  let passwordCheck = await isValidPassword(password);
   if (!passwordCheck.valid) {
     res.status(200).send({
       requestStatus: "RJCT",
-      errMsg: passwordCheck.errMsg
+      errMsg: passwordCheck.errMsg,
     });
     return;
   }
@@ -79,6 +83,7 @@ const registerUser = async (req, res) => {
     city,
     sportsOfInterest,
     salt,
+    phoneNumber,
   }).save();
 
   try {
@@ -88,7 +93,9 @@ const registerUser = async (req, res) => {
       const otpDate = new Date();
 
       user.detailsOTP.OTP = parseInt(otp);
-      user.detailsOTP.expiryTimeOTP = otpDate.setMinutes(otpDate.getMinutes() + 5);
+      user.detailsOTP.expiryTimeOTP = otpDate.setMinutes(
+        otpDate.getMinutes() + 5
+      );
       await user.save();
 
       // generating email
@@ -120,39 +127,140 @@ const registerUser = async (req, res) => {
 
 export { registerUser };
 
-
 export const isValidPassword = async (password) => {
-  let loginParm = await getSysParmByParmId("login")
-  loginParm = loginParm.data.login
+  let loginParm = await getSysParmByParmId("login");
+  loginParm = loginParm.data.login;
   if (password.length < loginParm.minPasswordLength) {
-      return {valid: false, errMsg: `Password must be at least ${loginParm.minPasswordLength} characters.`}
+    return {
+      valid: false,
+      errMsg: `Password must be at least ${loginParm.minPasswordLength} characters.`,
+    };
   }
-  if (loginParm.passwordCriteria.capitalLetterIsRequired && !checkPasswordChar(password, loginParm.passwordCriteria.capitalLettersList)) {
-      return {valid: false, errMsg: `Password requires a capital letter.`}
+  if (
+    loginParm.passwordCriteria.capitalLetterIsRequired &&
+    !checkPasswordChar(password, loginParm.passwordCriteria.capitalLettersList)
+  ) {
+    return { valid: false, errMsg: `Password requires a capital letter.` };
   }
-  if (loginParm.passwordCriteria.specialCharacterIsRequired && !checkPasswordChar(password, loginParm.passwordCriteria.specialCharsList)) {
-    return {valid: false, errMsg: `Password requires a special character.`}
+  if (
+    loginParm.passwordCriteria.specialCharacterIsRequired &&
+    !checkPasswordChar(password, loginParm.passwordCriteria.specialCharsList)
+  ) {
+    return { valid: false, errMsg: `Password requires a special character.` };
   }
-  if (loginParm.passwordCriteria.numberIsRequired && !checkPasswordChar(password, loginParm.passwordCriteria.numbersList)) {
-    return {valid: false, errMsg: `Password requires a numeric character.`}
+  if (
+    loginParm.passwordCriteria.numberIsRequired &&
+    !checkPasswordChar(password, loginParm.passwordCriteria.numbersList)
+  ) {
+    return { valid: false, errMsg: `Password requires a numeric character.` };
   }
-  return {valid: true}
+  return { valid: true };
 };
 
 const checkPasswordChar = (password, charsToCheck) => {
   if (password === "" || charsToCheck === "") {
-    return false
+    return false;
   }
   for (let i = 0; i < password.length; i++) {
     if (charsToCheck.indexOf(password.charAt(i)) != -1) {
-      return true
+      return true;
     }
   }
-  return false
-}
+  return false;
+};
 
-const forgotPassword = (req,res) =>{
-  const {email} = req.body
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
   const otp = generateOTP();
   const otpDate = new Date();
-}
+  const user = await User.findOne({
+    $or: [
+      { userName: new RegExp(`^${email}$`, "i") },
+      { email: new RegExp(`^${email}$`, "i") },
+    ],
+  });
+
+  // check if the provided email or userName exists before saving otp to the user object
+  console.log(user);
+  if (!user) {
+    res.send({
+      requestStatus: "RJCT",
+      errMsg: "The username or email does not exist ",
+    });
+  } else {
+    // if the user exists generate otp and save
+    user.detailsOTP.OTP = parseInt(otp);
+    user.detailsOTP.expiryTimeOTP = otpDate.setMinutes(
+      otpDate.getMinutes() + 5
+    );
+
+    await user.save();
+
+    // generating email
+    const html = generateOTPEmail(otp, user.userName, email);
+
+    await sendEmail({
+      subject: "OTP for password change",
+      html: html,
+      to: email,
+      from: process.env.EMAIL,
+    })
+      .then(() => {
+        console.log("email has been sent");
+      })
+      .catch((e) => {
+        console.log(`email could not be sent ${e}`);
+      });
+
+    res.send({ requestStatus: "ACTC" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { newPassword, confirmNewPassword, email } = req.body;
+  if (newPassword !== confirmNewPassword) {
+    return res.send({
+      requestStatus: "RJCT",
+      errMsg: "Password does not match",
+    });
+  }
+
+  const existingUser = await User.findOne({
+    email: new RegExp(`^${email}$`, "i"),
+  });
+
+  if (!existingUser) {
+    return res.send({
+      requestStatus: "RJCT",
+      errMsg: "user does not exist",
+    });
+  }
+
+  let passwordCheck = await isValidPassword(newPassword);
+  if (!passwordCheck.valid) {
+    return res.status(200).send({
+      requestStatus: "RJCT",
+      errMsg: passwordCheck.errMsg,
+    });
+  }
+
+  const salt = genSalt();
+
+  const hashedPassword = await genHash(newPassword, salt);
+
+  let user = await User.findOneAndUpdate(
+    { email: new RegExp(`^${email}$`, "i") },
+    {
+      $set: {
+        password: hashedPassword,
+        salt: salt,
+      },
+    },
+    { new: true }
+  );
+
+  res.send({
+    requestStatus: "ACTC",
+    message: "password changed successfully",
+  });
+};

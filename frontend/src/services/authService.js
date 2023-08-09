@@ -1,18 +1,21 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:8000/api/users" : "https://panicky-robe-mite.cyclic.app/api/users";
+const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:8000/api/users"
+    : "https://panicky-robe-mite.cyclic.app/api/users";
 
 async function login(email, password) {
   try {
-    console.log(BASE_URL)
+    console.log(BASE_URL);
     const response = await axios.post(
-        `${BASE_URL}/login`,
-        {
-          email,
-          password,
-        }, 
-        { withCredentials: true, credentials: 'include' }
-      )
+      `${BASE_URL}/login`,
+      {
+        email,
+        password,
+      },
+      { withCredentials: true, credentials: "include" }
+    );
 
     return response;
   } catch (error) {
@@ -23,7 +26,8 @@ async function login(email, password) {
 async function registerUser(data) {
   try {
     const response = await axios.post(`${BASE_URL}/register`, data, {
-      withCredentials: true, credentials: 'include'
+      withCredentials: true,
+      credentials: "include",
     });
 
     return response;
@@ -35,7 +39,8 @@ async function registerUser(data) {
 async function verifyOTP(data) {
   try {
     const response = await axios.post(`${BASE_URL}/verifyotp`, data, {
-      withCredentials: true, credentials: 'include'
+      withCredentials: true,
+      credentials: "include",
     });
 
     return response;
@@ -46,8 +51,35 @@ async function verifyOTP(data) {
 
 async function logout() {
   try {
-    const response = await axios.post(`${BASE_URL}/logout`, {
-      withCredentials: true, credentials: 'include'
+    const response = await axios.post(`${BASE_URL}/logout`);
+
+    console.log(response);
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function forgotPassword(email) {
+  const body = { email };
+  try {
+    const response = await axios.post(`${BASE_URL}/forgotpassword`, body, {
+      withCredentials: true,
+    });
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function resetPassword(newPassword, confirmNewPassword, email) {
+  const body = { newPassword, confirmNewPassword, email };
+
+  try {
+    const response = await axios.post(`${BASE_URL}/resetpassword`, body, {
+      withCredentials: true,
     });
     console.log(response);
     return response;
@@ -61,4 +93,6 @@ export default {
   registerUser,
   verifyOTP,
   logout,
+  forgotPassword,
+  resetPassword
 };
