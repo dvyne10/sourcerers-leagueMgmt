@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import useAuth, {checkIfSignedIn} from "../hooks/auth";
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 import {Form} from 'react-bootstrap/';
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const TeamMaintenance = () => {
     const [validated, setValidated] = useState(false);
-    const {isSignedIn, responseToken} = useAuth()
-    const token = `Bearer ${responseToken}`
+    const {isSignedIn} = useAuth()
+    const token = `Bearer ${getToken()}`
     const location = useLocation();
     const routeParams = useParams();
     const inputFileBanner = useRef(null);

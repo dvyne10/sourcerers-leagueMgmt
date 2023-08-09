@@ -1,15 +1,15 @@
 import Card from "react-bootstrap/Card";
 import { useNavigate } from 'react-router-dom';
 import {useEffect, useState} from 'react'
-import useAuth, {checkIfSignedIn} from "../hooks/auth";
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const ChangePassword = () => {
 
   const navigate = useNavigate(); 
-  const {isSignedIn, responseToken} = useAuth()
-  const token = `Bearer ${responseToken}`
+  const {isSignedIn} = useAuth()
+  const token = `Bearer ${getToken()}`
   const navigateReturn = () => { navigate(-1) }
   const [input, setInput] = useState({currentPassword: "", newPassword: "", confirmNewPassword: ""})
   const [errorMessage, setErrorMessage] = useState([]);

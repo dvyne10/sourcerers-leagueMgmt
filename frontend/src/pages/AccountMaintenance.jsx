@@ -3,14 +3,14 @@ import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
 import validator from "validator";
-import useAuth, {checkIfSignedIn} from "../hooks/auth";
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const AccountMaintenance = () => {
   //hooks
-  let { isSignedIn, registerUser, registrationError, responseToken } = useAuth()
-  const token = `Bearer ${responseToken}`
+  let { isSignedIn, registerUser, registrationError } = useAuth()
+  const token = `Bearer ${getToken()}`
   const location = useLocation();
   const routeParams = useParams();
   const inputFile = useRef();
@@ -93,7 +93,7 @@ const AccountMaintenance = () => {
             if (data.errField !== "") {
                 document.getElementById(data.errField).focus()
             }
-        } else {
+        } else if (data.requestStatus === 'ACTC') {
             setPrevCountry(data.details.country);
             setPrevState(data.details.province);
             setCurrentValues({ userName: data.details.userName, password: "**********", email: data.details.email, phoneNumber: data.details.phoneNumber ? data.details.phoneNumber : "",

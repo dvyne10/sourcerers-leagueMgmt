@@ -2,7 +2,7 @@ import { useState, useEffect }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaTrash, FaSearchPlus } from 'react-icons/fa';
-import useAuth, {checkIfSignedIn} from "../hooks/auth";
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
@@ -11,8 +11,8 @@ const MatchUpdate = () => {
     const navigate = useNavigate(); 
     const location = useLocation();
     const routeParams = useParams();
-    const {isSignedIn, isAdmin, responseToken} = useAuth()
-    const token = `Bearer ${responseToken}`
+    const {isSignedIn, isAdmin} = useAuth()
+    const token = `Bearer ${getToken()}`
     const [action, handleAction] = useState({type: "Creation", title: "CREATE MATCH"});
     const [statistics, setStatistics] = useState([{ statisticsId: null, statShortDesc: null}])
     const [currValues, setCurrentValues] = useState({matchId: routeParams.matchId, dateOfMatch: null, locationOfMatch: null,
