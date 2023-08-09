@@ -189,7 +189,6 @@ const AuthContextProvider = ({ children }) => {
     setSignedIn(false);
     setAdmin(false);
     delete axios.defaults.headers.common["Authorization"];
-    // const data = await loginService.logout(); //TEMP
     await localStorage.clear();
   }
 

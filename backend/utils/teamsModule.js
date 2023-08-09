@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
-import { getSportName, getSportsList, getPosnAndStatBySport } from "./sysParmModule.js";
+import { getSportsList, getPosnAndStatBySport } from "./sysParmModule.js";
 import { getUserFullname } from "./usersModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
 

@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
 
 import { genHash, genSalt } from "./auth.utils.js";
 import { isValidPassword } from "../controllers/userController.js";

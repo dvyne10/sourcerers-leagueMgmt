@@ -401,6 +401,20 @@ app.post("/contactus", (req, res) => {
     });
 });
 
+app.post("/getmatchdetailsupdate/:matchid", adminAuthenticate, (req, res) => {
+  getMatchDetailsUpdate(req.user._id.toString(), req.params.matchid, "ADMIN")
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/updatematch/:matchid", adminAuthenticate, (req, res) => {
+  updateMatch(req.user._id.toString(), req.params.matchid, req.body, "ADMIN")
+  .then((data) => {
+    res.json(data);
+  });
+});
+
 app.use(notFound);
 app.use(errorHandler);
 

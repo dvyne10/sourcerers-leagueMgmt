@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
 import { getUserFullname } from "./usersModule.js";
 import { getTeamDetails, getTeamAdmin } from "./teamsModule.js";
-import { hasPendingRequest } from "./requestsModule.js";
 import { getPosnAndStatBySport, getNotifParmByNotifId } from "./sysParmModule.js";
 
 let ObjectId = mongoose.Types.ObjectId;

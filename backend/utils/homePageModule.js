@@ -1,11 +1,8 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
 import { getManyTeamNames, getOpenTeams } from "./teamsModule.js";
 import { getOpenLeagues } from "./leaguesModule.js";
-
-let ObjectId = mongoose.Types.ObjectId;
 
 export const getHomeDetails = async function() {
     let response = {requestStatus: "", errField: "", errMsg: ""}

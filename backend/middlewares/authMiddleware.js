@@ -29,10 +29,9 @@ export const authenticate = async (req, res, next) => {
 };
 
 export const getTokenFromCookies = async (req, res, next) => {
-  let token;
+  let token = req.header("Authorization").replace("Bearer ", "");
   let userId = "";
-  if (req.cookies.jwt) {
-    token = req.cookies.jwt;
+  if (token) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
       if (err) {
         req.userId = ""
@@ -46,8 +45,7 @@ export const getTokenFromCookies = async (req, res, next) => {
 };
 
 export const adminAuthenticate = async (req, res, next) => {
-  let token;
-  token = req.cookies.jwt;
+  let token = req.header("Authorization").replace("Bearer ", "");
   try {
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {

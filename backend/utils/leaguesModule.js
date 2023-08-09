@@ -342,7 +342,7 @@ export const getLeagueDetailsForUpdate = async function(userId, leagueId) {
         let detailsForUpdate = leagueDetails.details
         let teamHasPending, approverName
         let teamsForUpdate = []
-        let allowTeamRemoval = false //TEMP
+        let allowTeamRemoval = false
         if (detailsForUpdate.status === "NS" && allowTeamRemoval) {
             let promise = detailsForUpdate.teams.map(async function(team) { 
                 teamHasPending = await hasPendingRequest("APLGR", userId, "", team.teamId.toString(), leagueId)

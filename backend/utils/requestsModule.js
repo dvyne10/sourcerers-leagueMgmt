@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
 import { getPlayerButtons } from "./usersModule.js";
 import { getTeamDetails, getTeamsCreated, getUsersTeams, isTeamMember, getTeamMajorDetails, getTeamButtons, 
     getTeamAdmin, removePlayerFromTeam } from "./teamsModule.js";
@@ -9,22 +8,6 @@ import { getLeagueDetails, isLeagueAdmin, getLeagueButtons, getLeagueAdmins, get
 import { getNotifParmByNotifId, getSysParmByParmId, getSysParmList } from "./sysParmModule.js"
 
 let ObjectId = mongoose.Types.ObjectId;
-
-// export const deleteNotifs = async function() {
-//     let test = await UserModel.updateMany({ "notifications.forAction.requestId" : new ObjectId("64cdb3ce5720653a38768756") }, { 
-//         $pull: { notifications : {
-//             "forAction.requestId": new ObjectId("64cdb3ce5720653a38768756")
-//         } }
-//     })
-// }
-export const updateManyAccounts = async function() {
-    let test = await UserModel.updateMany({ province : "ON" }, { 
-        $set: { province : "Ontario"}
-    })
-}
-// export const deleteLeagues = async function() {
-//     let test = await LeagueModel.deleteMany({ leagueName : "Mississauga League 2023 V2" })
-// }
 
 export const getRequestById = async function(requestId) {
 
