@@ -33,7 +33,22 @@ export const getPlayers = async function() {
                             $concat: [ "$$value", "$$this"]
                         }
                     }
-                }
+                }, 
+                location: {
+                    $concat: [ 
+                        {$cond : [
+                            { $eq : [ "$city", "N/A" ] },  "" , "$city"
+                        ]}, 
+                        " ", 
+                        {$cond : [
+                            { $eq : [ "$province", "N/A" ] },  "" , "$province"
+                        ]}, 
+                        " ", 
+                        {$cond : [
+                            { $eq : [ "$country", "N/A" ] },  "" , "$country"
+                        ]}, 
+                    ]
+                },
             },
         },
         {
