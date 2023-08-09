@@ -26,7 +26,7 @@ const Notification = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchNotifications = async () => {
-    setIsLoading(true); 
+ 
 
     try {
       const response = await fetch(`${backend}/notifications`, {
@@ -163,13 +163,13 @@ const Notification = () => {
         )}
       {isLoading ? (
         <div className="loading-overlay">
-          <div style={{color: 'black'}}>Loading...</div>
+          <div >Loading...</div>
         <div className="loading-spinner"></div>
         </div>
       ): (
       <section className="section-50">
         <div className="container">
-          <h1 className="m-b-50 heading-line">Notifications </h1>
+          <h1 className="m-b-50 heading-line">Notifications</h1>
 
           <hr />
           
