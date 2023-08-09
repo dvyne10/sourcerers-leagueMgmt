@@ -6,59 +6,139 @@ import { useState, useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import useAuth from "../hooks/auth";
-<<<<<<< HEAD
+
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
 
-=======
->>>>>>> 47fbafc44da0238d412468ed67d259b1b2caceeb
+
 
 const Player = () => {
 
     
-  const {isSignedIn} = useAuth()
-  const routeParams = useParams();
-  const [showInvite, setShowInvite] = useState(false);
+    const {isSignedIn} = useAuth()
+    const routeParams = useParams();
+    const [loading, setLoading] = useState(false);
+    const [showInvite, setShowInvite] = useState(false);
     const handleClose = () => setShowInvite(false);
     const handleShow = () => setShowInvite(true);
     const [invite, setInvite] = useState(false);
-<<<<<<< HEAD
     const [errorMessage, setErrorMessage] = useState([]);
-    
-    const [action, handleAction] = useState({type: "userprofile", title: "Profile"});
-    const navigate = useNavigate();
-=======
-    const {isSignedIn} = useAuth();
+    const [playerInfo, setPlayerInfo] = useState({fullName:"", email:"", phone:"", userName:"", location:"", sports:[{}], statusDesc:"", activeTeams:[{}],activeLeagues:[{}],teamsCreated:[{}],leaguesCreated:[{}], pastLeagues:[{}], 
+    matches:[{}], totalGamesPlayed:"", wins:"", statistics:[{}], championships:"", displayInviteToTeamButton:null, displayUninviteToTeamButton:null, })
 
->>>>>>> 47fbafc44da0238d412468ed67d259b1b2caceeb
+    const [action, handleAction] = useState({type: "usprofile", title: "Profile"});
+    const navigate = useNavigate();
+
     function changeInviteShow(){
     
       setInvite(!invite);
       setShowInvite(false);
   }
 
-
   useEffect(() => {
     const url = window.location.pathname.substring(1,10).toLowerCase()
     if (url === "myprofile") {
         handleAction({type: "myprofile", title: "My Profile"})
-    } else {
-        handleAction({type: "usprofile", title: "Profile"})
-    }},[]);
+        
+
+        fetch(`${backend}/player/648ba154251b78d7946df338`, {
+          method: "POST",
+          credentials: 'include',
+          headers: {
+              "Content-Type": "Application/JSON"
+          }
+      })
+      .then(response => response.json())
+      .then(data=>{
+          if (data.requestStatus === 'RJCT') {
+              setErrorMessage([data.errMsg])
+              if (data.errField !== "") {
+                  document.getElementById(data.errField).focus()
+              }
+          } else {
+                  setPlayerInfo(
+                    {fullName: data.details.fullName, email: data.details.email, phone:data.details.phone, userName: data.details.userName, location: data.details.location, sports:data.details.sports,
+                      statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.teamsCreated, pastLeagues:data.pastLeagues, 
+                      matches:data.matches, statistics:data.statistics, totalGamesPlayed:data.totalGamesPlayed, wins:data.wins, championships:data.championships, displayInviteToTeamButton:data.buttons.displayInviteToTeamButton, displayUninviteToTeamButton:data.displayUninviteToTeamButton
+                    
+                    }
+                  )
+                  setLoading(true)
+      }
+  })
+  .catch((error) => {
+      console.log(error)
+  })
+        
+    }
+    else{
+      
+      handleAction({type: "usprofile", title: "User Profile", protectSport: false, protectRounds: false})
+    }
+    fetch(`${backend}/player/${routeParams.id}`, {
+          method: "POST",
+          credentials: 'include',
+          headers: {
+              "Content-Type": "Application/JSON"
+          }
+      })
+      .then(response => response.json())
+      .then(data=>{
+          if (data.requestStatus === 'RJCT') {
+              setErrorMessage([data.errMsg])
+              if (data.errField !== "") {
+                  document.getElementById(data.errField).focus()
+              }
+          } else {
+                  setPlayerInfo(
+                    {fullName: data.details.fullName, email: data.details.email, phone:data.details.phone, userName: data.details.userName, location: data.details.location, sports:data.details.sports,
+                      statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.teamsCreated, pastLeagues:data.pastLeagues, 
+                      matches:data.matches, statistics:data.statistics, totalGamesPlayed:data.totalGamesPlayed, wins:data.wins, championships:data.championships, displayInviteToTeamButton:data.buttons.displayInviteToTeamButton, displayUninviteToTeamButton:data.displayUninviteToTeamButton
+                    
+                    }
+                  )
+                  setLoading(true)
+      }
+  })
+  .catch((error) => {
+      console.log(error)
+  })
+    
+},[]);
+            
 
 
 
     return (
         <>
 
-        <Container className="mt-5" >
+        
+          
         { !isSignedIn && action.type==="myprofile" ? (
             <div>
                 {navigate('/signin')}
             </div>
         ) : ( 
-
-        
+        <Container className="mt-5" >
+          {!loading ? (
+            errorMessage.length===0 ? ( <div>
+              
+              <div className="center-wave">
+              <div className="wave"></div>
+              <div className="wave"></div>
+              <div className="wave"></div>
+              <div className="wave"></div>
+              <div className="wave"></div>
+              <div className="wave"></div>
+              <div className="wave"></div>
+              <div className="wave"></div>
+              <div className="wave"></div>
+              <div className="wave"></div>
+            </div></div>
+            
+              ) : (<h1>No user found</h1>)
+           ) 
+            : (
       <Row className="gutters-sm">
         <Col md={4} className="mb-3">
           <Card>
@@ -70,29 +150,25 @@ const Player = () => {
                   width="150"
                 />
                 <div className="mt-3">
-                  <h4>Harry Potter</h4>
-                  <p className="text-secondary mb-1">@hpotter</p>
+                  <h4>{playerInfo.fullName}</h4>
+                  <p className="text-secondary mb-1">@{playerInfo.userName}</p>
                   
                   <p className="text-secondary font-size-sm mb-1">
-                    Toronto, CA
+                    {playerInfo.location}
                   </p>
-                  <p className="text-secondary font-size-sm mb-2"><a href={"mailto:"} className="text-secondary text-decoration-none">hpotter@hogwarts.gr</a></p>
-<<<<<<< HEAD
-                  <p className="text-secondary font-size-sm mb-2">+143782838475</p>
+                  <p className="text-secondary font-size-sm mb-2"><a href={"mailto:"} className="text-secondary text-decoration-none">{playerInfo.email}</a></p>
+
+                  <p className="text-secondary font-size-sm mb-2">{playerInfo.phone}</p>
                   {action.type==="myprofile" ? (
-                    <Button href="/sos">Settings</Button>
+                    <Button href="/updateaccount">Settings</Button>
                   ) : (
+                    (isSignedIn &&
                     <Button variant={invite === false ? "btn btn-outline-success" : "btn btn-outline-danger"} onClick={handleShow}>{invite === false ? "Invite" : "Uninvite"}</Button>
-                  )
+                  ))
                   }
-                            
-=======
-                  {isSignedIn && (
-                  <Button variant={invite === false ? "btn btn-outline-success" : "btn btn-outline-danger"} onClick={handleShow}>{invite === false ? "Invite" : "Uninvite"}</Button>
-                  )}
-                  {" "}
+                          
                 
->>>>>>> 47fbafc44da0238d412468ed67d259b1b2caceeb
+
                 </div>
               </div>
             </Card.Body>
@@ -101,65 +177,51 @@ const Player = () => {
             <Card.Body>
               <ul className="list-group list-group-flush">
 
-                <h4 className="text-center pt-1 pb-3">Sports</h4>
-                <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                  <h6 className="mb-0">
-                    
-                    Soccer Team
-                  </h6>
-                  <a href="/team/1">
-                  <span className="text-secondary">Chelsea/47</span></a>
-                </li>
-                <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                  <h6 className="mb-0">
-                    
-                    Basketball Team
-                  </h6>
-                  <a href="/team/1">
-                  <span className="text-secondary">Lakers/23</span></a>
-                </li>
-
+                <h4 className="text-center pt-1 pb-3">Teams</h4>
                 
+                  
+                    
+                    {playerInfo.activeTeams.length===0 ? <h6 className="center-header">No active teams.</h6> : playerInfo.activeTeams.map((sports, index) => (
+                      <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap" key={index}>
+                      <h6 className="mb-0" >{sports.sportsName}</h6>
+                      <a href={"/team/"+sports.teamName}>
+                      <span className="text-secondary">{sports.teamName+"/"+sports.jerseyNumber}</span></a>
+                      </li>
+                    ))}
+
+                  <h4 className="text-center pt-1 pb-3">Teams Created</h4>
+                  {playerInfo.teamsCreated.length===0 ? <h6 className="center-header">No teams created.</h6> : playerInfo.teamsCreated.map((sports, index) => (
+                      <li className="list-group-item text-center flex-wrap" key={index}>
+                      <a href={"/team/"+sports.teamName} className="general-link-no-dec">
+                      {index+1+ "." + sports.teamName}</a>
+                      </li>
+                    ))}
+
               </ul>
             </Card.Body>
           </Card>
-          <Card className="mt-3">
+          <Card className="mt-3 overflow-auto" style={{height:"30em"}}>
             <Card.Body>
               <h4 className="text-center">Past Matches</h4>
                    {/* Past Matches Here */}
                    <ListGroup>
-            <ListGroup.Item action variant="danger" href="/match/1"  className='mt-2'>
-              <Row className='text-center'>
-              <Col>
-              20.06.23
-              </Col>
-              <Col>
-              Real Madrid
-              </Col>
-              <Col md>
-              1-4
-              </Col>
-              <Col>
-              Toronto
-              </Col>
-              </Row>
-            </ListGroup.Item>
-            <ListGroup.Item action variant="success" href="/match/1" className='mt-2'>      
-            <Row className='text-center'>
-              <Col>
-              20.06.23
-              </Col>
-              <Col>
-              Real Madrid
-              </Col>
-              <Col md>
-              4-1
-              </Col>
-              <Col>
-              Toronto
-              </Col>
-              </Row>          
-          </ListGroup.Item>
+                    {playerInfo.matches.length===0 ? <h6 className="center-header">No past matches.</h6> :playerInfo.matches.map(match=>(
+                      <ListGroup.Item key={match.matchId} action variant={match.playerTeam.won ? "success" : "danger"} href={"/match/"+match.matchId}  className='mt-2'>
+                      <Row className='text-center'>
+                      <Col md={4}>
+                      {new Date(match.dateOfMatch).toLocaleDateString('en-US')}
+                      </Col>
+                      <Col>
+                     {match.team1.teamName+ " " + match.team1.finalScore +  " - " + match.team2.finalScore+ " " + match.team2.teamName}
+                      </Col>
+                      <Col>
+                      {match.locationOfMatch}
+                      </Col>
+                      </Row>
+                    </ListGroup.Item>
+                    )
+
+                    )}
           </ListGroup>
             </Card.Body>
           </Card>
@@ -167,31 +229,32 @@ const Player = () => {
         <Col md={8}>
           <Card>
             
-              <h4 className="center-header">Statistics</h4>
               
+              {playerInfo.statistics.length===0 ?<div><h4 className="center-header" >Statistics</h4> <h6 className="center-header">No statistics yet.</h6></div> :playerInfo.statistics.map(stat=>(
+                <div key={stat.sportsTypeId}>
+                  <h4 className="center-header" >{stat.sportsName} Statistics</h4>
+                
               <div className="denemerow12">
                 {/* This part will repeat */}
-              <div className="d-block denemecolumn12">
-        <h1 className=" text-center" style={{fontSize:"9rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>72</h1>
-        <div className="text-center w-50 mx-auto"><h6 className="border-top border-bottom">Goals</h6></div>
-      </div>
+             
+              {stat.stats.map(indvStat=>(
+                 <div className="d-block denemecolumn12" key={indvStat.statisticsId}>
+                <h1 className=" text-center"  style={{fontSize:"9rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>{indvStat.totalValue}</h1>
+                <div className="text-center w-50 mx-auto"><h6 className="border-top border-bottom">{indvStat.statShortDesc}</h6></div>
+              
+              
+                </div>
+              ))}
+        
+        
+     
 {/* Repeat end */}
-<div className="d-block denemecolumn12 ">
-        <h1 className=" text-center" style={{fontSize:"9rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>1.15</h1>
-        <div className="text-center w-50 mx-auto"><h6 className="border-top border-bottom">Avg Goal Per Game</h6></div>
-      </div>
-      <div className="d-block denemecolumn12">
-        <h1 className=" text-center" style={{fontSize:"9rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>30</h1>
-        <div className="text-center w-50 mx-auto"><h6 className="border-top border-bottom">Assists</h6></div>
-      </div>
-      <div className="d-block denemecolumn12">
-        <h1 className=" text-center" style={{fontSize:"9rem", fontFamily:"Saira Extra Condensed", color:"indigo"}}>150</h1>
-        <div className="text-center w-50 mx-auto"><h6 className="border-top border-bottom">Shots</h6></div>
       </div>
 
       
       </div>
-    
+      
+    ))}
         </Card>
 
           <Card className="mt-5">
@@ -199,9 +262,12 @@ const Player = () => {
             <h4 className="center-header">Active Leagues</h4>
               <Row ><Col>
               <div className="col d-flex flex-column flex-md-row justify-content-around align-items-center mx-5 mb-5">
-              <FlippableCard imageUrl="/images/mainPage/basketball_pic1.jpg" cardText="BasketBall Club" />
+                {playerInfo.activeLeagues.length===0 ? <h6 className="center-header">No active leagues.</h6> :playerInfo.activeLeagues.map(league=>(
+                  <FlippableCard imageUrl={`${backend}/leaguelogos/${league.leagueId}.jpeg`} cardText={league.leagueName} teams={league.teams}  key={league.leagueId}/>
 
-              <FlippableCard imageUrl="/images/mainPage/basketball_pic2.jpg" cardText="Jordan Warriors" />
+                ))}
+              
+             
           </div>
     </Col>
           <hr />      
@@ -212,36 +278,40 @@ const Player = () => {
               
         <Col sm={12} >
           <ListGroup>
+            {playerInfo.activeTeams.length===0 ? <h6 className="center-header">No active teams.</h6> :(
           <Row className='text-center mb-3  '>
-              <Col md={3}>
+              <Col md={4}>
                 Name
               </Col>
-              <Col md={3}>
+              <Col md={2}>
               Start Date
               </Col>
-              <Col md={3}>
+              <Col md={2}>
               End Date
               </Col>
               <Col md={3}>
               Location
               </Col>
-              </Row>  
-            <ListGroup.Item action href="/league/1">
+              </Row>  )}
+              {playerInfo.pastLeagues.map(pastLeague=>(
+                <ListGroup.Item action href={"/league/"+pastLeague.leagueId} key={pastLeague.leagueId}>
               <Row className='text-center'>
-              <Col md={3}>
-                Do or Do not
+              <Col md={4}>
+                {pastLeague.leagueName}
               </Col>
-              <Col md={3}>
-              20.06.23
+              <Col md={2}>
+              {new Date(pastLeague.startDate).toLocaleDateString('en-US')}
               </Col>
-              <Col md={3}>
-              15.09.23
+              <Col md={2}>
+              {new Date(pastLeague.endDate).toLocaleDateString('en-US')}
               </Col>
               <Col md={3}>
               Toronto
               </Col>
               </Row>
             </ListGroup.Item>
+              ))}
+              
             </ListGroup>
             </Col>
             </Row>
@@ -256,9 +326,11 @@ const Player = () => {
         </Col>
         
       </Row>
-      )}
+      
+            )}
+            
     </Container>
-
+)}
 
 
 {/* Modal opening up after clicking Join */}
