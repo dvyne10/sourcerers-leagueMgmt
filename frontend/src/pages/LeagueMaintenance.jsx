@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import useAuth, {checkIfSignedIn} from "../hooks/auth";
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const LeagueMaintenance = () => {
   
     const {isSignedIn} = useAuth()
+    const token = `Bearer ${getToken()}`
     const routeParams = useParams();
     const inputFileBanner = useRef(null);
     const inputFileLogo = useRef(null);
@@ -47,7 +48,8 @@ const LeagueMaintenance = () => {
                 method: "POST",
                 credentials: 'include',
                 headers: {
-                    "Content-Type": "Application/JSON"
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
                 }
             })
             .then(response => response.json())
@@ -104,7 +106,8 @@ const LeagueMaintenance = () => {
                 method: "POST",
                 credentials: 'include',
                 headers: {
-                    "Content-Type": "Application/JSON"
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
                 }
             })
             .then(response => response.json())
@@ -193,7 +196,8 @@ const LeagueMaintenance = () => {
                     credentials: 'include',
                     body: JSON.stringify(data),
                     headers: {
-                        "Content-Type": "Application/JSON"
+                        "Content-Type": "Application/JSON",
+                        "Authorization": token
                     }
                 })
                 .then(response => response.json())
@@ -233,7 +237,8 @@ const LeagueMaintenance = () => {
                         credentials: 'include',
                         body: JSON.stringify(data),
                         headers: {
-                            "Content-Type": "Application/JSON"
+                            "Content-Type": "Application/JSON",
+                            "Authorization": token
                         }
                     })
                     .then(response => response.json())
@@ -376,7 +381,8 @@ const LeagueMaintenance = () => {
                     method: "DELETE",
                     credentials: 'include',
                     headers: {
-                        "Content-Type": "Application/JSON"
+                        "Content-Type": "Application/JSON",
+                        "Authorization": token
                     }
                 })
                 .then(response => response.json())

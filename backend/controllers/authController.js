@@ -7,6 +7,7 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   let user;
+  let token;
 
   if (!email || !password) {
     res.status(401).send({ message: "Incorrect email/username or password." });
@@ -34,7 +35,7 @@ export const login = async (req, res) => {
             message: "User is not allowed to login.",
           });
         } else {
-          generateToken(res, user._id);
+          token = generateToken(res, user._id);
           let succLogin
           if (user.successfulLoginDetails) {
             if (user.successfulLoginDetails.length >= loginParm.numberOfLoginDtlsToKeep) {
@@ -54,6 +55,7 @@ export const login = async (req, res) => {
             res.status(200).send({
               requestStatus: "ACTC",
               user: {userType: user.userType, userId: user._id},
+              token
             });
         }
       } else {
@@ -118,12 +120,13 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    expires: new Date(0),
-    secure: true,
-    sameSite: 'none',
-  });
+  // res.cookie("jwt", "", {
+  //   httpOnly: true,
+  //   expires: new Date(0),
+  //   secure: true,
+  //   sameSite: 'none',
+  // });
+  
 
   res.status(200).send({ message: "User successfully logged out" });
 };
@@ -131,6 +134,7 @@ export const logout = async (req, res) => {
 export const verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
   const currentTime = Date.now();
+  let token;
   
   try {
     const user = await UserModel.findOne({ email });
@@ -143,7 +147,7 @@ export const verifyOTP = async (req, res) => {
         const currentTimeDate = new Date(currentTime);
         if (otpDate.toISOString() > currentTimeDate.toISOString()) {
             if (user.status === "PEND") {
-              generateToken(res, user._id);
+              token =  generateToken(res, user._id);
               user.status = "ACTV";
               user.detailsOTP = null
               let newLogin = [{sourceIPAddress: "IPtemp", timestamp: new Date()}]
@@ -153,6 +157,7 @@ export const verifyOTP = async (req, res) => {
             return res.status(200).send({
               requestStatus: 'ACTC',
               message: "OTP verified",
+              token
             });
         } else {
           return res

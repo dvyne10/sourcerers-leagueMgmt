@@ -19,3 +19,9 @@ export const checkIfSignedIn = async function(){
   }
   return {isSignedIn, isAdmin}
 }
+
+export const getToken = function(){
+  const data = localStorage.getItem("token");
+  const parsedData = JSON.parse(data);
+  return parsedData
+}
