@@ -647,8 +647,8 @@ body {
 
 .loading-spinner {
   position: relative;
-  width: 60px; /* Adjust size as needed */
-  height: 60px; /* Adjust size as needed */
+  width: 60px; 
+  height: 60px;
 }
 
 .loading-spinner::before {
@@ -667,7 +667,6 @@ body {
 }
 
 .loading-spinner::after {
-
   position: absolute;
   top: calc(50% + 10px); /* Adjust position as needed */
   left: 50%;
@@ -727,4 +726,9 @@ body {
     justify-content: center;
     margin-top: 10px;
   }
+}
+
+.team-names {
+  display: flex;
+  align-items: center;
 }

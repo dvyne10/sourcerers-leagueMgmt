@@ -139,7 +139,7 @@ const Home = () => {
       <section className="section-50">
         <div className="container">
           <h1 className="m-b-50 heading-line">
-            Announcements 
+            Announcements
           </h1>
 
           <div className="notification-ui_dd-content">
