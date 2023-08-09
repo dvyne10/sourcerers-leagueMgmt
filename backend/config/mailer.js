@@ -17,7 +17,7 @@ export const createTransporter = async () => {
   const accessToken = await new Promise((resolve, reject) => {
     oauth2Client.getAccessToken((err, token) => {
       if (err) {
-        console.log(err);
+        // console.log(err);
         reject("Failed to create access token :(");
       }
       resolve(token);
@@ -33,6 +33,9 @@ export const createTransporter = async () => {
       clientId: process.env.G_CLIENT_ID,
       clientSecret: process.env.G_CLIENT_SECRET,
       refreshToken: process.env.REFRESH_TOKEN,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
 

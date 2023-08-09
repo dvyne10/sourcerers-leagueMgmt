@@ -61,10 +61,24 @@ async function logout() {
   }
 }
 
-async function forgotPassword() {
-  console.log("forgot pa");
+async function forgotPassword(email) {
+  const body = { email };
   try {
-    const response = await axios.post(`${BASE_URL}/forgotpassword`, {
+    const response = await axios.post(`${BASE_URL}/forgotpassword`, body, {
+      withCredentials: true,
+    });
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function resetPassword(newPassword, confirmNewPassword, email) {
+  const body = { newPassword, confirmNewPassword, email };
+
+  try {
+    const response = await axios.post(`${BASE_URL}/resetpassword`, body, {
       withCredentials: true,
     });
     console.log(response);
@@ -80,4 +94,5 @@ export default {
   verifyOTP,
   logout,
   forgotPassword,
+  resetPassword
 };
