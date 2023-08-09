@@ -2,7 +2,7 @@ import { useState, useEffect }  from 'react';
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaTrash, FaSearchPlus } from 'react-icons/fa';
-import useAuth, {checkIfSignedIn} from "../hooks/auth";
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
@@ -12,7 +12,7 @@ const MatchUpdate = () => {
     const location = useLocation();
     const routeParams = useParams();
     const {isSignedIn, isAdmin} = useAuth()
-    const [action, handleAction] = useState({type: "Creation", title: "CREATE MATCH"});
+    const token = `Bearer ${getToken()}`
     const [statistics, setStatistics] = useState([{ statisticsId: null, statShortDesc: null}])
     const [currValues, setCurrentValues] = useState({matchId: routeParams.matchId, dateOfMatch: null, locationOfMatch: null,
         teamId1: null, teamName1: null, finalScore1: null, finalScorePending1: null, leaguePoints1: null, leaguePointsPending1: null, disableInput1: true,
@@ -27,42 +27,43 @@ const MatchUpdate = () => {
     
     useEffect(() => {
         let url
-        handleAction({type: "Update", title: "Update Match"})
-            if (window.location.pathname.substring(1,6).toLowerCase() === "admin") {
-                url = `${backend}/admingetmatchdetailsupdate/${routeParams.matchid}`
-            } else {
-                url = `${backend}/getmatchdetailsupdate/${routeParams.matchid}`
+        console.log("30 " + isSignedIn + isAdmin + window.location.pathname)
+        if (window.location.pathname.substring(1,6).toLowerCase() === "admin") {
+            url = `${backend}/admingetmatchdetailsupdate/${routeParams.matchid}`
+        } else {
+            url = `${backend}/getmatchdetailsupdate/${routeParams.matchid}`
+        }
+        fetch(url, {
+            method: "POST",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "Application/JSON",
+                "Authorization": token
             }
-            fetch(url, {
-                method: "POST",
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "Application/JSON"
-                }
-            })
-            .then(response => response.json())
-            .then(data=>{
-                if (data.requestStatus !== 'ACTC') {
-                    navigate(`/match/${routeParams.matchid}`)
-                } else {
-                    setCurrentValues({ dateOfMatch: data.details.dateOfMatch.toString().substring(0,16), locationOfMatch: data.details.locationOfMatch,
-                        teamId1: data.details.team1.teamId, teamName1: data.details.team1.teamName, finalScore1: data.details.team1.finalScore, finalScorePending1: data.details.team1.finalScorePending, 
-                            leaguePoints1: data.details.team1.leaguePoints, leaguePointsPending1: data.details.team1.leaguePointsPending, disableInput1: !data.details.team1.isTeamAdmin,
-                        teamId2: data.details.team2.teamId, teamName2: data.details.team2.teamName, finalScore2: data.details.team2.finalScore, finalScorePending2: data.details.team2.finalScorePending, 
-                            leaguePoints2: data.details.team2.leaguePoints, leaguePointsPending2: data.details.team2.leaguePointsPending, disableInput2: !data.details.team2.isTeamAdmin,
-                    })
-                    setMatchesToUpdate1(data.details.team1.players)
-                    setMatchesToUpdate2(data.details.team2.players)
-                    setStatistics(data.details.statisticOptions)
-                    setOldValues({ dateOfMatch: data.details.dateOfMatch.toString().substring(0,16), locationOfMatch: data.details.locationOfMatch, 
-                        finalScore1: data.details.team1.finalScore, leaguePoints1: data.details.team1.leaguePoints, finalScore2: data.details.team2.finalScore, leaguePoints2: data.details.team2.leaguePoints,
-                        finalScorePending1: data.details.team1.finalScorePending, leaguePointsPending1: data.details.team1.leaguePointsPending, 
-                        finalScorePending2: data.details.team2.finalScorePending, leaguePointsPending2: data.details.team1.leaguePointsPending
-                    }) 
-                }
-            }).catch((error) => {
-                console.log(error)
-            })
+        })
+        .then(response => response.json())
+        .then(data=>{
+            if (data.requestStatus !== 'ACTC') {
+                navigate(`/match/${routeParams.matchid}`)
+            } else {
+                setCurrentValues({ dateOfMatch: data.details.dateOfMatch.toString().substring(0,16), locationOfMatch: data.details.locationOfMatch,
+                    teamId1: data.details.team1.teamId, teamName1: data.details.team1.teamName, finalScore1: data.details.team1.finalScore, finalScorePending1: data.details.team1.finalScorePending, 
+                        leaguePoints1: data.details.team1.leaguePoints, leaguePointsPending1: data.details.team1.leaguePointsPending, disableInput1: !data.details.team1.isTeamAdmin,
+                    teamId2: data.details.team2.teamId, teamName2: data.details.team2.teamName, finalScore2: data.details.team2.finalScore, finalScorePending2: data.details.team2.finalScorePending, 
+                        leaguePoints2: data.details.team2.leaguePoints, leaguePointsPending2: data.details.team2.leaguePointsPending, disableInput2: !data.details.team2.isTeamAdmin,
+                })
+                setMatchesToUpdate1(data.details.team1.players)
+                setMatchesToUpdate2(data.details.team2.players)
+                setStatistics(data.details.statisticOptions)
+                setOldValues({ dateOfMatch: data.details.dateOfMatch.toString().substring(0,16), locationOfMatch: data.details.locationOfMatch, 
+                    finalScore1: data.details.team1.finalScore, leaguePoints1: data.details.team1.leaguePoints, finalScore2: data.details.team2.finalScore, leaguePoints2: data.details.team2.leaguePoints,
+                    finalScorePending1: data.details.team1.finalScorePending, leaguePointsPending1: data.details.team1.leaguePointsPending, 
+                    finalScorePending2: data.details.team2.finalScorePending, leaguePointsPending2: data.details.team1.leaguePointsPending
+                }) 
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
     }, [location.pathname]);
 
     const handleMatchDetails = (e) => {
@@ -217,7 +218,8 @@ const MatchUpdate = () => {
                             credentials: 'include',
                             body: JSON.stringify(data),
                             headers: {
-                                "Content-Type": "Application/JSON"
+                                "Content-Type": "Application/JSON",
+                                "Authorization": token
                             }
                         })
                         .then(response => response.json())
@@ -240,7 +242,8 @@ const MatchUpdate = () => {
                         credentials: 'include',
                         body: JSON.stringify(data),
                         headers: {
-                            "Content-Type": "Application/JSON"
+                            "Content-Type": "Application/JSON",
+                            "Authorization": token
                         }
                     })
                     .then(response => response.json())

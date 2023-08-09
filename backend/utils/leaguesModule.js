@@ -169,6 +169,8 @@ export const getLeagueDetails = async function(leagueId) {
         let idx = teamPoints.findIndex(i => i.teamId.equals(team.teamId))
         if (idx !== -1) {
             return { ...team, totalLeaguePts: teamPoints[idx].points, totalScore: teamPoints[idx].score  }
+        } else {
+            return { ...team, totalLeaguePts : 0, totalScore : 0}
         }
     })
     teamDetails.sort((a, b) => {
@@ -340,7 +342,7 @@ export const getLeagueDetailsForUpdate = async function(userId, leagueId) {
         let detailsForUpdate = leagueDetails.details
         let teamHasPending, approverName
         let teamsForUpdate = []
-        let allowTeamRemoval = false //TEMP
+        let allowTeamRemoval = false
         if (detailsForUpdate.status === "NS" && allowTeamRemoval) {
             let promise = detailsForUpdate.teams.map(async function(team) { 
                 teamHasPending = await hasPendingRequest("APLGR", userId, "", team.teamId.toString(), leagueId)
@@ -352,6 +354,7 @@ export const getLeagueDetailsForUpdate = async function(userId, leagueId) {
             })
             teamsForUpdate = await Promise.all(promise)
         }
+
         let promise2 = detailsForUpdate.teams.map(async function(team) { 
             approverName = await getUserFullname(team.approvedBy.toString(), "")
             teamsForUpdate.push({teamId: team.teamId, teamName:team.teamName, joinedTimestamp: team.joinedTimestamp, approvedBy: approverName.fullName})

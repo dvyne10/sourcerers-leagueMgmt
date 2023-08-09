@@ -1,11 +1,7 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
-import { getManyTeamNames, getOpenTeams } from "./teamsModule.js";
 import { getSportsList } from "./sysParmModule.js";
-
-let ObjectId = mongoose.Types.ObjectId;
 
 export const getSearchResults = async function(findText, location, playerFilter, teamFilter, leagueFilter) {
     let response = {requestStatus: "", errField: "", errMsg: ""}

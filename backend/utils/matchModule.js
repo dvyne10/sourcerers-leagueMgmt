@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
 import { getUserFullname } from "./usersModule.js";
 import { getTeamDetails, getTeamAdmin } from "./teamsModule.js";
-import { hasPendingRequest } from "./requestsModule.js";
 import { getPosnAndStatBySport, getNotifParmByNotifId } from "./sysParmModule.js";
 
 let ObjectId = mongoose.Types.ObjectId;
@@ -98,6 +96,8 @@ export const getMatchDetails = async function(userId, matchId) {
                 index = sportDetails.stats.findIndex(statParm => statParm.statisticsId.equals(stat.statisticsId))
                 if (index !== -1) {
                     return {...stat, statShortDesc : sportDetails.stats[index].statShortDesc, statLongDesc : sportDetails.stats[index].statLongDesc}
+                } else {
+                    return {...stat}
                 }
             })
             promised = getUserFullname(player.playerId.toString(), "")
@@ -120,6 +120,8 @@ export const getMatchDetails = async function(userId, matchId) {
                 index = sportDetails.stats.findIndex(statParm => statParm.statisticsId.equals(stat.statisticsId))
                 if (index !== -1) {
                     return {...stat, statShortDesc : sportDetails.stats[index].statShortDesc, statLongDesc : sportDetails.stats[index].statLongDesc}
+                } else {
+                    return {...stat}
                 }
             })
             promised = getUserFullname(player.playerId.toString(), "")

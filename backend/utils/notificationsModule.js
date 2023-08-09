@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
-import { getUserFullname, getPlayerButtons } from "./usersModule.js";
-import { getTeamDetails, getTeamsCreated, getUsersTeams, getTeamName } from "./teamsModule.js";
-import { getLeagueMajorDetails, isLeagueAdmin, getLeagueButtons, getLeagueAdmins } from "./leaguesModule.js";
+import { getUserFullname } from "./usersModule.js";
+import { getTeamName } from "./teamsModule.js";
+import { getLeagueMajorDetails, getLeagueAdmins } from "./leaguesModule.js";
 import { getNotifParmByNotifId, getSysParmById, getSysParmList } from "./sysParmModule.js"
 import { getRequestStatus } from "./requestsModule.js"
 import { getMatchDetails } from "./matchModule.js"
