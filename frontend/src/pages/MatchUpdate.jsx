@@ -24,15 +24,16 @@ const MatchUpdate = () => {
     const [oldValues, setOldValues] = useState(null)
     const [didMatchDetailsChange, setMatchDetailsChanged] = useState(false)
     const [errorMessage, setErrorMessage] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     
     useEffect(() => {
         let url
-        console.log("30 " + isSignedIn + isAdmin + window.location.pathname)
         if (window.location.pathname.substring(1,6).toLowerCase() === "admin") {
             url = `${backend}/admingetmatchdetailsupdate/${routeParams.matchid}`
         } else {
             url = `${backend}/getmatchdetailsupdate/${routeParams.matchid}`
         }
+        setIsLoading(true)
         fetch(url, {
             method: "POST",
             credentials: 'include',
@@ -43,6 +44,7 @@ const MatchUpdate = () => {
         })
         .then(response => response.json())
         .then(data=>{
+            console.log(JSON.stringify(data))
             if (data.requestStatus !== 'ACTC') {
                 navigate(`/match/${routeParams.matchid}`)
             } else {
@@ -61,8 +63,10 @@ const MatchUpdate = () => {
                     finalScorePending2: data.details.team2.finalScorePending, leaguePointsPending2: data.details.team1.leaguePointsPending
                 }) 
             }
+            setIsLoading(false)
         }).catch((error) => {
             console.log(error)
+            setIsLoading(false)
         })
     }, [location.pathname]);
 
@@ -199,6 +203,7 @@ const MatchUpdate = () => {
                         return { playerId: player.playerId, statistics: player.statistics }
                     })
                 }
+                setIsLoading(true)
                 if (!isAdmin) {
                     let proceed = false
                     if (oldValues.finalScore1 !== currValues.finalScore1
@@ -232,8 +237,10 @@ const MatchUpdate = () => {
                             } else {
                                 navigate(`/match/${routeParams.matchid}`)
                             }
+                            setIsLoading(false)
                         }).catch((error) => {
                             console.log(error)
+                            setIsLoading(false)
                         })
                     }
                 } else {
@@ -256,8 +263,10 @@ const MatchUpdate = () => {
                         } else {
                             navigate("/adminmatches")
                         }
+                        setIsLoading(false)
                     }).catch((error) => {
                         console.log(error)
+                        setIsLoading(false)
                     })
                 }
             }
@@ -372,6 +381,12 @@ const MatchUpdate = () => {
   return (
     <div className="d-flex container mt-3 justify-content-center" >
       <Card style={{ width: "60rem", padding: 20 }}>
+      {isLoading && (
+          <div className="loading-overlay">
+            <div style={{color: 'black'}}>Loading...</div>
+            <div className="loading-spinner"></div>
+          </div>
+        )}
       {errorMessage.length > 0 && (
             <div className="alert alert-danger mb-3 p-1">
                 {errorMessage.map((err, index) => (

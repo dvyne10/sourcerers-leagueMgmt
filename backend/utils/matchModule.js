@@ -275,7 +275,7 @@ export const getMatchDetailsUpdate = async function(userId, matchId, userType) {
         matchDetails.sportsName = sportDetails.sport.sportsName
         if (userType === "ADMIN") {
             matchDetails.team1.isTeamAdmin = true
-            matchDetails.team2.isTeamAdmin = false
+            matchDetails.team2.isTeamAdmin = true
         } else {
             if (matchDetails.leagueStatus === 'ST') {
                 if (mongoose.isValidObjectId(userId) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
