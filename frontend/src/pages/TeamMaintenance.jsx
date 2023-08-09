@@ -8,7 +8,8 @@ const backend = import.meta.env.MODE === "development" ? "http://localhost:8000"
 
 const TeamMaintenance = () => {
     const [validated, setValidated] = useState(false);
-    const {isSignedIn} = useAuth()
+    const {isSignedIn, responseToken} = useAuth()
+    const token = `Bearer ${responseToken}`
     const location = useLocation();
     const routeParams = useParams();
     const inputFileBanner = useRef(null);
@@ -52,7 +53,8 @@ const TeamMaintenance = () => {
                 method: "POST",
                 credentials: 'include',
                 headers: {
-                    "Content-Type": "Application/JSON"
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
                 }
             })
             .then(response => response.json())
@@ -100,12 +102,12 @@ const TeamMaintenance = () => {
     useEffect(() => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
         if (url === "update" && isSignedIn) {
-            console.log(121)
             fetch(`${backend}/admin?team=${routeParams.teamid}`, {
                 method: "POST",
                 credentials: 'include',
                 headers: {
-                    "Content-Type": "Application/JSON"
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
                 }
             })
             .then(response => response.json())
@@ -156,7 +158,8 @@ const TeamMaintenance = () => {
                 method: "POST",
                 credentials: 'include',
                 headers: {
-                    "Content-Type": "Application/JSON"
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
                 }
             })
             .then(response => response.json())
@@ -226,7 +229,8 @@ const TeamMaintenance = () => {
                     credentials: 'include',
                     body: JSON.stringify(data),
                     headers: {
-                        "Content-Type": "Application/JSON"
+                        "Content-Type": "Application/JSON",
+                        "Authorization": token
                     }
                 })
                 .then(response => response.json())
@@ -266,7 +270,8 @@ const TeamMaintenance = () => {
                     credentials: 'include',
                     body: JSON.stringify(data),
                     headers: {
-                        "Content-Type": "Application/JSON"
+                        "Content-Type": "Application/JSON",
+                        "Authorization": token
                     }
                 })
                 .then(response => response.json())
@@ -328,7 +333,8 @@ const validateInput = () => {
                     method: "DELETE",
                     credentials: 'include',
                     headers: {
-                        "Content-Type": "Application/JSON"
+                        "Content-Type": "Application/JSON",
+                        "Authorization": token
                     }
                 })
                 .then(response => response.json())

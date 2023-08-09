@@ -11,7 +11,8 @@ const MatchUpdate = () => {
     const navigate = useNavigate(); 
     const location = useLocation();
     const routeParams = useParams();
-    const {isSignedIn, isAdmin} = useAuth()
+    const {isSignedIn, isAdmin, responseToken} = useAuth()
+    const token = `Bearer ${responseToken}`
     const [action, handleAction] = useState({type: "Creation", title: "CREATE MATCH"});
     const [statistics, setStatistics] = useState([{ statisticsId: null, statShortDesc: null}])
     const [currValues, setCurrentValues] = useState({matchId: routeParams.matchId, dateOfMatch: null, locationOfMatch: null,
@@ -37,7 +38,8 @@ const MatchUpdate = () => {
                 method: "POST",
                 credentials: 'include',
                 headers: {
-                    "Content-Type": "Application/JSON"
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
                 }
             })
             .then(response => response.json())
@@ -217,7 +219,8 @@ const MatchUpdate = () => {
                             credentials: 'include',
                             body: JSON.stringify(data),
                             headers: {
-                                "Content-Type": "Application/JSON"
+                                "Content-Type": "Application/JSON",
+                                "Authorization": token
                             }
                         })
                         .then(response => response.json())
@@ -240,7 +243,8 @@ const MatchUpdate = () => {
                         credentials: 'include',
                         body: JSON.stringify(data),
                         headers: {
-                            "Content-Type": "Application/JSON"
+                            "Content-Type": "Application/JSON",
+                            "Authorization": token
                         }
                     })
                     .then(response => response.json())

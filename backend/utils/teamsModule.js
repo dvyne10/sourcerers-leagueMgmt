@@ -4,8 +4,114 @@ import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
 import { getSportName, getSportsList, getPosnAndStatBySport } from "./sysParmModule.js";
 import { getUserFullname } from "./usersModule.js";
+import { hasPendingRequest } from "./requestsModule.js";
 
 let ObjectId = mongoose.Types.ObjectId;
+
+export const getTeams = async function() {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    let teamsCreated = await UserModel.find({teamsCreated : { $ne : null}}, {_id: 0, teamsCreated : 1})
+
+    if (teamsCreated.length === 0) {
+        response.requestStatus = "ACTC"
+        response.errMsg = "No data found"
+        response.details = []
+        return response
+    }
+
+    let sportsList = []
+    let sportsParms = await getSportsList()
+    if (sportsParms.requestStatus === 'ACTC') {
+        sportsList = sportsParms.data
+    }
+
+    let sportsName, sportIndex, numberOfwins
+    let teamsWithWins = []
+    let promises1 = teamsCreated.map(async function(user) {
+        let promises2 = user.teamsCreated.map(async function(team) {
+            sportIndex = sportsList.findIndex((i) => i.sportsId.equals(team.sportsTypeId))
+            sportsName = sportIndex === -1 ? "" : sportsList[sportIndex].sportsName
+            numberOfwins = await getTeamWinsCount(team._id.toString())
+            teamsWithWins.push({teamId: team._id, teamName: team.teamName, location: team.location, division: team.division,
+                teamContactEmail: team. teamContactEmail, description: team.description, sportsTypeId: team.sportsTypeId, 
+                sportsName, lookingForPlayers: team.lookingForPlayers, lookingForPlayersChgTmst: team.lookingForPlayersChgTmst, numberOfwins})
+        })
+        await Promise.all(promises2);
+    })
+    await Promise.all(promises1);
+
+    response.requestStatus = "ACTC"
+    response.details = teamsWithWins.sort((a, b) => b.numberOfwins - a.numberOfwins)
+    return response
+}
+
+export const getTeamWinsCount = async function(teamId) {
+    let wins = 0
+    let teamGames = await LeagueModel.aggregate([
+        {
+            $match: {
+                $or : [{ "matches.team1.teamId" : new ObjectId(teamId)} , {"matches.team2.teamId" : new ObjectId(teamId) }]
+            }
+        },
+        {
+            $addFields: {
+                wins: {
+                    $map: {
+                        input: "$matches",
+                        as: "match",
+                        in: {
+                            $cond : [{
+                                $eq : [ "$$match.team1.teamId", new ObjectId(teamId) ]
+                            },
+                            { 
+                                $cond : [ { $gt : [ "$$match.team1.leaguePoints", "$$match.team2.leaguePoints" ] }, 1, 0]
+                            },
+                            {$cond : [
+                                {
+                                    $eq : [ "$$match.team2.teamId", new ObjectId(teamId) ]
+                                },
+                                {
+                                    $cond : [ { $gt : [ "$$match.team2.leaguePoints", "$$match.team1.leaguePoints" ] }, 1, 0]
+                                },
+                                0
+                            ]}
+                            ]
+                        }
+                    }
+                }
+            }
+        }, {
+            $project : { _id : 0, wins: 1}
+        }
+    ])
+
+    teamGames.map((league) => {
+        league.wins.map((match) => {
+            wins += match
+        })
+    })
+    return wins
+}
+
+export const getTeamDetailsAndButtons = async function(userId, teamId) {
+    let team
+    let teamButtons
+    if (mongoose.isValidObjectId(userId.trim())) {
+        team = getTeamDetails(teamId)
+        teamButtons = getTeamButtons(userId, teamId)
+        let [teamDetails, teamButtonsInd] = await Promise.all([team, teamButtons])
+        if (teamDetails.requestStatus !== "ACTC") {
+            return teamDetails
+        } else {
+            teamDetails = {...teamDetails, buttons: teamButtonsInd}
+            return teamDetails
+        }
+    } else {
+        team = await getTeamDetails(teamId)
+        return team
+    }
+}
 
 export const getTeamDetails = async function(teamId) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
@@ -44,14 +150,191 @@ export const getTeamDetails = async function(teamId) {
 
     let createdBy = team[0]._id
     team = team[0].teamsCreated[0]
-    let sportsName = await getSportName(team.sportsTypeId.toString())
+    let sportDetails = await getPosnAndStatBySport(team.sportsTypeId.toString())
+    let promisea = team.players.map(async (player) => {
+        let position = null, positionId = "", positionDesc = ""
+        let index = sportDetails.positions.findIndex(p => p.positionParmId.equals(player.position))
+        if (index !== -1) {
+            position = sportDetails.positions[index].positionParmId
+            positionId = sportDetails.positions[index].positionId
+            positionDesc = sportDetails.positions[index].positionDesc
+        }
+        let playerFullname = await getUserFullname(player.playerId.toString(), "")
+        return {playerId: player.playerId, playerName: playerFullname.fullName, position, positionId, 
+            positionDesc, jerseyNumber: player.jerseyNumber, joinedTimestamp: player.joinedTimestamp}
+    })
+    let promiseb = getTeamMatches(teamId, team.teamName)
+    let [players, matches] = await Promise.all([Promise.all(promisea), promiseb])
 
-    const teamWithdetails = { ...team, sportsName, createdBy };
+    const teamWithdetails = { ...team, sportsName: sportDetails.sport.sportsName, players, matches, createdBy };
 
     response.requestStatus = "ACTC"
     response.details = teamWithdetails
     return response
+}
 
+export const getTeamMatches = async function(teamId, teamName) {
+    let teamGames = await LeagueModel.aggregate([
+        {
+            $match: {
+                $or : [{ "matches.team1.teamId" : new ObjectId(teamId)} , {"matches.team2.teamId" : new ObjectId(teamId) }]
+            }
+        },
+        { 
+            $project: {
+                matches: {
+                    $filter: {
+                        input: "$matches",
+                        as: "match",
+                        cond: { 
+                            $or : [{ $eq: ["$$match.team1.teamId", new ObjectId(teamId)]} , { $eq : ["$$match.team2.teamId", new ObjectId(teamId)]}]
+                        }
+                    }
+                }, _id : 1
+            }
+        },
+        {
+            $addFields: {
+                matches1: {
+                    $map: {
+                        input: "$matches",
+                        as: "match",
+                        in: {
+                            matchId: "$$match._id",
+                            dateOfMatch: "$$match.dateOfMatch",
+                            locationOfMatch: "$$match.locationOfMatch",
+                            team1 : {
+                                teamId: "$$match.team1.teamId",
+                                finalScore: "$$match.team1.finalScore",
+                                leaguePoints: "$$match.team1.leaguePoints",
+                            },
+                            team2 : {
+                                teamId: "$$match.team2.teamId",
+                                finalScore: "$$match.team2.finalScore",
+                                leaguePoints: "$$match.team2.leaguePoints",
+                            },
+                            won: {
+                                $cond : [{
+                                    $eq : [ "$$match.team1.teamId", new ObjectId(teamId) ]
+                                },
+                                { 
+                                    $cond : [ { $gt : [ "$$match.team1.leaguePoints", "$$match.team2.leaguePoints" ] }, true, false]
+                                },
+                                {$cond : [{
+                                    $eq : [ "$$match.team2.teamId", new ObjectId(teamId) ]
+                                },
+                                { 
+                                    $cond : [ { $gt : [ "$$match.team2.leaguePoints", "$$match.team1.leaguePoints" ] }, true, false]
+                                },
+                                    false
+                                ]}
+                                ]
+                            }
+                        }
+                    }
+                }, _id : 0
+            }
+        }, {
+            $project : { _id : 0, matches: "$matches1", leagueName: 1 }
+        }
+    ])
+
+    let teamMatches = []
+    let otherTeams = []
+    let promises1 = teamGames.map(async (league) => {
+        let promises2 = league.matches.map(async (match) => {
+            let index = 0
+            if (match.team1.teamId.equals(new ObjectId(teamId))) {
+                match.team1.teamName = teamName
+            } else {
+                index = otherTeams.findIndex(team => team.teamId.equals(match.team1.teamId))
+                if (index !== -1) {
+                    match.team1.teamName = otherTeams[index].teamName
+                } else {
+                    match.team1.teamName = await getTeamName(match.team1.teamId.toString())
+                    otherTeams.push({teamId: match.team1.teamId, teamName: match.team1.teamName})
+                }
+            }
+            if (match.team2.teamId.equals(new ObjectId(teamId))) {
+                match.team2.teamName = teamName
+            } else {
+                index = otherTeams.findIndex(team => team.teamId.equals(match.team2.teamId))
+                if (index !== -1) {
+                    match.team2.teamName = otherTeams[index].teamName
+                } else {
+                    match.team2.teamName = await getTeamName(match.team2.teamId.toString())
+                    otherTeams.push({teamId: match.team2.teamId, teamName: match.team2.teamName})
+                }
+            }
+            teamMatches.push({...match})
+        })
+        await Promise.all(promises2)
+    })
+    await Promise.all(promises1);
+    return teamMatches
+}
+
+export const getTeamButtons = async function(userId, teamId) {
+    let response = { displayUpdateButton : false, displayTurnOnLookingForPlayers: false, displayTurnOffLookingForPlayers : false, displayUnjoinButton: false, 
+        displayInviteToLeagueButton: false, nsLeaguesUserIsAdmin: [], displayUninviteToLeagueButton: false, pendingInviteRequestId : "", 
+        displayJoinButton: false, playerCurrentTeamName: "",  playerCurrentTeamId: "", displayCancelReqButton: false, pendingJoinRequestId : "" }
+
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(teamId.trim())) {
+        return response
+    }
+    
+    let team = await UserModel.findOne({ "teamsCreated._id" : new ObjectId(teamId) }, { "teamsCreated.$" : 1, _id : 1 })
+    if (team === null) {
+        return response
+    }
+
+    let createdBy = team._id
+    team = team.teamsCreated[0]
+    if (createdBy.equals(new ObjectId(userId))) {
+        response.displayUpdateButton = true
+        if (team.lookingForPlayers === false) {
+            response.displayTurnOnLookingForPlayers = true
+        } else {
+            response.displayTurnOffLookingForPlayers = true
+        }
+        return response
+    }
+    
+    let isMemberOfTeam = await isTeamPlayer(userId, teamId)
+    if (isMemberOfTeam) {
+        response.displayUnjoinButton = true
+        return response
+    }
+    
+    let inviteToLeague = await hasPendingRequest("APLGI", userId, "", teamId, "")
+    if (inviteToLeague !== null && inviteToLeague.requestStatus === "ACTC") {
+        if (inviteToLeague.hasPending === false && inviteToLeague.nsLeaguesUserIsAdmin.length > 0) {    // is a league admin of the same sport type
+            response.displayInviteToLeagueButton = true
+            response.nsLeaguesUserIsAdmin = inviteToLeague.nsLeaguesUserIsAdmin
+            return response
+        }
+        if (inviteToLeague.hasPending === true) {
+            response.displayUninviteToLeagueButton = true
+            response.pendingInviteRequestId = inviteToLeague.pendingInviteRequestId
+            return response
+        }
+    }
+
+    let joinTeam = await hasPendingRequest("APTMJ", userId, "", teamId, "")
+    if (joinTeam !== null && joinTeam.requestStatus === "ACTC" && joinTeam.canJoinTeam) {
+        if (joinTeam.hasPending === false) {
+            response.displayJoinButton = true
+            response.playerCurrentTeamName = joinTeam.playerCurrentTeamName
+            response.playerCurrentTeamId = joinTeam.playerCurrentTeamId
+            return response
+        }
+        if (joinTeam.hasPending === true) {
+            response.displayCancelReqButton = true
+            response.pendingJoinRequestId = joinTeam.pendingJoinRequestId
+            return response
+        }
+    }
+    return response
 }
 
 export const getTeamsCreated = async function(userId) {
@@ -203,6 +486,19 @@ export const isTeamMember = async function(userId, playerId) {
             return true
         }
         let team = await UserModel.findOne({ _id: new ObjectId(userId), "teamsCreated.players.playerId"  : new ObjectId(playerId) }, { _id: 1})
+        if (team !== null) {
+            return true
+        } else {
+            return false
+        }
+    } else {
+        return false
+    }   
+}
+
+export const isTeamPlayer = async function(userId, teamId) {
+    if (mongoose.isValidObjectId(userId.trim()) && mongoose.isValidObjectId(teamId.trim())) {
+        let team = await UserModel.findOne({ "teamsCreated._id"  : new ObjectId(teamId), "teamsCreated.players.playerId"  : new ObjectId(userId) }, { _id: 1})
         if (team !== null) {
             return true
         } else {
@@ -498,3 +794,61 @@ export const removePlayerFromTeam = async function(userId, teamId, playerId) {
     response.requestStatus = "ACTC"
     return response
 }
+
+export const updateLookingForPlayers = async function(userId, teamId, indicator) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(teamId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid entry parameters"
+        return response
+    }
+    let teamDetails = await getTeamMajorDetails(teamId)
+    if (teamDetails === null) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid team"
+        return response
+    }
+    if (!teamDetails.createdBy.equals(new ObjectId(userId))) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Not authorized to team."
+        return response
+    }
+    if (teamDetails.lookingForPlayers === indicator) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "No necessary change found."
+        return response
+    }
+    await UserModel.updateOne({ _id : new ObjectId(userId), "teamsCreated._id" : new ObjectId(teamId) }, { 
+        $set: {"teamsCreated.$[n1].lookingForPlayers": indicator,
+                "teamsCreated.$[n1].lookingForPlayersChgTmst": new Date() }
+      }, {arrayFilters: [ { "n1._id": new ObjectId(teamId) }] })
+    .then(() => {
+        response.requestStatus = "ACTC"
+    })
+    .catch((error) => {
+        response.requestStatus = "RJCT"
+        response.errMsg = error
+    });
+    return response
+}
+
+export const getTeamMajorDetails = async function(teamId) {
+    if (!mongoose.isValidObjectId(teamId.trim())) {
+        return null
+    }
+    let teamDetails = await UserModel.findOne({"teamsCreated._id"  : new ObjectId(teamId)}, {"teamsCreated.$" : 1})  
+    if (teamDetails === null) {
+        return null
+    }
+    let createdBy = teamDetails._id
+    teamDetails = teamDetails.teamsCreated[0]
+    teamDetails.createdBy = createdBy
+    return teamDetails
+}
+
+const getTimestamp = (daysToAdd) => {
+    let date = new Date();
+    date.setDate(date.getDate() + daysToAdd);
+    return date;
+  }

@@ -9,13 +9,13 @@ import { authenticate, getTokenFromCookies, adminAuthenticate } from "./middlewa
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
-import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname} from "./utils/usersModule.js";
-import { getTeamDetails, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam,
-  removePlayerFromTeam} from "./utils/teamsModule.js";
+import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, changePassword} from "./utils/usersModule.js";
+import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam,
+  removePlayerFromTeam, updateLookingForPlayers} from "./utils/teamsModule.js";
 import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, updateLeague, deleteLeague, canUserCreateNewLeague, 
   getLeagueDetailsAndButtons, updateLookingForTeams} from "./utils/leaguesModule.js";
 import { getMatchDetails, getMatchDetailsUpdate, updateMatch } from "./utils/matchModule.js";
-import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam } from "./utils/requestsModule.js";
+import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joinTeam, unjoinTeam, inviteToLeague } from "./utils/requestsModule.js";
 import { getSportsList } from "./utils/sysParmModule.js";
 import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
 import {getSearchResults} from "./utils/searchModule.js";
@@ -31,13 +31,8 @@ app.use(
     credentials: true,
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token", "Origin", "X-Api-Key", "X-Requested-With", "Accept", "X-XSRF-TOKEN", "XSRF-TOKEN"],
-    // origin: "https://playpal.netlify.app",
-    origin: [
-      "http://127.0.0.1:5173",
-      "https://playpal.netlify.app/",
-      "http://localhost:5173",
-    ],
-    // preflightContinue: true,
+    origin: "https://playpal.netlify.app",
+    preflightContinue: true,
     exposedHeaders: ["*", "Authorization"],
     optionsSuccessStatus: 200
   })
@@ -66,6 +61,18 @@ app.get("/leagues", (req, res) => {
   });
 });
 
+app.get("/teams", (req, res) => {
+  getTeams().then((data) => {
+    res.json(data);
+  });
+});
+
+app.get("/players", (req, res) => {
+  getPlayers().then((data) => {
+    res.json(data);
+  });
+});
+
 app.post("/canusercreatenewleague", authenticate, (req, res) => {
   canUserCreateNewLeague(req.user._id.toString()).then((data) => {
     res.json(data);
@@ -79,21 +86,15 @@ app.post("/league/:leagueid", getTokenFromCookies, (req, res) => {
 });
 
 app.put("/lookingforteamson/:leagueid", authenticate, (req, res) => {
-  updateLookingForTeams(
-    req.user._id.toString(),
-    req.params.leagueid,
-    true
-  ).then((data) => {
+  updateLookingForTeams(req.user._id.toString(), req.params.leagueid, true)
+  .then((data) => {
     res.json(data);
   });
 });
 
 app.put("/lookingforteamsoff/:leagueid", authenticate, (req, res) => {
-  updateLookingForTeams(
-    req.user._id.toString(),
-    req.params.leagueid,
-    false
-  ).then((data) => {
+  updateLookingForTeams(req.user._id.toString(), req.params.leagueid, false)
+  .then((data) => {
     res.json(data);
   });
 });
@@ -101,15 +102,15 @@ app.put("/lookingforteamsoff/:leagueid", authenticate, (req, res) => {
 app.post("/joinleague/:leagueid", authenticate, (req, res) => {
   let teamId = req.body.teamId
   let msg = req.body.msg
-  joinLeague(req.user._id.toString(), teamId, req.params.leagueid, msg).then(
-    (data) => {
+  joinLeague(req.user._id.toString(), teamId, req.params.leagueid, msg)
+  .then((data) => {
       res.json(data);
-    }
-  );
+  });
 });
 
 app.post("/unjoinleague/:leagueid", authenticate, (req, res) => {
-  unjoinLeague(req.user._id.toString(), req.params.leagueid).then((data) => {
+  unjoinLeague(req.user._id.toString(), req.params.leagueid)
+  .then((data) => {
     res.json(data);
   });
 });
@@ -128,9 +129,47 @@ app.post("/startleague/:leagueid", authenticate, (req, res) => {
   });
 });
 
-app.get("/players", (req, res) => {
-  getPlayers().then((data) => {
+app.post("/team/:teamid", getTokenFromCookies, (req, res) => {
+  getTeamDetailsAndButtons(req.userId, req.params.teamid).then((data) => {
     res.json(data);
+  });
+});
+
+app.put("/lookingforplayerson/:teamid", authenticate, (req, res) => {
+  updateLookingForPlayers(req.user._id.toString(), req.params.teamid, true)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.put("/lookingforteamsoff/:teamid", authenticate, (req, res) => {
+  updateLookingForPlayers(req.user._id.toString(), req.params.teamid, false)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/jointeam/:teamid", authenticate, (req, res) => {
+  let msg = req.body.msg
+  joinTeam(req.user._id.toString(), req.params.teamid, msg)
+  .then((data) => {
+      res.json(data);
+  });
+});
+
+app.post("/unjointeam/:teamid", authenticate, (req, res) => {
+  unjoinTeam(req.user._id.toString(), req.params.teamid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/invitetoleague/:teamid", authenticate, (req, res) => {
+  let leagueId = req.body.leagueid
+  let msg = req.body.msg
+  inviteToLeague(req.user._id.toString(), leagueId, req.params.teamid, msg)
+  .then((data) => {
+      res.json(data);
   });
 });
 
@@ -143,11 +182,10 @@ app.post("/player/:playerid", getTokenFromCookies, (req, res) => {
 app.post("/invitetoteam/:playerid", authenticate, (req, res) => {
   let teamId = req.body.teamId
   let msg = req.body.msg
-  inviteToTeam(req.user._id.toString(), teamId, req.params.playerid, msg).then(
-    (data) => {
+  inviteToTeam(req.user._id.toString(), teamId, req.params.playerid, msg)
+  .then((data) => {
       res.json(data);
-    }
-  );
+  });
 });
 
 app.post("/match/:matchid", getTokenFromCookies, (req, res) => {
@@ -335,7 +373,6 @@ app.post("/getleaguedetailsupdate/:leagueid", authenticate, (req, res) => {
 });
 
 app.post("/updateleague/:leagueid", authenticate, (req, res) => {
-  console.log('here')
   updateLeague(req.user._id.toString(), req.params.leagueid, req.body).then(
     (data) => {
       res.json(data);
@@ -345,6 +382,13 @@ app.post("/updateleague/:leagueid", authenticate, (req, res) => {
 
 app.delete("/deleteleague/:leagueid", authenticate, (req, res) => {
   deleteLeague(req.user._id.toString(), req.params.leagueid)
+  .then((data) => {
+      res.json(data);
+  });
+});
+
+app.post("/changepassword", authenticate, (req, res) => {
+  changePassword(req.user._id.toString(), req.body)
   .then((data) => {
       res.json(data);
   });

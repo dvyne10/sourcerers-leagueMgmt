@@ -3,6 +3,8 @@ import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
 
+import { genHash, genSalt } from "./auth.utils.js";
+import { isValidPassword } from "../controllers/userController.js";
 import { getUsersTeams, getTeamsCreated, } from "./teamsModule.js";
 import { getLeagueDetails, getLeaguesCreated, getTeamActiveLeagues } from "./leaguesModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
@@ -704,6 +706,87 @@ export const updateAccount = async function(userId, details) {
     if (user.modifiedCount !== 1) {
         response.requestStatus = "RJCT"
         response.errMsg = "Account update was not successful"
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    return response
+}
+
+export const changePassword = async function(userId, details) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(userId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "User Id is required."
+        return response
+    }
+
+    if (details.currentPassword === "") {
+        response.requestStatus = "RJCT"
+        response.errField = "currentPassword"
+        response.errMsg = "Current password is required."
+        return response
+    }
+    if (details.newPassword === "") {
+        response.requestStatus = "RJCT"
+        response.errField = "newPassword"
+        response.errMsg = "New password is required."
+        return response
+    }
+    if (details.currentPassword === details.newPassword) {
+        response.requestStatus = "RJCT"
+        response.errField = "newPassword"
+        response.errMsg = "Current and new passwords cannot be the same."
+        return response
+    }
+    if (details.confirmNewPassword === "") {
+        response.requestStatus = "RJCT"
+        response.errField = "confirmNewPassword"
+        response.errMsg = "Confirm new password is required."
+        return response
+    }
+    if (details.newPassword !== details.confirmNewPassword) {
+        response.requestStatus = "RJCT"
+        response.errField = "confirmNewPassword"
+        response.errMsg = "New password and confirm new password must be the same."
+        return response
+    }
+
+    const userDetails = await UserModel.findOne({ _id : new ObjectId(userId), userType : "USER", status : "ACTV" }, { password: 1, salt: 1});
+    if (userDetails === null) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid user"
+        return response
+    }
+
+    let hashedPassword = genHash(details.currentPassword, userDetails.salt);
+    if (hashedPassword !== userDetails.password) {
+        response.requestStatus = "RJCT"
+        response.errField = "currentPassword"
+        response.errMsg = "Incorrect current password"
+        return response
+    }
+
+    let passwordCheck = await isValidPassword(details.newPassword)
+    if (!passwordCheck.valid) {
+        response.requestStatus = "RJCT"
+        response.errField = "newPassword"
+        response.errMsg = passwordCheck.errMsg
+        return response
+    }
+
+    const newSalt = genSalt();
+    hashedPassword = genHash(details.newPassword, newSalt)
+    let user = await UserModel.updateOne({ _id : new ObjectId(userId), userType : "USER", status : "ACTV"}, {
+        $set: { 
+            password: hashedPassword,
+            salt: newSalt,
+        } 
+    })
+    if (user.modifiedCount !== 1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Password update was not successful"
         return response
     }
     

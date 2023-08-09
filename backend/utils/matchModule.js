@@ -98,6 +98,8 @@ export const getMatchDetails = async function(userId, matchId) {
                 index = sportDetails.stats.findIndex(statParm => statParm.statisticsId.equals(stat.statisticsId))
                 if (index !== -1) {
                     return {...stat, statShortDesc : sportDetails.stats[index].statShortDesc, statLongDesc : sportDetails.stats[index].statLongDesc}
+                } else {
+                    return {...stat}
                 }
             })
             promised = getUserFullname(player.playerId.toString(), "")
@@ -120,6 +122,8 @@ export const getMatchDetails = async function(userId, matchId) {
                 index = sportDetails.stats.findIndex(statParm => statParm.statisticsId.equals(stat.statisticsId))
                 if (index !== -1) {
                     return {...stat, statShortDesc : sportDetails.stats[index].statShortDesc, statLongDesc : sportDetails.stats[index].statLongDesc}
+                } else {
+                    return {...stat}
                 }
             })
             promised = getUserFullname(player.playerId.toString(), "")

@@ -7,8 +7,7 @@ const backend = import.meta.env.MODE === "development" ? "http://localhost:8000"
 
 const LeagueMaintenance = () => {
   
-    const {isSignedIn,responseToken} = useAuth()
-
+    const {isSignedIn, responseToken} = useAuth()
     const token = `Bearer ${responseToken}`
     const routeParams = useParams();
     const inputFileBanner = useRef(null);

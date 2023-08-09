@@ -9,8 +9,8 @@ const backend = import.meta.env.MODE === "development" ? "http://localhost:8000"
 
 const AccountMaintenance = () => {
   //hooks
-  let { isSignedIn, registerUser, registrationError } = useAuth()
-
+  let { isSignedIn, registerUser, registrationError, responseToken } = useAuth()
+  const token = `Bearer ${responseToken}`
   const location = useLocation();
   const routeParams = useParams();
   const inputFile = useRef();
@@ -81,7 +81,8 @@ const AccountMaintenance = () => {
         method: "POST",
         credentials: 'include',
         headers: {
-            "Content-Type": "Application/JSON"
+          "Content-Type": "Application/JSON",
+          "Authorization": token
         }
       })
       .then(response => response.json())
@@ -261,7 +262,8 @@ const AccountMaintenance = () => {
           credentials: 'include',
           body: JSON.stringify(data),
           headers: {
-              "Content-Type": "Application/JSON"
+            "Content-Type": "Application/JSON",
+            "Authorization": token
           }
         })
         .then(response => response.json())
