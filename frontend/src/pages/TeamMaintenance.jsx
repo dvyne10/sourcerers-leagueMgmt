@@ -32,8 +32,10 @@ const TeamMaintenance = () => {
     const [didPlayersChange, setPlayersChanged] = useState(false)
     const [errorMessage, setErrorMessage] = useState([]);
     const [positionOptions, setPositionOptions] = useState([ {label: "Team Captain", value: "SCP01"}, {label: "Goalkeeper", value: "SCP02"}, {label: "Defender", value: "SCP03"} ])
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        setIsLoading(true)
         fetch(`${backend}/getsportslist`)
             .then(response => response.json())
             .then(resp => {
@@ -47,6 +49,7 @@ const TeamMaintenance = () => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
         if (url === "create") {
             handleAction({type: "Creation", title: "Create Team"})
+            setIsLoading(false)
         } else {
             handleAction({type: "Update", title: "Update Team", protectSport: true })
             fetch(`${backend}/getteamdetailsupdate/${routeParams.teamid}`, {
@@ -93,8 +96,10 @@ const TeamMaintenance = () => {
                     })
                     setPositionOptions(positionsFromDb.sort((a,b) => a.label > b.label ? 1 : -1))
                 }
+                setIsLoading(false)
             }).catch((error) => {
                 console.log(error)
+                setIsLoading(false)
             })
         }
     }, [location.pathname]);
@@ -102,6 +107,7 @@ const TeamMaintenance = () => {
     useEffect(() => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
         if (url === "update" && isSignedIn) {
+            setIsLoading(true)
             fetch(`${backend}/admin?team=${routeParams.teamid}`, {
                 method: "POST",
                 credentials: 'include',
@@ -112,12 +118,12 @@ const TeamMaintenance = () => {
             })
             .then(response => response.json())
             .then(data=>{
-                console.log(131 + JSON.stringify(data))
                 setTeamAdmin(data)
+                setIsLoading(false)
             }).catch((error) => {
                 console.log(error)
+                setIsLoading(false)
             })
-            console.log(135 + isTeamAdmin)
         }
     }, [location.pathname]);
 
@@ -220,6 +226,7 @@ const TeamMaintenance = () => {
         let error = false
         error = validateInput()
         if (!error) {
+        setIsLoading(true)
         if (action.type === "Creation") {
             data = {...currValues}
                 //data.logo = selectedLogo
@@ -243,8 +250,10 @@ const TeamMaintenance = () => {
                     } else {
                         navigate('/team/' + data.team._id)
                     }
+                    setIsLoading(false)
                 }).catch((error) => {
                     console.log(error)
+                    setIsLoading(false)
                 })
         } else {
             if ( oldValues.teamName == currValues.teamName 
@@ -284,8 +293,10 @@ const TeamMaintenance = () => {
                     } else {
                         navigate('/team/' + routeParams.teamid)
                     }
+                    setIsLoading(false)
                 }).catch((error) => {
                     console.log(error)
+                    setIsLoading(false)
                 })
             } 
         }
@@ -329,6 +340,7 @@ const validateInput = () => {
             alert("You cannot delete a team that has player/s or game history.")
         } else {
             if (confirm("Please confirm if you want to proceed with deletion of this team.")) {
+                setIsLoading(true)
                 fetch(`${backend}/deleteteam/${routeParams.teamid}`, {
                     method: "DELETE",
                     credentials: 'include',
@@ -347,8 +359,10 @@ const validateInput = () => {
                     } else {
                         navigate('/teams')
                     }
+                    setIsLoading(false)
                 }).catch((error) => {
                     console.log(error)
+                    setIsLoading(false)
                 })
             } else {
                 console.log("Deletion cancelled")
@@ -362,6 +376,12 @@ const validateInput = () => {
             <div>
                 {checkIfUserIsSignedIn()}
             </div>
+        )}
+        {isLoading && (
+          <div className="loading-overlay">
+            <div style={{color: 'black'}}>Loading...</div>
+            <div className="loading-spinner"></div>
+          </div>
         )}
         { action.type === "Update" && !isTeamAdmin ? (
             <div>

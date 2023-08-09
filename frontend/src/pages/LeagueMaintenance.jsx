@@ -27,8 +27,10 @@ const LeagueMaintenance = () => {
     const [allowTeamRemoval, setTeamRemoval] = useState(false)
     const [oldValues, setOldValues] = useState(null)
     const [errorMessage, setErrorMessage] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        setIsLoading(true)
         fetch(`${backend}/getsportslist`)
             .then(response => response.json())
             .then(resp => {
@@ -42,6 +44,7 @@ const LeagueMaintenance = () => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
         if (url === "create") {
             handleAction({type: "Creation", title: "Create League"})
+            setIsLoading(false)
         } else {
             handleAction({type: "Update", title: "Update League", protectSport: false, protectRounds: false})
             fetch(`${backend}/getleaguedetailsupdate/${routeParams.leagueid}`, {
@@ -93,8 +96,10 @@ const LeagueMaintenance = () => {
                         ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, 
                         logo: oldLogo, banner: oldBanner })
                 }
+                setIsLoading(false)
             }).catch((error) => {
                 console.log(error)
+                setIsLoading(false)
             })
         }
     }, [location.pathname]);
@@ -102,6 +107,7 @@ const LeagueMaintenance = () => {
     useEffect(() => {
         const url = window.location.pathname.substring(1,7).toLowerCase()
         if (url === "update" && isSignedIn) {
+            setIsLoading(true)
             fetch(`${backend}/admin?league=${routeParams.leagueid}`, {
                 method: "POST",
                 credentials: 'include',
@@ -113,8 +119,10 @@ const LeagueMaintenance = () => {
             .then(response => response.json())
             .then(data=>{
                 setLeagueAdmin(data)
+                setIsLoading(false)
             }).catch((error) => {
                 console.log(error)
+                setIsLoading(false)
             })
         }
     }, [location.pathname]);
@@ -188,6 +196,7 @@ const LeagueMaintenance = () => {
         error = validateInput()
         if (!error) {
             if (action.type === "Creation") {
+                setIsLoading(true)
                 data = {...currValues}
                 //data.logo = selectedLogo
                 //data.banner = selectedBanner
@@ -210,8 +219,10 @@ const LeagueMaintenance = () => {
                     } else {
                         navigate('/league/' + data.league._id)
                     }
+                    setIsLoading(false)
                 }).catch((error) => {
                     console.log(error)
+                    setIsLoading(false)
                 })
             } else {
                 if ( oldValues.leagueName == currValues.leagueName 
@@ -229,6 +240,7 @@ const LeagueMaintenance = () => {
                 ) {
                     alert("NO CHANGES FOUND!")
                 } else {
+                    setIsLoading(true)
                     data = {...currValues}
                     //data.logo = selectedLogo
                     //data.banner = selectedBanner
@@ -251,8 +263,10 @@ const LeagueMaintenance = () => {
                         } else {
                             navigate('/league/' + routeParams.leagueid)
                         }
+                        setIsLoading(false)
                     }).catch((error) => {
                         console.log(error)
+                        setIsLoading(false)
                     })
                 } 
             }
@@ -377,6 +391,7 @@ const LeagueMaintenance = () => {
             alert("You cannot delete a league that has team/s or game history.")
         } else {
             if (confirm("Please confirm if you want to proceed with deletion of this league.")) {
+                setIsLoading(true)
                 fetch(`${backend}/deleteleague/${routeParams.leagueid}`, {
                     method: "DELETE",
                     credentials: 'include',
@@ -395,8 +410,10 @@ const LeagueMaintenance = () => {
                     } else {
                         navigate('/leagues')
                     }
+                    setIsLoading(false)
                 }).catch((error) => {
                     console.log(error)
+                    setIsLoading(false)
                 })
             } else {
                 console.log("Deletion cancelled")
@@ -427,6 +444,12 @@ const LeagueMaintenance = () => {
             <div>
                 {checkIfUserIsSignedIn()}
             </div>
+        )}
+        {isLoading && (
+          <div className="loading-overlay">
+            <div style={{color: 'black'}}>Loading...</div>
+            <div className="loading-spinner"></div>
+          </div>
         )}
         { action.type == "Update" && !isLeagueAdmin ? (
             <div>

@@ -41,8 +41,10 @@ const AccountMaintenance = () => {
   const [prevState, setPrevState] = useState("");
   const [formError, setFormError] = useState(false);
   const [formErrorArray, setFormErrorArray] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true)
     fetch(`${backend}/getsportslist`)
     .then(response => response.json())
     .then(resp => {
@@ -67,6 +69,7 @@ const AccountMaintenance = () => {
           country: data[0].name,
           province: data[0].states[0].name,
         });
+        setIsLoading(false)
       });
     } else {
       handleAction({
@@ -117,8 +120,10 @@ const AccountMaintenance = () => {
               country: data.details.country, city: data.details.city, province: data.details.province, sports: sportsSelectedValues, image: "x",
             });
         }
+        setIsLoading(false)
     }).catch((error) => {
         console.log(error)
+        setIsLoading(false)
     })
     }
   }, [location.pathname]);
@@ -237,7 +242,9 @@ const AccountMaintenance = () => {
     currValues.sportsOfInterest = []
     sportsSelected.map((i) => (currValues.sportsOfInterest.push(i.value)));
     if (action.type === "Register") {
+      setIsLoading(true)
       registerUser(currValues, navigate);
+      setIsLoading(false)
     } else {
       let sportsSelectedValues = "";
       sportsSelected.map(
@@ -256,6 +263,7 @@ const AccountMaintenance = () => {
       ) {
         alert("NO CHANGES FOUND!");
       } else {
+        setIsLoading(true)
         let data = {...currValues}
         fetch(`${backend}/updateaccount`, {
           method: "POST",
@@ -277,8 +285,10 @@ const AccountMaintenance = () => {
           } else {
               navigate(-1)
           }
+          setIsLoading(false)
         }).catch((error) => {
           console.log(error)
+          setIsLoading(false)
         })
       }
     }
@@ -323,6 +333,12 @@ const AccountMaintenance = () => {
             <div>
                 {checkIfUserIsSignedIn()}
             </div>
+        )}
+        {isLoading && (
+          <div className="loading-overlay">
+            <div style={{color: 'black'}}>Loading...</div>
+            <div className="loading-spinner"></div>
+          </div>
         )}
         <form
           onSubmit={(e) => {
