@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BiEnvelopeOpen, BiEnvelope, BiChevronLeft, BiChevronRight } from 'react-icons/bi';
-import useAuth, {checkIfSignedIn} from "../hooks/auth";
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 import { useNavigate } from 'react-router-dom';
 import '../App.css'
 
@@ -9,7 +9,7 @@ const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000'
 const Notification = () => {
   const navigate = useNavigate(); 
   const {isSignedIn} = useAuth();
-
+  const token = `Bearer ${getToken()}`;
   const checkIfUserIsSignedIn = () => {
     checkIfSignedIn()
     .then((user) => {
@@ -26,15 +26,15 @@ const Notification = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchNotifications = async () => {
- 
-
     try {
       const response = await fetch(`${backend}/notifications`, {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'Application/JSON',
+          "Content-Type": "Application/JSON",
+          "Authorization": token
         },
+        
       });
 
       const data = await response.json();

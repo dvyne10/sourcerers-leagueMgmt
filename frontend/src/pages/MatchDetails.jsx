@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
 import useAuth from "../hooks/auth";
+import {getToken} from "../hooks/auth"; 
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app/';
 
@@ -30,7 +31,7 @@ const MatchDetails = () => {
   const routeParams = useParams();
   const { isSignedIn } = useAuth()
   const navigateUpdateMatch = () => { navigate(`/updatematch/${routeParams.matchid}`) }   
-
+  const token = `Bearer ${getToken()}`; 
   const playerListOne = [
     { name: 'Lionel Messi', position: 'MF', goals: 2, assists: 0, image: messiImage},
     { name: 'Cristiano Ronaldo', position: 'FW', goals: 0, assists: 2, image: ronaldoImage },
@@ -66,7 +67,8 @@ const MatchDetails = () => {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
+          "Authorization": token
         },
       });
 
