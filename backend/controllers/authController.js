@@ -4,7 +4,6 @@ import { genHash, generateToken } from "../utils/auth.utils.js";
 import { getSysParmByParmId } from "../utils/sysParmModule.js";
 
 export const login = async (req, res) => {
-  // added changes for cyclic to work
   const { email, password } = req.body;
 
   let user;
