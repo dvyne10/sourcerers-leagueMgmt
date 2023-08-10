@@ -165,12 +165,10 @@ const MatchUpdate = () => {
     }
 
     const checkIfUserIsSignedIn = () => {
-        checkIfSignedIn()
-        .then((user) => {
-          if (!user.isSignedIn) {
+        let user = checkIfSignedIn()
+        if (!user.isSignedIn) {
             navigate("/signin");
           }
-        })
       }
 
     const navigateUpdate = () => {

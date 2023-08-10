@@ -137,14 +137,12 @@ const AccountMaintenance = () => {
   }, [currValues.province]);
 
   const checkIfUserIsSignedIn = () => {
-    checkIfSignedIn()
-    .then((user) => {
-      if (!user.isSignedIn && action.type === "Update") {
-        navigate("/signin");
-      } else if (user.isSignedIn && action.type === "Register") {
-        navigate("/");
-      }
-    })
+    let user = checkIfSignedIn()
+    if (!user.isSignedIn && action.type === "Update") {
+      navigate("/signin");
+    } else if (user.isSignedIn && action.type === "Register") {
+      navigate("/");
+    }
   }
 
   const handlePhotoChange = (event) => {

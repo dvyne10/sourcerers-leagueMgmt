@@ -111,24 +111,17 @@ export const getPlayerDetailsAndButtons = async function(userId, playerId) {
         return playerDetails
     }
     
-    let resp1 = getUsersTeamsAndLeagues(playerId)  // returns an array
-    let resp2 = getTeamsCreated(playerId)   // returns an array
+    let resp1 = getUsersTeamsAndLeagues(playerId)
+    let resp2 = getTeamsCreated(playerId)
     let resp3 = getUserGamesWinsChamps(playerId)
-    let resp4 = getUserStatsTotal(playerId)  //returns an array
-    let resp5 = getLeaguesCreated(playerId) //returns an array
+    let resp4 = getUserStatsTotal(playerId)
+    let resp5 = getLeaguesCreated(playerId)
+    let resp6 = getPlayerButtons(userId, playerId)
 
-    if (mongoose.isValidObjectId(userId.trim())) {
-        let resp6 = getPlayerButtons(userId, playerId)
-        let [activeTeamsLeagues, teamsCreated, playerMatches, statistics, leaguesCreated, buttons] = await Promise.all([resp1, resp2, resp3, resp4, resp5, resp6])
-        playerDetails = {...playerDetails, activeTeams: activeTeamsLeagues.activeTeams, teamsCreated, matches: playerMatches.matches, 
-            pastLeagues: playerMatches.pastLeagues, totalGamesPlayed: playerMatches.totalGamesPlayed, wins: playerMatches.wins, 
-            championships: playerMatches.championships, activeLeagues: activeTeamsLeagues.activeLeagues, statistics, leaguesCreated, buttons}
-    } else {
-        let [activeTeamsLeagues, teamsCreated, playerMatches, statistics, leaguesCreated] = await Promise.all([resp1, resp2, resp3, resp4, resp5])
-        playerDetails = {...playerDetails, activeTeams: activeTeamsLeagues.activeTeams, teamsCreated, matches: playerMatches.matches, 
-            pastLeagues: playerMatches.pastLeagues, totalGamesPlayed: playerMatches.totalGamesPlayed, wins: playerMatches.wins, 
-            championships: playerMatches.championships, activeLeagues: activeTeamsLeagues.activeLeagues, statistics, leaguesCreated}
-    }
+    let [activeTeamsLeagues, teamsCreated, playerMatches, statistics, leaguesCreated, buttons] = await Promise.all([resp1, resp2, resp3, resp4, resp5, resp6])
+    playerDetails = {...playerDetails, activeTeams: activeTeamsLeagues.activeTeams, teamsCreated, matches: playerMatches.matches, 
+        pastLeagues: playerMatches.pastLeagues, totalGamesPlayed: playerMatches.totalGamesPlayed, wins: playerMatches.wins, 
+        championships: playerMatches.championships, activeLeagues: activeTeamsLeagues.activeLeagues, statistics, leaguesCreated, buttons}
     return playerDetails
 }
 

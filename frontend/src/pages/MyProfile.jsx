@@ -12,12 +12,10 @@ const Player = () => {
   const {isSignedIn} = useAuth();
 
   const checkIfUserIsSignedIn = () => {
-    checkIfSignedIn()
-    .then((user) => {
-      if (!user.isSignedIn) {
-        navigate("/signin");
-      }
-    })
+    let user = checkIfSignedIn()
+    if (!user.isSignedIn) {
+      navigate("/signin");
+    }
   }
 
     return (

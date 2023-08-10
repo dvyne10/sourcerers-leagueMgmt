@@ -5,13 +5,14 @@ import { FaSearch, FaUserCircle, FaBell } from "react-icons/fa";
 import { Col, Row } from "react-bootstrap";
 import "./navigationcomponent.css";
 import Dropdown from "react-bootstrap/Dropdown";
-import useAuth from "../hooks/auth";
+import useAuth, {checkIfSignedIn} from "../hooks/auth";
 import { Badge } from "@mui/material";
 import useNotification from "../hooks/notification";
 
 const NavigationComponent = () => {
-  const { isSignedIn, signOut, isAdmin } = useAuth();
   const { notificationCount } = useNotification();
+  const { signOut } = useAuth();
+  let { isSignedIn, isAdmin } = checkIfSignedIn()
 
   return (
     <Navbar
