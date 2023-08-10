@@ -216,4 +216,51 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-export const changePassword = async (req, res) => {};
+export const resetPassword = async (req, res) => {
+  const { newPassword, confirmNewPassword, email } = req.body;
+  if (newPassword !== confirmNewPassword) {
+    return res.send({
+      requestStatus: "RJCT",
+      errMsg: "Password does not match",
+    });
+  }
+
+  const existingUser = await User.findOne({
+    email: new RegExp(`^${email}$`, "i"),
+  });
+
+  if (!existingUser) {
+    return res.send({
+      requestStatus: "RJCT",
+      errMsg: "user does not exist",
+    });
+  }
+
+  let passwordCheck = await isValidPassword(newPassword);
+  if (!passwordCheck.valid) {
+    return res.status(200).send({
+      requestStatus: "RJCT",
+      errMsg: passwordCheck.errMsg,
+    });
+  }
+
+  const salt = genSalt();
+
+  const hashedPassword = await genHash(newPassword, salt);
+
+  let user = await User.findOneAndUpdate(
+    { email: new RegExp(`^${email}$`, "i") },
+    {
+      $set: {
+        password: hashedPassword,
+        salt: salt,
+      },
+    },
+    { new: true }
+  );
+
+  res.send({
+    requestStatus: "ACTC",
+    message: "password changed successfully",
+  });
+};

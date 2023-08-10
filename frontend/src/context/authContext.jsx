@@ -49,6 +49,7 @@ const AuthContextProvider = ({ children }) => {
         setOTPErrorMessage,
         forgotPassword,
         responseToken,
+        resetPassword,
       }}
     >
       {children}
@@ -193,14 +194,31 @@ const AuthContextProvider = ({ children }) => {
   }
 
   async function forgotPassword(email, navigate) {
-    console.log('workng')
     try {
+      await localStorage.setItem("email", JSON.stringify(email));
       const res = await loginService.forgotPassword(email);
-      console.log('workng',9)
       console.log(res);
-      if(res.data){
+      if (res.data) {
         await navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function resetPassword(newPassword, confirmNewPassword, navigate) {
+    try {
+      const data = await localStorage.getItem("email");
+
+      const email = JSON.parse(data);
+      console.log(data);
+      const res = await loginService.resetPassword(
+        newPassword,
+        confirmNewPassword,
+        email
+      );
+      console.log(res);
+      navigate("/signin");
     } catch (error) {
       console.log(error);
     }
