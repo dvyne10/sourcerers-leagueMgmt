@@ -377,12 +377,13 @@ const validateInput = () => {
                 {checkIfUserIsSignedIn()}
             </div>
         )}
-        {isLoading && (
+        {isLoading ? (
           <div className="loading-overlay">
             <div style={{color: 'black'}}>Loading...</div>
             <div className="loading-spinner"></div>
           </div>
-        )}
+        ) : (
+        <>
         { action.type === "Update" && !isTeamAdmin ? (
             <div>
                 <h1>Not authorized to this page !!!</h1>
@@ -574,6 +575,8 @@ const validateInput = () => {
                     </button>
                 </div>
       </Card>
+      )}
+      </>
       )}
     </div>
   );

@@ -445,12 +445,13 @@ const LeagueMaintenance = () => {
                 {checkIfUserIsSignedIn()}
             </div>
         )}
-        {isLoading && (
+        {isLoading ? (
           <div className="loading-overlay">
             <div style={{color: 'black'}}>Loading...</div>
             <div className="loading-spinner"></div>
           </div>
-        )}
+        ) : ( 
+        <>
         { action.type == "Update" && !isLeagueAdmin ? (
             <div>
                 <h1>Not authorized to this page !!!</h1>
@@ -649,6 +650,8 @@ const LeagueMaintenance = () => {
             </div>
             )}
       </Card>
+        )}
+        </>
         )}
     </div>
   );

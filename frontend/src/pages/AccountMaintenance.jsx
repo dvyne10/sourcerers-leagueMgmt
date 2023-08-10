@@ -304,6 +304,23 @@ const AccountMaintenance = () => {
   return (
     <div className="d-flex container mt-5 justify-content-center">
       <Card style={{ width: "60rem", padding: 20 }}>
+        { !isSignedIn && action.type === "Update" && (
+            <div>
+                {checkIfUserIsSignedIn()}
+            </div>
+        )}
+        { isSignedIn && action.type === "Register" && (
+            <div>
+                {checkIfUserIsSignedIn()}
+            </div>
+        )}
+        {isLoading ? (
+          <div className="loading-overlay">
+            <div style={{color: 'black'}}>Loading...</div>
+            <div className="loading-spinner"></div>
+          </div>
+        ) : (
+          <>
         <h2 className="mb-4 center-text">{action.title}</h2>
         {formError && (
           <div
@@ -324,22 +341,7 @@ const AccountMaintenance = () => {
             <p className="mb-0">{registrationError}</p>
           </div>
         )}
-        { !isSignedIn && action.type === "Update" && (
-            <div>
-                {checkIfUserIsSignedIn()}
-            </div>
-        )}
-        { isSignedIn && action.type === "Register" && (
-            <div>
-                {checkIfUserIsSignedIn()}
-            </div>
-        )}
-        {isLoading && (
-          <div className="loading-overlay">
-            <div style={{color: 'black'}}>Loading...</div>
-            <div className="loading-spinner"></div>
-          </div>
-        )}
+        
         <form
           onSubmit={(e) => {
             navigateCreateUpdate(e)
@@ -594,9 +596,10 @@ const AccountMaintenance = () => {
             </button>
           </div>
         </form>
+        </>
+        )}
       </Card>
     </div>
   );
 };
-
 export default AccountMaintenance;
