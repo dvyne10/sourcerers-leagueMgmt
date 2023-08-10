@@ -32,7 +32,7 @@ app.use(
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token", "Origin", "X-Api-Key", "X-Requested-With", "Accept", "X-XSRF-TOKEN", "XSRF-TOKEN"],
     origin: "https://playpal.netlify.app",
-    preflightContinue: true,
+    // preflightContinue: true,
     exposedHeaders: ["*", "Authorization"],
     optionsSuccessStatus: 200
   })
