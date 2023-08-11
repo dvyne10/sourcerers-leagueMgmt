@@ -93,22 +93,11 @@ export const getLeagues = async function() {
 }
 
 export const getLeagueDetailsAndButtons = async function(userId, leagueId) {
-    let league
-    let leagueButtons
-    if (mongoose.isValidObjectId(userId.trim())) {
-        league = getLeagueDetails(leagueId)
-        leagueButtons = getLeagueButtons(userId, leagueId)
-        let [leagueDetails, leagueButtonsInd] = await Promise.all([league, leagueButtons])
-        if (leagueDetails.requestStatus !== "ACTC") {
-            return leagueDetails
-        } else {
-            leagueDetails = {...leagueDetails, buttons: leagueButtonsInd}
-            return leagueDetails
-        }
-    } else {
-        league = await getLeagueDetails(leagueId)
-        return league
-    }
+    let league = getLeagueDetails(leagueId)
+    let leagueButtons = getLeagueButtons(userId, leagueId)
+    let [leagueDetails, leagueButtonsInd] = await Promise.all([league, leagueButtons])
+    leagueDetails = {...leagueDetails, buttons: leagueButtonsInd}
+    return leagueDetails
 }
 
 export const getLeagueDetails = async function(leagueId) {

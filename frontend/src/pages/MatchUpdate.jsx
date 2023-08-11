@@ -165,12 +165,10 @@ const MatchUpdate = () => {
     }
 
     const checkIfUserIsSignedIn = () => {
-        checkIfSignedIn()
-        .then((user) => {
-          if (!user.isSignedIn) {
+        let user = checkIfSignedIn()
+        if (!user.isSignedIn) {
             navigate("/signin");
           }
-        })
       }
 
     const navigateUpdate = () => {
@@ -380,23 +378,25 @@ const MatchUpdate = () => {
     }
   return (
     <div className="d-flex container mt-3 justify-content-center" >
-      <Card style={{ width: "60rem", padding: 20 }}>
-      {isLoading && (
+        { !isSignedIn && (
+            <div>
+                {checkIfUserIsSignedIn()}
+            </div>
+        )}
+        {isLoading ? (
           <div className="loading-overlay">
             <div style={{color: 'black'}}>Loading...</div>
             <div className="loading-spinner"></div>
           </div>
-        )}
+        ) : (
+        <>
+      <Card style={{ width: "60rem", padding: 20 }}>
+      
       {errorMessage.length > 0 && (
             <div className="alert alert-danger mb-3 p-1">
                 {errorMessage.map((err, index) => (
                     <p className="mb-0" key={index}>{err}</p>
                 ))}
-            </div>
-        )}
-        { !isSignedIn && (
-            <div>
-                {checkIfUserIsSignedIn()}
             </div>
         )}
         <form action="">
@@ -572,6 +572,8 @@ const MatchUpdate = () => {
             </div>
         </form>
       </Card>
+      </>
+      )}
     </div>
   );
 };

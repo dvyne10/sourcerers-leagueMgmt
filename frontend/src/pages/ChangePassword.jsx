@@ -15,12 +15,10 @@ const ChangePassword = () => {
   const [errorMessage, setErrorMessage] = useState([]);
 
   const checkIfUserIsSignedIn = () => {
-    checkIfSignedIn()
-    .then((user) => {
-      if (!user.isSignedIn) {
-        navigate("/signin");
-      }
-    })
+    let user = checkIfSignedIn()
+    if (!user.isSignedIn) {
+      navigate("/signin");
+    }
   }
 
   const onInputChange = (e) => {

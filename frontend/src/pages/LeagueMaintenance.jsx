@@ -63,6 +63,7 @@ const LeagueMaintenance = () => {
                         document.getElementById(data.errField).focus()
                     }
                 } else {
+                    setLeagueAdmin(true)
                     setCurrentValues({leagueName: data.details.leagueName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, 
                         location: data.details.location, division: data.details.division, startDate: dateFormat(data.details.startDate, "ISO"), endDate: dateFormat(data.details.endDate, "ISO"), 
                         ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, leagueStatus: data.details.status
@@ -96,29 +97,6 @@ const LeagueMaintenance = () => {
                         ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, 
                         logo: oldLogo, banner: oldBanner })
                 }
-                setIsLoading(false)
-            }).catch((error) => {
-                console.log(error)
-                setIsLoading(false)
-            })
-        }
-    }, [location.pathname]);
-
-    useEffect(() => {
-        const url = window.location.pathname.substring(1,7).toLowerCase()
-        if (url === "update" && isSignedIn) {
-            setIsLoading(true)
-            fetch(`${backend}/admin?league=${routeParams.leagueid}`, {
-                method: "POST",
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "Application/JSON",
-                    "Authorization": token
-                }
-            })
-            .then(response => response.json())
-            .then(data=>{
-                setLeagueAdmin(data)
                 setIsLoading(false)
             }).catch((error) => {
                 console.log(error)
@@ -173,12 +151,10 @@ const LeagueMaintenance = () => {
     }
 
     const checkIfUserIsSignedIn = () => {
-        checkIfSignedIn()
-        .then((user) => {
-          if (!user.isSignedIn) {
+        let user = checkIfSignedIn()
+        if (!user.isSignedIn) {
             navigate("/signin");
           }
-        })
       }
 
     const navigate = useNavigate(); 
@@ -445,12 +421,13 @@ const LeagueMaintenance = () => {
                 {checkIfUserIsSignedIn()}
             </div>
         )}
-        {isLoading && (
+        {isLoading ? (
           <div className="loading-overlay">
             <div style={{color: 'black'}}>Loading...</div>
             <div className="loading-spinner"></div>
           </div>
-        )}
+        ) : ( 
+        <>
         { action.type == "Update" && !isLeagueAdmin ? (
             <div>
                 <h1>Not authorized to this page !!!</h1>
@@ -649,6 +626,8 @@ const LeagueMaintenance = () => {
             </div>
             )}
       </Card>
+        )}
+        </>
         )}
     </div>
   );
