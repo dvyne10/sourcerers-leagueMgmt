@@ -95,22 +95,11 @@ export const getTeamWinsCount = async function(teamId) {
 }
 
 export const getTeamDetailsAndButtons = async function(userId, teamId) {
-    let team
-    let teamButtons
-    if (mongoose.isValidObjectId(userId.trim())) {
-        team = getTeamDetails(teamId)
-        teamButtons = getTeamButtons(userId, teamId)
-        let [teamDetails, teamButtonsInd] = await Promise.all([team, teamButtons])
-        if (teamDetails.requestStatus !== "ACTC") {
-            return teamDetails
-        } else {
-            teamDetails = {...teamDetails, buttons: teamButtonsInd}
-            return teamDetails
-        }
-    } else {
-        team = await getTeamDetails(teamId)
-        return team
-    }
+    let team = getTeamDetails(teamId)
+    let teamButtons = getTeamButtons(userId, teamId)
+    let [teamDetails, teamButtonsInd] = await Promise.all([team, teamButtons])
+    teamDetails = {...teamDetails, buttons: teamButtonsInd}
+    return teamDetails
 }
 
 export const getTeamDetails = async function(teamId) {

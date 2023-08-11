@@ -5,11 +5,10 @@ export const authenticate = async (req, res, next) => {
   let token;
   token = req.header("Authorization").replace("Bearer ", "");
   try {
-    if (token) {
+    if (token && token !== null && token !== "null") {
       const decoded = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
         if (err) {
           console.log(err);
-          // res.status(401).send({ message: "Invalid token" });
         } else {
           return data;
         }
@@ -31,12 +30,13 @@ export const authenticate = async (req, res, next) => {
 export const getTokenFromCookies = async (req, res, next) => {
   let token = req.header("Authorization").replace("Bearer ", "");
   let userId = "";
-  if (token) {
+  if (token && token !== null && token !== "null") {
     const decoded = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
       if (err) {
-        req.userId = ""
+        return {userId: ""}
+      } else {
+        return data;
       }
-      return data;
     });
     userId = decoded.userId;
   }
@@ -47,7 +47,7 @@ export const getTokenFromCookies = async (req, res, next) => {
 export const adminAuthenticate = async (req, res, next) => {
   let token = req.header("Authorization").replace("Bearer ", "");
   try {
-    if (token) {
+    if (token && token !== null & token !== "null") {
       const decoded = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
         if (err) {
           console.log(err);

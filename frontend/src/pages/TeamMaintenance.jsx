@@ -68,6 +68,7 @@ const TeamMaintenance = () => {
                         document.getElementById(data.errField).focus()
                     }
                 } else {
+                    setTeamAdmin(true)
                     setCurrentValues({teamName: data.details.teamName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, 
                         location: data.details.location, division: data.details.division, teamContactEmail: data.details.teamContactEmail, 
                     })
@@ -103,30 +104,6 @@ const TeamMaintenance = () => {
             })
         }
     }, [location.pathname]);
-
-    useEffect(() => {
-        const url = window.location.pathname.substring(1,7).toLowerCase()
-        if (url === "update" && isSignedIn) {
-            setIsLoading(true)
-            fetch(`${backend}/admin?team=${routeParams.teamid}`, {
-                method: "POST",
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "Application/JSON",
-                    "Authorization": token
-                }
-            })
-            .then(response => response.json())
-            .then(data=>{
-                setTeamAdmin(data)
-                setIsLoading(false)
-            }).catch((error) => {
-                console.log(error)
-                setIsLoading(false)
-            })
-        }
-    }, [location.pathname]);
-
 
     const handleLogoChange = event => {
         if (event.target.files.length > 0) {
@@ -199,12 +176,10 @@ const TeamMaintenance = () => {
     }
 
     const checkIfUserIsSignedIn = () => {
-        checkIfSignedIn()
-        .then((user) => {
-          if (!user.isSignedIn) {
+        let user = checkIfSignedIn()
+        if (!user.isSignedIn) {
             navigate("/signin");
-          }
-        })
+        }
       }
 
     const navigate = useNavigate(); 
@@ -377,12 +352,13 @@ const validateInput = () => {
                 {checkIfUserIsSignedIn()}
             </div>
         )}
-        {isLoading && (
+        {isLoading ? (
           <div className="loading-overlay">
             <div style={{color: 'black'}}>Loading...</div>
             <div className="loading-spinner"></div>
           </div>
-        )}
+        ) : (
+        <>
         { action.type === "Update" && !isTeamAdmin ? (
             <div>
                 <h1>Not authorized to this page !!!</h1>
@@ -574,6 +550,8 @@ const validateInput = () => {
                     </button>
                 </div>
       </Card>
+      )}
+      </>
       )}
     </div>
   );

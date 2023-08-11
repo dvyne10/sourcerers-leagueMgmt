@@ -8,10 +8,10 @@ const useAuth = () => {
 
 export default useAuth;
 
-export const checkIfSignedIn = async function(){
+export const checkIfSignedIn = function(){
   let isAdmin = false
   let isSignedIn = false
-  const user = await localStorage.getItem("login");
+  const user = localStorage.getItem("login");
   const parsedUserData = JSON.parse(user);
   if (parsedUserData) {
     isAdmin = parsedUserData.admin ? true : false
@@ -21,7 +21,11 @@ export const checkIfSignedIn = async function(){
 }
 
 export const getToken = function(){
+  let token = null
   const data = localStorage.getItem("token");
   const parsedData = JSON.parse(data);
-  return parsedData
+  if (parsedData) {
+    token = parsedData
+  }
+  return token
 }

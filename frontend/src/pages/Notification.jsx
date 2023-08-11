@@ -11,12 +11,10 @@ const Notification = () => {
   const {isSignedIn} = useAuth();
   const token = `Bearer ${getToken()}`;
   const checkIfUserIsSignedIn = () => {
-    checkIfSignedIn()
-    .then((user) => {
-      if (!user.isSignedIn) {
-        navigate("/signin");
-      }
-    })
+    let user = checkIfSignedIn()
+    if (!user.isSignedIn) {
+      navigate("/signin");
+    }
   }
 
   const [selectedStates, setSelectedStates] = useState(Array(20).fill(false));
