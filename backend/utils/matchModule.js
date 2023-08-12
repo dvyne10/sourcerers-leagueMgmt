@@ -337,7 +337,7 @@ export const updateMatch = async function(userId, matchId, data, userType) {
     let recordUpdated
     if (userType === "ADMIN") {
         recordUpdated = await LeagueModel.updateOne({ "matches._id" : new ObjectId(matchId) }, { 
-            $set: { "matches.$[n1].dateOfMatch" : data.dateOfMatch,
+            $set: { "matches.$[n1].dateOfMatch" : new Date(data.dateOfMatch+":00Z"),
                     "matches.$[n1].locationOfMatch" : data.locationOfMatch,
                     "matches.$[n1].team1.finalScore": data.finalScore1,
                     "matches.$[n1].team1.leaguePoints": data.leaguePoints1,
@@ -354,7 +354,7 @@ export const updateMatch = async function(userId, matchId, data, userType) {
     } else {
         if (match.details.team1.isTeamAdmin) {
             recordUpdated = await LeagueModel.updateOne({ "matches._id" : new ObjectId(matchId) }, { 
-                $set: { "matches.$[n1].dateOfMatch" : data.dateOfMatch,
+                $set: { "matches.$[n1].dateOfMatch" : new Date(data.dateOfMatch+":00Z"),
                         "matches.$[n1].locationOfMatch" : data.locationOfMatch,
                         "matches.$[n1].team1.finalScorePending": scoresAreChanged ? data.finalScore1 : null,
                         "matches.$[n1].team1.leaguePointsPending": scoresAreChanged ? data.leaguePoints1 : null,
@@ -365,7 +365,7 @@ export const updateMatch = async function(userId, matchId, data, userType) {
                 }, {arrayFilters: [ { "n1._id": new ObjectId(matchId) }] })
         } else {
             recordUpdated = await LeagueModel.updateOne({ "matches._id" : new ObjectId(matchId) }, { 
-                $set: { "matches.$[n1].dateOfMatch" : data.dateOfMatch,
+                $set: { "matches.$[n1].dateOfMatch" : new Date(data.dateOfMatch+":00Z"),
                         "matches.$[n1].locationOfMatch" : data.locationOfMatch,
                         "matches.$[n1].team1.finalScorePending": scoresAreChanged ? data.finalScore1 : null,
                         "matches.$[n1].team1.leaguePointsPending": scoresAreChanged ? data.leaguePoints1 : null,

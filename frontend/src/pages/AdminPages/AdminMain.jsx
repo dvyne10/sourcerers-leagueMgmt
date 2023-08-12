@@ -7,12 +7,12 @@ import AdminMatches from "./TabPages/AdminMatches";
 import AdminRequests from "./TabPages/AdminRequests";
 import AdminNotifications from "./TabPages/AdminNotifications";
 import AdminSystemParameters from "./TabPages/AdminSystemParameters";
-import useAuth from "../../hooks/auth";
+import {checkIfSignedIn} from "../../hooks/auth";
 
 const AdminPage = () => {
 
     const [activeTab, setActiveTab] = useState("");
-    const {isSignedIn, isAdmin} = useAuth()
+    let { isSignedIn, isAdmin } = checkIfSignedIn()
     const navigate = useNavigate(); 
     const location = useLocation();
 

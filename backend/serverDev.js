@@ -19,6 +19,9 @@ import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joi
 import { getSportsList } from "./utils/sysParmModule.js";
 import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
 import {getSearchResults} from "./utils/searchModule.js";
+import {adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches,
+  adminGetTeams, adminGetTeamDetails, adminCreateTeam, adminUpdateTeam, adminDeleteTeam
+  } from "./utils/adminModule.js";
 
 dotenv.config();
 connectDB();
@@ -42,7 +45,7 @@ app.use(
     optionsSuccessStatus: 200
   })
 );
-
+  
 app.use((req, res, next) => {
   next();
 });
@@ -423,6 +426,83 @@ app.post("/contactus", (req, res) => {
   .then((data) => {
       res.json(data);
     });
+});
+
+app.post("/admingetusers", adminAuthenticate, (req, res) => {
+  adminGetUsers()
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetuser/:userid", adminAuthenticate, (req, res) => {
+  adminGetUserDetails(req.params.userid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admincreateuser", adminAuthenticate, (req, res) => {
+  adminCreateUser(req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/adminupdateuser/:userid", adminAuthenticate, (req, res) => {
+  adminUpdateUser(req.params.userid, req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.delete("/admindeleteuser/:userid", adminAuthenticate, (req, res) => {
+  adminDeleteUser(req.params.userid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetteams", adminAuthenticate, (req, res) => {
+  adminGetTeams()
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetteamdetails/:teamid", adminAuthenticate, (req, res) => {
+  adminGetTeamDetails(req.params.teamid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admincreateteam", adminAuthenticate, (req, res) => {
+  adminCreateTeam(req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/adminupdateteam/:teamid", adminAuthenticate, (req, res) => {
+  adminUpdateTeam(req.params.teamid, req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.delete("/admindeleteteam/:teamid", adminAuthenticate, (req, res) => {
+  adminDeleteTeam(req.params.teamid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetmatches", adminAuthenticate, (req, res) => {
+  adminGetMatches()
+  .then((data) => {
+    res.json(data);
+  });
 });
 
 app.post("/admingetmatchdetailsupdate/:matchid", adminAuthenticate, (req, res) => {

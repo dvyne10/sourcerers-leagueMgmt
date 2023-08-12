@@ -670,7 +670,7 @@ export const deleteTeam = async function(userId, teamId) {
     if (validate.requestStatus !== "ACTC") {
         response = validate
     } else {
-        let deteteTeam = await UserModel.updateOne({_id : new ObjectId(userId)}, {
+        let deleteTeam = await UserModel.updateOne({_id : new ObjectId(userId)}, {
             $pull: { teamsCreated : {
                 _id: new ObjectId(teamId)
             } } 

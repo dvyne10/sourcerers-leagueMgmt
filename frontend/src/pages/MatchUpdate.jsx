@@ -44,7 +44,6 @@ const MatchUpdate = () => {
         })
         .then(response => response.json())
         .then(data=>{
-            console.log(JSON.stringify(data))
             if (data.requestStatus !== 'ACTC') {
                 navigate(`/match/${routeParams.matchid}`)
             } else {
