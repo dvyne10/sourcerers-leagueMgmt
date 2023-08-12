@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import { useState, useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
-import {useAuth, getToken} from "../hooks/auth";
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
@@ -15,10 +15,11 @@ const backend = import.meta.env.MODE === "development" ? "http://localhost:8000"
 const Player = () => {
 
     
-    const {isSignedIn} = useAuth()
+    
     const routeParams = useParams();
     const token = `Bearer ${getToken()}`
-    const [loading, setLoading] = useState(false);
+    const {isSignedIn} = useAuth();
+    const [loading, setLoading] = useState(true);
     const [showInvite, setShowInvite] = useState(false);
     const handleClose = () => setShowInvite(false);
     const handleShow = () => setShowInvite(true);
@@ -41,8 +42,43 @@ const Player = () => {
     if (url === "myprofile") {
         handleAction({type: "myprofile", title: "My Profile"})
         
-
-        fetch(`${backend}/player/648ba154251b78d7946df338`, {
+        fetch(`${backend}/myprofile`, {
+          method: "PUT",
+          credentials: 'include',
+          headers: {
+              "Content-Type": "Application/JSON",
+              "Authorization": token
+          }
+      })
+      .then(response => response.json())
+      .then(data=>{
+          if (data.requestStatus === 'RJCT') {
+              setErrorMessage([data.errMsg])
+              if (data.errField !== "") {
+                  document.getElementById(data.errField).focus()
+              }
+          } else {
+                  setPlayerInfo(
+                    {fullName: data.details.fullName, email: data.details.email, phone:data.details.phone, userName: data.details.userName, location: data.details.location, sports:data.details.sports,
+                      statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.teamsCreated, pastLeagues:data.pastLeagues, 
+                      matches:data.matches, statistics:data.statistics, totalGamesPlayed:data.totalGamesPlayed, wins:data.wins, championships:data.championships, displayInviteToTeamButton:data.buttons.displayInviteToTeamButton, displayUninviteToTeamButton:data.displayUninviteToTeamButton
+                    
+                    }
+                    
+                  )
+                  setLoading(false)
+      }
+  })
+  .catch((error) => {
+      console.log(error)
+  })
+        
+    }
+    else{
+      
+      handleAction({type: "usprofile", title: "User Profile", protectSport: false, protectRounds: false})
+    }
+    fetch(`${backend}/player/${routeParams.id}`, {
           method: "POST",
           credentials: 'include',
           headers: {
@@ -65,41 +101,7 @@ const Player = () => {
                     
                     }
                   )
-                  setLoading(true)
-      }
-  })
-  .catch((error) => {
-      console.log(error)
-  })
-        
-    }
-    else{
-      
-      handleAction({type: "usprofile", title: "User Profile", protectSport: false, protectRounds: false})
-    }
-    fetch(`${backend}/player/${routeParams.id}`, {
-          method: "POST",
-          credentials: 'include',
-          headers: {
-              "Content-Type": "Application/JSON"
-          }
-      })
-      .then(response => response.json())
-      .then(data=>{
-          if (data.requestStatus === 'RJCT') {
-              setErrorMessage([data.errMsg])
-              if (data.errField !== "") {
-                  document.getElementById(data.errField).focus()
-              }
-          } else {
-                  setPlayerInfo(
-                    {fullName: data.details.fullName, email: data.details.email, phone:data.details.phone, userName: data.details.userName, location: data.details.location, sports:data.details.sports,
-                      statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.teamsCreated, pastLeagues:data.pastLeagues, 
-                      matches:data.matches, statistics:data.statistics, totalGamesPlayed:data.totalGamesPlayed, wins:data.wins, championships:data.championships, displayInviteToTeamButton:data.buttons.displayInviteToTeamButton, displayUninviteToTeamButton:data.displayUninviteToTeamButton
-                    
-                    }
-                  )
-                  setLoading(true)
+                  setLoading(false)
       }
   })
   .catch((error) => {
@@ -122,7 +124,7 @@ const Player = () => {
             </div>
         ) : ( 
         <Container className="mt-5" >
-          {!loading ? (
+          {loading ? (
             errorMessage.length===0 ? ( <div>
               
               <div className="center-wave">
@@ -138,7 +140,7 @@ const Player = () => {
               <div className="wave"></div>
             </div></div>
             
-              ) : (<h1>No user found</h1>)
+              ) : (<h1>{errorMessage[0]}No user found</h1>)
            ) 
             : (
       <Row className="gutters-sm">
@@ -277,10 +279,11 @@ const Player = () => {
 
               <h4 className="center-header">Past Leagues</h4>
               <Row className="justify-content-center">
+                
               
         <Col sm={12} >
           <ListGroup>
-            {playerInfo.activeTeams.length===0 ? <h6 className="center-header">No active teams.</h6> :(
+            {playerInfo.activeTeams.length===0 ? <h6 className="center-header">No past leagues.</h6> :(
           <Row className='text-center mb-3  '>
               <Col md={4}>
                 Name
@@ -317,7 +320,50 @@ const Player = () => {
             </ListGroup>
             </Col>
             </Row>
-            
+            <h1>{playerInfo.displayInviteToTeamButton}</h1>
+
+            <h4 className="center-header">Teams Created</h4>
+              <Row className="justify-content-center">
+              
+        <Col sm={12} >
+          <ListGroup>
+            {playerInfo.teamsCreated.length===0 ? <h6 className="center-header">No teams created.</h6> :(
+          <Row className='text-center mb-3  '>
+              <Col md={4}>
+                Name
+              </Col>
+              <Col md={2}>
+              Start Date
+              </Col>
+              <Col md={2}>
+              End Date
+              </Col>
+              <Col md={3}>
+              Location
+              </Col>
+              </Row>  )}
+              {playerInfo.teamsCreated.map(createdTeam=>(
+                <ListGroup.Item action href={"/league/"+createdTeam.teamId} key={playerInfo.leagueId}>
+              <Row className='text-center'>
+              <Col md={4}>
+                {playerInfo.leagueName}
+              </Col>
+              <Col md={2}>
+              {new Date(playerInfo.startDate).toLocaleDateString('en-US')}
+              </Col>
+              <Col md={2}>
+              {new Date(playerInfo.endDate).toLocaleDateString('en-US')}
+              </Col>
+              <Col md={3}>
+              Toronto
+              </Col>
+              </Row>
+            </ListGroup.Item>
+              ))}
+              
+            </ListGroup>
+            </Col>
+            </Row>
 
                 
             

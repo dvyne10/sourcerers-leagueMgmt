@@ -3,12 +3,13 @@ import { Container, Row, Col, Image, Button } from "react-bootstrap";
 import { useState, useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
-import useAuth from "../hooks/auth";
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
 export default function Players() {
 
   const {isSignedIn} = useAuth()
   const routeParams = useParams();
+  const token = `Bearer ${getToken()}`
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState([]);
   const [playerListing, setPlayerListing] = useState([]);
@@ -23,7 +24,12 @@ const backend = import.meta.env.MODE === "development" ? "http://localhost:8000"
 
 useEffect(() => {
 
-      fetch(`http://localhost:8000/players`)
+  fetch(`${backend}/players`, {
+    headers: {
+        "Content-Type": "Application/JSON",
+        "Authorization": token
+    }
+})
     .then(response => response.json())
     .then(data=>{
         if (data.requestStatus === 'RJCT') {
@@ -111,7 +117,7 @@ useEffect(() => {
         </Container>
 {playerListing.map(player=>(
  <div className="team-individual border-bottom p-2" key={player.playerId}>
-             <a href={"/player/" + player.playerId} className="general-link-no-dec">
+             <a href={"/player/" + player.playerId} className="general-link-no-dec text-decoration-none">
                <div className="mt-2 text-center shadow-1-strong rounded text-white">
                   <Row className="text-center align-items-center mx-auto rounded player-list-container">
                      <Col
@@ -137,13 +143,13 @@ useEffect(() => {
                        lg="2"
                        className="text-center justify-content-center align-items-center mx-auto p-2"
                      >
-                       {" "}
-                       Baris Berber
+                      
+                       {player.fullName}
                      </Col>
                      <Col lg="3" className="text-center">
                        <h1></h1>
                        <h6>{player.activeTeams.map((teams) => {
-           return (<a className="general-link-no-dec text-white" href={`${backend}/team/${teams.teamId}`} key={teams.teamId}>{teams.teamName}</a>)})}</h6>
+           return (<a className="general-link-no-dec text-white" href={`/team/${teams.teamId}`} key={teams.teamId}>{teams.teamName}</a>)})}</h6>
                      </Col>
                      <Col lg="3" className="text-center">
                        <h1></h1>
