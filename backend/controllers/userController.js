@@ -99,7 +99,8 @@ const registerUser = async (req, res) => {
       await user.save();
 
       // generating email
-      const html = generateOTPEmail(otp, userName, email);
+      let emailName = `${firstName} ${lastName}`
+      const html = generateOTPEmail(otp, emailName, email);
 
       // sending the otp through the provided email for verification
       await sendEmail({
@@ -191,10 +192,11 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // generating email
-    const html = generateOTPEmail(otp, user.userName, email);
+    let emailName = `${user.firstName} ${user.lastName}`
+    const html = generateOTPEmail(otp, emailName, email);
 
     await sendEmail({
-      subject: "OTP for password change",
+      subject: "OTP for Password Change",
       html: html,
       to: email,
       from: process.env.EMAIL,
