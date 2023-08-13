@@ -296,9 +296,9 @@ export const approveRequest = async function(userId, notifId) {
                 })
             })
             await Promise.all(promises);
-            response.requestStatus = "ACTC"
-            return response
         }
+        response.requestStatus = "ACTC"
+        return response
     }
 
     if (requestType === "APTMI") {  // approval request from team admin to player to join team
