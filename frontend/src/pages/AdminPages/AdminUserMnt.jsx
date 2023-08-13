@@ -16,7 +16,7 @@ const AdminUserMnt = () => {
     const [action, handleAction] = useState("");
     const [currValues, setCurrentValues] = useState({userName: "", password: "", userType: "USER", email: "", phoneNumber: "",
       firstName: "", lastName: "", country: "", province: "", city: "", announcementsCreated: [{ showInHome: false, announcementMsg: "" }], teamsCreated: [], 
-      requestsSent: [], notifications: [], successfulLoginDetails: [{sourceIPAddress: "", timestamp: null}], 
+      successfulLoginDetails: [{sourceIPAddress: "", timestamp: null}], 
       failedLoginDetails: { numberOfLoginTries: 0, numberOfFailedLogins: 0, failedLogins: [{sourceIPAddress: "", timestamp: null}], consecutiveLockedOuts: 0, lockedTimestamp: null },
       detailsOTP: {OTP: "", expiryTimeOTP: null}
     })
@@ -78,8 +78,6 @@ const AdminUserMnt = () => {
                         userType: details.userType, phoneNumber: details.phoneNumber, firstName: details.firstName, lastName: details.lastName, country: details.country, province: details.province, city: details.city,
                         announcementsCreated: [...details.announcementsCreated],
                         teamsCreated: details.teamsCreated.map(team => team._id), 
-                        requestsSent: details.requestsSent.map(req => req._id), 
-                        notifications: details.notifications.map(notif => notif._id), 
                         successfulLoginDetails: [...details.successfulLoginDetails], 
                         failedLoginDetails: details.failedLoginDetails !== null ? {...details.failedLoginDetails} : currValues.failedLoginDetails,
                         detailsOTP: details.detailsOTP && details.detailsOTP !== null? {...details.detailsOTP} : currValues.detailsOTP, createdAt: details.createdAt, updatedAt: details.updatedAt
@@ -105,7 +103,7 @@ const AdminUserMnt = () => {
                 setIsLoading(false)
             })
         }
-    }, []);
+    }, [location.pathname]);
 
     useEffect(()=> {
         getStates(currValues.country)
@@ -180,7 +178,6 @@ const AdminUserMnt = () => {
         console.log(index)
         let newList = [...currValues.announcementsCreated]
         newList = newList.filter((items, itemIndex) => itemIndex !== index)
-        console.log("131" + JSON.stringify(newList))
         setCurrentValues({ ...currValues, announcementsCreated : newList })
     }
 
@@ -429,22 +426,6 @@ const AdminUserMnt = () => {
                     <div className="col mt-3">
                         {currValues.teamsCreated.map((team) => (
                             <><a href={`/adminteamupdate/${team}`} target="_blank" rel="noreferrer" name="teamsCreated" className="col-10 mb-1" key={team}>{team}</a>
-                            <div className = "col-2 mb-1"></div></>
-                        ))}
-                    </div>
-                    <p/>
-                    <div className="col-2 text-end"><label htmlFor="requestsSent" className="form-label" >Requests Sent</label></div>
-                    <div className="col mb-1">
-                        {currValues.requestsSent.map((req) => (
-                            <><a href={`/adminrequestupdate/${req}`} target="_blank" rel="noreferrer" name="requestsSent" className="col-10 mb-1" key={req}>{req}</a>
-                            <div className = "col-2 mb-1"></div></>
-                        ))}
-                    </div>
-                    <p/>
-                    <div className="col-2 text-end"><label htmlFor="notifications" className="form-label" >Notifications</label></div>
-                    <div className="col mb-1">
-                        {currValues.notifications.map((notif) => (
-                            <><a href={`/adminnotificationupdate/${notif}`} target="_blank" rel="noreferrer" name="notifications" className="col-10 mb-1" key={notif}>{notif}</a>
                             <div className = "col-2 mb-1"></div></>
                         ))}
                     </div>

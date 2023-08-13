@@ -4,24 +4,20 @@ import { useNavigate } from "react-router-dom";
 import useAuth from '../hooks/auth'
 
 const ResetPassword = () => {
-  const {resetPassword} = useAuth()
+  const {resetPassword, resetPasswordError} = useAuth()
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState("");
 
-  // useEffect(() => {
-  //   console.log(error);
-  // }, [error]);
-
   const navigate = useNavigate();
   const navigateSignin = () => {
-    if (error.length > 0) {
-      return;
-    }
-    if (newPassword === confirmNewPassword) {
+    if (newPassword.length < 8 || confirmNewPassword.length < 8) {
+      setError("Password must be at least 8 characters.");
+    } else if (newPassword === confirmNewPassword) {
+      setError("")
       resetPassword(newPassword, confirmNewPassword, navigate);
     } else {
-      setError("password does not match");
+      setError("Passwords do not match");
     }
   };
 
@@ -33,6 +29,11 @@ const ResetPassword = () => {
             <p className="mb-0">{error}</p>
           </div>
         )}
+        {resetPasswordError && resetPasswordError !== "" &&(
+          <div className="alert alert-danger mb-3 p-1">
+            <p className="mb-0">{resetPasswordError}</p>
+          </div>
+        )}
         <h2 className="mb-4 center-text">Reset Password</h2>
         <form action="">
           <div className="mb-3">
@@ -42,14 +43,9 @@ const ResetPassword = () => {
             <input
               id="newPassword"
               name="newPassword"
-              type="text"
+              type="password"
               className="form-control"
               onChange={(e) => {
-                if (e.target.value < 8) {
-                  setError("minimum of eight characters");
-                } else {
-                  setError("");
-                }
                 setNewPassword(e.target.value);
               }}
             />
@@ -61,14 +57,9 @@ const ResetPassword = () => {
             <input
               id="confirmNewPassword"
               name="confirmNewPassword"
-              type="text"
+              type="password"
               className="form-control"
               onChange={(e) => {
-                if (e.target.value < 8) {
-                  setError("minimum of eight characters");
-                } else {
-                  setError("");
-                }
                 setConfirmNewPassword(e.target.value);
               }}
             />

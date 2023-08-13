@@ -4,10 +4,12 @@ import UserModel from "../models/user.model.js";
 
 import { genHash, genSalt } from "./auth.utils.js";
 import { isValidPassword } from "../controllers/userController.js";
+import { getUserFullname } from "./usersModule.js";
 import { getUsersTeams, getTeamsCreated, } from "./teamsModule.js";
 import { getLeagueDetails, getLeaguesCreated, getTeamActiveLeagues } from "./leaguesModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
 import { getSportsList, getSportName, getSysParmById, getPosnAndStatBySport } from "./sysParmModule.js";
+import systemParameterModel from "../models/systemParameter.model.js";
 
 let ObjectId = mongoose.Types.ObjectId;
 const userStatus = [ {desc: "Active", code: "ACTV"}, {desc: "Banned", code: "BAN"},
@@ -551,5 +553,397 @@ export const adminGetMatches = async function() {
 
     response.requestStatus = "ACTC"
     response.details = matches
+    return response
+}
+
+export const adminGetLeagues = async function() {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    let allLeagues = await LeagueModel.find({}, {_id : 1, leagueName: 1, location: 1, division : 1, sportsTypeId: 1})
+
+    if (allLeagues.length === 0) {
+        response.requestStatus = "ACTC"
+        response.errMsg = "No data found"
+        response.details = []
+        return response
+    }
+
+    let sports = []
+    let sportsParms = await getSportsList()
+    if (sportsParms.requestStatus === 'ACTC') {
+        sports = sportsParms.data
+    }
+
+    let sportIndex, sportsName
+    let leagues = []
+    allLeagues.map(league => {
+        sportIndex = sports.findIndex((i) => i.sportsId.equals(league.sportsTypeId))
+        sportsName = sportIndex === -1 ? "" : sports[sportIndex].sportsName
+        leagues.push({leagueId: league._id, leagueName: league.leagueName, location: league.location, division: league.division, sportsName})
+    })
+
+    response.requestStatus = "ACTC"
+    response.details = leagues
+    return response
+}
+
+export const adminGetLeagueDetails = async function(leagueId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(leagueId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "League Id is required."
+        return response
+    }
+ 
+    let league = await LeagueModel.findOne({_id: new ObjectId(leagueId)})
+    .catch((error) => {
+        response.requestStatus = "RJCT"
+        response.errMsg = error
+        return response
+    })
+
+    if (league === null) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "No data found"
+        response.details = {}
+        return response
+    }
+
+    league = {leagueName: league.leagueName, sportsTypeId: league.sportsTypeId, description: league.description, 
+            location: league.location, division: league.division, status: league.status, matches: league.matches,
+            ageGroup: league.ageGroup, numberOfTeams: league.numberOfTeams, numberOfRounds: league.numberOfRounds, startDate: league.startDate, endDate: league.endDate,
+            teams: league.teams, lookingForTeams: league.lookingForTeams, lookingForTeamsChgBy: league.lookingForTeamsChgBy, lookingForTeamsChgTmst: league.lookingForTeamsChgTmst,
+            createdBy: league.createdBy, createdAt: league.createdAt, updatedAt: league.updatedAt}
+    
+    response.requestStatus = "ACTC"
+    response.details = league
+    return response
+}
+
+export const adminCreateLeague = async function(details) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!details.newCreatorId || !mongoose.isValidObjectId(details.newCreatorId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "League creator is required."
+        return response
+    }
+
+    let isValidUser = await getUserFullname(details.newCreatorId, "")
+    if (isValidUser === null || isValidUser.playerId === "") {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid league creator"
+        return response
+    }
+
+    details.status = "NS"
+    let valid = leagueValidation(details)
+    if (valid.requestStatus !== "ACTC") {
+        return valid
+    }
+
+    let newLeague = new LeagueModel({
+        leagueName: details.leagueName,
+        status: "NS",
+        location: details.location,
+        division: details.division,
+        description: details.description,
+        sportsTypeId: details.sportsTypeId,
+        ageGroup: details.ageGroup,
+        numberOfTeams: details.numberOfTeams,
+        numberOfRounds: details.numberOfRounds,
+        startDate: details.startDate,
+        endDate: details.endDate,
+        lookingForTeams: false,
+        createdBy: new ObjectId(details.newCreatorId)
+    })
+    await newLeague.save()
+    .then(() => {
+        response.requestStatus = "ACTC"
+        response.league = newLeague
+    })
+    .catch((error) => {
+        response.requestStatus = "RJCT"
+        response.errMsg = error
+    });
+    return response
+}
+
+export const adminUpdateLeague = async function(leagueId, details) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    
+    if (!mongoose.isValidObjectId(leagueId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "League Id is required."
+        return response
+    }
+
+    let leagueCreator = details.createdBy
+    if (!details.newCreatorId && details.newCreatorId !== "" && !mongoose.isValidObjectId(details.newCreatorId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid league creator"
+        return response
+    } else if (mongoose.isValidObjectId(details.newCreatorId.trim())){
+        leagueCreator = details.newCreatorId
+    }
+    
+    let isValidUser = await getUserFullname(leagueCreator, "")
+    if (isValidUser === null || isValidUser.playerId === "") {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Invalid league creator"
+        return response
+    }
+
+    let valid = leagueValidation(details)
+    if (valid.requestStatus !== "ACTC") {
+        return valid
+    }
+
+    let league = await LeagueModel.updateOne({ _id: new ObjectId(leagueId)}, { 
+        $set: { 
+            status: details.status,
+            leagueName: details.leagueName,
+            location: details.location,
+            division: details.division,
+            description: details.description,
+            sportsTypeId: details.sportsTypeId,
+            ageGroup: details.ageGroup,
+            numberOfTeams: details.numberOfTeams,
+            numberOfRounds: details.numberOfRounds,
+            startDate: details.startDate,
+            endDate: details.endDate,
+            lookingForTeams: details.lookingForTeams,
+            lookingForTeamsChgTmst: details.lookingForTeamsChgTmst,
+            createdBy: new ObjectId(leagueCreator),
+            teams: details.teams
+        } 
+    })
+    if (league.modifiedCount !== 1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "League update was not successful"
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    return response
+}
+
+export const adminDeleteLeague = async function(leagueId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(leagueId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "League Id is required."
+        return response
+    }
+
+    const league = await LeagueModel.deleteOne({ _id : new ObjectId(leagueId) });
+    if (league.deletedCount !== 1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "League deletion was not successful"
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    return response
+}
+
+const leagueValidation = function(details) {
+
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    let ageGroupChars = /[0-9]-[0-9]/
+
+    if (details.leagueName.trim() === "") {
+        response.errMsg = 'League name is required.'
+        response.errField = "leagueName"
+        response.requestStatus = 'RJCT'
+        return response
+    } 
+    if (details.sportsTypeId.trim() === "") {
+        response.errMsg = 'Sport is required.'
+        response.errField = "sport"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    if (details.location.trim() === "") {
+        response.errMsg = 'Location is required.'
+        response.errField = "location"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    if (details.startDate === null || details.startDate.trim() === "") {
+        response.errMsg = 'Start date is required.'
+        response.errField = "startDate"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    let dateChecker = (dateToCheck) => {return (dateToCheck instanceof Date && !isNaN(dateToCheck))}
+    if (!dateChecker(new Date(details.startDate))) {
+        response.errMsg = 'Start date is invalid.'
+        response.errField = "startDate"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    if (details.endDate === null  || details.endDate.trim() === "") {
+        response.errMsg = 'End date is required.'
+        response.errField = "endDate"
+        response.requestStatus = 'RJCT'
+        return response
+    } 
+    if (!dateChecker(new Date(details.endDate))) {
+        response.errMsg = 'End date is invalid.'
+        response.errField = "endDate"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+
+    if (details.endDate < details.startDate) {
+        response.errMsg = 'End date cannot be less than start date.'
+        response.errField = "endDate"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    if (details.ageGroup.trim() === "") {
+        response.errMsg = 'Age group is required.'
+        response.errField = "ageGroup"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    if (!ageGroupChars.test(details.ageGroup.trim())){
+        response.errMsg = 'Age group format is invalid.'
+        response.errField = "ageGroup"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    if (Number(details.ageGroup.trim().substring(0,details.ageGroup.trim().indexOf("-"))) 
+        > Number(details.ageGroup.trim().substring(details.ageGroup.trim().indexOf("-")+1))){
+            response.errMsg = 'Age group value is invalid.'
+            response.errField = "ageGroup"
+            response.requestStatus = 'RJCT'
+            return response
+    }
+    if (details.numberOfTeams < 3 || isNaN(details.numberOfTeams)) {
+        response.errMsg = 'Number of teams cannot be less than 3.'
+        response.errField = "numberOfTeams"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    if (details.numberOfRounds < 1 || isNaN(details.numberOfRounds)) {
+        response.errMsg = 'Number of rounds cannot be less than 1.'
+        response.errField = "numberOfRounds"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    if (details.status !== "NS" && details.status !== "ST" && details.status !== "EN") {
+        response.errMsg = 'Invalid status'
+        response.errField = "status"
+        response.requestStatus = 'RJCT'
+        return response
+    }
+    response.requestStatus = 'ACTC'
+    return response
+}
+
+export const adminGetParms = async function() {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    let allParms = await systemParameterModel.find()
+
+    if (allParms.length === 0) {
+        response.requestStatus = "ACTC"
+        response.errMsg = "No data found"
+        response.details = []
+        return response
+    }
+
+    response.requestStatus = "ACTC"
+    response.details = allParms
+    return response
+}
+
+export const adminGetParmDetails = async function(parmId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(parmId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Parameter Id is required."
+        return response
+    }
+ 
+    let parm = await systemParameterModel.findOne({_id: new ObjectId(parmId)}, { createdBy: 0, createdAt: 0, updatedAt: 0})
+    .catch((error) => {
+        response.requestStatus = "RJCT"
+        response.errMsg = error
+        return response
+    })
+
+    if (parm === null) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "No data found"
+        response.details = {}
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    response.details = parm
+    return response
+}
+
+export const adminCreateParm = async function(details) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    let newParm = new systemParameterModel({...details})
+    await newParm.save()
+    .then(() => {
+        response.requestStatus = "ACTC"
+        response.parm = newParm
+    })
+    .catch((error) => {
+        response.requestStatus = "RJCT"
+        response.errMsg = error
+    });
+    return response
+}
+
+export const adminUpdateParm = async function(parmId, details) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+    
+    if (!mongoose.isValidObjectId(parmId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Parameter Id is required."
+        return response
+    }
+
+    let parm = await systemParameterModel.updateOne({ _id: new ObjectId(parmId)}, { 
+        ...details
+    })
+    if (parm.modifiedCount !== 1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Parameter update was not successful"
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
+    return response
+}
+
+export const adminDeleteParm = async function(parmId) {
+    let response = {requestStatus: "", errField: "", errMsg: ""}
+
+    if (!mongoose.isValidObjectId(parmId.trim())) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Parameter Id is required."
+        return response
+    }
+
+    const parm = await systemParameterModel.deleteOne({ _id : new ObjectId(parmId) });
+    if (parm.deletedCount !== 1) {
+        response.requestStatus = "RJCT"
+        response.errMsg = "Parameter deletion was not successful"
+        return response
+    }
+    
+    response.requestStatus = "ACTC"
     return response
 }

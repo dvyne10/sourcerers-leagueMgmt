@@ -60,8 +60,6 @@ const AdminTeams = () => {
       .then(data=>{
         if (data.requestStatus === 'RJCT') {
             setErrorMessage([data.errMsg])
-        } else {
-            navigate('/adminteams')
         }
         setIsLoading(false)
       }).catch((error) => {

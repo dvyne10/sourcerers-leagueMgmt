@@ -20,7 +20,9 @@ import { getSportsList } from "./utils/sysParmModule.js";
 import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
 import {getSearchResults} from "./utils/searchModule.js";
 import {adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches,
-  adminGetTeams, adminGetTeamDetails, adminCreateTeam, adminUpdateTeam, adminDeleteTeam
+  adminGetTeams, adminGetTeamDetails, adminCreateTeam, adminUpdateTeam, adminDeleteTeam,
+  adminGetLeagues, adminGetLeagueDetails, adminCreateLeague, adminUpdateLeague, adminDeleteLeague,
+  adminGetParms, adminGetParmDetails, adminCreateParm, adminUpdateParm, adminDeleteParm,
   } from "./utils/adminModule.js";
 
 dotenv.config();
@@ -498,6 +500,41 @@ app.delete("/admindeleteteam/:teamid", adminAuthenticate, (req, res) => {
   });
 });
 
+app.post("/admingetleagues", adminAuthenticate, (req, res) => {
+  adminGetLeagues()
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetleaguedetails/:leagueid", adminAuthenticate, (req, res) => {
+  adminGetLeagueDetails(req.params.leagueid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admincreateleague", adminAuthenticate, (req, res) => {
+  adminCreateLeague(req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/adminupdateleague/:leagueid", adminAuthenticate, (req, res) => {
+  adminUpdateLeague(req.params.leagueid, req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.delete("/admindeleteleague/:leagueid", adminAuthenticate, (req, res) => {
+  adminDeleteLeague(req.params.leagueid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
 app.post("/admingetmatches", adminAuthenticate, (req, res) => {
   adminGetMatches()
   .then((data) => {
@@ -514,6 +551,41 @@ app.post("/admingetmatchdetailsupdate/:matchid", adminAuthenticate, (req, res) =
 
 app.post("/adminupdatematch/:matchid", adminAuthenticate, (req, res) => {
   updateMatch(req.user._id.toString(), req.params.matchid, req.body, "ADMIN")
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetparms", adminAuthenticate, (req, res) => {
+  adminGetParms()
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetparmdetails/:parmid", adminAuthenticate, (req, res) => {
+  adminGetParmDetails(req.params.parmid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admincreateparm", adminAuthenticate, (req, res) => {
+  adminCreateParm(req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/adminupdateparm/:parmid", adminAuthenticate, (req, res) => {
+  adminUpdateParm(req.params.parmid, req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.delete("/admindeleteparm/:parmid", adminAuthenticate, (req, res) => {
+  adminDeleteParm(req.params.parmid)
   .then((data) => {
     res.json(data);
   });

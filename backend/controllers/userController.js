@@ -109,10 +109,10 @@ const registerUser = async (req, res) => {
         from: process.env.EMAIL,
       })
         .then(() => {
-          console.log("email has been sent");
+          console.log("Email has been sent");
         })
         .catch((e) => {
-          console.log(`email could not be sent ${e}`);
+          console.log(`Email could not be sent ${e}`);
         });
 
       res.status(201).send({ requestStatus: "ACTC", user });
@@ -173,19 +173,13 @@ export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const otp = generateOTP();
   const otpDate = new Date();
-  const user = await User.findOne({
-    $or: [
-      { userName: new RegExp(`^${email}$`, "i") },
-      { email: new RegExp(`^${email}$`, "i") },
-    ],
-  });
+  const user = await User.findOne({email: new RegExp(`^${email}$`, "i")})
 
-  // check if the provided email or userName exists before saving otp to the user object
-  console.log(user);
+  // check if the provided email exists before saving otp to the user object
   if (!user) {
     res.send({
       requestStatus: "RJCT",
-      errMsg: "The username or email does not exist ",
+      errMsg: "The email does not exist",
     });
   } else {
     // if the user exists generate otp and save
@@ -206,18 +200,18 @@ export const forgotPassword = async (req, res) => {
       from: process.env.EMAIL,
     })
       .then(() => {
-        console.log("email has been sent");
+        console.log("Email has been sent");
+        res.send({ requestStatus: "ACTC" });
       })
       .catch((e) => {
-        console.log(`email could not be sent ${e}`);
+        console.log(`Email could not be sent ${e}`);
+        res.send({ requestStatus: "RJCT" });
       });
-
-    res.send({ requestStatus: "ACTC" });
   }
 };
 
 export const resetPassword = async (req, res) => {
-  const { newPassword, confirmNewPassword, email } = req.body;
+  const { newPassword, confirmNewPassword, email, otp } = req.body;
   if (newPassword !== confirmNewPassword) {
     return res.send({
       requestStatus: "RJCT",
@@ -232,7 +226,14 @@ export const resetPassword = async (req, res) => {
   if (!existingUser) {
     return res.send({
       requestStatus: "RJCT",
-      errMsg: "user does not exist",
+      errMsg: "User does not exist",
+    });
+  }
+
+  if (otp !== existingUser.detailsOTP.OTP) {
+    return res.send({
+      requestStatus: "RJCT",
+      errMsg: "Invalid reset password request",
     });
   }
 
@@ -254,6 +255,7 @@ export const resetPassword = async (req, res) => {
       $set: {
         password: hashedPassword,
         salt: salt,
+        detailsOTP: null
       },
     },
     { new: true }
@@ -261,6 +263,6 @@ export const resetPassword = async (req, res) => {
 
   res.send({
     requestStatus: "ACTC",
-    message: "password changed successfully",
+    message: "Password changed successfully",
   });
 };
