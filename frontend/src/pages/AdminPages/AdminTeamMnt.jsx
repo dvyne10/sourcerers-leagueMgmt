@@ -86,7 +86,7 @@ const AdminTeamMnt = () => {
                 setIsLoading(false)
             })
         }
-    }, []);
+    }, [location.pathname]);
 
     const handleLogoChange = event => {
         if (event.target.files.length > 0) {

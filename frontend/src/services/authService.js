@@ -7,7 +7,6 @@ const BASE_URL =
 
 async function login(email, password) {
   try {
-    console.log(BASE_URL);
     const response = await axios.post(
       `${BASE_URL}/login`,
       {
@@ -52,9 +51,6 @@ async function verifyOTP(data) {
 async function logout() {
   try {
     const response = await axios.post(`${BASE_URL}/logout`);
-
-    console.log(response);
-
     return response;
   } catch (error) {
     console.log(error);
@@ -67,21 +63,19 @@ async function forgotPassword(email) {
     const response = await axios.post(`${BASE_URL}/forgotpassword`, body, {
       withCredentials: true,
     });
-    console.log(response);
     return response;
   } catch (error) {
     console.log(error);
   }
 }
 
-async function resetPassword(newPassword, confirmNewPassword, email) {
-  const body = { newPassword, confirmNewPassword, email };
+async function resetPassword(newPassword, confirmNewPassword, email, otp) {
+  const body = { newPassword, confirmNewPassword, email, otp };
 
   try {
     const response = await axios.post(`${BASE_URL}/resetpassword`, body, {
       withCredentials: true,
     });
-    console.log(response);
     return response;
   } catch (error) {
     console.log(error);

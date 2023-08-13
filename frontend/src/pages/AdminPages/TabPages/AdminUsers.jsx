@@ -61,8 +61,6 @@ const AdminUsers = () => {
       .then(data=>{
         if (data.requestStatus === 'RJCT') {
             setErrorMessage([data.errMsg])
-        } else {
-            navigate('/adminusers')
         }
         setIsLoading(false)
       }).catch((error) => {

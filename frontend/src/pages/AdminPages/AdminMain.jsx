@@ -4,8 +4,6 @@ import AdminUsers from "./TabPages/AdminUsers";
 import AdminTeams from "./TabPages/AdminTeams";
 import AdminLeagues from "./TabPages/AdminLeagues";
 import AdminMatches from "./TabPages/AdminMatches";
-import AdminRequests from "./TabPages/AdminRequests";
-import AdminNotifications from "./TabPages/AdminNotifications";
 import AdminSystemParameters from "./TabPages/AdminSystemParameters";
 import {checkIfSignedIn} from "../../hooks/auth";
 
@@ -26,12 +24,8 @@ const AdminPage = () => {
         setActiveTab("tab3")
       } else if (url === "/adminmatches") {
         setActiveTab("tab4")
-      } else if (url === "/adminrequests") {
-        setActiveTab("tab5")
-      } else if (url === "/adminnotifications") {
-        setActiveTab("tab6")
       } else if (url === "/adminsystemparameters") {
-        setActiveTab("tab7")
+        setActiveTab("tab5")
       }
     }, [location.pathname]);
 
@@ -45,10 +39,6 @@ const AdminPage = () => {
       } else if (tabNum === "tab4") {
         navigate('/adminmatches')
       } else if (tabNum === "tab5") {
-        navigate('/adminrequests')
-      } else if (tabNum === "tab6") {
-        navigate('/adminnotifications')
-      } else if (tabNum === "tab7") {
         navigate('/adminsystemparameters')
       } 
   }
@@ -66,19 +56,15 @@ const AdminPage = () => {
             <li className={activeTab === "tab2" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => navigateTabs("tab2")}>Teams</li>
             <li className={activeTab === "tab3" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => navigateTabs("tab3")}>Leagues</li>
             <li className={activeTab === "tab4" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => navigateTabs("tab4")}>Matches</li>
-            <li className={activeTab === "tab5" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => navigateTabs("tab5")}>Requests</li>
-            <li className={activeTab === "tab6" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => navigateTabs("tab6")}>Notifications</li>
-            <li className={activeTab === "tab7" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => navigateTabs("tab7")}>SysParms</li>
+            <li className={activeTab === "tab5" ? "nav-link active fw-bold text-primary" : "nav-link text-secondary"} onClick={() => navigateTabs("tab5")}>SysParms</li>
           </ul>
           <div className="outlet">
             {activeTab === "tab1" ? <AdminUsers /> 
                 : (activeTab === "tab2" ? <AdminTeams /> 
                 : (activeTab === "tab3" ? <AdminLeagues /> 
                 : (activeTab === "tab4" ? <AdminMatches />
-                : (activeTab === "tab5" ? <AdminRequests />
-                : (activeTab === "tab6" ? <AdminNotifications />
                 : <AdminSystemParameters />
-                )))))
+                )))
             }
           </div>
         </div>

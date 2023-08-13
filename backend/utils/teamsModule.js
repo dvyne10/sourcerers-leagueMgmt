@@ -632,7 +632,6 @@ export const getTeamDetailsForUpdate = async function(userId, teamId) {
 export const updateTeam = async function(userId, teamId, data){
     let response = {requestStatus: "", errField: "", errMsg: ""}
 
-    console.log(JSON.stringify(data.players))
     data.teamId = teamId
     let validate = await teamValidation(data, "CHG", userId)
 
@@ -716,7 +715,6 @@ export const teamValidation = async function(data, requestType, userId) {
     let teamHasGames = null
     if (requestType !== "NEW") {
         teamHasGames = await LeagueModel.find({ "teams.teamId" : new ObjectId(data.teamId) })
-        console.log(JSON.stringify(teamHasGames))
     }
     if (requestType === "DEL" && teamHasGames !== null && teamHasGames.length !== 0) {
         response.errMsg = 'Team with matches cannot be deleted.'
