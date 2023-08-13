@@ -581,6 +581,7 @@ export const joinLeague = async function(userId, teamId, leagueId, msg) {
         })
         await Promise.all(promises);
         response.requestStatus = "ACTC"
+        response.pendingRequestId = pendingRequestId
         return response
     }
     return response
@@ -861,6 +862,7 @@ export const inviteToTeam = async function(userId, teamId, playerId, msg) {
             } } 
         })
         response.requestStatus = "ACTC"
+        response.pendingInviteRequestId = pendingRequestId
         return response
     }
     return response
@@ -933,6 +935,7 @@ export const joinTeam = async function(userId, teamId, msg) {
             } } 
         })
         response.requestStatus = "ACTC"
+        response.pendingJoinRequestId = pendingJoinRequestId
         return response
     }
     return response
@@ -1048,6 +1051,7 @@ export const inviteToLeague = async function(userId, leagueId, teamId, msg) {
             } } 
         })
         response.requestStatus = "ACTC"
+        response.pendingInviteRequestId = pendingRequestId
         return response
     }
     return response
