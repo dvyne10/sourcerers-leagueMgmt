@@ -637,7 +637,7 @@ export const rejectRequest = async function(userId, notifId) {
                     "matches.$[n1].team1.leaguePointsPending": null,
                     "matches.$[n1].team2.finalScorePending": null,
                     "matches.$[n1].team2.leaguePointsPending": null }
-            }, {arrayFilters: [ { "n1._id": new ObjectId(notif.notificationDetails.substring(0,30).trim()) }] })
+            }, {arrayFilters: [ { "n1._id": new ObjectId(notif.notificationDetails.trim()) }] })
         if (recordUpdated.modifiedCount !== 1) {
             response.requestStatus = "RJCT"
             response.errMsg = "Match update was not successful"

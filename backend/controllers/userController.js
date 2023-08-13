@@ -174,7 +174,7 @@ export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const otp = generateOTP();
   const otpDate = new Date();
-  const user = await User.findOne({email: new RegExp(`^${email}$`, "i")})
+  const user = await User.findOne({email: new RegExp(`^${email}$`, "i"), status: 'ACTV'})
 
   // check if the provided email exists before saving otp to the user object
   if (!user) {
@@ -222,7 +222,7 @@ export const resetPassword = async (req, res) => {
   }
 
   const existingUser = await User.findOne({
-    email: new RegExp(`^${email}$`, "i"),
+    email: new RegExp(`^${email}$`, "i"), status: 'ACTV'
   });
 
   if (!existingUser) {

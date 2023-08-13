@@ -6,7 +6,13 @@ export const generateToken = (res, userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
+  return token;
+};
 
+export const generateTokenAdmin = (res, userId) => {
+  const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: "10m",
+  });
   return token;
 };
 

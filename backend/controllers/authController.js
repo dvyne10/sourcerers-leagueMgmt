@@ -1,6 +1,6 @@
 import UserModel from "../models/user.model.js";
 import SysParmModel from "../models/systemParameter.model.js";
-import { genHash, generateToken } from "../utils/auth.utils.js";
+import { genHash, generateToken, generateTokenAdmin } from "../utils/auth.utils.js";
 import { getSysParmByParmId } from "../utils/sysParmModule.js";
 
 export const login = async (req, res) => {
@@ -35,7 +35,11 @@ export const login = async (req, res) => {
             message: "User is not allowed to login.",
           });
         } else {
-          token = generateToken(res, user._id);
+          if (user.userType === "ADMIN") {
+            token = generateTokenAdmin(res, user._id)
+          } else {
+            token = generateToken(res, user._id);
+          }
           let succLogin
           if (user.successfulLoginDetails) {
             if (user.successfulLoginDetails.length >= loginParm.numberOfLoginDtlsToKeep) {
