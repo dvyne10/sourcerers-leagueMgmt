@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import { getUserFullname } from "./usersModule.js";
-import { getTeamDetails, getTeamAdmin } from "./teamsModule.js";
+import { getTeamDetails, getTeamAdmin, getTeamName } from "./teamsModule.js";
 import { getPosnAndStatBySport, getNotifParmByNotifId } from "./sysParmModule.js";
+import { genNotifMsg } from "./notificationsModule.js";
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -402,26 +403,27 @@ export const updateMatch = async function(userId, matchId, data, userType) {
         // Send notification to other team Id
         let newReq = await UserModel.findOne({ _id : new ObjectId(userId) }, { requestsSent: 1, _id: 0 })
         let index = newReq.requestsSent.length -1
-        //Eagles vs Scorpions (Score: null-null Points: null-null
-        let parm1 = matchId + "                              "
-        let scoreparm1 = data.finalScore1.toString() + "     "
-        let scoreparm2 = data.finalScore2.toString() + "     "
-        let pointparm1 = data.leaguePoints1.toString() + "     "
-        let pointparm2 = data.leaguePoints2.toString() + "     "
-        let notifMsg = parm1.substring(0,30) + scoreparm1.substring(0,5) + scoreparm2.substring(0,5) + pointparm1.substring(0,5) + pointparm2.substring(0,5)
+
+        let promise1 = getTeamName(match.details.team1.teamId.toString())
+        let promise2 = getTeamName(match.details.team2.teamId.toString())
+        let [teamName1, teamName2] = await Promise.all([promise1, promise2])
+        let matchDetailMsg = `${teamName1} vs ${teamName2} (Score: ${data.finalScore1}-${data.finalScore2} Points: ${data.leaguePoints1}-${data.leaguePoints2})`
+        let senderTeamId = match.details.team1.isTeamAdmin ? match.details.team1.teamId : match.details.team2.teamId
+        let notifMsg = await genNotifMsg("APMDU", userId, senderTeamId.toString(), match.details.leagueId.toString(), matchDetailMsg, "")
         await UserModel.updateOne({ _id : otherTeamAdmin }, { 
             $push: { notifications : {
                 readStatus: false,
                 notificationType: notif.data._id,
                 senderUserId: new ObjectId(userId),
-                senderTeamId: match.details.team1.isTeamAdmin ? match.details.team1.teamId : match.details.team2.teamId,
+                senderTeamId: senderTeamId,
                 senderLeagueId: match.details.leagueId,
                 forAction: {
                     requestId: newReq.requestsSent[index]._id,
                     actionDone: null,
                     actionTimestamp: null
                 },
-                notificationDetails: notifMsg
+                notificationMsg: notifMsg,
+                notificationDetails: matchId
             } } 
         })
         

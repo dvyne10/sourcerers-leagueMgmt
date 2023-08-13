@@ -17,9 +17,9 @@ import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, upd
 import { getMatchDetails, getMatchDetailsUpdate, updateMatch } from "./utils/matchModule.js";
 import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joinTeam, unjoinTeam, inviteToLeague } from "./utils/requestsModule.js";
 import { getSportsList } from "./utils/sysParmModule.js";
-import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
-import {getSearchResults} from "./utils/searchModule.js";
-import {adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches,
+import { getUnreadNotifsCount, getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
+import { getSearchResults } from "./utils/searchModule.js";
+import { adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches,
   adminGetTeams, adminGetTeamDetails, adminCreateTeam, adminUpdateTeam, adminDeleteTeam,
   adminGetLeagues, adminGetLeagueDetails, adminCreateLeague, adminUpdateLeague, adminDeleteLeague,
   adminGetParms, adminGetParmDetails, adminCreateParm, adminUpdateParm, adminDeleteParm,
@@ -226,6 +226,13 @@ app.get("/finduser/:username", (req, res) => {
   });
 });
 
+app.post("/notifunreadcount", authenticate, (req, res) => {
+  getUnreadNotifsCount(req.user._id.toString())
+  .then((data) => {
+      res.json(data);
+    });
+});
+
 app.post("/notifications", authenticate, (req, res) => {
   getUserNotifications(req.user._id.toString())
   .then((data) => {
@@ -329,7 +336,7 @@ app.get("/testing", (req, res) => {
   //getUserNotifications("648e7e34db2a68344fda3906") //tRobles
   //getTeamDetailsAndButtons("648e5a24db2a68344fda38e1", "648e224f91a1a82229a6c11f")
   //getTeamMajorDetails("648ba154251b78d7946df344")
-  updateLookingForPlayers("648ba154251b78d7946df338", "648ba154251b78d7946df344", false)
+  getUnreadNotifsCount("648e7e34db2a68344fda38fa")
   .then((data) => {
     res.json(data);
   });

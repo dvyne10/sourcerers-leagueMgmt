@@ -6,6 +6,7 @@ import { getTeamDetails, getTeamsCreated, getUsersTeams, isTeamMember, getTeamMa
     getTeamAdmin, removePlayerFromTeam } from "./teamsModule.js";
 import { getLeagueDetails, isLeagueAdmin, getLeagueButtons, getLeagueAdmins, getNSLeaguesUserIsAdmin } from "./leaguesModule.js";
 import { getNotifParmByNotifId, getSysParmByParmId, getSysParmList } from "./sysParmModule.js"
+import { genNotifMsg } from "./notificationsModule.js"
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -559,6 +560,7 @@ export const joinLeague = async function(userId, teamId, leagueId, msg) {
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingRequestId = reqDetails.pendingRequestId
         let admins = await getLeagueAdmins(leagueId)
+        let notifMsg = await genNotifMsg(notifId, userId, teamId, leagueId, "", msg)
         const promises = admins.map(async function(admin) {
             await UserModel.updateOne({ _id : admin.userId }, { 
                 $push: { notifications : {
@@ -572,6 +574,7 @@ export const joinLeague = async function(userId, teamId, leagueId, msg) {
                         actionDone: null,
                         actionTimestamp: null
                     },
+                    notificationMsg: notifMsg,
                     notificationDetails: msg
                 } } 
             })
@@ -625,6 +628,7 @@ export const unjoinLeague = async function(userId, leagueId) {
     // TO DO - remove all notifs to or requests from user that is related to that leagueId !!!!!
 
     // Send notifications to league admins
+    let notifMsg = await genNotifMsg(notifId, userId, teamToUnjoin.toString(), leagueId, "", "")
     const promise2 = admins.map(async function(admin) {
         if (!admin.userId.equals(userId)) {
             await UserModel.updateOne({ _id : admin.userId }, { 
@@ -634,6 +638,7 @@ export const unjoinLeague = async function(userId, leagueId) {
                     senderUserId: new ObjectId(userId),
                     senderTeamId: teamToUnjoin,
                     senderLeagueId: new ObjectId(leagueId),
+                    notificationMsg: notifMsg,
                 } } 
             })
         }
@@ -689,6 +694,7 @@ export const startLeague = async function(userId, leagueId) {
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingRequestId = reqDetails.pendingStartLeagueRequestId
         let admins = await getLeagueAdmins(leagueId)
+        let notifMsg = await genNotifMsg(notifId, userId, "", leagueId, "", "")
         const promises = admins.map(async function(admin) {
             if (!admin.userId.equals(new ObjectId(userId))) {       // send to all admins except requestor
                 await UserModel.updateOne({ _id : admin.userId }, { 
@@ -702,6 +708,7 @@ export const startLeague = async function(userId, leagueId) {
                             actionDone: null,
                             actionTimestamp: null
                         },
+                        notificationMsg: notifMsg,
                     } } 
                 })
             }
@@ -837,6 +844,7 @@ export const inviteToTeam = async function(userId, teamId, playerId, msg) {
     let reqDetails = await hasPendingRequest(notifId, userId, playerId, "", "")
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingRequestId = reqDetails.pendingInviteRequestId
+        let notifMsg = await genNotifMsg(notifId, userId, teamId, "", "", msg)
         await UserModel.updateOne({ _id : new ObjectId(playerId) }, { 
             $push: { notifications : {
                 readStatus: false,
@@ -848,6 +856,7 @@ export const inviteToTeam = async function(userId, teamId, playerId, msg) {
                     actionDone: null,
                     actionTimestamp: null
                 },
+                notificationMsg: notifMsg,
                 notificationDetails: msg
             } } 
         })
@@ -907,6 +916,7 @@ export const joinTeam = async function(userId, teamId, msg) {
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingJoinRequestId = reqDetails.pendingJoinRequestId
         let admin = reqDetails.teamCreatedBy
+        let notifMsg = await genNotifMsg(notifId, userId, teamId, "", "", msg)
         await UserModel.updateOne({ _id : admin }, { 
             $push: { notifications : {
                 readStatus: false,
@@ -918,6 +928,7 @@ export const joinTeam = async function(userId, teamId, msg) {
                     actionDone: null,
                     actionTimestamp: null
                 },
+                notificationMsg: notifMsg,
                 notificationDetails: msg
             } } 
         })
@@ -959,12 +970,14 @@ export const unjoinTeam = async function(userId, teamId) {
     }
 
     // Send notification to team admin
+    let notifMsg = await genNotifMsg(notifId, userId, teamId, "", "", msg)
     await UserModel.updateOne({ _id : admin }, { 
         $push: { notifications : {
             readStatus: false,
             notificationType: notif.data._id,
             senderUserId: new ObjectId(userId),
             senderTeamId: new ObjectId(teamId),
+            notificationMsg: notifMsg,
         } } 
     })
     response.requestStatus = "ACTC"
@@ -1017,6 +1030,7 @@ export const inviteToLeague = async function(userId, leagueId, teamId, msg) {
     let reqDetails = await hasPendingRequest(notifId, userId, "", teamId, "")
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingRequestId = reqDetails.pendingInviteRequestId
+        let notifMsg = await genNotifMsg(notifId, userId, teamId, leagueId, "", msg)
         await UserModel.updateOne({ _id : teamAdmin }, { 
             $push: { notifications : {
                 readStatus: false,
@@ -1029,6 +1043,7 @@ export const inviteToLeague = async function(userId, leagueId, teamId, msg) {
                     actionDone: null,
                     actionTimestamp: null
                 },
+                notificationMsg: notifMsg,
                 notificationDetails: msg
             } } 
         })
