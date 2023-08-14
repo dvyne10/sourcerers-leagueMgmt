@@ -17,6 +17,7 @@ const notificationsSchema = Schema(
       actionDone: String,
       actionTimestamp: Date,
     },
+    notificationMsg: String,
     notificationDetails: String,
   },
   {

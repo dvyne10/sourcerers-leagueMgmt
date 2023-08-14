@@ -99,7 +99,8 @@ const registerUser = async (req, res) => {
       await user.save();
 
       // generating email
-      const html = generateOTPEmail(otp, userName, email);
+      let emailName = `${firstName} ${lastName}`
+      const html = generateOTPEmail(otp, emailName, email);
 
       // sending the otp through the provided email for verification
       await sendEmail({
@@ -173,7 +174,7 @@ export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const otp = generateOTP();
   const otpDate = new Date();
-  const user = await User.findOne({email: new RegExp(`^${email}$`, "i")})
+  const user = await User.findOne({email: new RegExp(`^${email}$`, "i"), status: 'ACTV'})
 
   // check if the provided email exists before saving otp to the user object
   if (!user) {
@@ -191,10 +192,11 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // generating email
-    const html = generateOTPEmail(otp, user.userName, email);
+    let emailName = `${user.firstName} ${user.lastName}`
+    const html = generateOTPEmail(otp, emailName, email);
 
     await sendEmail({
-      subject: "OTP for password change",
+      subject: "OTP for Password Change",
       html: html,
       to: email,
       from: process.env.EMAIL,
@@ -220,7 +222,7 @@ export const resetPassword = async (req, res) => {
   }
 
   const existingUser = await User.findOne({
-    email: new RegExp(`^${email}$`, "i"),
+    email: new RegExp(`^${email}$`, "i"), status: 'ACTV'
   });
 
   if (!existingUser) {

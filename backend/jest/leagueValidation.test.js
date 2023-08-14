@@ -14,9 +14,9 @@ let data = {
     numberOfRounds: 1,
     startDate: "2023-07-17",
     endDate: "2023-07-31",
-    leagueId: "64b44ece24a426f0d78c1016"
+    leagueId: "64c3dfc45fb6e744a574b730"
 }
-let userId = "648ba154251b78d7946df339"
+let userId = "648e529fdf54411c8f837779"
 let newData = {}
 
 describe('League Validation - leagueValidation() function', function () {

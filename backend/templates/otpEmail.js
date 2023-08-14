@@ -1,4 +1,4 @@
-export const generateOTPEmail = (otp, userName, email) => {
+export const generateOTPEmail = (otp, emailName, email) => {
   return `<html lang="en">
             <head>
                 <meta charset="UTF-8" />
@@ -41,7 +41,7 @@ export const generateOTPEmail = (otp, userName, email) => {
             </head>
             <body>
                 <div class="wrapper">
-                    <p>Hello ${userName},</p>
+                    <p>Hello ${emailName},</p>
                     <p>Your One-Time Password (OTP) is</p>
                     <div class="otp-wrapper">
                         <p class="otp"><b>${otp}</b></p>

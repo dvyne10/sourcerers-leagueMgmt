@@ -17,9 +17,9 @@ import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, upd
 import { getMatchDetails, getMatchDetailsUpdate, updateMatch } from "./utils/matchModule.js";
 import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joinTeam, unjoinTeam, inviteToLeague } from "./utils/requestsModule.js";
 import { getSportsList } from "./utils/sysParmModule.js";
-import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
-import {getSearchResults} from "./utils/searchModule.js";
-import {adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches,
+import { getUnreadNotifsCount, getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
+import { getSearchResults } from "./utils/searchModule.js";
+import { adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches,
   adminGetTeams, adminGetTeamDetails, adminCreateTeam, adminUpdateTeam, adminDeleteTeam,
   adminGetLeagues, adminGetLeagueDetails, adminCreateLeague, adminUpdateLeague, adminDeleteLeague,
   adminGetParms, adminGetParmDetails, adminCreateParm, adminUpdateParm, adminDeleteParm,
@@ -218,6 +218,13 @@ app.get("/finduser/:username", (req, res) => {
   .then((data) => {
     res.json(data);
   });
+});
+
+app.post("/notifunreadcount", authenticate, (req, res) => {
+  getUnreadNotifsCount(req.user._id.toString())
+  .then((data) => {
+      res.json(data);
+    });
 });
 
 app.post("/notifications", authenticate, (req, res) => {
