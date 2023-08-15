@@ -19,7 +19,6 @@ import {
 import handlebars from "handlebars";
 
 const registerUser = async (req, res) => {
-  // console.log(req,'this is the request')
   const {
     firstName,
     lastName,

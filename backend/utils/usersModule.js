@@ -800,3 +800,22 @@ export const changePassword = async function(userId, details) {
     response.requestStatus = "ACTC"
     return response
 }
+
+export const unlockAccounts = async function() {
+    await UserModel.updateMany({ status : "LOCK", "failedLoginDetails.lockedTimestamp" : { $lte : new Date()} }, {
+        $set: { 
+            status: "ACTV", 
+            "failedLoginDetails.lockedTimestamp": null,
+            "failedLoginDetails.numberOfLoginTries": 0, 
+            "failedLoginDetails.numberOfFailedLogins": 0
+        } 
+    })
+    return
+}
+
+export const deletePendingAccounts = async function() {
+    const currDate = new Date();
+    let housekeepDate = currDate.setMinutes(currDate.getMinutes() - 5);
+    await UserModel.deleteMany({ status : "PEND", "detailsOTP.expiryTimeOTP" : { $lte : housekeepDate} })
+    return
+}

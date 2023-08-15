@@ -1,14 +1,32 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react'; 
 import LeagueCard from "../components/LeagueCard";
 import useAuth from "../hooks/auth";
 
+const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
 export default function Leagues() {
+  const [leagues, setLeagues] = useState(null); 
   const navigate = useNavigate();
   const { isSignedIn  } = useAuth()
   const navigateCreateLeague = () => {
     navigate("/createleague");
   };
+
+  const fetchLeagues = async () => {
+    try {
+      const response = await fetch(`${backend}/leagues`);
+      const data = await response.json();
+      setLeagues(data.details);  
+      console.log(data.details);
+    } catch (error) {
+      console.error('Error fetching top leagues data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeagues(); 
+  }, []);
   return (
     <>
       <div
@@ -28,7 +46,7 @@ export default function Leagues() {
             <p>Filter</p> */}
           </div>
           <div>
-            <h1>LEAGUES</h1>
+            <h1 style={{marginLeft: '50%'}}>LEAGUES</h1>
           </div>
           <div className="d-flex">
             { isSignedIn && (
@@ -92,34 +110,27 @@ export default function Leagues() {
         </div>
       </div>
       <div>
-        <LeagueCard
-          name={"York League 2023"}
-          status={"ongoing"}
-          totalTeams={12}
-          teamsJoined={12}
-          expanded={true}
-          onClick={() => {
-            navigate("/league/648e9013466c1c995745907c");
-          }}
-        />
-        <LeagueCard
-          name={"Mississauga League 2023"}
-          status={"finished"}
-          totalTeams={12}
-          teamsJoined={6}
-          onClick={() => {
-            navigate("/league/648e9018466c1c9957459258");
-          }}
-        />
-        <LeagueCard
-          name={"Hogsmeade League 2023"}
-          status={"open"}
-          totalTeams={12}
-          teamsJoined={9}
-          onClick={() => {
-            navigate("/league/648ba154251b78d7946df35d");
-          }}
-        />
+      <div>
+        {leagues &&
+          leagues.map((league, index) => (
+            <LeagueCard
+              key={league.leagueId} 
+              name={league.leagueName}
+              teams={league.teams}
+              status={league.status}
+              totalTeams={league.teams.length}
+              teamsJoined={league.numberOfTeams}
+              startDate={league.startDate}
+              endDate={league.endDate}
+              expanded={index === 0}
+              leagueAdmin={league.createdByName}
+              pastMatches={league.matches}
+              onClick={() => {
+                navigate(`/league/${league.leagueId}`);
+              }}
+            />
+          ))}
+      </div>
       </div>
     </>
   );

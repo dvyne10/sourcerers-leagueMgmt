@@ -90,12 +90,10 @@ const AuthContextProvider = ({ children }) => {
       if (resp.data) {
         setIsLoading(false);
         const { requestStatus, token } = resp.data;
-
-        updateHTTPHeaders(token);
-        setResponseToken(token);
-        await localStorage.setItem("token", JSON.stringify(token));
-
         if (requestStatus === "ACTC") {
+          updateHTTPHeaders(token);
+          setResponseToken(token);
+          await localStorage.setItem("token", JSON.stringify(token));
           const { user } = resp.data;
           setSignedIn(true);
           if (user.userType === "USER") {

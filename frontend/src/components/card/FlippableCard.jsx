@@ -4,7 +4,7 @@ import { CSSTransition } from 'react-transition-group';
 import { useState } from 'react'; 
 import PropTypes from 'prop-types'; 
 
-const FlippableCard = ({ imageUrl, cardText, teams }) => {
+const FlippableCard = ({ imageUrl, cardText, teams, leagueId }) => {
     const [showFront, setShowFront] = useState(true);
 
     return (
@@ -21,6 +21,7 @@ const FlippableCard = ({ imageUrl, cardText, teams }) => {
                     imageUrl={imageUrl}
                     cardText={cardText}
                     teams={teams}
+                    leagueId={leagueId}
                     style={{
                         width: '100%',  // Set width as needed
                         height: 'auto', // Maintain aspect ratio
@@ -41,6 +42,7 @@ FlippableCard.propTypes = {
             teamName: PropTypes.string.isRequired,
         })
     ).isRequired,
+    leagueId: PropTypes.string,
 };
 
 export default FlippableCard;

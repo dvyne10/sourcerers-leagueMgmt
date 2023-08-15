@@ -211,8 +211,6 @@ export const adminUpdateUser = async function(userId, details) {
             city: details.city,
             sportsOfInterest: details.sportsOfInterest,
             announcementsCreated: details.userType === "ADMIN" ? details.announcementsCreated : [],
-            // requestsSent: details.requestsSent,
-            // notifications: details.notifications,
             successfulLoginDetails: details.successfulLoginDetails,
             failedLoginDetails: details.failedLoginDetails,
             detailsOTP: details.detailsOTP

@@ -93,13 +93,23 @@ export const login = async (req, res) => {
             failedLogins = [{sourceIPAddress: "IPtemp", timestamp: new Date()}]
           }
           if (maxFailedReached === false) {
-            await UserModel.updateOne({ _id: user._id}, {    
-              $set: { failedLoginDetails : {
-                numberOfLoginTries: maxLogins,
-                numberOfFailedLogins: ( user.failedLoginDetails.numberOfFailedLogins ? user.failedLoginDetails.numberOfFailedLogins + 1 : 1 ),
-                failedLogins:  failedLogins
-              } },
-            })
+            if (user.failedLoginDetails.numberOfLoginTries) {
+              await UserModel.updateOne({ _id: user._id}, {    
+                $set: { 
+                  "failedLoginDetails.numberOfLoginTries": maxLogins,
+                  "failedLoginDetails.numberOfFailedLogins": ( user.failedLoginDetails.numberOfFailedLogins ? user.failedLoginDetails.numberOfFailedLogins + 1 : 1 ),
+                  "failedLoginDetails.failedLogins":  failedLogins
+                } },
+              )
+            } else {
+              await UserModel.updateOne({ _id: user._id}, {    
+                $set: { failedLoginDetails : {
+                  numberOfLoginTries: maxLogins,
+                  numberOfFailedLogins: ( user.failedLoginDetails.numberOfFailedLogins ? user.failedLoginDetails.numberOfFailedLogins + 1 : 1 ),
+                  failedLogins:  failedLogins
+                } },
+              })
+            }
             res.status(200).send({
               requestStatus: "RJCT",
               message: "Incorrect email/username or password",

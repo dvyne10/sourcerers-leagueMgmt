@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
+import SysParmModel from "../models/systemParameter.model.js";
 import { getUserFullname } from "./usersModule.js";
 import { getTeamName } from "./teamsModule.js";
 import { getLeagueMajorDetails, getLeagueAdmins } from "./leaguesModule.js";
 import { getNotifParmByNotifId, getSysParmById, getSysParmList } from "./sysParmModule.js"
 import { getRequestStatus } from "./requestsModule.js"
-import { getMatchDetails } from "./matchModule.js"
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -436,13 +436,13 @@ export const approveRequest = async function(userId, notifId) {
         resp1 = getNotifParmByNotifId("NTFLGN")
         resp2 = getLeagueAdmins(notif.senderLeagueId.toString())
         let resp3 = genNotifMsg("NTFLGN", "", notif.senderTeamId.toString(), notif.senderLeagueId.toString(), "", "")
-        let [newNotif, admins, notifMsg2] = await Promise.all([resp1, resp2, resp3])
+        let [newNotif2, admins, notifMsg2] = await Promise.all([resp1, resp2, resp3])
         const promises = admins.map(async function(admin) {
-            if (!admin.userId.equals(notif.senderUserId)) {
+            if (!admin.userId.equals(notif.senderUserId) && !admin.userId.equals(new ObjectId(userId))) {
                 await UserModel.updateOne({ _id : admin.userId }, { 
                     $push: { notifications : {
                         readStatus: false,
-                        notificationType: newNotif.data._id,
+                        notificationType: newNotif2.data._id,
                         senderTeamId: notif.senderTeamId,
                         senderLeagueId: notif.senderLeagueId,
                         notificationMsg: notifMsg2,
@@ -472,7 +472,7 @@ export const approveRequest = async function(userId, notifId) {
         
         // Send notification to requestor team admin
         newNotif = await getNotifParmByNotifId("NTFLGJA")
-        let notifMsg = await genNotifMsg("NTFLGJA", userId, senderTeamId.toString(), notif.senderLeagueId.toString(), "", "")
+        let notifMsg = await genNotifMsg("NTFLGJA", userId, notif.senderTeamId.toString(), notif.senderLeagueId.toString(), "", "")
         await UserModel.updateOne({ _id : notif.senderUserId }, { 
             $push: { notifications : {
                 readStatus: false,
@@ -488,14 +488,14 @@ export const approveRequest = async function(userId, notifId) {
         // Send notifications to other league admins
         resp1 = getNotifParmByNotifId("NTFLGN")
         resp2 = getLeagueAdmins(notif.senderLeagueId.toString())
-        let resp3 = genNotifMsg("NTFLGN", "", senderTeamId.toString(), notif.senderLeagueId.toString(), "", "")
-        let [newNotif, admins, notifMsg2] = await Promise.all([resp1, resp2, resp3])
+        let resp3 = genNotifMsg("NTFLGN", "", notif.senderTeamId.toString(), notif.senderLeagueId.toString(), "", "")
+        let [newNotif2, admins, notifMsg2] = await Promise.all([resp1, resp2, resp3])
         const promises = admins.map(async function(admin) {
-            if (!admin.userId.equals(new ObjectId(userId))) {
+            if (!admin.userId.equals(new ObjectId(userId)) && !admin.userId.equals(notif.senderUserId)) {
                 await UserModel.updateOne({ _id : admin.userId }, { 
                     $push: { notifications : {
                         readStatus: false,
-                        notificationType: newNotif.data._id,
+                        notificationType: newNotif2.data._id,
                         senderTeamId: notif.senderTeamId,
                         senderLeagueId: notif.senderLeagueId,
                         notificationMsg: notifMsg2,
@@ -511,7 +511,7 @@ export const approveRequest = async function(userId, notifId) {
     
     if (requestType === "APLGS") {  // approval to start league
         recordToUpdate = await LeagueModel.findOne({ _id : notif.senderLeagueId }, { 
-            teams: 1, _id:0
+            teams: 1, _id: 0, numberOfRounds: 1
         })
         //Generate match rosters
         let genMatches = []
@@ -542,12 +542,12 @@ export const approveRequest = async function(userId, notifId) {
         resp1 = getNotifParmByNotifId("NTFLGS")
         resp2 = getLeagueAdmins(notif.senderLeagueId.toString())
         let resp3 = genNotifMsg("NTFLGS", "", "", notif.senderLeagueId.toString(), "", "")
-        let [newNotif, admins, notifMsg] = await Promise.all([resp1, resp2, resp3])
+        let [newNotif1, admins, notifMsg] = await Promise.all([resp1, resp2, resp3])
         const promises = admins.map(async function(admin) {
             await UserModel.updateOne({ _id : admin.userId }, { 
                 $push: { notifications : {
                     readStatus: false,
-                    notificationType: newNotif.data._id,
+                    notificationType: newNotif1.data._id,
                     senderLeagueId: notif.senderLeagueId,
                     notificationMsg: notifMsg,
                     notificationDetails: notif.forAction.requestId.toString()
@@ -559,13 +559,13 @@ export const approveRequest = async function(userId, notifId) {
         // Update any pending request/invite to join league to EXP
         resp1 = getNotifParmByNotifId("APLGJ")
         resp2 = getNotifParmByNotifId("APLGI")
-        let [newNotif1, newNotif2] = await Promise.all([resp1, resp2])
+        let [newNotif2, newNotif3] = await Promise.all([resp1, resp2])
         await UserModel.updateMany(
-            { $or : [ {"requestsSent.requestType" : newNotif1.data._id, "requestsSent.receiverLeagueId" : notif.senderLeagueId, "requestsSent.requestStatus" : "PEND"},
-                {"requestsSent.requestType" : newNotif2.data._id, "requestsSent.receiverLeagueId" : notif.senderLeagueId, "requestsSent.requestStatus" : "PEND"}]
+            { $or : [ {"requestsSent.requestType" : newNotif2.data._id, "requestsSent.receiverLeagueId" : notif.senderLeagueId, "requestsSent.requestStatus" : "PEND"},
+                {"requestsSent.requestType" : newNotif3.data._id, "requestsSent.receiverLeagueId" : notif.senderLeagueId, "requestsSent.requestStatus" : "PEND"}]
             }, { $set: { "requestsSent.$[n1].requestStatus": "EXP"} 
-            }, {arrayFilters: [ { $or : [ {"n1.receiverLeagueId": notif.senderLeagueId, "n1.requestType" : newNotif1.data._id }, 
-                                        {"n1.receiverLeagueId": notif.senderLeagueId, "n1.requestType" : newNotif2.data._id }
+            }, {arrayFilters: [ { $or : [ {"n1.receiverLeagueId": notif.senderLeagueId, "n1.requestType" : newNotif2.data._id }, 
+                                        {"n1.receiverLeagueId": notif.senderLeagueId, "n1.requestType" : newNotif3.data._id }
             ] }] })
 
         response.requestStatus = "ACTC"
@@ -630,7 +630,7 @@ export const rejectRequest = async function(userId, notifId) {
         $set: { "requestsSent.$[n1].requestStatus": "RJCT" }
         }, {arrayFilters: [ { "n1._id": notif.forAction.requestId }] })
 
-    let recordToUpdate, recordUpdated, newNotif
+    let recordUpdated, newNotif
     if (requestType === "APMDU") {  // approval for match details update
         recordUpdated = await LeagueModel.updateOne({ "matches._id" : new ObjectId(notif.notificationDetails.trim()) }, { 
             $set: { "matches.$[n1].team1.finalScorePending": null,
@@ -751,6 +751,18 @@ export const processContactUsMsgs = async function(msgBody) {
     })
     return ""
 
+}
+
+export const housekeepNotifications = async function() {
+    let parms = await SysParmModel.findOne({ parameterId: "maxParms"}, {maxParms: 1}).exec();
+    let notifHousekeeping = parms.maxParms.notifHousekeeping
+    let housekeepDate = getTimestamp(notifHousekeeping * -1)
+    await UserModel.updateMany({ "notifications.createdAt" : { $lte : housekeepDate} }, {
+        $pull: { notifications: {
+            createdAt: { $lte : housekeepDate}
+        }} 
+    })
+    return
 }
 
 const getTimestamp = (daysToAdd) => {
