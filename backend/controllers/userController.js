@@ -18,7 +18,15 @@ import {
 } from "../utils/auth.utils.js";
 import handlebars from "handlebars";
 
+const SERVER_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:8000"
+    : "https://panicky-robe-mite.cyclic.app/";
+
 const registerUser = async (req, res) => {
+  let profileImageUrl;
+  const photoPath = "profilepictures";
+  // console.log(req,'this is the request')
   const {
     firstName,
     lastName,
@@ -31,6 +39,11 @@ const registerUser = async (req, res) => {
     password,
     phoneNumber,
   } = req.body;
+
+  console.log(req.file.filename);
+
+  console.log(req.body);
+  // return;
 
   const existingUsername = await User.findOne({
     userName: new RegExp(`^${userName}$`, "i"),
@@ -69,6 +82,12 @@ const registerUser = async (req, res) => {
 
   const hashedPassword = await genHash(password, salt);
 
+  if (req.file.filename) {
+    profileImageUrl = `${SERVER_URL}/${photoPath}/${req.file.filename}`;
+  }
+
+  console.log(profileImageUrl)
+
   const user = await User({
     status: "PEND",
     userName,
@@ -83,6 +102,7 @@ const registerUser = async (req, res) => {
     sportsOfInterest,
     salt,
     phoneNumber,
+    profileImage: profileImageUrl,
   }).save();
 
   try {
@@ -98,7 +118,7 @@ const registerUser = async (req, res) => {
       await user.save();
 
       // generating email
-      let emailName = `${firstName} ${lastName}`
+      let emailName = `${firstName} ${lastName}`;
       const html = generateOTPEmail(otp, emailName, email);
 
       // sending the otp through the provided email for verification
@@ -173,7 +193,10 @@ export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const otp = generateOTP();
   const otpDate = new Date();
-  const user = await User.findOne({email: new RegExp(`^${email}$`, "i"), status: 'ACTV'})
+  const user = await User.findOne({
+    email: new RegExp(`^${email}$`, "i"),
+    status: "ACTV",
+  });
 
   // check if the provided email exists before saving otp to the user object
   if (!user) {
@@ -191,7 +214,7 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // generating email
-    let emailName = `${user.firstName} ${user.lastName}`
+    let emailName = `${user.firstName} ${user.lastName}`;
     const html = generateOTPEmail(otp, emailName, email);
 
     await sendEmail({
@@ -221,7 +244,8 @@ export const resetPassword = async (req, res) => {
   }
 
   const existingUser = await User.findOne({
-    email: new RegExp(`^${email}$`, "i"), status: 'ACTV'
+    email: new RegExp(`^${email}$`, "i"),
+    status: "ACTV",
   });
 
   if (!existingUser) {
@@ -256,7 +280,7 @@ export const resetPassword = async (req, res) => {
       $set: {
         password: hashedPassword,
         salt: salt,
-        detailsOTP: null
+        detailsOTP: null,
       },
     },
     { new: true }

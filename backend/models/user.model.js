@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 import notificationsSchema from "./subSchemas/notification.schema.js";
 import requestsSentSchema from "./subSchemas/request.schema.js";
-import teamschema from "./subSchemas/team.schema.js"
+import teamschema from "./subSchemas/team.schema.js";
 
 const userSchema = Schema(
   {
@@ -13,7 +13,7 @@ const userSchema = Schema(
     userName: { type: String, unique: true, required: true, index: true },
     email: { type: String, unique: true, required: true, index: true },
     password: { type: String, required: true },
-    salt: { type: String, unique: true, required: true }, 
+    salt: { type: String, unique: true, required: true },
     userType: { type: String, enum: ["USER", "ADMIN"], required: true },
     announcementsCreated: [
       {
@@ -35,21 +35,17 @@ const userSchema = Schema(
       },
     ],
     teamsCreated: [teamschema],
-    profileImage: {
-      _id: false,
-      data: Buffer,
-      contentType: String,
-    },
+    profileImage: { type: String },
     requestsSent: [requestsSentSchema],
     notifications: [notificationsSchema],
     successfulLoginDetails: [
       {
         _id: false,
         sourceIPAddress: {
-          type: String
+          type: String,
         },
         timestamp: {
-          type: Date
+          type: Date,
         },
       },
     ],
@@ -89,8 +85,7 @@ const userSchema = Schema(
 );
 
 function isRegular() {
-  return this.userType == 'USER' ? true : false;
+  return this.userType == "USER" ? true : false;
 }
-
 
 export default model("user", userSchema);

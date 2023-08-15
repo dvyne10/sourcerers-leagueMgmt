@@ -125,6 +125,7 @@ const AuthContextProvider = ({ children }) => {
   }
 
   async function registerUser(currentValues, navigate) {
+    console.log(currentValues)
     try {
       const response = await loginService.registerUser(currentValues);
       if (response) {
@@ -158,7 +159,7 @@ const AuthContextProvider = ({ children }) => {
           setSignedIn(true);
           navigate("/");
         } else if (requestStatus === "ACTC" && nextPage === "/resetpassword") {
-          let store = {email, otp}
+          let store = { email, otp };
           localStorage.setItem("otp", JSON.stringify(store));
           navigate("/resetpassword");
         } else {
@@ -200,20 +201,22 @@ const AuthContextProvider = ({ children }) => {
   async function forgotPassword(email, navigate) {
     if (email === "") {
       setForgotPasswordError("Email address is required");
-      navigate("/forgotpassword")
+      navigate("/forgotpassword");
     } else {
       try {
-        let store = {email}
+        let store = { email };
         await localStorage.setItem("otp", JSON.stringify(store));
         const res = await loginService.forgotPassword(email);
         if (res.data) {
-          await navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
+          await navigate("/inputotp", {
+            state: { fromPage: "ForgotPassword" },
+          });
         }
         if (res) {
           const { requestStatus } = res.data;
           if (requestStatus === "RJCT") {
             setForgotPasswordError(res.data.errMsg);
-            navigate("/forgotpassword")
+            navigate("/forgotpassword");
           } else {
             navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
           }
@@ -228,7 +231,7 @@ const AuthContextProvider = ({ children }) => {
     try {
       const data = await localStorage.getItem("otp");
 
-      const {email, otp} = JSON.parse(data);
+      const { email, otp } = JSON.parse(data);
       console.log(data);
       const res = await loginService.resetPassword(
         newPassword,
@@ -240,7 +243,7 @@ const AuthContextProvider = ({ children }) => {
         const { requestStatus } = res.data;
         if (requestStatus === "RJCT") {
           setResetPasswordError(res.data.errMsg);
-          navigate("/resetpassword")
+          navigate("/resetpassword");
         } else {
           await localStorage.removeItem("otp");
           navigate("/signin");
@@ -250,6 +253,20 @@ const AuthContextProvider = ({ children }) => {
       console.log(error);
     }
   }
+
+  // async function uploadProfilePhoto(file) {
+  //   try {
+  //     const formData = new FormData();
+
+  //     formData.append("photo", file);
+
+  //     const response = await loginService.uploadProfilePloto(formData)
+
+  //     console.log(response)
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 };
 
 AuthContext.ProviderWrapper = AuthContextProvider;
