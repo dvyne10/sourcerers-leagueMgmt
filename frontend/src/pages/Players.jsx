@@ -19,7 +19,7 @@ export default function Players() {
 
 
 
-const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 
 useEffect(() => {

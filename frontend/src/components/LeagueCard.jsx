@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Collapse from "react-bootstrap/Collapse";
 import { format } from 'date-fns';
 
-const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app/';
+const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
 const LeagueCard = ({
   name,

@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import {format} from 'date-fns'; 
 
-const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app/';
+const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
 const LiveCard = ({ match, onClickTeamIcon }) => {
   const formattedMatchDate = format(new Date(match.dateOfMatch), 'yyyy-MM-dd');

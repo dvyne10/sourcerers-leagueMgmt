@@ -14,7 +14,7 @@ export default function Teams() {
   const navigateCreateTeam = () => {
     navigate("/createTeam");
   };
-  const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
+  const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
   
   useEffect(()=>{
   fetch(`${backend}/teams`)
