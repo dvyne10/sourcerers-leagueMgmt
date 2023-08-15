@@ -58,7 +58,6 @@ const Player = () => {
                   document.getElementById(data.errField).focus()
               }
           } else {
-            console.log(JSON.stringify(data.details))
                   setPlayerInfo(
                     {playerId: data.details.playerId, fullName: data.details.fullName, email: data.details.email, phone:data.details.phone, userName: data.details.userName, location: data.details.location, sports:data.details.sports,
                       statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.leaguesCreated, pastLeagues:data.pastLeagues, 

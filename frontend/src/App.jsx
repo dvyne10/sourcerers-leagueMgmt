@@ -4,7 +4,7 @@ import routes from "./routes";
 import NavigationComponent from "./components/NavigationComponent";
 import FooterComponent from "./components/FooterComponent";
 import AuthContext from "./context/authContext";
-import NotificationContext from "./context/notificatonContext";
+import NotificationContext from "./context/notificationContext";
 
 export default function App() {
   return (
