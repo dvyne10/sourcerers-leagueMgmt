@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
+import SysParmModel from "../models/systemParameter.model.js";
 import { getUserFullname } from "./usersModule.js";
 import { getTeamName } from "./teamsModule.js";
 import { getLeagueMajorDetails, getLeagueAdmins } from "./leaguesModule.js";
 import { getNotifParmByNotifId, getSysParmById, getSysParmList } from "./sysParmModule.js"
 import { getRequestStatus } from "./requestsModule.js"
-import { getMatchDetails } from "./matchModule.js"
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -751,6 +751,18 @@ export const processContactUsMsgs = async function(msgBody) {
     })
     return ""
 
+}
+
+export const housekeepNotifications = async function() {
+    let parms = await SysParmModel.findOne({ parameterId: "maxParms"}, {maxParms: 1}).exec();
+    let notifHousekeeping = parms.maxParms.notifHousekeeping
+    let housekeepDate = getTimestamp(notifHousekeeping * -1)
+    await UserModel.updateMany({ "notifications.createdAt" : { $lte : housekeepDate} }, {
+        $pull: { notifications: {
+            createdAt: { $lte : housekeepDate}
+        }} 
+    })
+    return
 }
 
 const getTimestamp = (daysToAdd) => {

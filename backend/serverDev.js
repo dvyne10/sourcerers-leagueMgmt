@@ -4,12 +4,14 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
+import cron from "node-cron"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import { authenticate, getTokenFromCookies, adminAuthenticate } from "./middlewares/authMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
-import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, changePassword} from "./utils/usersModule.js";
+import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, 
+  changePassword, unlockAccounts, deletePendingAccounts } from "./utils/usersModule.js";
 import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam,
   removePlayerFromTeam, updateLookingForPlayers} from "./utils/teamsModule.js";
 import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, updateLeague, deleteLeague, canUserCreateNewLeague, 
@@ -17,7 +19,7 @@ import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, upd
 import { getMatchDetails, getMatchDetailsUpdate, updateMatch } from "./utils/matchModule.js";
 import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joinTeam, unjoinTeam, inviteToLeague } from "./utils/requestsModule.js";
 import { getSportsList } from "./utils/sysParmModule.js";
-import { getUnreadNotifsCount, getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
+import { getUnreadNotifsCount, getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs, housekeepNotifications } from "./utils/notificationsModule.js";
 import { getSearchResults } from "./utils/searchModule.js";
 import { adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches,
   adminGetTeams, adminGetTeamDetails, adminCreateTeam, adminUpdateTeam, adminDeleteTeam,
@@ -596,6 +598,26 @@ app.delete("/admindeleteparm/:parmid", adminAuthenticate, (req, res) => {
   .then((data) => {
     res.json(data);
   });
+});
+
+cron.schedule('*/2 * * * *', () => {
+  console.log('running a task every 2 minutes ' + new Date());
+  unlockAccounts()
+  .then( console.log("Unlock accounts job ran."))
+});
+
+cron.schedule('*/2 * * * *', () => {
+  console.log('running a task every 2 minutes ' + new Date());
+  deletePendingAccounts()
+  .then( console.log("Deletion of pending accounts job ran."))
+});
+
+//cron.schedule('*/2 * * * *', () => {
+  //console.log('running a task every 2 minutes ' + new Date());
+cron.schedule('39 20 * * *', () => {
+  console.log('Runs at 20:39 ' + new Date());
+  housekeepNotifications()
+  .then( console.log("Notifications housekeeping job ran."))
 });
 
 app.use(notFound);
