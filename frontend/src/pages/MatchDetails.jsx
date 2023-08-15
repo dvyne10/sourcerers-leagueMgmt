@@ -120,7 +120,7 @@ const MatchDetails = () => {
   
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2%' }}>
           
-          <div className="team-logo-container" onClick={() => navigate('/team/:teamid')}
+          <div className="team-logo-container" onClick={() => navigate(`/team/${matchDetails.team1.teamId}`)}
               style={{
                       backgroundColor: '#D1E8E2',
                       width: '20%',
@@ -149,7 +149,7 @@ const MatchDetails = () => {
               </div>
             </div>
 
-            <div className="team-logo-container" onClick={() => navigate('/team/:teamid')}
+            <div className="team-logo-container" onClick={() => navigate(`/team/${matchDetails.team2.teamId}`)}
                 style={{
                       backgroundColor: '#D1E8E2',
                       width: '20%',

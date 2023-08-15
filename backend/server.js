@@ -261,7 +261,7 @@ app.put("/rejectrequest/:notifid", authenticate, (req, res) => {
   );
 });
 
-app.put("/myprofile", authenticate, (req, res) => {
+app.post("/myprofile", authenticate, (req, res) => {
   getMyProfile(req.user._id.toString())
   .then((data) => {
       res.json(data);

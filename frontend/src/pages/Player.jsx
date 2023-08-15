@@ -43,7 +43,7 @@ const Player = () => {
         handleAction({type: "myprofile", title: "My Profile"})
         
         fetch(`${backend}/myprofile`, {
-          method: "PUT",
+          method: "POST",
           credentials: 'include',
           headers: {
               "Content-Type": "Application/JSON",
@@ -58,10 +58,11 @@ const Player = () => {
                   document.getElementById(data.errField).focus()
               }
           } else {
+            console.log(JSON.stringify(data.details))
                   setPlayerInfo(
-                    {fullName: data.details.fullName, email: data.details.email, phone:data.details.phone, userName: data.details.userName, location: data.details.location, sports:data.details.sports,
-                      statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.teamsCreated, pastLeagues:data.pastLeagues, 
-                      matches:data.matches, statistics:data.statistics, totalGamesPlayed:data.totalGamesPlayed, wins:data.wins, championships:data.championships, displayInviteToTeamButton:data.buttons.displayInviteToTeamButton, displayUninviteToTeamButton:data.displayUninviteToTeamButton
+                    {playerId: data.details.playerId, fullName: data.details.fullName, email: data.details.email, phone:data.details.phone, userName: data.details.userName, location: data.details.location, sports:data.details.sports,
+                      statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.leaguesCreated, pastLeagues:data.pastLeagues, 
+                      matches:data.matches, statistics:data.statistics, totalGamesPlayed:data.totalGamesPlayed, wins:data.wins, championships:data.championships
                     
                     }
                     
@@ -96,8 +97,8 @@ const Player = () => {
               }
           } else {
                   setPlayerInfo(
-                    {fullName: data.details.fullName, email: data.details.email, phone:data.details.phone, userName: data.details.userName, location: data.details.location, sports:data.details.sports,
-                      statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.teamsCreated, pastLeagues:data.pastLeagues, 
+                    {playerId: data.details.playerId, fullName: data.details.fullName, email: data.details.email, phone:data.details.phone, userName: data.details.userName, location: data.details.location, sports:data.details.sports,
+                      statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.leaguesCreated, pastLeagues:data.pastLeagues, 
                       matches:data.matches, statistics:data.statistics, totalGamesPlayed:data.totalGamesPlayed, wins:data.wins, championships:data.championships, displayInviteToTeamButton:data.buttons.displayInviteToTeamButton, displayUninviteToTeamButton:data.displayUninviteToTeamButton
                     
                     })
@@ -160,7 +161,8 @@ const Player = () => {
             <Card.Body>
               <div className="d-flex flex-column align-items-center text-center">
                 <img
-                  src="https://images.lifestyleasia.com/wp-content/uploads/sites/3/2022/12/31011513/harry-potter-films.jpeg"
+                  src={`${backend}/profilepictures/${playerInfo.playerId}.jpeg`}
+                  
                   className="rounded-circle"
                   width="150"
                 />
@@ -338,7 +340,7 @@ const Player = () => {
               
         <Col sm={12} >
           <ListGroup>
-            {playerInfo.teamsCreated.length===0 ? <h6 className="center-header">No teams created.</h6> :(
+            {playerInfo.leaguesCreated.length===0 ? <h6 className="center-header">No leagues created.</h6> :(
           <Row className='text-center mb-3  '>
               <Col md={4}>
                 Name
@@ -353,20 +355,20 @@ const Player = () => {
               Location
               </Col>
               </Row>  )}
-              {playerInfo.teamsCreated.map(createdTeam=>(
-                <ListGroup.Item action href={"/league/"+createdTeam.teamId} key={playerInfo.leagueId}>
+              {playerInfo.leaguesCreated.map(createdLeague=>(
+                <ListGroup.Item action href={"/league/"+createdLeague.leagueId} key={playerInfo.leagueId}>
               <Row className='text-center'>
               <Col md={4}>
-                {playerInfo.leagueName}
+                {createdLeague.leagueName}
               </Col>
               <Col md={2}>
-              {new Date(playerInfo.startDate).toLocaleDateString('en-US')}
+              {new Date(createdLeague.startDate).toLocaleDateString('en-US')}
               </Col>
               <Col md={2}>
-              {new Date(playerInfo.endDate).toLocaleDateString('en-US')}
+              {new Date(createdLeague.endDate).toLocaleDateString('en-US')}
               </Col>
               <Col md={3}>
-              Toronto
+              {createdLeague.location}
               </Col>
               </Row>
             </ListGroup.Item>

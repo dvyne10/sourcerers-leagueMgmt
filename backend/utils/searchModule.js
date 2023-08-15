@@ -81,7 +81,7 @@ export const searchPlayers = async function(findText, location) {
                       }
                   }
                 },
-                type: "Player",
+                type: "player",
                 rowId: "$_id", 
                 sports: "$sportsOfInterest",
                 location: {
@@ -123,12 +123,13 @@ export const searchPlayers = async function(findText, location) {
         if (location !== "" && player.location.toLowerCase().indexOf(location.toLowerCase()) === -1) {
             return
         }
-        sportsDetails = player.sports.map(sport => {
+        let sportsSelected = ""
+        player.sports.map(sport => {
             sportIndex = sports.findIndex((i) => i.sportsId.equals(sport))
             sportsName = sportIndex === -1 ? "" : sports[sportIndex].sportsName
-            return {sportsTypeId: sport, sportsName}
+            sportsSelected = sportsSelected === "" ? sportsName : `${sportsSelected}, ${sportsName}`
         })
-        playerResults.push({...player, sports: sportsDetails})
+        playerResults.push({...player, sports: sportsSelected})
     })
     await Promise.all(promises)  
     return playerResults
@@ -174,7 +175,7 @@ export const searchTeams = async function(findText, location) {
                         as: "team",
                         in: {
                             name: "$$team.teamName",
-                            type: "Team",
+                            type: "team",
                             rowId: "$$team._id",
                             sports: ["$$team.sportsTypeId"],
                             location: "$$team.location",
@@ -208,7 +209,7 @@ export const searchTeams = async function(findText, location) {
             }
             sportIndex = sports.findIndex((i) => i.sportsId.equals(team.sports[0]))
             sportsName = sportIndex === -1 ? "" : sports[sportIndex].sportsName
-            teamResults.push({...team, sports: [{sportsTypeId: team.sports[0], sportsName}]})
+            teamResults.push({...team, sports: sportsName})
         })
     })
     await Promise.all(promises)  
@@ -226,7 +227,7 @@ export const searchLeagues = async function(findText, location) {
         { 
           $addFields: {
                 name: "$leagueName",
-                type: "League",
+                type: "league",
                 rowId: "$_id", 
                 sports: ["$sportsTypeId"],
                 location: "$location",
@@ -272,7 +273,7 @@ export const searchLeagues = async function(findText, location) {
         }
         sportIndex = sports.findIndex((i) => i.sportsId.equals(league.sports[0]))
         sportsName = sportIndex === -1 ? "" : sports[sportIndex].sportsName
-        leagueResults.push({...league, sports: [{sportsTypeId: league.sports[0], sportsName}]})
+        leagueResults.push({...league, sports: sportsName})
     })
     await Promise.all(promises)  
     return leagueResults

@@ -742,7 +742,7 @@ export const getLeagueAdmins = async function(leagueId) {
 export const getLeaguesCreated = async function(userId) {
     let leaguesCreated = await LeagueModel.aggregate([
         { $match : {createdBy : new ObjectId(userId) } }, 
-        { $project: { _id: 0, leagueId: "$_id", leagueName : 1, sportsTypeId : 1, status : 1 } }
+        { $project: { _id: 0, leagueId: "$_id", leagueName : 1, sportsTypeId : 1, status : 1, startDate: 1, endDate: 1, location: 1 } }
     ])
     if (leaguesCreated === null || leaguesCreated.length === 0) {
         return []
