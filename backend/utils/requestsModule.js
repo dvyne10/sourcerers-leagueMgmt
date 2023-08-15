@@ -3,7 +3,7 @@ import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import { getPlayerButtons } from "./usersModule.js";
 import { getTeamDetails, getTeamsCreated, getUsersTeams, isTeamMember, getTeamMajorDetails, getTeamButtons, 
-    getTeamAdmin, removePlayerFromTeam } from "./teamsModule.js";
+    getTeamAdmin, removePlayerFromTeam, getTeamName } from "./teamsModule.js";
 import { getLeagueDetails, isLeagueAdmin, getLeagueButtons, getLeagueAdmins, getNSLeaguesUserIsAdmin } from "./leaguesModule.js";
 import { getNotifParmByNotifId, getSysParmByParmId, getSysParmList } from "./sysParmModule.js"
 import { genNotifMsg } from "./notificationsModule.js"
