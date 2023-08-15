@@ -310,7 +310,7 @@ export const getTeamButtons = async function(userId, teamId) {
     }
 
     let joinTeam = await hasPendingRequest("APTMJ", userId, "", teamId, "")
-    if (joinTeam !== null && joinTeam.requestStatus === "ACTC" && joinTeam.canJoinTeam) {
+    if (joinTeam !== null && joinTeam.requestStatus === "ACTC" && joinTeam.canJoinTeam && team.lookingForPlayers) {
         if (joinTeam.hasPending === false) {
             response.displayJoinButton = true
             response.playerCurrentTeamName = joinTeam.playerCurrentTeamName
@@ -665,7 +665,6 @@ export const deleteTeam = async function(userId, teamId) {
 
     let data = {teamId}
     let validate = await teamValidation(data, "DEL", userId)
-    console.log(JSON.stringify(validate))
     if (validate.requestStatus !== "ACTC") {
         response = validate
     } else {

@@ -68,29 +68,27 @@ export const getMatchDetails = async function(userId, matchId) {
         matchDetails.sportsName = sportDetails.sport.sportsName
         matchDetails.enableUpdateButton = false
         matchDetails.displayUpdateButton = false
-        if (matchDetails.leagueStatus === 'ST') {
-            if (mongoose.isValidObjectId(userId) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
-                matchDetails.team1.isTeamAdmin = true
-                matchDetails.displayUpdateButton = true
-                if (matchDetails.team1.finalScorePending === null && matchDetails.team1.leaguePointsPending === null &&
-                    matchDetails.team2.finalScorePending === null && matchDetails.team2.leaguePointsPending === null) {
-                        matchDetails.enableUpdateButton = true
-                        matchDetails.displayUpdateButton = false
-                }
-            } else {
-                matchDetails.team1.isTeamAdmin = false
+        if (mongoose.isValidObjectId(userId) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
+            matchDetails.team1.isTeamAdmin = true
+            matchDetails.displayUpdateButton = true
+            if (matchDetails.team1.finalScorePending === null && matchDetails.team1.leaguePointsPending === null &&
+                matchDetails.team2.finalScorePending === null && matchDetails.team2.leaguePointsPending === null) {
+                    matchDetails.enableUpdateButton = true
+                    matchDetails.displayUpdateButton = false
             }
-            if (mongoose.isValidObjectId(userId) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
-                matchDetails.team2.isTeamAdmin = true
-                matchDetails.displayUpdateButton = true
-                if (matchDetails.team1.finalScorePending === null && matchDetails.team1.leaguePointsPending === null &&
-                    matchDetails.team2.finalScorePending === null && matchDetails.team2.leaguePointsPending === null) {
-                        matchDetails.enableUpdateButton = true
-                        matchDetails.displayUpdateButton = false
-                }
-            } else {
-                matchDetails.team2.isTeamAdmin = false
+        } else {
+            matchDetails.team1.isTeamAdmin = false
+        }
+        if (mongoose.isValidObjectId(userId) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
+            matchDetails.team2.isTeamAdmin = true
+            matchDetails.displayUpdateButton = true
+            if (matchDetails.team1.finalScorePending === null && matchDetails.team1.leaguePointsPending === null &&
+                matchDetails.team2.finalScorePending === null && matchDetails.team2.leaguePointsPending === null) {
+                    matchDetails.enableUpdateButton = true
+                    matchDetails.displayUpdateButton = false
             }
+        } else {
+            matchDetails.team2.isTeamAdmin = false
         }
         promisea = matchDetails.team1.players.map(async (player) => {
             promisec = player.statistics.map(async (stat) => {
@@ -247,12 +245,6 @@ export const getMatchDetailsUpdate = async function(userId, matchId, userType) {
         return response
     }
 
-    if (leagueMatch[0].leagueStatus !== "ST" && userType === "USER") {
-        response.requestStatus = "RJCT"
-        response.errMsg = "No league match updates allowed"
-        return response
-    }
-
     let matchDetails = leagueMatch[0].matches[0]
     matchDetails = {leagueId: leagueMatch[0].leagueId, leagueStatus: leagueMatch[0].leagueStatus, sportsTypeId: leagueMatch[0].sportsTypeId, matchId: matchDetails._id, ...matchDetails }
     if (userType !== "ADMIN") {
@@ -278,17 +270,15 @@ export const getMatchDetailsUpdate = async function(userId, matchId, userType) {
             matchDetails.team1.isTeamAdmin = true
             matchDetails.team2.isTeamAdmin = true
         } else {
-            if (matchDetails.leagueStatus === 'ST') {
-                if (mongoose.isValidObjectId(userId) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
-                    matchDetails.team1.isTeamAdmin = true
-                } else {
-                    matchDetails.team1.isTeamAdmin = false
-                }
-                if (mongoose.isValidObjectId(userId) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
-                    matchDetails.team2.isTeamAdmin = true
-                } else {
-                    matchDetails.team2.isTeamAdmin = false
-                }
+            if (mongoose.isValidObjectId(userId) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
+                matchDetails.team1.isTeamAdmin = true
+            } else {
+                matchDetails.team1.isTeamAdmin = false
+            }
+            if (mongoose.isValidObjectId(userId) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
+                matchDetails.team2.isTeamAdmin = true
+            } else {
+                matchDetails.team2.isTeamAdmin = false
             }
             if (!matchDetails.team1.isTeamAdmin && !matchDetails.team2.isTeamAdmin) {
                 response.requestStatus = "RJCT"
