@@ -1,95 +1,122 @@
 import {Container,Row,Col, Image, Button} from 'react-bootstrap';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { BsGearFill } from "react-icons/bs";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './teamdetails.css'
 import ListGroup from 'react-bootstrap/ListGroup';
+import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
 
 
 
 function TeamDetails() {
+    const routeParams = useParams();
     const navigate = useNavigate(); 
-    const navigateUpdateTeam = () => { navigate('/updateteam/648e9013466c1c995745907c') }
+    const navigateUpdateTeam = () => { navigate(`/updateteam/${routeParams.teamid}`) }
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const [showInvite, setShowInvite] = useState(false);
     const handleCloseInvite = () => setShowInvite(false);
     const handleShowInvite = () => setShowInvite(true);
-    const [join, setJoin] = useState(false);
+    const token = `Bearer ${getToken()}`
+    const {isSignedIn} = useAuth();
+    const [buttonRes, setButtonRes] = useState("BR");
+    const [join, setJoin] = useState(true);
+    const [errorMessage, setErrorMessage] = useState([]);
+    const [teamInfo, setTeamInfo] = useState({teamName:"", players:[],
+    matches:[],
+    details:{},
+    sportsName:"",
+  lookingForPlayers:null,
+  buttons:{}});
     const [invite, setInvite] = useState(false);
 
+    
+
 // Array of team members here
-    const teamMembers = [
-        { id: 1, imurl: 'https://images.squarespace-cdn.com/content/v1/590814dc1e5b6c7f60b5e133/1495591011988-I2E7W449RQFRP9M50CTT/teens_008.jpg?format=2500w', body: "Carla Dovermner", position: "Forward" },
-        { id: 2, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Back"},
-        { id: 3, body: "Carla Dovermnersd", position: "Back" },
-        { id: 4, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Left Wing" },
-        { id: 5, body: "Carla Dovermner" },
-        { id: 6, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Right Wing"  },
-        { id: 15, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Forward"  },
-        { id: 17, body: "Carla Dovermner" },
-        { id: 18, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Goalkeeper"  },
-        { id: 7, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Left Wing" },
-        { id: 8, body: "Carla Dovermner" },
-        { id: 9, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Right Wing"  },
-        { id: 10, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Forward"  },
-        { id: 11, body: "Carla Dovermner" },
-        { id: 12, imurl: 'https://c4.wallpaperflare.com/wallpaper/461/775/643/drake-beard-musician-face-portrait-wallpaper-preview.jpg', body: 'Walter White', position: "Goalkeeper"  }
-    ];
-    function changeJoinShow(){
-    
-      setJoin(!join);
-      setShow(!show);
-  }
-
-  function changeInviteShow(){
-    
-    setInvite(!invite);
-    setShowInvite(false);
-}
-
-
-const [data, setData] = useState([]);
-
-  useEffect(() => {
-    fetchTeams();
-  }, []);
-
-  const fetchTeams = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/teams');
-      const data = await response.json();
-      setData(data.details);
-    } catch (error) {
-      console.error('Error fetching teams data:', error);
+    useEffect(()=>{
+      fetch(`${backend}/team/${routeParams.teamid}`, {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "Application/JSON",
+            "Authorization": token
+        }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      
+        if (data.requestStatus === 'RJCT') {
+            setErrorMessage([data.errMsg])
+            if (data.errField !== "") {
+                document.getElementById(data.errField).focus()
+            }
+        } else {
+                setTeamInfo({teamName : data.teamName, details: data.details,players :data.details.players, buttons:data.buttons, matches: data.details.matches})
     }
-  };
+})
+.catch((error) => {
+    console.log(error)
+})
+      
+  },[])
+
+ 
+ 
+
+
 
     return (
-      <>
-      <div className='d-flex w-100 position-absolute justify-content-end p-4'><Button variant='transparent' onClick={navigateUpdateTeam} className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
+      
+      
+        <div key={teamInfo.teamName}> 
+      {teamInfo.buttons.displayUpdateButton && 
+         <div className='d-flex w-100 position-absolute justify-content-end p-4'><Button variant='transparent'  onClick={navigateUpdateTeam} className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
+         }
         <div className='bg-light container justify-content-center text-center'>
+        
+
+        
         {/* Here is the team header, with background and info */}
-        <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white"
-  style={{"backgroundImage": "url('https://mdbcdn.b-cdn.net/img/new/slides/003.webp')"}} >
+        <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white" 
+   style={{"backgroundImage": `url(${backend}/teambanners/${teamInfo.details._id}.jpeg)`}} >
         <Container style={{background:'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg'}}>
       <Row>
         <Col lg="2" className='text-center'>
-      
-        <Image src="https://i.ytimg.com/vi/ghMKmANLr4E/maxresdefault.jpg"  className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
-     
+         
+        <Image src={`${backend}/teamlogos/${teamInfo.details._id}.jpeg`}  className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
+        {teamInfo.details.sportsName == "Basketball" ? (
+                        <img
+                          src="https://i.imgur.com/w14EKbv.png"
+                          style={{ width: "2em", backgroundColor:"white", borderRadius:"50%"}}
+                          className="text-center opacity-75 mt-2 position-relative"
+                        />
+                      ) : (
+                        <img
+                          src="https://i.imgur.com/7Qa798a.png"
+                          style={{ width: "2em", backgroundColor:"white", borderRadius:"50%"}}
+                          className="text-center opacity-75 mt-2 position-relative"
+                        />
+                      )}
         </Col>
-        <Col><h1>Team name here</h1>
-        <p className='mt-5'>Team description here.</p></Col>
+        <Col><h1>{teamInfo.details.teamName}</h1>
+        <p className='mt-2'><strong>Description</strong> : {teamInfo.details.description}</p>
+        <p className='mt-1'><strong>Started</strong> : {new Date(teamInfo.details.createdAt).toLocaleDateString('en-US')}</p>
+        <h3 className='mt-5'>Contact</h3>
+        <p><a href={`mailto:${teamInfo.details.teamContactEmail}`} className='general-link-no-dec text-white text-decoration-underline'>{teamInfo.details.teamContactEmail}</a></p>
+        
+        </Col>
       </Row>
       <Row>
         <Col lg="2" className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>{join===false ? "Join" : "Unjoin"}</Button>
-        <Button className='mt-2 ms-2 mb-2 btn-success rounded-pill' onClick={handleShowInvite}>{invite===false ? "Invite to League" : "Uninvite to League"}</Button></Col>
-
+        {teamInfo.buttons.displayJoinButton &&<Button className='mt-2 ms-2 mb-2 btn-success rounded-pill' onClick={handleShowInvite}>{invite===false ? "Invite to League" : "Uninvite to League"}</Button>}
+        </Col>
+        
+        
       </Row>
     </Container>
     
@@ -100,133 +127,96 @@ const [data, setData] = useState([]);
 <h1 className='gap-divider'>Team Members</h1>
 
 <div className='align-items-center border justify-content-center'>
-<Row className='gap-3 justify-content-center mb-2 '> 
-{teamMembers.map((teamMember)=>{
-return(
+
+<Row className='gap-3 justify-content-center mb-2 '  > 
+
+
+
+{teamInfo.players.map(player=>(
   
- 
-    <Col sm={3} className='border mt-2 rounded passive-active-column' key={teamMember.id}>
+    <Col sm={3} className='border mt-2 rounded passive-active-column' key={player.playerId}>
       <Row className='align-items-center'>
       
+      
+      
 
-
-      <Col sm={3} href="www.google.com" className='text-center rounded-start '  style={{backgroundColor:"#C7DDCC"}}>
-      <a href={`/player/${teamMember.id}`} className='team-jersey-list-number' >
+      
+      <Col sm={3} href="www.google.com" className='text-center rounded-start '    style={{backgroundColor:"#C7DDCC"}}>
+      <a href={`/player/${player.playerId}`} className='team-jersey-list-number' >
       <Image
-                          src={teamMember.imurl ===undefined ? `https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg` : teamMember.imurl}
+                          src={`${backend}/profilepictures/${player.playerId}.jpeg`}
                           className="mt-2 mb-2 shadow object-fit-cover border"
                           rounded
                           fluid
                           style={{  width: "4em", height: "4em" }}
                         />
-                      {console.log(teamMember.imurl)}
-                      <h5 >No : 23</h5>
+                      <h5 >{player.jerseyNumber}</h5>
       </a>
       </Col>
       <Col md="auto" className='mx-auto mt-2'>
-        <h6>{teamMember.body}</h6>
-        <p>{teamMember.position == undefined ? "Not Assigned" : teamMember.position}</p>
-        <h6>23</h6>
+        <h6>{player.playerName}</h6>
+        <p>{player.positionDesc}</p>
+        <h6>{new Date(player.joinedTimestamp).toLocaleDateString('en-US')}</h6>
       </Col>
+     
+       
+
       </Row>
+      
     </Col>
+     ))}
     
-    
-            
-)})
-}
+
 </Row>
+
 </div>
     
 
 
-    <div className='mt-20 container justify-content-center text-center gap-divider'>
+    <div className='mt-20 container justify-content-center text-center gap-divider ' >
 {/* This is for the past matches list for the team */}
       <Row className=''>
-        <Col sm={9} className='border'>
+        <Col sm={12} className='border'>
         <div className='team-past-matches'>
           <h2 className='center-header gap-divider'>Past Matches</h2>
           <Row className='text-center mx-1'>
-              <Col md={2}>
+              <Col md={3}>
               <h6 className='border-bottom border-secondary'>Date</h6>
               </Col>
-              <Col md={4}>
-              <h6 className='border-bottom border-secondary'>Opponent</h6>
+              <Col md={3}>
+              <h6 className='border-bottom border-secondary'>Team 1</h6>
               </Col>
-              <Col md={4}>
-              <h6 className='border-bottom border-secondary'>Score</h6>
+              <Col md={3}>
+              <h6 className='border-bottom border-secondary'>Team 2</h6>
               </Col>
-              <Col md={2}>
+              <Col md={3}>
               <h6 className='border-bottom border-secondary'>Location</h6>
               </Col>
               </Row>
       <Row>
         <Col sm={12} >
-          <ListGroup>
-            <ListGroup.Item action variant="danger" href="/match/1"  className='mt-2'>
+          <ListGroup className='overflow-auto' style={{height:"30em"}}>
+            {teamInfo.matches.map(match=>(
+              <ListGroup.Item action variant={match.won ? "success" : "danger"} href={`/match/${match.matchId}`}  className='mt-2' key={match.matchId}>
               <Row className='text-center'>
               <Col md={2}>
-              20.06.23
+              {new Date(match.dateOfMatch).toLocaleDateString('en-US')}
               </Col>
               <Col md={4}>
-              Real Madrid
+              {match.team1.teamName + " " + match.team1.finalScore}
               </Col>
               <Col md={4}>
-              1-4
+              {match.team2.finalScore + " " + match.team2.teamName}
               </Col>
               <Col md={2}>
-              Toronto
+              {match.locationOfMatch}
               </Col>
               </Row>
             </ListGroup.Item>
-            <ListGroup.Item action variant="success" href="/match/1" className='mt-2'>
-            <Row className='text-center'>
-              <Col md={2}>
-              20.06.23
-              </Col>
-              <Col md={4}>
-              Real Madrid
-              </Col>
-              <Col md={4}>
-              4-1
-              </Col>
-              <Col md={2}>
-              Toronto
-              </Col>
-              </Row>
-            </ListGroup.Item>
-            <ListGroup.Item action variant="success" href="/match/1" className='mt-2'>
-            <Row className='text-center'>
-              <Col md={2}>
-              20.06.23
-              </Col>
-              <Col md={4}>
-              Real Madrid
-              </Col>
-              <Col md={4}>
-              3-1
-              </Col>
-              <Col md={2}>
-              Toronto
-              </Col>
-              </Row>
-            </ListGroup.Item>
-            <ListGroup.Item action variant="success" href="/match/1" className='mt-2'>
-            <Row className='text-center'>
-              <Col md={2}>
-              20.06.23
-              </Col>
-              <Col md={4}>
-              Real Madrid
-              </Col>
-              <Col md={4}>
-              2-1
-              </Col>
-              <Col md={2}>
-              Toronto
-              </Col>
-              </Row>
-            </ListGroup.Item>
+            ))}
+            
+            
+            
           </ListGroup>
         </Col>
         <Col sm={8}>
@@ -240,7 +230,7 @@ return(
         <Col sm={3} className='container ' style={{"minWidth":"20rem"}}>
 
           {/* This is the timeline for upcoming matches on the right side of the page*/}
-        <div className="team-upcoming-matches w-100">
+        {/* <div className="team-upcoming-matches w-100">
           <h4 className='center-header'>Upcoming Matches</h4><hr />
     <ul>
       <li className='active-game-hover'>
@@ -271,7 +261,7 @@ return(
         </a>
       </li>
     </ul>
-  </div>
+  </div> */}
 
         </Col>
         
@@ -290,13 +280,13 @@ return(
           <Modal.Title>Message</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form action='POST'>
             
             <Form.Group
               className="mb-3"
               controlId="exampleForm.ControlTextarea1"
             >
-              <Form.Label>Explain shortly why you want to {join===false ? "join to" : "unjoin from"} this league.</Form.Label>
+              <Form.Label>Explain shortly why you want to {teamInfo.displayJoinButton===false ? "join to" : "unjoin from"} this league.</Form.Label>
               <Form.Control as="textarea" rows={3} />
             </Form.Group>
           </Form>
@@ -305,9 +295,12 @@ return(
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant={join===false ? "success" : "danger"} onClick={changeJoinShow}>
-          {join===false ? "Send Request" : "Leave"}
-          </Button>
+          {teamInfo.displayJoinButton ? <Button type='submit' variant="danger" >Join</Button>
+          :
+          <Button variant="danger">Unjoin</Button>
+          
+}
+<p>{buttonRes}</p>
         </Modal.Footer>
       </Modal>
 
@@ -332,13 +325,18 @@ return(
         <Button variant="secondary" onClick={handleCloseInvite}>
           Cancel
         </Button>
-        <Button variant={invite===false ? "success" : "danger"} onClick={changeInviteShow}>
+        
+         
+         
+        <Button variant={invite===false ? "success" : "danger"} >
         {invite===false ? "Invite Team" : "Uninvite Team"}
         </Button>
       </Modal.Footer>
     </Modal>
+
   </div>
-  </>
+
+  </div>
   );
   }
   

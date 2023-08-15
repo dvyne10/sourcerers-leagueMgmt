@@ -27,7 +27,7 @@ const Player = () => {
     const [errorMessage, setErrorMessage] = useState([]);
     const [playerInfo, setPlayerInfo] = useState({fullName:"", email:"", phone:"", userName:"", location:"", sports:[{}], statusDesc:"", activeTeams:[{}],activeLeagues:[{}],teamsCreated:[{}],leaguesCreated:[{}], pastLeagues:[{}], 
     matches:[{}], totalGamesPlayed:"", wins:"", statistics:[{}], championships:"", displayInviteToTeamButton:null, displayUninviteToTeamButton:null, })
-
+    const [inviteButton, setInviteButton] = useState({title:"displayInviteToTeamButton", status:"false"})
     const [action, handleAction] = useState({type: "usprofile", title: "Profile"});
     const navigate = useNavigate();
 
@@ -65,6 +65,7 @@ const Player = () => {
                     
                     }
                     
+                    
                   )
                   setLoading(false)
       }
@@ -78,7 +79,7 @@ const Player = () => {
       
       handleAction({type: "usprofile", title: "User Profile", protectSport: false, protectRounds: false})
     }
-    fetch(`${backend}/player/${routeParams.id}`, {
+      fetch(`${backend}/player/${routeParams.id}`, {
           method: "POST",
           credentials: 'include',
           headers: {
@@ -99,8 +100,18 @@ const Player = () => {
                       statusDesc:data.details.statusDesc, activeTeams:data.activeTeams,activeLeagues:data.activeLeagues,teamsCreated:data.teamsCreated,leaguesCreated:data.teamsCreated, pastLeagues:data.pastLeagues, 
                       matches:data.matches, statistics:data.statistics, totalGamesPlayed:data.totalGamesPlayed, wins:data.wins, championships:data.championships, displayInviteToTeamButton:data.buttons.displayInviteToTeamButton, displayUninviteToTeamButton:data.displayUninviteToTeamButton
                     
+                    })
+                    if(data.buttons.displayInviteToTeamButton){
+                      setInviteButton({title:"displayInviteToTeamButton"})
                     }
-                  )
+                    else if(data.buttons.displayUninviteToTeamButton){
+                      setInviteButton();
+                    }
+                    else{
+                      setInviteButton({title:null, status:null})
+                    }
+                    
+                  
                   setLoading(false)
       }
   })
