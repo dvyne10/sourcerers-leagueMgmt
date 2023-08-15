@@ -1,48 +1,89 @@
 import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
-import { useNavigate } from 'react-router-dom';
-import useAuth from "../../hooks/auth";
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaSearchPlus } from 'react-icons/fa';
+import {checkIfSignedIn, getToken} from "../../hooks/auth";
+
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const AdminLeagueMnt = () => {
   
-    const {isSignedIn, isAdmin} = useAuth()
+    let { isSignedIn, isAdmin } = checkIfSignedIn()
+    const token = `Bearer ${getToken()}`
     const inputFileBanner = useRef(null);
     const inputFileLogo = useRef(null);
+    const routeParams = useParams();
     const [action, handleAction] = useState("");
-    const [currValues, setCurrentValues] = useState({leagueName: null, sport: null, location: null, division: null, description: null, matches: [] })
+    const [currValues, setCurrentValues] = useState({leagueName: null, sport: null, location: null, division: null, 
+        description: null, matches: [], teams: [{teamId: "", approvedBy: "", joinedTimestamp: null}] })
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
     const [bannerURL, setBannerURL] = useState(null);
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+    const [sportsOptions, setSportsOptions] = useState([{ label: "Soccer", value: "648ba153251b78d7946df311" }, { label: "Basketball", value: "648ba153251b78d7946df322" }]);
     const statusOptions = [ {label: "Hasn't started", value: "NS"}, {label: "Has started", value: "ST"}, {label: "Has ended", value: "EN"} ]
-    
+    const [errorMessage, setErrorMessage] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
+        setIsLoading(true)
+        fetch(`${backend}/getsportslist`)
+        .then(response => response.json())
+        .then(resp => {
+            if (resp.requestStatus === 'ACTC') {
+                let newSportsList = resp.data.map(sport => {
+                    return {label: sport.sportsName, value: sport.sportsId}
+                })
+                setSportsOptions(newSportsList.sort((a,b) => a.label > b.label ? 1 : -1))
+            }
+        })
         const url = window.location.pathname
         if (url === "/adminleaguecreation") {
             handleAction({type: "Creation", title: "CREATE LEAGUE", button1: "Create League"})
+            setIsLoading(false)
         } else {
             handleAction({type: "Update", title: "UPDATE LEAGUE", button1: "Update"})
-            setCurrentValues({leagueName: "York Soccer League 2023", sport: "soccerId", location: "North York, Ontario, CA", division: "mixed", description: "North York Soccer League 2023 - Mixed Division",
-                status: "ST", ageGroup: "18-25", numberOfTeams: "15", numberOfRounds: "2", startDate: "2023-07-08", endDate: "2023-07-31", 
-                teams: [
-                    { teamId: "648e224f91a1a82229a6c11f", approvedBy: "648e0a6ff1915e7c19e2303a", joinedTimestamp: "2023-06-17T05:03:16.292+00:00" },
-                    { teamId: "648e24201b1bedfb32de974c", approvedBy: "648e0a6ff1915e7c19e2303a", joinedTimestamp: "2023-06-17T05:03:16.331+00:00" },
-                    { teamId: "648e6ddb2b6cc0ba74f41d32", approvedBy: "648e0a6ff1915e7c19e2303a", joinedTimestamp: "2023-06-17T05:03:16.366+00:00" },
-                    { teamId: "648e7042be708eef6f20f756", approvedBy: "648e0a6ff1915e7c19e2303a", joinedTimestamp: "2023-06-17T05:03:16.401+00:00" },
-                    { teamId: "648e7195202d60616b612716", approvedBy: "648e0a6ff1915e7c19e2303a", joinedTimestamp: "2023-06-17T05:03:16.436+00:00" },
-                ],
-                lookingForTeams: true, lookingForTeamsChgBy: "648e132ff3d2cb1d615fbd9d", lookingForTeamsChgTmst: "2023-06-17T09:40:04.233+00:00", addTeam: "",
-                matches: [ "648e9014466c1c99574590b1", "648e9014466c1c99574590b5", "648e9014466c1c99574590b9", "648e9014466c1c99574590bd", "648e9014466c1c99574590c1" ],
-                createdBy: "648e0a6ff1915e7c19e2303a", createdAt: "2023-06-15T23:40:04.236+00:00", updatedAt: "2023-06-15T23:40:04.875+00:00", newCreator: "", newCreatorId: ""
+            fetch(`${backend}/admingetleaguedetails/${routeParams.leagueid}`, {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
+                }
             })
-            setLogoURL("https://images.unsplash.com/photo-1511886929837-354d827aae26?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80")
-            setSelectedLogo("x")
-            setBannerURL("https://plus.unsplash.com/premium_photo-1685055940239-21af8b3b0443?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80")
-            setSelectedBanner("x")
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                } else {
+                    setCurrentValues({leagueName: data.details.leagueName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, 
+                        location: data.details.location, division: data.details.division, status: data.details.status, matches: data.details.matches.map(match => match._id),
+                        ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, startDate: dateFormat(data.details.startDate, "ISO"), endDate: dateFormat(data.details.endDate, "ISO"),
+                        teams: data.details.teams, lookingForTeams: data.details.lookingForTeams, lookingForTeamsChgBy: data.details.lookingForTeamsChgBy, lookingForTeamsChgTmst: data.details.lookingForTeamsChgTmst,
+                        createdBy: data.details.createdBy, createdAt: data.details.createdAt, updatedAt: data.details.updatedAt, newCreator: "", newCreatorId: ""
+                    })
+                    fetch(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`)
+                    .then(res=>{
+                        if (res.ok) {
+                            setLogoURL(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`) 
+                            setSelectedLogo("x")
+                        }
+                    })
+                    fetch(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
+                    .then(res=>{
+                        if (res.ok) {
+                            setBannerURL(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
+                            setSelectedBanner("x")
+                        }
+                    })
+                }
+                setIsLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setIsLoading(false)
+            })
         }
-    }, []);
+    }, [location.pathname]);
 
     const handleLogoChange = event => {
         if (event.target.files.length > 0) {
@@ -79,36 +120,89 @@ const AdminLeagueMnt = () => {
         } 
     }
 
-    const handleSearchTeam = (teamId) => {
-        if (teamId !== "") {
-            const randomId = "83xj2udjm4fu3x2om3r342x"
-            const adminId =  "83xux2u8j3xo2239ou84uj4"
-            let date = new Date()
-            date.setDate(date.getDate())
-            let newList = [...currValues.teams]
-            newList.push({ teamId: randomId, approvedBy: adminId, joinedTimestamp: "2023-07-07T14:03:16.292+00:00" })
-            setCurrentValues({ ...currValues, teams : newList, addTeam : "" })
+    const dateFormat = (date, type) => {
+        let dateIn = new Date(date)
+        if (type === "ISO") {
+            return dateIn.toISOString().substring(0,10)
+        } else {
+            return dateIn.toDateString()
         }
     }
 
-    const handleSearchUser = (username) => {
-        if (username !== "") {
-            const rand = Math.floor(Math.random() * 10);
-            if (rand >= 5 ) {    // find username first if valid
-                const randomId = "xn2n3824823jx3238o23s8374i8j"
-                setCurrentValues({ ...currValues, newCreatorId : randomId })
-            } else {
-                setCurrentValues({ ...currValues, newCreatorId : "" })
-                alert("USERNAME NOT FOUND!")
-            }
+    const handleSearchUser = (userName) => {
+        if (userName !== "") {
+            setErrorMessage([]);
+            fetch(`${backend}/finduser/${userName}`)
+            .then(response => response.json())
+            .then(resp => {
+                if (resp.playerId !== "") {
+                    if (resp.playerId !== currValues.createdBy) {
+                        setCurrentValues({ ...currValues, newCreatorId : resp.playerId })
+                    } else {
+                        setErrorMessage(["The same user as current team admin"]);
+                    }
+                } else {
+                    setErrorMessage(["User is not found"]);
+                    setCurrentValues({ ...currValues, newCreatorId : "" })
+                    window.scrollTo(0, 0);
+                }
+            })
         }
     }
 
     const navigate = useNavigate(); 
     const navigateCreateUpdate = () => { 
-        // do validations first then send to server
-        // Pass new/update values to parent component 
-        navigate(-1)
+        let data = {...currValues}
+        setIsLoading(true)
+        if (action.type === "Creation") {
+            //data.logo = selectedLogo
+            //data.banner = selectedBanner
+            fetch(`${backend}/admincreateleague`, {
+                method: "POST",
+                credentials: 'include',
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
+                }
+            })
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                } else {
+                    navigate('/adminleagues')
+                }
+                setIsLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setIsLoading(false)
+            })
+        } else {
+            //data.logo = selectedLogo
+            //data.banner = selectedBanner
+            fetch(`${backend}/adminupdateleague/${routeParams.leagueid}`, {
+                method: "POST",
+                credentials: 'include',
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
+                }
+            })
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                } else {
+                    navigate('/adminleagues')
+                }
+                setIsLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setIsLoading(false)
+            })
+        }
     }
 
     const navigateCancel = () => {
@@ -122,16 +216,29 @@ const AdminLeagueMnt = () => {
             <h1>NOT AUTHORIZED TO ACCESS THIS PAGE !!!</h1>
           </div>
         ) : (
+            isLoading ? (
+                <div className="loading-overlay">
+                  <div style={{color: 'black'}}>Loading...</div>
+                  <div className="loading-spinner"></div>
+                </div>
+              ) : (
       <Card style={{ width: "70rem", padding: 20 }}>
+        {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+        )}
         <h2 className="mb-4 center-text">{action.title}</h2>
         <form action="" encType="multipart/form-data">
 
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="leagueName" className="form-label">League Name*</label></div>
                 <div className="col-4"><input id="leagueName" name="leagueName" type="text" className="form-control" value={currValues.leagueName} onChange={handleLeagueDetails} /></div>
-                <div className="col-2 text-end"><label htmlFor="sport" className="form-label" >Sport*</label></div>
+                <div className="col-2 text-end"><label htmlFor="sportsTypeId" className="form-label" >Sport*</label></div>
                 <div className="col-2">
-                    <select id="sport" name="sport" className="form-control" value={currValues.sport} onChange={handleLeagueDetails} >
+                    <select id="sportsTypeId" name="sportsTypeId" className="form-control" value={currValues.sportsTypeId} onChange={handleLeagueDetails} >
                         {sportsOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
                         ))}
@@ -164,7 +271,6 @@ const AdminLeagueMnt = () => {
             </div>           
             
             <div className="row">
-
                 { action.type !== "Creation" && (
                 <>
                     <div className="row mt-2" >
@@ -204,14 +310,6 @@ const AdminLeagueMnt = () => {
                         </div>
                     </div>
                     <div className="row mt-2">
-                        <div className="col-3 text-end"><label htmlFor="newCreator" className="form-label">Change League Creator :</label></div>
-                        <div className="col-3"><input id="newCreator" name="newCreator" type="text" className="form-control" onChange={handleLeagueDetails} placeholder="Search by username" /></div>
-                        <FaSearchPlus className="col-1 mt-2" onClick={()=> handleSearchUser(currValues.newCreator)} />
-                        <div className="col-3">
-                            <a href={`/adminuserupdate/${currValues.newCreatorId}`} target="_blank" rel="noreferrer" name="newCreatorId">{currValues.newCreatorId}</a>
-                        </div>
-                    </div>
-                    <div className="row mt-2">
                         <div className="col-3 text-end"><label htmlFor="createdAt" className="form-label">Date of League Creation :</label></div>
                         <div className="col-4"><p className="form-label">{currValues.createdAt}</p></div>
                     </div>
@@ -221,7 +319,14 @@ const AdminLeagueMnt = () => {
                     </div>
                 </>
                 ) }
-
+                <div className="row mt-2">
+                        <div className="col-3 text-end"><label htmlFor="newCreator" className="form-label">Change League Creator :</label></div>
+                        <div className="col-3"><input id="newCreator" name="newCreator" type="text" className="form-control" onChange={handleLeagueDetails} placeholder="Search by username" /></div>
+                        <FaSearchPlus className="col-1 mt-2" onClick={()=> handleSearchUser(currValues.newCreator)} />
+                        <div className="col-3">
+                            <a href={`/adminuserupdate/${currValues.newCreatorId}`} target="_blank" rel="noreferrer" name="newCreatorId">{currValues.newCreatorId}</a>
+                        </div>
+                </div>
             </div>
 
             <div className="row justify-content-center mt-3">
@@ -297,14 +402,6 @@ const AdminLeagueMnt = () => {
                                     <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemoveTeam(index)}>Remove</button></td>
                                 </tr>) 
                             }
-                            <tr>
-                                <td>
-                                    <input name="addTeam" type="text" value={currValues.addTeam} onChange={handleLeagueDetails} placeholder="Search by team name"/>
-                                </td>
-                                <td/>
-                                <td/>
-                                <td><FaSearchPlus className="m-auto" onClick={()=> handleSearchTeam(currValues.addTeam)} /></td>  
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -319,6 +416,7 @@ const AdminLeagueMnt = () => {
                 </button>
             </div>
       </Card>
+              )
       )}
     </div>
   );

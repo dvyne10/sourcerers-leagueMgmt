@@ -14,9 +14,9 @@ const InputOTP = () => {
   const navigate = useNavigate();
   const navigateResetPassword = () => {
     if (fromPage === "Register") {
-      verifyOTP(Number(otp),navigate)
+      verifyOTP(Number(otp),"/", navigate)
     } else {
-      navigate("/resetpassword");
+      verifyOTP(Number(otp),"/resetpassword", navigate)
     }
   };
 

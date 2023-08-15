@@ -1,16 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {Container,Row,Col, Button, Card, Image, ListGroup} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './teamdetails.css'
 import { BsGearFill } from "react-icons/bs";
-import useAuth from "../hooks/auth";
 
 const LeagueDetails = () => {
 
   const navigate = useNavigate(); 
-  const {isSignedIn} = useAuth();
   const routeParams = useParams();
   const navigateUpdateLeague = () => { navigate(`/updateleague/${routeParams.leagueid}`) }   // temp id only
 
@@ -23,11 +21,30 @@ function changeJoinShow(){
     setJoin(!join);
     setShow(!show);
 }
+ 
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetchLeagues();
+  }, []);
+
+  const fetchLeagues = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/leagues');
+      const data = await response.json();
+      console.log(data); // Log the data received from the backend
+      setData(data.details);
+    } catch (error) {
+      console.error('Error fetching top leagues data:', error);
+    }
+  };
   return (
     <>
-    {isSignedIn && (
-     <div className='d-flex w-100 position-absolute w-75 justify-content-end p-5' style={{zIndex:"20"}}><Button onClick={navigateUpdateLeague} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
-    )}    
+    <h1>{data.map(league=>(
+      league.status
+    ))}</h1>
+     <div className='d-flex w-100 position-absolute w-75 justify-content-end p-5' style={{zIndex:"99999"}}><Button onClick={navigateUpdateLeague} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
+        
     <div className="App" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
       
   
@@ -50,9 +67,8 @@ function changeJoinShow(){
         
       </Row>
       <Row>
-      {isSignedIn && (
         <Col className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>{join===false ? "Join" : "Unjoin"}</Button></Col>
-      )}
+
       </Row>
     </Container>
     </div>
@@ -197,7 +213,20 @@ function changeJoinShow(){
               20.06.23
               </Col>
               <Col md={4}>
-              Real Madrid - Cologne
+              <Image
+                          src='https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww&w=1000&q=80'
+                          className="shadow object-fit-cover border"
+                          rounded
+                          style={{  width: "2em", height: "2em" }}
+                        />
+                        -
+                        <Image
+                          src='https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww&w=1000&q=80'
+                          className="shadow object-fit-cover border"
+                          rounded
+                          style={{  width: "2em", height: "2em" }}
+                        />
+                             
               </Col>
               <Col md={4}>
               1-4
@@ -213,7 +242,19 @@ function changeJoinShow(){
               20.09.23
               </Col>
               <Col md={4}>
-              Real Madrid - Barcelona
+              <Image
+                          src='https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww&w=1000&q=80'
+                          className="shadow object-fit-cover border"
+                          rounded
+                          style={{  width: "2em", height: "2em" }}
+                        />
+                        -
+                        <Image
+                          src='https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww&w=1000&q=80'
+                          className="shadow object-fit-cover border"
+                          rounded
+                          style={{  width: "2em", height: "2em" }}
+                        />
               </Col>
               <Col md={4}>
               TBD
@@ -229,7 +270,19 @@ function changeJoinShow(){
               20.09.23
               </Col>
               <Col md={4}>
-              Justice - Content
+              <Image
+                          src='https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww&w=1000&q=80'
+                          className="shadow object-fit-cover border"
+                          rounded
+                          style={{  width: "2em", height: "2em" }}
+                        />
+                        -
+                        <Image
+                          src='https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww&w=1000&q=80'
+                          className="shadow object-fit-cover border"
+                          rounded
+                          style={{  width: "2em", height: "2em" }}
+                        />
               </Col>
               <Col md={4}>
               TBD
@@ -245,7 +298,19 @@ function changeJoinShow(){
               20.09.23
               </Col>
               <Col md={4}>
-              Real Madrid - Raptors
+              <Image
+                          src='https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww&w=1000&q=80'
+                          className="shadow object-fit-cover border"
+                          rounded
+                          style={{  width: "2em", height: "2em" }}
+                        />
+                        -
+                        <Image
+                          src='https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww&w=1000&q=80'
+                          className="shadow object-fit-cover border"
+                          rounded
+                          style={{  width: "2em", height: "2em" }}
+                        />
               </Col>
               <Col md={4}>
               TBD

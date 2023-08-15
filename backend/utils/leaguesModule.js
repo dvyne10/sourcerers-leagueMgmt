@@ -382,7 +382,6 @@ export const updateLeague = async function(userId, leagueId, data){
                 numberOfRounds: data.numberOfRounds,
                 startDate: data.startDate,
                 endDate: data.endDate,
-                lookingForTeams: false,
                 updatedBy: new ObjectId(userId)
             } 
         })

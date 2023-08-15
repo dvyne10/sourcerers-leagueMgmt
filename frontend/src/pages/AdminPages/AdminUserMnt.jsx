@@ -1,23 +1,29 @@
 import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MultiSelect } from "react-multi-select-component";
 import { FaTrash, FaPlusCircle } from 'react-icons/fa';
-import useAuth from "../../hooks/auth";
+import {checkIfSignedIn, getToken} from "../../hooks/auth";
+
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const AdminUserMnt = () => {
   
-    const {isSignedIn, isAdmin} = useAuth()
+    let { isSignedIn, isAdmin } = checkIfSignedIn()
+    const token = `Bearer ${getToken()}`
     const inputFile = useRef(null);
+    const routeParams = useParams();
     const [action, handleAction] = useState("");
-    const [currValues, setCurrentValues] = useState({userName: null, password: null, role: "USER", email: null, phone: null,
-      firstName: null, lastName: null, country: "", province: "", city: "", announcementsCreated: [{ announcementMsg: "", showInHome: false }], teamsCreated: [], 
-      requestsSent: [], notifications: [], successfulLoginDetails: [], failedLoginDetails: { failedLogins: [] }
+    const [currValues, setCurrentValues] = useState({userName: "", password: "", userType: "USER", email: "", phoneNumber: "",
+      firstName: "", lastName: "", country: "", province: "", city: "", announcementsCreated: [{ showInHome: false, announcementMsg: "" }], teamsCreated: [], 
+      successfulLoginDetails: [{sourceIPAddress: "", timestamp: null}], 
+      failedLoginDetails: { numberOfLoginTries: 0, numberOfFailedLogins: 0, failedLogins: [{sourceIPAddress: "", timestamp: null}], consecutiveLockedOuts: 0, lockedTimestamp: null },
+      detailsOTP: {OTP: "", expiryTimeOTP: null}
     })
     const [sportsSelected, setSportsSelected] = useState([])
     const [selectedImage, setSelectedImage] = useState(null);
     const [imageURL, setImageURL] = useState(null);
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
+    const [sportsOptions, setSportsOptions] = useState([{ label: "Soccer", value: "648ba153251b78d7946df311" }, { label: "Basketball", value: "648ba153251b78d7946df322" }]);
     const roleOptions = [ {label: "Regular user", value: "USER"}, {label: "System admin", value: "ADMIN"} ]
     const accountStatus = [ {label: "Active", value: "ACTV"}, {label: "Banned", value: "BAN"},
         {label: "Suspended", value: "SUSP"}, {label: "Locked", value: "LOCK"}, {label: "Pending", value: "PEND"} ]
@@ -26,39 +32,78 @@ const AdminUserMnt = () => {
     const [cities, setCities] = useState([])
     const [prevCountry, setPrevCountry] = useState("")
     const [prevState, setPrevState] = useState("")
+    const [errorMessage, setErrorMessage] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        setIsLoading(true)
+        fetch(`${backend}/getsportslist`)
+        .then(response => response.json())
+        .then(resp => {
+            if (resp.requestStatus === 'ACTC') {
+                let newSportsList = resp.data.map(sport => {
+                    return {label: sport.sportsName, value: sport.sportsId}
+                })
+                setSportsOptions(newSportsList.sort((a,b) => a.label > b.label ? 1 : -1))
+            }
+        })
         const url = window.location.pathname
         if (url === "/adminusercreation") {
             handleAction({type: "Creation", title: "CREATE USER ACCOUNT", button1: "Create Account"})
             getCountries()
             .then((data) => {
               setCurrentValues({ ...currValues, country : data[0].name, province: data[0].states[0].name})
+              setIsLoading(false)
             })
         } else {
             handleAction({type: "Update", title: "UPDATE USER ACCOUNT", button1: "Update"})
             getCountries()
-            .then((data) => {
-              setPrevCountry("United Kingdom")
-              setPrevState("City of London")
-              setCurrentValues({status: "ACTV", userName: "hpotter", email: "hpotter@gmail.com", password: "991f120169ac3db7cbd57b9af5f8fb81718a14d19dc79db185160a66ec4dcd09", salt: "buFeA9ckvzI/DXBLL8PhJQ==", 
-                role: "USER", adminAnnounce: [], phone: "", firstName: "Harry", lastName: "Potter", country: "United Kingdom", province: "City of London", city: "N/A",
-                announcementsCreated: [{ announcementMsg: "announce1", showInHome: false}, { announcementMsg: "announce2", showInHome: true}],
-                teamsCreated: ["648ba154251b78d7946df340", "648ba154251b78d7946df344"], 
-                requestsSent: ["648ba154251b78d7946df34a", "648ba154251b78d7946df335"], 
-                notifications: ["648ba154251b78d7946df34b", "648ba154251b78d7946df335" ], 
-                successfulLoginDetails: [{sourceIpAddress: "194.120.180.275", timestamp: "2023-06-15T23:40:04.233+00:00"}, {sourceIpAddress: "194.120.180.275", timestamp: "2023-06-18T12:35:19.123+00:00"}], 
-                failedLoginDetails: { numberOfLoginTries: 8, numberOfFailedLogins: 2, 
-                    failedLogins: [{sourceIpAddress: "194.120.180.275", timestamp: "2023-07-01T23:40:04.233+00:00"}, {sourceIpAddress: "194.120.180.275", timestamp: "2023-07-01T23:42:19.123+00:00"}],
-                    consecutiveLockedOuts: null, lockedOutTimestamp: null },
-                detailsOTP: null, expiryTimeOTP: "" , createdAt: "2023-06-15T23:40:04.236+00:00", updatedAt: "2023-06-15T23:40:04.875+00:00"
+            fetch(`${backend}/admingetuser/${routeParams.userid}`, {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                  "Content-Type": "Application/JSON",
+                  "Authorization": token
+                }
               })
+              .then(response => response.json())
+              .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                } else if (data.requestStatus === 'ACTC') {
+                    let details = data.details
+                    setPrevCountry(details.country);
+                    setPrevState(details.province);
+                    setCurrentValues({...currValues, status: details.status, userName: details.userName, email: details.email, password: details.password, salt: details.salt, 
+                        userType: details.userType, phoneNumber: details.phoneNumber, firstName: details.firstName, lastName: details.lastName, country: details.country, province: details.province, city: details.city,
+                        announcementsCreated: [...details.announcementsCreated],
+                        teamsCreated: details.teamsCreated.map(team => team._id), 
+                        successfulLoginDetails: [...details.successfulLoginDetails], 
+                        failedLoginDetails: details.failedLoginDetails !== null ? {...details.failedLoginDetails} : currValues.failedLoginDetails,
+                        detailsOTP: details.detailsOTP && details.detailsOTP !== null? {...details.detailsOTP} : currValues.detailsOTP, createdAt: details.createdAt, updatedAt: details.updatedAt
+                    })
+                    let sportsSelectedValues = "";
+                    let sportsInDb = details.sportsOfInterest.map(sport => {
+                      sportsSelectedValues = sportsSelectedValues + sport
+                      let index = sportsOptions.findIndex(option => option.value ===  sport)
+                      return {label: sportsOptions[index].label, value: sport}
+                    })
+                    setSportsSelected(sportsInDb);
+                    fetch(`${backend}/profilepictures/${details._id}.jpeg`)
+                    .then(res=>{
+                        if (res.ok) {
+                          setImageURL(`${backend}/profilepictures/${details._id}.jpeg`)
+                          setSelectedImage("x")
+                        }
+                    })
+                }
+                setIsLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setIsLoading(false)
             })
-            setSportsSelected([{label: "Basketball", value: "basketId"}])
-            setImageURL("https://images.lifestyleasia.com/wp-content/uploads/sites/3/2022/12/31011513/harry-potter-films.jpeg")
-            setSelectedImage("x")
         }
-    }, []);
+    }, [location.pathname]);
 
     useEffect(()=> {
         getStates(currValues.country)
@@ -104,6 +149,12 @@ const AdminUserMnt = () => {
       const field = e.target.name
       setCurrentValues({ ...currValues, [field] : e.target.value })
     }
+    
+    const handleOTPChange = (e) => {
+        const field = e.target.name
+        let newList = {...currValues.detailsOTP, [field] : e.target.value}
+        setCurrentValues({ ...currValues, detailsOTP : newList })
+    }
 
     const handleAnnouncements = (event, index) => {
         const field = event.target.name
@@ -127,7 +178,6 @@ const AdminUserMnt = () => {
         console.log(index)
         let newList = [...currValues.announcementsCreated]
         newList = newList.filter((items, itemIndex) => itemIndex !== index)
-        console.log("131" + JSON.stringify(newList))
         setCurrentValues({ ...currValues, announcementsCreated : newList })
     }
 
@@ -189,9 +239,64 @@ const AdminUserMnt = () => {
 
     const navigate = useNavigate(); 
     const navigateCreateUpdate = () => { 
-        // do validations first then send to server
-        // Pass new/update values to parent component 
-        navigate(-1)
+        let data = {}
+        setIsLoading(true)
+        currValues.sportsOfInterest = []
+        sportsSelected.map((i) => (currValues.sportsOfInterest.push(i.value)));
+        if (action.type === "Creation") {
+            data = {...currValues}
+            //data.logo = selectedLogo
+            //data.banner = selectedBanner
+            fetch(`${backend}/admincreateuser`, {
+                method: "POST",
+                credentials: 'include',
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
+                }
+            })
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                } else {
+                    navigate('/adminusers')
+                }
+                setIsLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setIsLoading(false)
+            })
+        } else {
+            data = {...currValues}
+            //data.logo = selectedLogo
+            //data.banner = selectedBanner
+            fetch(`${backend}/adminupdateuser/${routeParams.userid}`, {
+                method: "POST",
+                credentials: 'include',
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
+                }
+            })
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                    if (data.errField !== "") {
+                        document.getElementById(data.errField).focus()
+                    }
+                } else {
+                    navigate('/adminusers')
+                }
+                setIsLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setIsLoading(false)
+            })
+        }
     }
 
     const navigateCancel = () => {
@@ -205,10 +310,22 @@ const AdminUserMnt = () => {
             <h1>NOT AUTHORIZED TO ACCESS THIS PAGE !!!</h1>
           </div>
         ) : (
+            isLoading ? (
+                <div className="loading-overlay">
+                  <div style={{color: 'black'}}>Loading...</div>
+                  <div className="loading-spinner"></div>
+                </div>
+              ) : (
       <Card style={{ width: "70rem", padding: 20 }}>
+        {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+        )}
         <h2 className="mb-4 center-text">{action.title}</h2>
         <form action="" encType="multipart/form-data">
-
             { action.type !== "Creation" && (
                 <div className = "row mb-2">
                     <div className="col-2 text-end"><label htmlFor="status" className="form-label" >Account status*</label></div>
@@ -228,9 +345,9 @@ const AdminUserMnt = () => {
                 <div className="col-4"><input id="password" name="password" type="password" className="form-control" value={currValues.password} onChange={handleAccountDetails}/></div>
             </div>
             <div className = "row mb-2">
-                <div className="col-2 text-end"><label htmlFor="role" className="form-label" >Role*</label></div>
+                <div className="col-2 text-end"><label htmlFor="userType" className="form-label" >Role*</label></div>
                 <div className="col-4">
-                    <select id="role" name="role" type="text" className="form-control" value={currValues.role} onChange={handleAccountDetails}>
+                    <select id="userType" name="userType" type="text" className="form-control" value={currValues.userType} onChange={handleAccountDetails}>
                         {roleOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
                         ))}
@@ -239,7 +356,7 @@ const AdminUserMnt = () => {
                 <div className="col-2 text-end"><label htmlFor="email" className="form-label">Email*</label></div>
                 <div className="col-4"><input id="email" name="email" type="email" className="form-control" value={currValues.email} onChange={handleAccountDetails} /></div>
             </div>
-            { currValues.role === "ADMIN" && (
+            { currValues.userType === "ADMIN" && (
             <>
             <div className = "row mt-3 mb-2">
                 <div className="col-2"></div>
@@ -264,8 +381,8 @@ const AdminUserMnt = () => {
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="sports" className="form-label">Sports of Interest**</label></div>
                 <div className="col-4"><MultiSelect options={sportsOptions} value={sportsSelected} onChange={setSportsSelected} className="form-control"/></div>
-                <div className="col-2 text-end"><label htmlFor="phone" className="form-label">Phone Number</label></div>
-                <div className="col-4"><input id="phone" name="phone" type="text" className="form-control" value={currValues.phone} onChange={handleAccountDetails} /></div>
+                <div className="col-2 text-end"><label htmlFor="phoneNumber" className="form-label">Phone Number</label></div>
+                <div className="col-4"><input id="phoneNumber" name="phoneNumber" type="text" className="form-control" value={currValues.phoneNumber} onChange={handleAccountDetails} /></div>
             </div>
             <div className = "row mb-2">
                 <div className="col-2 text-end"><label htmlFor="firstName" className="form-label">First Name*</label></div>
@@ -312,22 +429,6 @@ const AdminUserMnt = () => {
                             <div className = "col-2 mb-1"></div></>
                         ))}
                     </div>
-                    <p/>
-                    <div className="col-2 text-end"><label htmlFor="requestsSent" className="form-label" >Requests Sent</label></div>
-                    <div className="col mb-1">
-                        {currValues.requestsSent.map((req) => (
-                            <><a href={`/adminrequestupdate/${req}`} target="_blank" rel="noreferrer" name="requestsSent" className="col-10 mb-1" key={req}>{req}</a>
-                            <div className = "col-2 mb-1"></div></>
-                        ))}
-                    </div>
-                    <p/>
-                    <div className="col-2 text-end"><label htmlFor="notifications" className="form-label" >Notifications</label></div>
-                    <div className="col mb-1">
-                        {currValues.notifications.map((notif) => (
-                            <><a href={`/adminnotificationupdate/${notif}`} target="_blank" rel="noreferrer" name="notifications" className="col-10 mb-1" key={notif}>{notif}</a>
-                            <div className = "col-2 mb-1"></div></>
-                        ))}
-                    </div>
                     <div className="row mt-3">
                         <div className="col-2 text-end"><label htmlFor="successfulLoginDetails" className="form-label" >Successful Logins : </label></div>
                         <div className="col-3 text-center"><label htmlFor="sourceIpAddress" className="form-label" >IP Address</label></div>
@@ -337,7 +438,7 @@ const AdminUserMnt = () => {
                         {currValues.successfulLoginDetails.map((login, index) => (
                             <div className="row" key={index}>
                                 <p className = "col-2"></p>
-                                <div className="col-3 mb-1"><input name="sourceIpAddress" type="text" className="form-control" value={login.sourceIpAddress} onChange={(e) => handleSuccLoginChange(e, index)} /></div>
+                                <div className="col-3 mb-1"><input name="sourceIPAddress" type="text" className="form-control" value={login.sourceIPAddress} onChange={(e) => handleSuccLoginChange(e, index)} /></div>
                                 <div className="col-4 mb-1"><input name="timestamp" type="text" className="form-control" value={login.timestamp} onChange={(e) => handleSuccLoginChange(e, index)} /></div>
                             </div>
                         ))}
@@ -380,11 +481,11 @@ const AdminUserMnt = () => {
                     </div>
                     <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="detailsOTP" className="form-label">One Time Password</label></div>
-                        <div className="col-2"><input id="detailsOTP" name="detailsOTP" type="number" min="0" className="form-control" value={currValues.detailsOTP} onChange={handleAccountDetails} /></div>
+                        <div className="col-2"><input id="detailsOTP" name="OTP" type="number" min="0" className="form-control" value={currValues.detailsOTP.OTP} onChange={handleOTPChange} /></div>
                     </div>
                     <div className="row mb-2">
                         <div className="col-4 text-end"><label htmlFor="expiryTimeOTP" className="form-label">OTP Expiry Timestamp</label></div>
-                        <div className="col-4"><input id="expiryTimeOTP" name="expiryTimeOTP" type="text" className="form-control" value={currValues.expiryTimeOTP} onChange={handleAccountDetails} /></div>
+                        <div className="col-4"><input id="expiryTimeOTP" name="expiryTimeOTP" type="text" className="form-control" value={currValues.detailsOTP.expiryTimeOTP} onChange={handleOTPChange} /></div>
                     </div>
                     <div className="row mt-3">
                         <div className="col-3 text-end"><label htmlFor="createdAt" className="form-label">Date of Account Creation :</label></div>
@@ -424,7 +525,7 @@ const AdminUserMnt = () => {
             </div>
 
             <div className="row justify-content-center">
-                <button className="btn btn-dark col-2 mx-5" type="submit" onClick={navigateCreateUpdate}>
+                <button className="btn btn-dark col-2 mx-5" type="button" onClick={navigateCreateUpdate}>
                     {action.button1}
                 </button>
                 <button type="button" className="btn btn-outline-secondary col-2" onClick={navigateCancel}>
@@ -434,6 +535,7 @@ const AdminUserMnt = () => {
 
         </form>
       </Card>
+              )
       )}
     </div>
   );

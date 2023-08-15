@@ -24,6 +24,8 @@ const Notification = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchNotifications = async () => {
+    const startTime = new Date(); 
+
     try {
       const response = await fetch(`${backend}/notifications`, {
         method: 'POST',
@@ -32,20 +34,23 @@ const Notification = () => {
           "Content-Type": "Application/JSON",
           "Authorization": token
         },
-        
       });
 
       const data = await response.json();
-      console.log(data.details);
+
       if (data.requestStatus === 'ACTC') {
         setNotifications(data.details);
-        setEnvelopeOpen(data.details.map((notification) => !notification.readStatus));
+        setEnvelopeOpen(data.details.map((notification) => notification.readStatus));
       } else {
-        console.log('notification does not exist');
+        console.log(data.errMsg);
       }
     } catch (error) {
       console.error('Error fetching top leagues data:', error);
-    } finally {
+      } finally {
+      const endTime = new Date(); // Record the end time
+      const elapsedTimeInSeconds = (endTime - startTime) / 1000; // Calculate time difference in seconds
+      console.log(`Response time: ${elapsedTimeInSeconds} seconds`);
+
       setIsLoading(false); 
     }
   };
@@ -78,6 +83,7 @@ const Notification = () => {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
+            "Authorization": token
           },
         });
         
@@ -92,6 +98,7 @@ const Notification = () => {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
+            "Authorization": token
           },
         });
 
@@ -103,49 +110,67 @@ const Notification = () => {
 
   const totalPages = Math.ceil(notifications.length / notificationsPerPage);
 
-  const handleApproveClick = async (notification) => {
+  const handleApproveClick = (notification, index) => {
     const confirmed = window.confirm('Are you sure to approve?');
     if (confirmed) {
       try {
-        const response = await fetch(`${backend}/approverequest/${notification.notifId}`, {
+        fetch(`${backend}/approverequest/${notification.notifId}`, {
           method: 'PUT',
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
+            "Authorization": token
           },
-        });
-        if (response.requestStatus === 'ACTC') {
-          // re-render the page, or update the button 
-          // if it was succesful, I disable both buttons 
-        } else {
-          // display error message on the client-side 
-        }
+        })
+        .then(response => response.json())
+        .then(data=>{
+          if (data.requestStatus === 'ACTC') {
+            let updatedNotifications = [...notifications]      
+            updatedNotifications[index].enableApproveButton = false; 
+            updatedNotifications[index].displayApproveButton = true;       
+            if (updatedNotifications[index].enableRejectButton === true) {
+              updatedNotifications[index].enableRejectButton = false; 
+              updatedNotifications[index].displayRejectButton = true;
+            }
+            setNotifications([...updatedNotifications]);
+          } else {
+            console.log(data.errMsg)
+          }
+        })
       } catch (error) {
-        console.error('Error marking notification as read:', error);
+        console.error('Error marking notification as approved:', error);
       }
 
     }
   };
 
-  const handleRejectClick = async (notification) => {
+  const handleRejectClick = (notification, index) => {
 
     const confirmed = window.confirm('Are you sure to reject?');
+    
     if (confirmed) {
       try {
-        console.log(notification.notifId);
-        const response = await fetch(`${backend}/rejectrequest/${notification.notifId}`, {
+        fetch(`${backend}/rejectrequest/${notification.notifId}`, {
           method: 'PUT',
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
+            "Authorization": token,
           },
-        });
-        if (response.requestStatus === 'ACTC') {
-          // re-render the page, or update the button 
-          // if it was succesful, I disable both buttons 
-        } else {
-          // 
-        }
+        })
+        .then(response => response.json())
+        .then(data=>{
+          if (data.requestStatus === 'ACTC') {
+            let updatedNotifications = [...notifications]      
+            updatedNotifications[index].enableApproveButton = false; 
+            updatedNotifications[index].displayApproveButton = true;       
+            updatedNotifications[index].enableRejectButton = false; 
+            updatedNotifications[index].displayRejectButton = true;
+            setNotifications([...updatedNotifications]);
+          } else {
+            console.log(data.errMsg)
+          }
+        })
       } catch (error) {
         console.error('Error marking notification as read:', error);
       }
@@ -188,12 +213,12 @@ const Notification = () => {
                       </button>
                     </div>
                     <div className="notification-list_detail">
-                      <p className={`notification-sender ${notification.read || envelopeOpen[index] ? '' : 'bold'}`}>
+                      <p className={`notification-sender ${notification.read  ? '' : 'bold'}`}>
                         {notification.read || envelopeOpen[index] ? notification.sender : <b>{notification.sender}</b>}
                       </p>
                     </div>
                     <div className="text-muted">
-                      <p className={`notification-message ${notification.read || envelopeOpen[index] ? '' : 'bold'}`}>
+                      <p className={`notification-message ${notification.read  ? '' : 'bold'}`}>
                         {notification.read || envelopeOpen[index] ? notification.message : <b>{notification.message}</b>}
                       </p>
                     </div>
@@ -202,7 +227,7 @@ const Notification = () => {
                     {notification.enableApproveButton ? (
                       <button
                       className="approval-button"
-                      onClick={() => handleApproveClick(notification)}
+                      onClick={() => handleApproveClick(notification, index)}
                       >
                         Approve
                       </button>
@@ -217,7 +242,7 @@ const Notification = () => {
                     {notification.enableRejectButton ? (
                       <button
                         className="decline-button"
-                        onClick={() => handleRejectClick(notification)}
+                        onClick={() => handleRejectClick(notification, index)}
                       >
                         Reject
                       </button>

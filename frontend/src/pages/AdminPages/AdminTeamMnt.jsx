@@ -1,46 +1,92 @@
 import { useState, useEffect, useRef }  from 'react';
 import Card from "react-bootstrap/Card";
-import { useNavigate } from 'react-router-dom';
-import useAuth from "../../hooks/auth";
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaSearchPlus } from 'react-icons/fa';
+import {checkIfSignedIn, getToken} from "../../hooks/auth";
+
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const AdminTeamMnt = () => {
   
-    const {isSignedIn, isAdmin} = useAuth()
+    let { isSignedIn, isAdmin } = checkIfSignedIn()
+    const token = `Bearer ${getToken()}`
     const inputFileBanner = useRef(null);
     const inputFileLogo = useRef(null);
+    const routeParams = useParams();
     const [action, handleAction] = useState("");
-    const [currValues, setCurrentValues] = useState({teamName: null, sport: null, location: null, division: null, email: null, description: null })
+    const [currValues, setCurrentValues] = useState({teamName: null, sportsTypeId: null, location: null, division: null, teamContactEmail: null, 
+        description: null, players: [] })
     const [selectedLogo, setSelectedLogo] = useState(null);
     const [logoURL, setLogoURL] = useState(null);
     const [selectedBanner, setSelectedBanner] = useState(null);
     const [bannerURL, setBannerURL] = useState(null);
-    const sportsOptions = [ {label: "Soccer", value: "soccerId"}, {label: "Basketball", value: "basketId"} ]
-    const positionOptions = [ {label: "Team Captain", value: "648ba153251b78d7946df31e"}, {label: "Goalkeeper", value: "648ba153251b78d7946df31f"}, {label: "Defender", value: "648ba153251b78d7946df320"} ]
+    const [sportsOptions, setSportsOptions] = useState([{ label: "Soccer", value: "648ba153251b78d7946df311" }, { label: "Basketball", value: "648ba153251b78d7946df322" }]);
+    const [positionOptions, setPositionOptions] = useState([ {label: "Team Captain", value: "SCP01"}, {label: "Goalkeeper", value: "SCP02"}, {label: "Defender", value: "SCP03"} ])
+    const [errorMessage, setErrorMessage] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        setIsLoading(true)
+        fetch(`${backend}/getsportslist`)
+        .then(response => response.json())
+        .then(resp => {
+            if (resp.requestStatus === 'ACTC') {
+                let newSportsList = resp.data.map(sport => {
+                    return {label: sport.sportsName, value: sport.sportsId}
+                })
+                setSportsOptions(newSportsList.sort((a,b) => a.label > b.label ? 1 : -1))
+            }
+        })
         const url = window.location.pathname
         if (url === "/adminteamcreation") {
             handleAction({type: "Creation", title: "CREATE TEAM", button1: "Create Team"})
+            setIsLoading(false)
         } else {
             handleAction({type: "Update", title: "UPDATE TEAM", button1: "Update"})
-            setCurrentValues({teamName: "Vikings", sport: "basketId", location: "York, Ontario, CA", division: "mixed", email: "vikingsteam@mail.com", description: "A team of soccer enthusiasts.",
-              players: [
-                    {playerId: "648d3815252cbe610b0970d9", positionId: "648ba153251b78d7946df31e", jerseyNumber: 15, joinedDate: "2023-06-17T09:40:04.233+00:00"}, 
-                    {playerId: "648d3815252cbe610b0970da", positionId: "648ba153251b78d7946df31f", jerseyNumber: 87, joinedDate: "2023-06-18T10:20:03.213+00:00"},
-                    {playerId: "648d3815252cbe610b0970db", positionId: "648ba153251b78d7946df320", jerseyNumber: 12, joinedDate: "2023-06-19T11:30:02.231+00:00"},
-                    {playerId: "648d3815252cbe610b0970dc", positionId: "648ba153251b78d7946df31f", jerseyNumber: 74, joinedDate: "2023-06-11T12:50:01.133+00:00"},
-                    {playerId: "648d3815252cbe610b0970dd", positionId: "648ba153251b78d7946df320", jerseyNumber: 69, joinedDate: "2023-06-12T13:10:00.231+00:00"},
-                ],
-                lookingForPlayers: true, lookingForPlayersChgTmst: "2023-06-17T09:40:04.233+00:00", addPlayer: "",
-                createdBy: "648e132ff3d2cb1d615fbd9d", createdAt: "2023-06-15T23:40:04.236+00:00", updatedAt: "2023-06-15T23:40:04.875+00:00", newCreator: "", newCreatorId: ""
+            fetch(`${backend}/admingetteamdetails/${routeParams.teamid}`, {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
+                }
             })
-            setLogoURL("https://images.unsplash.com/photo-1511886929837-354d827aae26?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80")
-            setSelectedLogo("x")
-            setBannerURL("https://plus.unsplash.com/premium_photo-1685055940239-21af8b3b0443?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80")
-            setSelectedBanner("x")
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                } else {
+                    setCurrentValues({teamName: data.details.teamName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, 
+                        location: data.details.location, division: data.details.division, teamContactEmail: data.details.teamContactEmail, 
+                        players: data.details.players, lookingForPlayers: data.details.lookingForPlayers, lookingForPlayersChgTmst: data.details.lookingForPlayersChgTmst, addPlayer: "",
+                        createdBy: data.details.createdBy, createdAt: data.details.createdAt, updatedAt: data.details.updatedAt, newCreatorId: ""
+                    })
+                    fetch(`${backend}/teamlogos/${routeParams.teamid}.jpeg`)
+                    .then(res=>{
+                        if (res.ok) {
+                            setLogoURL(`${backend}/teamlogos/${routeParams.teamid}.jpeg`) 
+                            setSelectedLogo("x")
+                        }
+                    })
+                    fetch(`${backend}/teambanners/${routeParams.teamid}.jpeg`)
+                    .then(res=>{
+                        if (res.ok) {
+                            setBannerURL(`${backend}/teambanners/${routeParams.teamid}.jpeg`)
+                            setSelectedBanner("x")
+                        }
+                    })
+                    let positionsFromDb = data.details.positionOptions.map(position => {
+                        return {label: position.positionDesc, value: position.positionParmId}
+                    })
+                    setPositionOptions(positionsFromDb.sort((a,b) => a.label > b.label ? 1 : -1))
+                }
+                setIsLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setIsLoading(false)
+            })
         }
-    }, []);
+    }, [location.pathname]);
 
     const handleLogoChange = event => {
         if (event.target.files.length > 0) {
@@ -84,35 +130,94 @@ const AdminTeamMnt = () => {
         } 
     }
 
-    const handleSearchUser = (username) => {
-        if (username !== "") {
-            const rand = Math.floor(Math.random() * 10);
-            if (rand >= 5 ) {    // find username first if valid
-                const randomId = "xn2n3824823jx3238o23s8374i8j"
-                setCurrentValues({ ...currValues, newCreatorId : randomId })
-            } else {
-                setCurrentValues({ ...currValues, newCreatorId : "" })
-                alert("USERNAME NOT FOUND!")
-            }
-        }
-    }
-
-    const handleSearchPlayer = (username) => {
-        if (username !== "") {
-            const randomId = "83xj2udjm4fu3x2om3r342x"
-            let date = new Date()
-            date.setDate(date.getDate())
-            let newList = [...currValues.players]
-            newList.push({ playerId: randomId, positionId: null, jerseyNumber: null, joinedDate: "2023-07-07T14:03:16.292+00:00" })
-            setCurrentValues({ ...currValues, players : newList, addPlayer : "" })
+    const handleSearchUser = (userName, field) => {
+        if (userName !== "") {
+            setErrorMessage([]);
+            fetch(`${backend}/finduser/${userName}`)
+            .then(response => response.json())
+            .then(resp => {
+                if (resp.playerId !== "") {
+                    if (field === 1) {
+                        if (resp.playerId !== currValues.createdBy) {
+                            setCurrentValues({ ...currValues, newCreatorId : resp.playerId })
+                        } else {
+                            setErrorMessage(["The same user as current team admin"]);
+                        }
+                    } else {
+                        let newList = [...currValues.players]
+                        let index = newList.findIndex(p => p.playerId === resp.playerId)
+                        if (index === -1) {
+                            newList.push({ playerId: resp.playerId, position: null, jerseyNumber: null, joinedTimestamp: new Date() })
+                            setCurrentValues({ ...currValues, players : newList, addPlayer : "" })
+                        } else {
+                            setErrorMessage(["Player is already part of the team."]);
+                            window.scrollTo(0, 0);
+                        }
+                    }
+                } else {
+                    setErrorMessage(["User is not found"]);
+                    if (field === 1) {
+                        setCurrentValues({ ...currValues, newCreatorId : "" })
+                    }
+                    window.scrollTo(0, 0);
+                }
+            })
         }
     }
 
     const navigate = useNavigate(); 
     const navigateCreateUpdate = () => { 
-        // do validations first then send to server
-        // Pass new/update values to parent component 
-        navigate(-1)
+        let data = {...currValues}
+        setIsLoading(true)
+        if (action.type === "Creation") {
+            //data.logo = selectedLogo
+            //data.banner = selectedBanner
+            fetch(`${backend}/admincreateteam`, {
+                method: "POST",
+                credentials: 'include',
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
+                }
+            })
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                } else {
+                    navigate('/adminteams')
+                }
+                setIsLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setIsLoading(false)
+            })
+        } else {
+            //data.logo = selectedLogo
+            //data.banner = selectedBanner
+            fetch(`${backend}/adminupdateteam/${routeParams.teamid}`, {
+                method: "POST",
+                credentials: 'include',
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "Application/JSON",
+                    "Authorization": token
+                }
+            })
+            .then(response => response.json())
+            .then(data=>{
+                if (data.requestStatus === 'RJCT') {
+                    setErrorMessage([data.errMsg])
+                } else {
+                    navigate('/adminteams')
+                }
+                setIsLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                setIsLoading(false)
+            })
+        }
     }
 
     const navigateCancel = () => {
@@ -126,7 +231,20 @@ const AdminTeamMnt = () => {
             <h1>NOT AUTHORIZED TO ACCESS THIS PAGE !!!</h1>
           </div>
         ) : (
+            isLoading ? (
+                <div className="loading-overlay">
+                  <div style={{color: 'black'}}>Loading...</div>
+                  <div className="loading-spinner"></div>
+                </div>
+              ) : (
       <Card style={{ width: "70rem", padding: 20 }}>
+        {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+        )}
         <h2 className="mb-4 center-text">{action.title}</h2>
         <form action="" encType="multipart/form-data">
 
@@ -138,13 +256,13 @@ const AdminTeamMnt = () => {
                 <div className="col-4 mb-2"><input id="location" name="location" type="text" className="form-control" value={currValues.location} onChange={handleTeamDetails}/></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="division" className="form-label" >Division</label></div>
                 <div className="col-4 mb-2"><input id="division" name="division" type="text" className="form-control" value={currValues.division} onChange={handleTeamDetails}/></div>
-                <div className="col-2 text-end mb-2"><label htmlFor="email" className="form-label">Email*</label></div>
-                <div className="col-4 mb-2"><input id="email" name="email" type="email" className="form-control" value={currValues.email} onChange={handleTeamDetails} /></div>
+                <div className="col-2 text-end mb-2"><label htmlFor="teamContactEmail" className="form-label">Email*</label></div>
+                <div className="col-4 mb-2"><input id="teamContactEmail" name="teamContactEmail" type="email" className="form-control" value={currValues.teamContactEmail} onChange={handleTeamDetails} /></div>
                 <div className="col-2 text-end mb-2"><label htmlFor="description" className="form-label" >Description</label></div>
                 <div className="col-10 mb-2"><textarea id="description" name="description" className="form-control form-control-sm" value={currValues.description} onChange={handleTeamDetails}/></div>
-                <div className="col-2 text-end mb-2"><label htmlFor="sport" className="form-label" >Sport*</label></div>
+                <div className="col-2 text-end mb-2"><label htmlFor="sportsTypeId" className="form-label" >Sport*</label></div>
                 <div className="col-4 mb-2">
-                    <select id="sport" name="sport" className="form-control" value={currValues.sport} onChange={handleTeamDetails} >
+                    <select id="sportsTypeId" name="sportsTypeId" className="form-control" value={currValues.sportsTypeId} onChange={handleTeamDetails} >
                         {sportsOptions.map((option) => (
                             <option value={option.value} key={option.value}>{option.label}</option>
                         ))}
@@ -152,7 +270,6 @@ const AdminTeamMnt = () => {
                 </div>       
             </div>
             <div className="row">
-
                 { action.type !== "Creation" && (
                 <>
                     <p />
@@ -166,14 +283,6 @@ const AdminTeamMnt = () => {
                             <a href={`/adminuserupdate/${currValues.createdBy}`} target="_blank" rel="noreferrer" name="createdBy" className="col-10 mb-1">{currValues.createdBy}</a>
                         </div>
                     </div>
-                    <div className="row mt-2 mb-2">
-                        <div className="col-3 text-end"><label htmlFor="newCreator" className="form-label">Change League Creator :</label></div>
-                        <div className="col-3"><input id="newCreator" name="newCreator" type="text" className="form-control" onChange={handleTeamDetails} placeholder="Search by username" /></div>
-                        <FaSearchPlus className="col-1 mt-2" onClick={()=> handleSearchUser(currValues.newCreator)} />
-                        <div className="col-3">
-                            <a href={`/adminuserupdate/${currValues.newCreatorId}`} target="_blank" rel="noreferrer" name="newCreatorId">{currValues.newCreatorId}</a>
-                        </div>
-                    </div>
                     <div className="row mb-2">
                         <div className="col-3 text-end"><label htmlFor="createdAt" className="form-label">Date of Team Creation :</label></div>
                         <div className="col-4"><p className="form-label">{currValues.createdAt}</p></div>
@@ -182,9 +291,16 @@ const AdminTeamMnt = () => {
                         <div className="col-3 text-end"><label htmlFor="updatedAt" className="form-label">Team Latest Update Date :</label></div>
                         <div className="col-4"><p className="form-label">{currValues.updatedAt}</p></div>
                     </div>
-                </>
+                    </>
                 ) }
-
+                    <div className="row mt-2 mb-2">
+                        <div className="col-3 text-end"><label htmlFor="newCreator" className="form-label">Change Team Creator :</label></div>
+                        <div className="col-3"><input id="newCreator" name="newCreator" type="text" className="form-control" onChange={handleTeamDetails} placeholder="Search by username" /></div>
+                        <FaSearchPlus className="col-1 mt-2" onClick={()=> handleSearchUser(currValues.newCreator, 1)} />
+                        <div className="col-3">
+                            <a href={`/adminuserupdate/${currValues.newCreatorId}`} target="_blank" rel="noreferrer" name="newCreatorId">{currValues.newCreatorId}</a>
+                        </div>
+                    </div>
             </div>
 
             <div className="row justify-content-center mt-3">
@@ -257,7 +373,7 @@ const AdminTeamMnt = () => {
                                 <tr key={player.playerId}>
                                     <td><a href={`/adminuserupdate/${player.playerId}`} target="_blank" rel="noreferrer" name="players" className="col-10 mb-1" key={player.playerId}>{player.playerId}</a></td>
                                     <td>
-                                        <select name="position" className="form-control" value={player.positionId} onChange={(e) => handlePLayerChange(e, index)}>
+                                        <select name="position" className="form-control" value={player.position} onChange={(e) => handlePLayerChange(e, index)}>
                                             {positionOptions.map((option) => (
                                                 <option value={option.value} key={option.value}>{option.label}</option>
                                             ))}
@@ -266,7 +382,7 @@ const AdminTeamMnt = () => {
                                     <td>
                                         <input name="jerseyNumber" type="number" min="0" value={player.jerseyNumber} onChange={(e) => handlePLayerChange(e, index)} style={{ width: "4rem"}}/>
                                     </td>
-                                    <td><input name="joinedDate" type="text" value={player.joinedDate} onChange={(e) => handlePLayerChange(e, index)}/></td>
+                                    <td><input name="joinedTimestamp" type="text" value={player.joinedTimestamp} onChange={(e) => handlePLayerChange(e, index)}/></td>
                                     <td><button className = "btn btn-danger btn-sm" onClick={() => handleRemovePlayer(index)}>Remove</button></td>
                                 </tr>) 
                             }
@@ -277,7 +393,7 @@ const AdminTeamMnt = () => {
                                 <td/>
                                 <td/>
                                 <td/>
-                                <td><FaSearchPlus className="m-auto" onClick={()=> handleSearchPlayer(currValues.addPlayer)} /></td>  
+                                <td><FaSearchPlus className="m-auto" onClick={()=> handleSearchUser(currValues.addPlayer, 2)} /></td>  
                             </tr>
                         </tbody>
                     </table>
@@ -293,6 +409,7 @@ const AdminTeamMnt = () => {
                 </button>
             </div>
       </Card>
+              )
       )}
     </div>
   );

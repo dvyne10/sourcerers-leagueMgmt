@@ -6,6 +6,7 @@ import { getTeamDetails, getTeamsCreated, getUsersTeams, isTeamMember, getTeamMa
     getTeamAdmin, removePlayerFromTeam } from "./teamsModule.js";
 import { getLeagueDetails, isLeagueAdmin, getLeagueButtons, getLeagueAdmins, getNSLeaguesUserIsAdmin } from "./leaguesModule.js";
 import { getNotifParmByNotifId, getSysParmByParmId, getSysParmList } from "./sysParmModule.js"
+import { genNotifMsg } from "./notificationsModule.js"
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -161,7 +162,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                         }
                     }
                 ]).limit(1)
-                if (aptmi === null || aptmi.length === 0) {
+                if (aptmi === null || aptmi.length === 0 || aptmi[0].requestsSent.length === 0) {
                     response.hasPending = false
                     response.teamsCreated = await getTeamsCreated(userId)
                     response.requestStatus = "ACTC"
@@ -239,7 +240,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                         }
                     }
                 ]).limit(1)
-                if (aptmj === null || aptmj.length === 0) {
+                if (aptmj === null || aptmj.length === 0 || aptmj[0].requestsSent.length === 0) {
                     response.hasPending = false
                     response.requestStatus = "ACTC"
                     return response
@@ -296,8 +297,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 }
                 let teamSport = team.details.sportsTypeId
                 let nsLeaguesUserIsAdmin = await usersLeagues.filter(league => league.sportsTypeId.equals(teamSport))
-                
-                if (aplgi === null || aplgi.length === 0) {
+                if (aplgi === null || aplgi.length === 0 || aplgi[0].requestsSent.length === 0) {
                     response.requestStatus = "ACTC"
                     response.hasPending = false
                     response.nsLeaguesUserIsAdmin = nsLeaguesUserIsAdmin
@@ -305,34 +305,18 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                 } else {
                     let found = false
                     let leagueIndex = 0
-                    let promises = aplgi.requestsSent.map(async function(req) {
+                    let promises = aplgi.map(async function(user) {
                         if (found === false) {
-                        let notif = UserModel.aggregate([ 
-                            { 
-                                $match: { "notifications.forAction.requestId" : new ObjectId(req._id)
-                                } 
-                            }, 
-                            { 
-                                $project: {
-                                    notifications: {
-                                        $filter: {
-                                            input: "$notifications",
-                                            as: "notif",
-                                            cond: {
-                                                $eq: [ "$$notif.forAction.requestId", new ObjectId(req._id) ]
-                                            }
-                                        }
+                            let promises2 = user.requestsSent.map(async function(req) {
+                                if (found === false) {
+                                    leagueIndex = nsLeaguesUserIsAdmin.findIndex((i) => i.leagueId.equals(req.receiverLeagueId))
+                                    if (leagueIndex !== -1) {
+                                        found = true
+                                        response.pendingInviteRequestId = req._id
                                     }
                                 }
-                            }
-                        ]).limit(1)
-                        if (notif !== null && notif.length > 0) {
-                            leagueIndex = await nsLeaguesUserIsAdmin.findIndex((i) => i.leagueId.equals(notif[0].notifications[0].senderLeagueId))
-                            if (leagueIndex !== -1) {
-                                found = true
-                                response.pendingInviteRequestId = req._id
-                            }
-                        }
+                            })
+                            await Promise.all(promises2)
                         }
                     })
                     await Promise.all(promises)
@@ -383,7 +367,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                         }
                     }
                 ]).limit(1)
-                if (aplgj === null || aplgj.length === 0) {
+                if (aplgj === null || aplgj.length === 0 || aplgj[0].requestsSent.length === 0) {
                     response.hasPending = false
                     let resp1 = getTeamsCreated(userId)
                     let resp2 = getLeagueDetails(leagueId)
@@ -442,7 +426,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                         }
                     }
                 ]).limit(1)
-                if (aplgr === null || aplgj.length === 0) {
+                if (aplgr === null || aplgj.length === 0 || aplgr[0].requestsSent.length === 0) {
                     response.hasPending = false
                     response.requestStatus = "ACTC"
                     return response
@@ -489,7 +473,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                         }
                     }
                 ]).limit(1)
-                if (aplgs === null || aplgs.length === 0) {
+                if (aplgs === null || aplgs.length === 0 || aplgs[0].requestsSent.length === 0) {
                     response.hasPending = false
                     let league = await getLeagueDetails(leagueId)
                     if (league.requestStatus !== "ACTC") {
@@ -559,6 +543,7 @@ export const joinLeague = async function(userId, teamId, leagueId, msg) {
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingRequestId = reqDetails.pendingRequestId
         let admins = await getLeagueAdmins(leagueId)
+        let notifMsg = await genNotifMsg(notifId, userId, teamId, leagueId, "", msg)
         const promises = admins.map(async function(admin) {
             await UserModel.updateOne({ _id : admin.userId }, { 
                 $push: { notifications : {
@@ -572,12 +557,14 @@ export const joinLeague = async function(userId, teamId, leagueId, msg) {
                         actionDone: null,
                         actionTimestamp: null
                     },
+                    notificationMsg: notifMsg,
                     notificationDetails: msg
                 } } 
             })
         })
         await Promise.all(promises);
         response.requestStatus = "ACTC"
+        response.pendingRequestId = pendingRequestId
         return response
     }
     return response
@@ -625,6 +612,7 @@ export const unjoinLeague = async function(userId, leagueId) {
     // TO DO - remove all notifs to or requests from user that is related to that leagueId !!!!!
 
     // Send notifications to league admins
+    let notifMsg = await genNotifMsg(notifId, userId, teamToUnjoin.toString(), leagueId, "", "")
     const promise2 = admins.map(async function(admin) {
         if (!admin.userId.equals(userId)) {
             await UserModel.updateOne({ _id : admin.userId }, { 
@@ -634,6 +622,7 @@ export const unjoinLeague = async function(userId, leagueId) {
                     senderUserId: new ObjectId(userId),
                     senderTeamId: teamToUnjoin,
                     senderLeagueId: new ObjectId(leagueId),
+                    notificationMsg: notifMsg,
                 } } 
             })
         }
@@ -689,6 +678,7 @@ export const startLeague = async function(userId, leagueId) {
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingRequestId = reqDetails.pendingStartLeagueRequestId
         let admins = await getLeagueAdmins(leagueId)
+        let notifMsg = await genNotifMsg(notifId, userId, "", leagueId, "", "")
         const promises = admins.map(async function(admin) {
             if (!admin.userId.equals(new ObjectId(userId))) {       // send to all admins except requestor
                 await UserModel.updateOne({ _id : admin.userId }, { 
@@ -702,6 +692,7 @@ export const startLeague = async function(userId, leagueId) {
                             actionDone: null,
                             actionTimestamp: null
                         },
+                        notificationMsg: notifMsg,
                     } } 
                 })
             }
@@ -837,6 +828,7 @@ export const inviteToTeam = async function(userId, teamId, playerId, msg) {
     let reqDetails = await hasPendingRequest(notifId, userId, playerId, "", "")
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingRequestId = reqDetails.pendingInviteRequestId
+        let notifMsg = await genNotifMsg(notifId, userId, teamId, "", "", msg)
         await UserModel.updateOne({ _id : new ObjectId(playerId) }, { 
             $push: { notifications : {
                 readStatus: false,
@@ -848,10 +840,12 @@ export const inviteToTeam = async function(userId, teamId, playerId, msg) {
                     actionDone: null,
                     actionTimestamp: null
                 },
+                notificationMsg: notifMsg,
                 notificationDetails: msg
             } } 
         })
         response.requestStatus = "ACTC"
+        response.pendingInviteRequestId = pendingRequestId
         return response
     }
     return response
@@ -907,6 +901,7 @@ export const joinTeam = async function(userId, teamId, msg) {
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingJoinRequestId = reqDetails.pendingJoinRequestId
         let admin = reqDetails.teamCreatedBy
+        let notifMsg = await genNotifMsg(notifId, userId, teamId, "", "", msg)
         await UserModel.updateOne({ _id : admin }, { 
             $push: { notifications : {
                 readStatus: false,
@@ -918,10 +913,12 @@ export const joinTeam = async function(userId, teamId, msg) {
                     actionDone: null,
                     actionTimestamp: null
                 },
+                notificationMsg: notifMsg,
                 notificationDetails: msg
             } } 
         })
         response.requestStatus = "ACTC"
+        response.pendingJoinRequestId = pendingJoinRequestId
         return response
     }
     return response
@@ -959,12 +956,14 @@ export const unjoinTeam = async function(userId, teamId) {
     }
 
     // Send notification to team admin
+    let notifMsg = await genNotifMsg(notifId, userId, teamId, "", "", "")
     await UserModel.updateOne({ _id : admin }, { 
         $push: { notifications : {
             readStatus: false,
             notificationType: notif.data._id,
             senderUserId: new ObjectId(userId),
             senderTeamId: new ObjectId(teamId),
+            notificationMsg: notifMsg,
         } } 
     })
     response.requestStatus = "ACTC"
@@ -1017,6 +1016,7 @@ export const inviteToLeague = async function(userId, leagueId, teamId, msg) {
     let reqDetails = await hasPendingRequest(notifId, userId, "", teamId, "")
     if (reqDetails !== null && reqDetails.requestStatus === "ACTC" && reqDetails.hasPending === true) {
         let pendingRequestId = reqDetails.pendingInviteRequestId
+        let notifMsg = await genNotifMsg(notifId, userId, teamId, leagueId, "", msg)
         await UserModel.updateOne({ _id : teamAdmin }, { 
             $push: { notifications : {
                 readStatus: false,
@@ -1029,10 +1029,12 @@ export const inviteToLeague = async function(userId, leagueId, teamId, msg) {
                     actionDone: null,
                     actionTimestamp: null
                 },
+                notificationMsg: notifMsg,
                 notificationDetails: msg
             } } 
         })
         response.requestStatus = "ACTC"
+        response.pendingInviteRequestId = pendingRequestId
         return response
     }
     return response

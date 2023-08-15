@@ -44,11 +44,11 @@ const MatchUpdate = () => {
         })
         .then(response => response.json())
         .then(data=>{
-            console.log(JSON.stringify(data))
             if (data.requestStatus !== 'ACTC') {
                 navigate(`/match/${routeParams.matchid}`)
             } else {
-                setCurrentValues({ dateOfMatch: data.details.dateOfMatch.toString().substring(0,16), locationOfMatch: data.details.locationOfMatch,
+                let leagueDateOfMatch = data.details.dateOfMatch !== null ? data.details.dateOfMatch.toString().substring(0,16) : ""
+                setCurrentValues({ dateOfMatch: leagueDateOfMatch, locationOfMatch: data.details.locationOfMatch,
                     teamId1: data.details.team1.teamId, teamName1: data.details.team1.teamName, finalScore1: data.details.team1.finalScore, finalScorePending1: data.details.team1.finalScorePending, 
                         leaguePoints1: data.details.team1.leaguePoints, leaguePointsPending1: data.details.team1.leaguePointsPending, disableInput1: !data.details.team1.isTeamAdmin,
                     teamId2: data.details.team2.teamId, teamName2: data.details.team2.teamName, finalScore2: data.details.team2.finalScore, finalScorePending2: data.details.team2.finalScorePending, 
@@ -57,7 +57,7 @@ const MatchUpdate = () => {
                 setMatchesToUpdate1(data.details.team1.players)
                 setMatchesToUpdate2(data.details.team2.players)
                 setStatistics(data.details.statisticOptions)
-                setOldValues({ dateOfMatch: data.details.dateOfMatch.toString().substring(0,16), locationOfMatch: data.details.locationOfMatch, 
+                setOldValues({ dateOfMatch: leagueDateOfMatch, locationOfMatch: data.details.locationOfMatch, 
                     finalScore1: data.details.team1.finalScore, leaguePoints1: data.details.team1.leaguePoints, finalScore2: data.details.team2.finalScore, leaguePoints2: data.details.team2.leaguePoints,
                     finalScorePending1: data.details.team1.finalScorePending, leaguePointsPending1: data.details.team1.leaguePointsPending, 
                     finalScorePending2: data.details.team2.finalScorePending, leaguePointsPending2: data.details.team1.leaguePointsPending
@@ -201,7 +201,6 @@ const MatchUpdate = () => {
                         return { playerId: player.playerId, statistics: player.statistics }
                     })
                 }
-                setIsLoading(true)
                 if (!isAdmin) {
                     let proceed = false
                     if (oldValues.finalScore1 !== currValues.finalScore1
@@ -213,9 +212,10 @@ const MatchUpdate = () => {
                             proceed = true
                         } else {
                             console.log("Update cancelled")
-                        } 
+                        }   
                     } else { proceed = true }
                     if (proceed) {
+                        setIsLoading(true)
                         fetch(`${backend}/updatematch/${routeParams.matchid}`, {
                             method: "POST",
                             credentials: 'include',
@@ -242,6 +242,7 @@ const MatchUpdate = () => {
                         })
                     }
                 } else {
+                    setIsLoading(true)
                     fetch(`${backend}/adminupdatematch/${routeParams.matchid}`, {
                         method: "POST",
                         credentials: 'include',
@@ -298,22 +299,22 @@ const MatchUpdate = () => {
         let dateStr = currValues.dateOfMatch; // Your date string
         let dateObj = new Date(dateStr);
 
-        matchesToUpdate1.forEach(player => {
-            player.statistics.forEach(stat => {
+        matchesToUpdate1.map(player => {
+            player.statistics.map(stat => {
                 if (stat.statisticsId === statistics[0].statisticsId) {
                     totalScore1 += stat.value;
                 }
             });
         });
 
-        matchesToUpdate2.forEach(player => {
-            player.statistics.forEach(stat => {
+        matchesToUpdate2.map(player => {
+            player.statistics.map(stat => {
                 if (stat.statisticsId === statistics[0].statisticsId) {
                     totalScore2 += stat.value;
                 }
             });
         });
-        if (currValues.locationOfMatch.trim() === "") {
+        if (currValues.locationOfMatch === null || currValues.locationOfMatch.trim() === "") {
             errMsgs.push("Location of match is required.");
             if (!focusON) {
                 window.scrollTo(0, 0);
@@ -329,11 +330,12 @@ const MatchUpdate = () => {
                 focusON = true; 
             }
         }
-        if (currValues.dateOfMatch > formattedDateTime) {
-            errMsgs.push("Date of match cannot be later than the current date."); 
+        if (currValues.dateOfMatch < formattedDateTime && (currValues.finalScore1 === null || currValues.finalScore2 === null || 
+            currValues.leaguePoints1 === null || currValues.leaguePoints2 === null) && currValues.dateOfMatch !== "") {
+            errMsgs.push("Final score and league points are required."); 
             if (!focusON) {
                 window.scrollTo(0, 0);
-                document.getElementById("dateOfMatch").focus();
+                document.getElementById("finalScore1").focus();
                 focusON = true; 
             }
         }
@@ -347,7 +349,7 @@ const MatchUpdate = () => {
             }
         }
         if (currValues.finalScore1 > 0 || currValues.finalScore2 > 0) {
-            if ((!matchesToUpdate1[0].statistics && !currValues.disableInput1) || (!matchesToUpdate2[0].statistics && !currValues.disableInput2)) {
+            if ((matchesToUpdate1.length > 0 && !matchesToUpdate1[0].statistics && !currValues.disableInput1) || (matchesToUpdate2.length > 0 && !matchesToUpdate2[0].statistics && !currValues.disableInput2)) {
                 errMsgs.push("The statistics of your team's players for this match are required."); 
                 if (!focusON) {
                     window.scrollTo(0, 0);
@@ -363,7 +365,7 @@ const MatchUpdate = () => {
             }
         }
         
-        if ((currValues.finalScore1 !== totalScore1 && !currValues.disableInput1) || (currValues.finalScore2 !== totalScore2 && !currValues.disableInput2)) {
+        if ((currValues.finalScore1 !== null && currValues.finalScore1 !== totalScore1 && !currValues.disableInput1) || (currValues.finalScore2 !== null && currValues.finalScore2 !== totalScore2 && !currValues.disableInput2)) {
             errMsgs.push("The sum of the total scores of the players does not match the final score entered.");    
             if (!focusON) {
                 window.scrollTo(0, 0);
@@ -414,49 +416,49 @@ const MatchUpdate = () => {
                 </div>
                 <div className="row justify-content-center mb-2">
                     <div className="col-2">
-                        <input name="finalScore1" type="number" min="0" className="form-control" value={currValues.finalScore1} onChange={handleMatchDetails} />
+                        <input id="finalScore1" name="finalScore1" type="number" min="0" className="form-control" value={currValues.finalScore1} onChange={handleMatchDetails} />
                     </div>
                     <div className="col-3">
                         <p className="text-lg-center fw-bold">Final Score</p>
                     </div>
                     <div className="col-2">
-                        <input name="finalScore2" type="number" min="0" className="form-control" value={currValues.finalScore2} onChange={handleMatchDetails} />
+                        <input id="finalScore2" name="finalScore2" type="number" min="0" className="form-control" value={currValues.finalScore2} onChange={handleMatchDetails} />
                     </div>
                 </div>
                 { isAdmin && location.pathname.substring(1,6).toLowerCase() === "admin" && (
                     <div className="row justify-content-center mb-2">
                         <div className="col-2">
-                            <input name="finalScorePending1" type="number" min="0" className="form-control" value={currValues.finalScorePending1} onChange={handleMatchDetails} />
+                            <input id="finalScorePending1" name="finalScorePending1" type="number" min="0" className="form-control" value={currValues.finalScorePending1} onChange={handleMatchDetails} />
                         </div>
                         <div className="col-3">
                             <p className="text-lg-center fw-bold">Final Score (Pending)</p>
                         </div>
                         <div className="col-2">
-                            <input name="finalScorePending2" type="number" min="0" className="form-control" value={currValues.finalScorePending2} onChange={handleMatchDetails} />
+                            <input id="finalScorePending2" name="finalScorePending2" type="number" min="0" className="form-control" value={currValues.finalScorePending2} onChange={handleMatchDetails} />
                         </div>
                     </div>
                 ) }
                 <div className="row justify-content-center mb-3">
                     <div className="col-2">
-                        <input name="leaguePoints1" type="number" min="0" className="form-control" value={currValues.leaguePoints1} onChange={handleMatchDetails} />
+                        <input id="leaguePoints1" name="leaguePoints1" type="number" min="0" className="form-control" value={currValues.leaguePoints1} onChange={handleMatchDetails} />
                     </div>
                     <div className="col-3">
                         <p className="text-lg-center fw-bold">League Points</p>
                     </div>
                     <div className="col-2">
-                        <input name="leaguePoints2" type="number" min="0" className="form-control" value={currValues.leaguePoints2} onChange={handleMatchDetails} />
+                        <input id="leaguePoints2" name="leaguePoints2" type="number" min="0" className="form-control" value={currValues.leaguePoints2} onChange={handleMatchDetails} />
                     </div>
                 </div>
                 { isAdmin && location.pathname.substring(1,6).toLowerCase() === "admin" && (
                     <div className="row justify-content-center mb-2">
                         <div className="col-2">
-                            <input name="leaguePointsPending1" type="number" min="0" className="form-control" value={currValues.leaguePointsPending1} onChange={handleMatchDetails} />
+                            <input id="leaguePointsPending1" name="leaguePointsPending1" type="number" min="0" className="form-control" value={currValues.leaguePointsPending1} onChange={handleMatchDetails} />
                         </div>
                         <div className="col-3">
                             <p className="text-lg-center fw-bold">League Points (Pending)</p>
                         </div>
                         <div className="col-2">
-                            <input name="leaguePointsPending2" type="number" min="0" className="form-control" value={currValues.leaguePointsPending2} onChange={handleMatchDetails} />
+                            <input id="leaguePointsPending2" name="leaguePointsPending2" type="number" min="0" className="form-control" value={currValues.leaguePointsPending2} onChange={handleMatchDetails} />
                         </div>
                     </div>
                 ) }

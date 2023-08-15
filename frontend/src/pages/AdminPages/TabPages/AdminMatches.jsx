@@ -2,32 +2,46 @@ import { useState, useEffect, useMemo } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { useNavigate } from 'react-router-dom';
 import { Button, MenuItem } from '@mui/material';
+import {getToken} from "../../../hooks/auth";
+
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const AdminMatches = () => {
-
+  const token = `Bearer ${getToken()}`
   const [matchesList, setMatchesList] = useState([])
+  const [errorMessage, setErrorMessage] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setMatchesList([ 
-      { matchId: "648d3815252cbe610b0970d9", leagueName: "York Soccer League 2023", teamName1: "Vikings", teamName2: "Dodgers", dateOfMatch: "2023-07-01", locationOfMatch: "Toronto"}, 
-      { matchId: "648d3815252cbe610b0970da", leagueName: "York Soccer League 2023", teamName1: "Warriors", teamName2: "Tigers", dateOfMatch: "2023-07-02", locationOfMatch: "Toronto"}, 
-      { matchId: "648d3815252cbe610b0970db", leagueName: "York Soccer League 2023", teamName1: "Giants", teamName2: "Rockets", dateOfMatch: "2023-07-03", locationOfMatch: "Toronto"}, 
-      { matchId: "648d3815252cbe610b0970dc", leagueName: "York Soccer League 2023", teamName1: "Hawks", teamName2: "Dragons", dateOfMatch: "2023-07-04", locationOfMatch: "Toronto"}, 
-      { matchId: "648d3815252cbe610b0970dd", leagueName: "York Soccer League 2023", teamName1: "Falcons", teamName2: "Bulls", dateOfMatch: "2023-07-05", locationOfMatch: "Toronto"}, 
-      { matchId: "648d3815252cbe610b0970de", leagueName: "Mississauga Basketball League 2023", teamName1: "Eagles", teamName2: "Scorpions", dateOfMatch: "2023-07-06", locationOfMatch: "Mississauga"}, 
-      { matchId: "648d3815252cbe610b0970df", leagueName: "Mississauga Basketball League 2023", teamName1: "Bulldogs", teamName2: "Spartans", dateOfMatch: "2023-07-07", locationOfMatch: "Mississauga"}, 
-      { matchId: "648d3815252cbe610b0970e0", leagueName: "Mississauga Basketball League 2023", teamName1: "Wildcats", teamName2: "Hyenas", dateOfMatch: "2023-07-08", locationOfMatch: "Mississauga"}, 
-      { matchId: "648d3815252cbe610b0970e1", leagueName: "Mississauga Basketball League 2023", teamName1: "Eagles", teamName2: "Bulldogs", dateOfMatch: "2023-07-09", locationOfMatch: "Mississauga"}, 
-      { matchId: "648d3815252cbe610b0970e2", leagueName: "Mississauga Basketball League 2023", teamName1: "Spartans", teamName2: "Wildcats", dateOfMatch: "2023-07-10", locationOfMatch: "Mississauga"}, 
-    ])
+    setIsLoading(true)
+    fetch(`${backend}/admingetmatches`, {
+      method: "POST",
+      credentials: 'include',
+      headers: {
+        "Content-Type": "Application/JSON",
+        "Authorization": token
+      }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      if (data.requestStatus === 'ACTC') {
+        setMatchesList(data.details)
+      } else {
+        setErrorMessage([data.errMsg])
+      }
+      setIsLoading(false)
+    }).catch((error) => {
+      console.log(error)
+      setIsLoading(false)
+    })
   }, [])
 
   const navigate = useNavigate();
   const columns = useMemo(() => [
       { accessorKey: 'matchId', header: 'Match Id', filterVariant: 'text', size: 50 },
       { accessorKey: 'leagueName', header: 'League Name', filterVariant: 'text', size: 100 },
-      { accessorKey: 'teamName1', header: 'Team 1 Name', filterVariant: 'text', size: 100 },
-      { accessorKey: 'teamName2', header: 'Team 2 Name', filterVariant: 'text', size: 100 },
+      { accessorKey: 'teamId1', header: 'Team 1 ID', filterVariant: 'text', size: 100 },
+      { accessorKey: 'teamId2', header: 'Team 2 ID', filterVariant: 'text', size: 100 },
       { accessorKey: 'dateOfMatch', header: 'Date of Match', filterVariant: 'text', size: 50 },
       { accessorKey: 'locationOfMatch', header: 'Location of Match', filterVariant: 'text', size: 100 },
     ], [], );
@@ -36,15 +50,22 @@ const AdminMatches = () => {
     navigate('/adminmatchupdate/' + matchId)
   }
 
-  const validateInput = () => {
-      let errResp = false; 
-      let errMsgs = []; 
-      let focusON = false;
-      
-      return errResp; 
-  }
   return (
     <div>
+      {isLoading ? (
+          <div className="loading-overlay">
+            <div style={{color: 'black'}}>Loading...</div>
+            <div className="loading-spinner"></div>
+          </div>
+        ) : (
+          <>
+          {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+        )}
       <MaterialReactTable
         columns={columns} data={matchesList} enableFacetedValues initialState={{ showColumnFilters: true }}
         enableRowActions
@@ -54,6 +75,8 @@ const AdminMatches = () => {
           </MenuItem>,
         ]}
       />
+      </>
+        )}
     </div>
   );
 }

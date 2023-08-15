@@ -2,17 +2,38 @@ import { useState, useEffect, useMemo } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { useNavigate } from 'react-router-dom';
 import { Button, MenuItem } from '@mui/material';
+import {getToken} from "../../../hooks/auth";
+
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 const AdminLeagues = () => {
-
+  const token = `Bearer ${getToken()}`
   const [leaguesList, setLeaguesList] = useState([])
+  const [errorMessage, setErrorMessage] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setLeaguesList([ 
-      { leagueId: "648ba154251b78d7946df35d", leagueName: "Hogsmeade League 2023", location: "Toronto, ON", division: "Boys", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
-      { leagueId: "648e9013466c1c995745907c", leagueName: "York Soccer League 2023", location: "North York, Toronto, ON", division: "Mixed", sport: "Soccer", sportId: "648ba153251b78d7946df311" },
-      { leagueId: "648e9018466c1c9957459258", leagueName: "Mississauga League 2023", location: "Mississauga, ON", division: "Men's", sport: "Basketball", sportId: "648ba153251b78d7946df322" },
-    ])
+    setIsLoading(true)
+    fetch(`${backend}/admingetleagues`, {
+      method: "POST",
+      credentials: 'include',
+      headers: {
+        "Content-Type": "Application/JSON",
+        "Authorization": token
+      }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      if (data.requestStatus === 'ACTC') {
+        setLeaguesList(data.details)
+      } else {
+        setErrorMessage([data.errMsg])
+      }
+      setIsLoading(false)
+    }).catch((error) => {
+      console.log(error)
+      setIsLoading(false)
+    })
   }, [])
 
   const navigate = useNavigate();
@@ -20,13 +41,31 @@ const AdminLeagues = () => {
       { accessorKey: 'leagueName', header: 'League Name', filterVariant: 'text', size: 100 },
       { accessorKey: 'location', header: 'Team Location', filterVariant: 'text', size: 100 },
       { accessorKey: 'division', header: 'Division', filterVariant: 'select', size: 50 },
-      { accessorKey: 'sport', header: 'Sport', filterVariant: 'select', size: 50 },
+      { accessorKey: 'sportsName', header: 'Sport', filterVariant: 'select', size: 50 },
     ], [], );
 
   const handleDeleteLeague = (leagueId) => {
     let newList = [...leaguesList]
     let index = newList.findIndex (i => i.leagueId === leagueId);
     if (confirm(`Delete ${newList[index].leagueName}?\nPlease click on OK if you wish to proceed.`)) {
+      fetch(`${backend}/admindeleteleague/${newList[index].leagueId}`, {
+        method: "DELETE",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "Application/JSON",
+            "Authorization": token
+        }
+      })
+      .then(response => response.json())
+      .then(data=>{
+        if (data.requestStatus === 'RJCT') {
+            setErrorMessage([data.errMsg])
+        }
+        setIsLoading(false)
+      }).catch((error) => {
+        console.log(error)
+        setIsLoading(false)
+      })
       newList.splice(index, 1)
       setLeaguesList(newList)
     } else {
@@ -44,6 +83,20 @@ const AdminLeagues = () => {
 
   return (
     <div>
+      {isLoading ? (
+          <div className="loading-overlay">
+            <div style={{color: 'black'}}>Loading...</div>
+            <div className="loading-spinner"></div>
+          </div>
+        ) : (
+          <>
+          {errorMessage.length > 0 && (
+            <div className="alert alert-danger mb-3 p-1">
+                {errorMessage.map((err, index) => (
+                    <p className="mb-0" key={index}>{err}</p>
+                ))}
+            </div>
+        )}
       <MaterialReactTable
         columns={columns} data={leaguesList} enableFacetedValues initialState={{ showColumnFilters: true }}
         enableRowActions
@@ -61,6 +114,8 @@ const AdminLeagues = () => {
           </Button>
         )}
       />
+      </>
+        )}
     </div>
   );
 }

@@ -3,21 +3,29 @@ import LiveCard from "./LiveCard";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import Collapse from "react-bootstrap/Collapse";
+import { format } from 'date-fns';
+
+const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
 const LeagueCard = ({
   name,
+  teams,
   status,
   totalTeams,
   teamsJoined,
   expanded,
   onClick,
+  startDate,
+  endDate,
+  leagueAdmin,
+  pastMatches
 }) => {
   const active =
-    status === "ongoing" || status === "finished" ? "disabled" : "";
+    status === "ST" || status === "EN" ? "disabled" : "";
   const backgroundColor =
-    status === "ongoing"
+    status === "ST"
       ? "#00ad43"
-      : status === "finished"
+      : status === "EN"
       ? "#7a7a7a"
       : "ffffff";
   const statusIcon = () => (
@@ -39,6 +47,10 @@ const LeagueCard = ({
 
   const [open, setOpen] = useState(expanded);
 
+  // Format the start and end dates
+  const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
+  const formattedEndDate = format(new Date(endDate), 'yyyy-MM-dd');
+
   const navigate = useNavigate();
   return (
     <div>
@@ -50,7 +62,7 @@ const LeagueCard = ({
           style={{ cursor: "pointer" }}
         >
           {statusIcon()}
-          {`${name}(${teamsJoined} / ${totalTeams})`}
+          {`${name} (${totalTeams} / ${teamsJoined})`}
         </div>
         <div>
           <button
@@ -69,7 +81,7 @@ const LeagueCard = ({
             className="btn"
             onClick={() => setOpen(!open)}
             aria-controls={`league-card`}
-            aria-expanded={open}
+            aria-expanded={expanded}
           >
             {open ? (
               <i className="bi bi-caret-up-fill p-2"></i>
@@ -89,33 +101,37 @@ const LeagueCard = ({
           <div className="league-details px-5">
             <div className="fs-6 fw-light">
               <p className="p-0 m-0">League Start Date</p>
-              <p>12/07/2023</p>
+              <p>{formattedStartDate}</p>
             </div>
             <div className="fs-6 fw-light">
               <p className="p-0 m-0">League End Date</p>
-              <p>12/07/2023</p>
+              <p>{formattedEndDate}</p>
             </div>
             <div className="fs-6 fw-light">
               <p className="p-0 m-0">League Admin</p>
-              <p>Divine</p>
+              <p>{leagueAdmin}</p>
             </div>
           </div>
           <div className="d-flex">
-            <LiveCard
-              onClickTeamIcon={() => {
-                navigate("/team/1");
-              }}
-            />
-            <LiveCard
-              onClickTeamIcon={() => {
-                navigate("/team/2");
-              }}
-            />
-            <LiveCard
-              onClickTeamIcon={() => {
-                navigate("/team/3");
-              }}
-            />
+          {pastMatches.length === 0 ? (
+            <div>
+                {teams.map((team) => (
+                  <div key={team.teamId}>
+                    <img src={`${backend}/teamlogos/${team.teamId}.jpeg`} alt={`Team ${team.teamName}`} />
+                  </div>
+                ))}
+            </div>
+          ) : (
+            pastMatches.map((match, index) => (
+              <LiveCard
+                key={index} 
+                match={match}
+                onClickTeamIcon={() => {
+                  navigate(`/team/${match.team1.teamId}`);
+                }}
+              />
+            ))
+          )}
           </div>
           </div>
           
@@ -129,11 +145,49 @@ const LeagueCard = ({
 
 LeagueCard.propTypes = {
   name: PropTypes.string,
+  teams: PropTypes.arrayOf(
+    PropTypes.shape({
+      approvedBy: PropTypes.string,
+      joinedTimestamp: PropTypes.string,
+      teamId: PropTypes.string.isRequired,
+      teamName: PropTypes.string.isRequired,
+    })
+  ),
   status: PropTypes.string,
   teamsJoined: PropTypes.number,
   totalTeams: PropTypes.number,
   expanded: PropTypes.bool,
   onClick: PropTypes.func,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
+  leagueAdmin: PropTypes.string,
+  pastMatches: PropTypes.arrayOf(
+    PropTypes.shape({
+      dateOfMatch: PropTypes.string,
+      locationOfMatch: PropTypes.string,
+      matchId: PropTypes.string,
+      team1: PropTypes.shape({
+        createdAt: PropTypes.string,
+        finalScore: PropTypes.number,
+        finalScorePending: PropTypes.any, 
+        leaguePoints: PropTypes.number,
+        leaguePointsPending: PropTypes.any, 
+        teamId: PropTypes.string,
+        updatedAt: PropTypes.string,
+        _id: PropTypes.string,
+      }),
+      team2: PropTypes.shape({
+        createdAt: PropTypes.string, 
+        finalScore: PropTypes.number,
+        finalScorePending: PropTypes.any, 
+        leaguePoints: PropTypes.number,
+        leaguePointsPending: PropTypes.any, 
+        teamId: PropTypes.string,
+        updatedAt: PropTypes.string, 
+        _id: PropTypes.string,
+      })
+    })
+  )
 };
 
 export default LeagueCard;

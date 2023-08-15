@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import { getUserFullname } from "./usersModule.js";
-import { getTeamDetails, getTeamAdmin } from "./teamsModule.js";
+import { getTeamDetails, getTeamAdmin, getTeamName } from "./teamsModule.js";
 import { getPosnAndStatBySport, getNotifParmByNotifId } from "./sysParmModule.js";
+import { genNotifMsg } from "./notificationsModule.js";
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -67,29 +68,27 @@ export const getMatchDetails = async function(userId, matchId) {
         matchDetails.sportsName = sportDetails.sport.sportsName
         matchDetails.enableUpdateButton = false
         matchDetails.displayUpdateButton = false
-        if (matchDetails.leagueStatus === 'ST') {
-            if (mongoose.isValidObjectId(userId) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
-                matchDetails.team1.isTeamAdmin = true
-                matchDetails.displayUpdateButton = true
-                if (matchDetails.team1.finalScorePending === null && matchDetails.team1.leaguePointsPending === null &&
-                    matchDetails.team2.finalScorePending === null && matchDetails.team2.leaguePointsPending === null) {
-                        matchDetails.enableUpdateButton = true
-                        matchDetails.displayUpdateButton = false
-                }
-            } else {
-                matchDetails.team1.isTeamAdmin = false
+        if (mongoose.isValidObjectId(userId) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
+            matchDetails.team1.isTeamAdmin = true
+            matchDetails.displayUpdateButton = true
+            if (matchDetails.team1.finalScorePending === null && matchDetails.team1.leaguePointsPending === null &&
+                matchDetails.team2.finalScorePending === null && matchDetails.team2.leaguePointsPending === null) {
+                    matchDetails.enableUpdateButton = true
+                    matchDetails.displayUpdateButton = false
             }
-            if (mongoose.isValidObjectId(userId) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
-                matchDetails.team2.isTeamAdmin = true
-                matchDetails.displayUpdateButton = true
-                if (matchDetails.team1.finalScorePending === null && matchDetails.team1.leaguePointsPending === null &&
-                    matchDetails.team2.finalScorePending === null && matchDetails.team2.leaguePointsPending === null) {
-                        matchDetails.enableUpdateButton = true
-                        matchDetails.displayUpdateButton = false
-                }
-            } else {
-                matchDetails.team2.isTeamAdmin = false
+        } else {
+            matchDetails.team1.isTeamAdmin = false
+        }
+        if (mongoose.isValidObjectId(userId) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
+            matchDetails.team2.isTeamAdmin = true
+            matchDetails.displayUpdateButton = true
+            if (matchDetails.team1.finalScorePending === null && matchDetails.team1.leaguePointsPending === null &&
+                matchDetails.team2.finalScorePending === null && matchDetails.team2.leaguePointsPending === null) {
+                    matchDetails.enableUpdateButton = true
+                    matchDetails.displayUpdateButton = false
             }
+        } else {
+            matchDetails.team2.isTeamAdmin = false
         }
         promisea = matchDetails.team1.players.map(async (player) => {
             promisec = player.statistics.map(async (stat) => {
@@ -246,12 +245,6 @@ export const getMatchDetailsUpdate = async function(userId, matchId, userType) {
         return response
     }
 
-    if (leagueMatch[0].leagueStatus !== "ST" && userType === "USER") {
-        response.requestStatus = "RJCT"
-        response.errMsg = "No league match updates allowed"
-        return response
-    }
-
     let matchDetails = leagueMatch[0].matches[0]
     matchDetails = {leagueId: leagueMatch[0].leagueId, leagueStatus: leagueMatch[0].leagueStatus, sportsTypeId: leagueMatch[0].sportsTypeId, matchId: matchDetails._id, ...matchDetails }
     if (userType !== "ADMIN") {
@@ -277,17 +270,15 @@ export const getMatchDetailsUpdate = async function(userId, matchId, userType) {
             matchDetails.team1.isTeamAdmin = true
             matchDetails.team2.isTeamAdmin = true
         } else {
-            if (matchDetails.leagueStatus === 'ST') {
-                if (mongoose.isValidObjectId(userId) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
-                    matchDetails.team1.isTeamAdmin = true
-                } else {
-                    matchDetails.team1.isTeamAdmin = false
-                }
-                if (mongoose.isValidObjectId(userId) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
-                    matchDetails.team2.isTeamAdmin = true
-                } else {
-                    matchDetails.team2.isTeamAdmin = false
-                }
+            if (mongoose.isValidObjectId(userId) && team1Details.details.createdBy.equals(new ObjectId(userId))) {
+                matchDetails.team1.isTeamAdmin = true
+            } else {
+                matchDetails.team1.isTeamAdmin = false
+            }
+            if (mongoose.isValidObjectId(userId) && team2Details.details.createdBy.equals(new ObjectId(userId))) {
+                matchDetails.team2.isTeamAdmin = true
+            } else {
+                matchDetails.team2.isTeamAdmin = false
             }
             if (!matchDetails.team1.isTeamAdmin && !matchDetails.team2.isTeamAdmin) {
                 response.requestStatus = "RJCT"
@@ -337,7 +328,7 @@ export const updateMatch = async function(userId, matchId, data, userType) {
     let recordUpdated
     if (userType === "ADMIN") {
         recordUpdated = await LeagueModel.updateOne({ "matches._id" : new ObjectId(matchId) }, { 
-            $set: { "matches.$[n1].dateOfMatch" : data.dateOfMatch,
+            $set: { "matches.$[n1].dateOfMatch" : new Date(data.dateOfMatch+":00Z"),
                     "matches.$[n1].locationOfMatch" : data.locationOfMatch,
                     "matches.$[n1].team1.finalScore": data.finalScore1,
                     "matches.$[n1].team1.leaguePoints": data.leaguePoints1,
@@ -354,7 +345,7 @@ export const updateMatch = async function(userId, matchId, data, userType) {
     } else {
         if (match.details.team1.isTeamAdmin) {
             recordUpdated = await LeagueModel.updateOne({ "matches._id" : new ObjectId(matchId) }, { 
-                $set: { "matches.$[n1].dateOfMatch" : data.dateOfMatch,
+                $set: { "matches.$[n1].dateOfMatch" : new Date(data.dateOfMatch+":00Z"),
                         "matches.$[n1].locationOfMatch" : data.locationOfMatch,
                         "matches.$[n1].team1.finalScorePending": scoresAreChanged ? data.finalScore1 : null,
                         "matches.$[n1].team1.leaguePointsPending": scoresAreChanged ? data.leaguePoints1 : null,
@@ -365,7 +356,7 @@ export const updateMatch = async function(userId, matchId, data, userType) {
                 }, {arrayFilters: [ { "n1._id": new ObjectId(matchId) }] })
         } else {
             recordUpdated = await LeagueModel.updateOne({ "matches._id" : new ObjectId(matchId) }, { 
-                $set: { "matches.$[n1].dateOfMatch" : data.dateOfMatch,
+                $set: { "matches.$[n1].dateOfMatch" : new Date(data.dateOfMatch+":00Z"),
                         "matches.$[n1].locationOfMatch" : data.locationOfMatch,
                         "matches.$[n1].team1.finalScorePending": scoresAreChanged ? data.finalScore1 : null,
                         "matches.$[n1].team1.leaguePointsPending": scoresAreChanged ? data.leaguePoints1 : null,
@@ -402,26 +393,27 @@ export const updateMatch = async function(userId, matchId, data, userType) {
         // Send notification to other team Id
         let newReq = await UserModel.findOne({ _id : new ObjectId(userId) }, { requestsSent: 1, _id: 0 })
         let index = newReq.requestsSent.length -1
-        //Eagles vs Scorpions (Score: null-null Points: null-null
-        let parm1 = matchId + "                              "
-        let scoreparm1 = data.finalScore1.toString() + "     "
-        let scoreparm2 = data.finalScore2.toString() + "     "
-        let pointparm1 = data.leaguePoints1.toString() + "     "
-        let pointparm2 = data.leaguePoints2.toString() + "     "
-        let notifMsg = parm1.substring(0,30) + scoreparm1.substring(0,5) + scoreparm2.substring(0,5) + pointparm1.substring(0,5) + pointparm2.substring(0,5)
+
+        let promise1 = getTeamName(match.details.team1.teamId.toString())
+        let promise2 = getTeamName(match.details.team2.teamId.toString())
+        let [teamName1, teamName2] = await Promise.all([promise1, promise2])
+        let matchDetailMsg = `${teamName1} vs ${teamName2} (Score: ${data.finalScore1}-${data.finalScore2} Points: ${data.leaguePoints1}-${data.leaguePoints2})`
+        let senderTeamId = match.details.team1.isTeamAdmin ? match.details.team1.teamId : match.details.team2.teamId
+        let notifMsg = await genNotifMsg("APMDU", userId, senderTeamId.toString(), match.details.leagueId.toString(), matchDetailMsg, "")
         await UserModel.updateOne({ _id : otherTeamAdmin }, { 
             $push: { notifications : {
                 readStatus: false,
                 notificationType: notif.data._id,
                 senderUserId: new ObjectId(userId),
-                senderTeamId: match.details.team1.isTeamAdmin ? match.details.team1.teamId : match.details.team2.teamId,
+                senderTeamId: senderTeamId,
                 senderLeagueId: match.details.leagueId,
                 forAction: {
                     requestId: newReq.requestsSent[index]._id,
                     actionDone: null,
                     actionTimestamp: null
                 },
-                notificationDetails: notifMsg
+                notificationMsg: notifMsg,
+                notificationDetails: matchId
             } } 
         })
         

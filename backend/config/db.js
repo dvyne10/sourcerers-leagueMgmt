@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 
 dotenv.config();
 
-console.log(process.env.NODE_ENV)
-
 const database =
   process.env.NODE_ENV === "production"
     ? process.env.PROD_DB

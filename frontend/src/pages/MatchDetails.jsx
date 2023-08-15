@@ -4,12 +4,6 @@ import soccerField from '/images/matchDetails/football_field.jpg';
 import soccerBackground from '/images/matchDetails/football_background.jpg';
 import basketballField from '/images/matchDetails/basketball_court.jpeg'; 
 import basketballBackground from '/images/matchDetails/basketball_background.jpeg';
-import messiImage from '/images/matchDetails/messi.jpeg'; 
-import ronaldoImage from '/images/matchDetails/ronaldo.jpeg';
-import vanDijkImage from '/images/matchDetails/vanDijk.jpeg'; 
-import kevinImage from '/images/matchDetails/kevin.jpeg';
-import ramosImage from '/images/matchDetails/ramos.jpeg'; 
-import neymarImage from '/images/matchDetails/neymar.jpeg'; 
 import Button from 'react-bootstrap/Button'; 
 import { Image }  from 'react-bootstrap'; 
 import { format } from 'date-fns';
@@ -18,39 +12,33 @@ import { BsGearFill } from "react-icons/bs";
 import useAuth from "../hooks/auth";
 import {getToken} from "../hooks/auth"; 
 
-const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app/';
+const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
 const MatchDetails = () => {
+  
   const [selectedPlayerLeft, setSelectedPlayerLeft] = useState(null);
   const [selectedPlayerRight, setSelectedPlayerRight] = useState(null);
   const [selectedPlayerData, setSelectedPlayerData] = useState(null);
   const [matchDetails, setMatchDetails] = useState(null);
   const [displayedTeam, setDisplayedTeam] = useState(1); 
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate(); 
   const routeParams = useParams();
   const { isSignedIn } = useAuth()
   const navigateUpdateMatch = () => { navigate(`/updatematch/${routeParams.matchid}`) }   
   const token = `Bearer ${getToken()}`; 
-  const playerListOne = [
-    { name: 'Lionel Messi', position: 'MF', goals: 2, assists: 0, image: messiImage},
-    { name: 'Cristiano Ronaldo', position: 'FW', goals: 0, assists: 2, image: ronaldoImage },
-    { name: 'Virgil van Dijk', position: 'DF', goals: 0, assists: 0, image: vanDijkImage },
-  ];
-  const playerListTwo = [
-    { name: 'Kevin De Bruyne', position: 'MF', goals: 10, assists: 7, image: kevinImage},
-    { name: 'Sergio Ramos', position: 'DF', goals: 3, assists: 12, image: ramosImage},
-    { name: 'Neymar Jr', position: 'FW', goals: 2, assists: 4, image: neymarImage},
-  ];
 
   const handleClickPlayerLeft = (player) => {
     setSelectedPlayerData(player);
-    setSelectedPlayerLeft(player.name);
+    setSelectedPlayerLeft(player.playerName);
+    setSelectedPlayerRight(null);
   };
 
   const handleClickPlayerRight = (player) => {
     setSelectedPlayerData(player);
-    setSelectedPlayerRight(player.name);
+    setSelectedPlayerRight(player.playerName);
+    setSelectedPlayerLeft(null); 
   };
   
   const handleClickTeam1 = () => {
@@ -62,8 +50,9 @@ const MatchDetails = () => {
   };
   
   const fetchMatchDetails = async () => {
+    setIsLoading(false); 
     try {
-      const response = await fetch(`${backend}/match/64c3defe7ac9bd6a6d2daa36`, {
+      const response = await fetch(`${backend}/match/${routeParams.matchid}`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -73,10 +62,15 @@ const MatchDetails = () => {
       });
 
       const data = await response.json(); 
-      console.log(data.details); 
-      setMatchDetails(data.details); 
+      if (data.requestStatus === "ACTC") {
+        setMatchDetails(data.details); 
+        setIsLoading(false); 
+      } else {
+        navigate("/")
+      }
     } catch (error) {
       console.error(`Error fetching match details: ` + error); 
+      navigate("/")
     }
   }
 
@@ -87,6 +81,12 @@ const MatchDetails = () => {
 
   return (
     <>
+    {isLoading && (
+        <div className="loading-overlay">
+          <div >Loading...</div>
+        <div className="loading-spinner"></div>
+        </div>
+    )}
     {matchDetails && (
       <>
 
@@ -105,12 +105,20 @@ const MatchDetails = () => {
   
   
   <div style={{marginLeft: '95%',  transform: 'translateY(15px)'}}>
-  {isSignedIn && (
-    <Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button>
-    )}
+  {isSignedIn && matchDetails && matchDetails.enableUpdateButton && (
+    <Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success">
+      <BsGearFill className="m-auto" />
+    </Button>
+  )}
+  {isSignedIn && matchDetails && matchDetails.displayUpdateButton &&  (
+    <Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success disabled">
+      <BsGearFill className="m-auto" />
+    </Button>
+  )}
+
     </div>
   
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2%' }}>
           
           <div className="team-logo-container" onClick={() => navigate('/team/:teamid')}
               style={{
@@ -131,7 +139,7 @@ const MatchDetails = () => {
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#D1E8E2', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
               <div className="team-names" >
                 <span>{matchDetails.team1.teamName} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <span style={{ color: '#3b3c4c' }}>2&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span style={{ color: '#3b3c4c' }}>{matchDetails.team1.finalScore}&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;{matchDetails.team2.finalScore}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span>{matchDetails.team2.teamName}</span> <br/>
               </div>
     
@@ -177,7 +185,7 @@ const MatchDetails = () => {
                     display: 'flex',
                     alignItems: 'center',
                     width: '100%',
-                    backgroundColor: player.name === selectedPlayerLeft ? 'lightgray' : 'transparent',
+                    backgroundColor: player.playerName === selectedPlayerLeft ? 'lightgray' : 'transparent',
                     border: 'none',
                     textAlign: 'left',
                     cursor: 'pointer',
@@ -196,72 +204,83 @@ const MatchDetails = () => {
             <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
               <div style={{ backgroundImage: `url(${matchDetails.sportsName === 'Soccer' ? soccerField : basketballField})`, backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
               <div style={{ display: 'flex', justifyContent: 'center'}}>
-            <div style={{ paddingTop: '15%'}}>
-              {playerListOne.map((player, index) => (
-                <div key={index} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                  <Image
-                    src={
-                      selectedPlayerData && selectedPlayerData.name === player.name
-                        ? player.image
-                        : player.image
-                    }
-                    onClick={() => handleClickPlayerLeft(player)}
-                    className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
-                    roundedCircle 
-                    fluid 
-                    style={{ width: "3em", height: "3em" }}
-                  />
-
-                  
-                  {selectedPlayerData && selectedPlayerData.name === player.name && (
-                    <div
-                      style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                        padding: '1%',
-                        borderRadius: '5px',
-                        width: '100px',
-                        textAlign: 'center',
-                      }}
-                    >
-                      <p>Goals: {player.goals}</p>
-                      <p>Assists: {player.assists}</p>
-                    </div>
-                  )}
+            <div style={{ paddingTop: '5%', paddingRight: '30%'}}>
+            {matchDetails.team1.players.map((player, index) => (
+            <div
+              key={index}
+              style={{
+                display: selectedPlayerData && selectedPlayerData.playerName === player.playerName ? 'flex' : 'none',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <Image
+                src={`${backend}/profilepictures/${player.playerId}.jpeg`}
+                onClick={() => handleClickPlayerLeft(player)}
+                className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
+                roundedCircle 
+                fluid 
+                style={{ width: "5em", height: "5em" }}
+              />
+              {selectedPlayerData && selectedPlayerData.playerName === player.playerName && (
+                <div
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    padding: '1%',
+                    borderRadius: '5px',
+                    width: '100px', 
+                    textAlign: 'center',
+                  }}
+                >
+                          {player.statistics.map((stat, index) => (
+                            <p key={index}>
+                              {stat.statShortDesc}: {stat.value}
+                            </p>
+                          ))}
                 </div>
-              ))} 
+              )}
             </div>
-            <div style={{ paddingLeft: '20%', paddingTop: '15%'}}>
-              {playerListTwo.map((player, index) => (
-                <div key={index} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                  <Image
-                    src={
-                      selectedPlayerData && selectedPlayerData.name === player.name
-                        ? player.image
-                        : player.image
-                    }
-                    onClick={() => handleClickPlayerLeft(player)}
-                    className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
-                    roundedCircle 
-                    fluid 
-                    style={{ width: "2em", height: "2em" }}
-                  />
-                  
-                  {selectedPlayerData && selectedPlayerData.name === player.name && (
-                    <div
-                      style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                        padding: '1%',
-                        borderRadius: '5px',
-                        width: '100px',
-                        textAlign: 'center',
-                      }}
-                    >
-                      <p>Goals: {player.goals}</p>
-                      <p>Assists: {player.assists}</p>
-                    </div>
-                  )}
+          ))}
+
+            </div>
+            <div style={{ paddingLeft: '5%', paddingTop: '5%'}}>
+            {matchDetails.team2.players.map((player, index) => (
+            <div
+              key={index}
+              style={{
+                display: selectedPlayerData && selectedPlayerData.playerName === player.playerName ? 'flex' : 'none',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <Image
+                src={`${backend}/profilepictures/${player.playerId}.jpeg`}
+                onClick={() => handleClickPlayerLeft(player)}
+                className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
+                roundedCircle 
+                fluid 
+                style={{ width: "5em", height: "5em" }}
+              />
+              {selectedPlayerData && selectedPlayerData.playerName === player.playerName && (
+                <div
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    padding: '1%',
+                    borderRadius: '5px',
+                    width: '100px',
+                    textAlign: 'center',
+                  }}
+                >
+                          {player.statistics.map((stat, index) => (
+                            <p key={index}>
+                              {stat.statShortDesc}: {stat.value}
+                            </p>
+                          ))}
                 </div>
-              ))}
+              )}
+            </div>
+          ))}
+
             </div>
           </div>
 
@@ -276,7 +295,7 @@ const MatchDetails = () => {
                     display: 'flex',
                     alignItems: 'center',
                     width: '100%',
-                    backgroundColor: player.name === selectedPlayerRight ? 'lightgray' : 'transparent',
+                    backgroundColor: player.playerName === selectedPlayerRight ? 'lightgray' : 'transparent',
                     border: 'none',
                     textAlign: 'left',
                     cursor: 'pointer',

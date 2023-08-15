@@ -4,12 +4,14 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
+import cron from "node-cron"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import { authenticate, getTokenFromCookies, adminAuthenticate } from "./middlewares/authMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
-import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, changePassword} from "./utils/usersModule.js";
+import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, 
+  changePassword, unlockAccounts, deletePendingAccounts } from "./utils/usersModule.js";
 import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam,
   removePlayerFromTeam, updateLookingForPlayers} from "./utils/teamsModule.js";
 import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, updateLeague, deleteLeague, canUserCreateNewLeague, 
@@ -17,8 +19,13 @@ import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, upd
 import { getMatchDetails, getMatchDetailsUpdate, updateMatch } from "./utils/matchModule.js";
 import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joinTeam, unjoinTeam, inviteToLeague } from "./utils/requestsModule.js";
 import { getSportsList } from "./utils/sysParmModule.js";
-import {getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs} from "./utils/notificationsModule.js";
-import {getSearchResults} from "./utils/searchModule.js";
+import { getUnreadNotifsCount, getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs, housekeepNotifications } from "./utils/notificationsModule.js";
+import { getSearchResults } from "./utils/searchModule.js";
+import { adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches,
+  adminGetTeams, adminGetTeamDetails, adminCreateTeam, adminUpdateTeam, adminDeleteTeam,
+  adminGetLeagues, adminGetLeagueDetails, adminCreateLeague, adminUpdateLeague, adminDeleteLeague,
+  adminGetParms, adminGetParmDetails, adminCreateParm, adminUpdateParm, adminDeleteParm,
+  } from "./utils/adminModule.js";
 
 dotenv.config();
 connectDB();
@@ -42,7 +49,7 @@ app.use(
     optionsSuccessStatus: 200
   })
 );
-
+  
 app.use((req, res, next) => {
   next();
 });
@@ -170,7 +177,7 @@ app.post("/unjointeam/:teamid", authenticate, (req, res) => {
 });
 
 app.post("/invitetoleague/:teamid", authenticate, (req, res) => {
-  let leagueId = req.body.leagueid
+  let leagueId = req.body.leagueId
   let msg = req.body.msg
   inviteToLeague(req.user._id.toString(), leagueId, req.params.teamid, msg)
   .then((data) => {
@@ -219,6 +226,13 @@ app.get("/finduser/:username", (req, res) => {
   .then((data) => {
     res.json(data);
   });
+});
+
+app.post("/notifunreadcount", authenticate, (req, res) => {
+  getUnreadNotifsCount(req.user._id.toString())
+  .then((data) => {
+      res.json(data);
+    });
 });
 
 app.post("/notifications", authenticate, (req, res) => {
@@ -324,7 +338,7 @@ app.get("/testing", (req, res) => {
   //getUserNotifications("648e7e34db2a68344fda3906") //tRobles
   //getTeamDetailsAndButtons("648e5a24db2a68344fda38e1", "648e224f91a1a82229a6c11f")
   //getTeamMajorDetails("648ba154251b78d7946df344")
-  updateLookingForPlayers("648ba154251b78d7946df338", "648ba154251b78d7946df344", false)
+  getUnreadNotifsCount("648e7e34db2a68344fda38fa")
   .then((data) => {
     res.json(data);
   });
@@ -425,6 +439,118 @@ app.post("/contactus", (req, res) => {
     });
 });
 
+app.post("/admingetusers", adminAuthenticate, (req, res) => {
+  adminGetUsers()
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetuser/:userid", adminAuthenticate, (req, res) => {
+  adminGetUserDetails(req.params.userid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admincreateuser", adminAuthenticate, (req, res) => {
+  adminCreateUser(req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/adminupdateuser/:userid", adminAuthenticate, (req, res) => {
+  adminUpdateUser(req.params.userid, req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.delete("/admindeleteuser/:userid", adminAuthenticate, (req, res) => {
+  adminDeleteUser(req.params.userid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetteams", adminAuthenticate, (req, res) => {
+  adminGetTeams()
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetteamdetails/:teamid", adminAuthenticate, (req, res) => {
+  adminGetTeamDetails(req.params.teamid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admincreateteam", adminAuthenticate, (req, res) => {
+  adminCreateTeam(req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/adminupdateteam/:teamid", adminAuthenticate, (req, res) => {
+  adminUpdateTeam(req.params.teamid, req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.delete("/admindeleteteam/:teamid", adminAuthenticate, (req, res) => {
+  adminDeleteTeam(req.params.teamid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetleagues", adminAuthenticate, (req, res) => {
+  adminGetLeagues()
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetleaguedetails/:leagueid", adminAuthenticate, (req, res) => {
+  adminGetLeagueDetails(req.params.leagueid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admincreateleague", adminAuthenticate, (req, res) => {
+  adminCreateLeague(req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/adminupdateleague/:leagueid", adminAuthenticate, (req, res) => {
+  adminUpdateLeague(req.params.leagueid, req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.delete("/admindeleteleague/:leagueid", adminAuthenticate, (req, res) => {
+  adminDeleteLeague(req.params.leagueid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetmatches", adminAuthenticate, (req, res) => {
+  adminGetMatches()
+  .then((data) => {
+    res.json(data);
+  });
+});
+
 app.post("/admingetmatchdetailsupdate/:matchid", adminAuthenticate, (req, res) => {
   getMatchDetailsUpdate(req.user._id.toString(), req.params.matchid, "ADMIN")
   .then((data) => {
@@ -437,6 +563,56 @@ app.post("/adminupdatematch/:matchid", adminAuthenticate, (req, res) => {
   .then((data) => {
     res.json(data);
   });
+});
+
+app.post("/admingetparms", adminAuthenticate, (req, res) => {
+  adminGetParms()
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admingetparmdetails/:parmid", adminAuthenticate, (req, res) => {
+  adminGetParmDetails(req.params.parmid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/admincreateparm", adminAuthenticate, (req, res) => {
+  adminCreateParm(req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.post("/adminupdateparm/:parmid", adminAuthenticate, (req, res) => {
+  adminUpdateParm(req.params.parmid, req.body)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+app.delete("/admindeleteparm/:parmid", adminAuthenticate, (req, res) => {
+  adminDeleteParm(req.params.parmid)
+  .then((data) => {
+    res.json(data);
+  });
+});
+
+cron.schedule('*/10 * * * *', () => {
+  unlockAccounts()
+  .then( console.log("Unlock accounts job ran."))
+});
+
+cron.schedule('*/10 * * * *', () => {
+  deletePendingAccounts()
+  .then( console.log("Deletion of pending accounts job ran."))
+});
+
+cron.schedule('0 0 * * *', () => {
+  housekeepNotifications()
+  .then( console.log("Notifications housekeeping job ran."))
 });
 
 app.use(notFound);

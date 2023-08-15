@@ -12,6 +12,8 @@ const AuthContextProvider = ({ children }) => {
   const [isLoginError, setIsLoginError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [registrationError, setRegistrationError] = useState("");
+  const [forgotPasswordError, setForgotPasswordError] = useState("");
+  const [resetPasswordError, setResetPasswordError] = useState("");
   const [otpError, setOTPError] = useState(false);
   const [otpErrorMessage, setOTPErrorMessage] = useState("");
   const [responseToken, setResponseToken] = useState("");
@@ -48,8 +50,10 @@ const AuthContextProvider = ({ children }) => {
         registrationError,
         setOTPErrorMessage,
         forgotPassword,
+        forgotPasswordError,
         responseToken,
         resetPassword,
+        resetPasswordError,
       }}
     >
       {children}
@@ -86,12 +90,10 @@ const AuthContextProvider = ({ children }) => {
       if (resp.data) {
         setIsLoading(false);
         const { requestStatus, token } = resp.data;
-
-        updateHTTPHeaders(token);
-        setResponseToken(token);
-        await localStorage.setItem("token", JSON.stringify(token));
-
         if (requestStatus === "ACTC") {
+          updateHTTPHeaders(token);
+          setResponseToken(token);
+          await localStorage.setItem("token", JSON.stringify(token));
           const { user } = resp.data;
           setSignedIn(true);
           if (user.userType === "USER") {
@@ -139,7 +141,7 @@ const AuthContextProvider = ({ children }) => {
     }
   }
 
-  async function verifyOTP(otp, navigate) {
+  async function verifyOTP(otp, nextPage, navigate) {
     try {
       let user = await JSON.parse(localStorage.getItem("otp"));
       const email = user.email;
@@ -148,15 +150,17 @@ const AuthContextProvider = ({ children }) => {
       if (response.data) {
         const { requestStatus, token } = response.data;
         // setting the token in the headers for every request
-
         updateHTTPHeaders(token);
-
-        if (requestStatus === "ACTC") {
+        if (requestStatus === "ACTC" && nextPage === "/") {
           await localStorage.setItem("login", JSON.stringify(user.userName));
           await localStorage.setItem("token", JSON.stringify(token));
           await localStorage.removeItem("otp");
           setSignedIn(true);
           navigate("/");
+        } else if (requestStatus === "ACTC" && nextPage === "/resetpassword") {
+          let store = {email, otp}
+          localStorage.setItem("otp", JSON.stringify(store));
+          navigate("/resetpassword");
         } else {
           setOTPError(true);
           setOTPErrorMessage(response.data.message);
@@ -194,31 +198,54 @@ const AuthContextProvider = ({ children }) => {
   }
 
   async function forgotPassword(email, navigate) {
-    try {
-      await localStorage.setItem("email", JSON.stringify(email));
-      const res = await loginService.forgotPassword(email);
-      console.log(res);
-      if (res.data) {
-        await navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
+    if (email === "") {
+      setForgotPasswordError("Email address is required");
+      navigate("/forgotpassword")
+    } else {
+      try {
+        let store = {email}
+        await localStorage.setItem("otp", JSON.stringify(store));
+        const res = await loginService.forgotPassword(email);
+        if (res.data) {
+          await navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
+        }
+        if (res) {
+          const { requestStatus } = res.data;
+          if (requestStatus === "RJCT") {
+            setForgotPasswordError(res.data.errMsg);
+            navigate("/forgotpassword")
+          } else {
+            navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
+          }
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   }
 
   async function resetPassword(newPassword, confirmNewPassword, navigate) {
     try {
-      const data = await localStorage.getItem("email");
+      const data = await localStorage.getItem("otp");
 
-      const email = JSON.parse(data);
+      const {email, otp} = JSON.parse(data);
       console.log(data);
       const res = await loginService.resetPassword(
         newPassword,
         confirmNewPassword,
-        email
+        email,
+        otp
       );
-      console.log(res);
-      navigate("/signin");
+      if (res) {
+        const { requestStatus } = res.data;
+        if (requestStatus === "RJCT") {
+          setResetPasswordError(res.data.errMsg);
+          navigate("/resetpassword")
+        } else {
+          await localStorage.removeItem("otp");
+          navigate("/signin");
+        }
+      }
     } catch (error) {
       console.log(error);
     }
