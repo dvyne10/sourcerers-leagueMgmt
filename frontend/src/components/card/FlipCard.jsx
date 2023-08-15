@@ -6,7 +6,7 @@ import './flipTransition.css';
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
-const FlipCard = ({ onClick, imageUrl, cardText, teams }) => {
+const FlipCard = ({ onClick, imageUrl, cardText, teams, leagueId }) => {
   const handleImageError = (event) => {
     event.target.style.display = 'none'; // Hide the image
   };
@@ -47,7 +47,7 @@ const FlipCard = ({ onClick, imageUrl, cardText, teams }) => {
         className="card-front"
         style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}
       >
-        <Link className="card-text" to={`/league/123`}>
+        <Link className="card-text" to={`/league/${leagueId}`}>
           {cardText}
         </Link>
         <div className="overlay">Click to flip!</div>
@@ -66,6 +66,7 @@ FlipCard.propTypes = {
       teamName: PropTypes.string.isRequired,
     })
   ).isRequired,
+  leagueId: PropTypes.string,
 };
 
 export default FlipCard;

@@ -128,6 +128,7 @@ const Home = () => {
                     }
                     cardText={league.leagueName}
                     teams={league.teams}
+                    leagueId={league.leagueId}
                   />
                 </div>
               ))}
