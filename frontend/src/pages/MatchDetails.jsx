@@ -12,7 +12,7 @@ import { BsGearFill } from "react-icons/bs";
 import useAuth from "../hooks/auth";
 import {getToken} from "../hooks/auth"; 
 
-const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app/';
+const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
 const MatchDetails = () => {
   
@@ -21,6 +21,7 @@ const MatchDetails = () => {
   const [selectedPlayerData, setSelectedPlayerData] = useState(null);
   const [matchDetails, setMatchDetails] = useState(null);
   const [displayedTeam, setDisplayedTeam] = useState(1); 
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate(); 
   const routeParams = useParams();
@@ -49,6 +50,7 @@ const MatchDetails = () => {
   };
   
   const fetchMatchDetails = async () => {
+    setIsLoading(false); 
     try {
       const response = await fetch(`${backend}/match/${routeParams.matchid}`, {
         method: 'POST',
@@ -60,10 +62,15 @@ const MatchDetails = () => {
       });
 
       const data = await response.json(); 
-      console.log(data.details); 
-      setMatchDetails(data.details); 
+      if (data.requestStatus === "ACTC") {
+        setMatchDetails(data.details); 
+        setIsLoading(false); 
+      } else {
+        navigate("/")
+      }
     } catch (error) {
       console.error(`Error fetching match details: ` + error); 
+      navigate("/")
     }
   }
 
@@ -74,6 +81,12 @@ const MatchDetails = () => {
 
   return (
     <>
+    {isLoading && (
+        <div className="loading-overlay">
+          <div >Loading...</div>
+        <div className="loading-spinner"></div>
+        </div>
+    )}
     {matchDetails && (
       <>
 
@@ -92,8 +105,13 @@ const MatchDetails = () => {
   
   
   <div style={{marginLeft: '95%',  transform: 'translateY(15px)'}}>
-  {isSignedIn && matchDetails && matchDetails.enableUpdateButton && matchDetails.displayUpdateButton && (
+  {isSignedIn && matchDetails && matchDetails.enableUpdateButton && (
     <Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success">
+      <BsGearFill className="m-auto" />
+    </Button>
+  )}
+  {isSignedIn && matchDetails && matchDetails.displayUpdateButton &&  (
+    <Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success disabled">
       <BsGearFill className="m-auto" />
     </Button>
   )}

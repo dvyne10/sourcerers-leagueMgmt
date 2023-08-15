@@ -600,22 +600,17 @@ app.delete("/admindeleteparm/:parmid", adminAuthenticate, (req, res) => {
   });
 });
 
-cron.schedule('*/2 * * * *', () => {
-  console.log('running a task every 2 minutes ' + new Date());
+cron.schedule('*/10 * * * *', () => {
   unlockAccounts()
   .then( console.log("Unlock accounts job ran."))
 });
 
-cron.schedule('*/2 * * * *', () => {
-  console.log('running a task every 2 minutes ' + new Date());
+cron.schedule('*/10 * * * *', () => {
   deletePendingAccounts()
   .then( console.log("Deletion of pending accounts job ran."))
 });
 
-//cron.schedule('*/2 * * * *', () => {
-  //console.log('running a task every 2 minutes ' + new Date());
-cron.schedule('39 20 * * *', () => {
-  console.log('Runs at 20:39 ' + new Date());
+cron.schedule('0 0 * * *', () => {
   housekeepNotifications()
   .then( console.log("Notifications housekeeping job ran."))
 });
