@@ -17,16 +17,9 @@ import {
   sendEmail,
 } from "../utils/auth.utils.js";
 import handlebars from "handlebars";
-
-const SERVER_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:8000"
-    : "https://panicky-robe-mite.cyclic.app/";
+import fs from "fs";
 
 const registerUser = async (req, res) => {
-  let profileImageUrl;
-  const photoPath = "profilepictures";
-  // console.log(req,'this is the request')
   const {
     firstName,
     lastName,
@@ -39,11 +32,6 @@ const registerUser = async (req, res) => {
     password,
     phoneNumber,
   } = req.body;
-
-  console.log(req.file.filename);
-
-  console.log(req.body);
-  // return;
 
   const existingUsername = await User.findOne({
     userName: new RegExp(`^${userName}$`, "i"),
@@ -68,7 +56,7 @@ const registerUser = async (req, res) => {
     });
     return;
   }
-
+  
   let passwordCheck = await isValidPassword(password);
   if (!passwordCheck.valid) {
     res.status(200).send({
@@ -79,14 +67,7 @@ const registerUser = async (req, res) => {
   }
 
   const salt = genSalt();
-
   const hashedPassword = await genHash(password, salt);
-
-  if (req.file.filename) {
-    profileImageUrl = `${SERVER_URL}/${photoPath}/${req.file.filename}`;
-  }
-
-  console.log(profileImageUrl)
 
   const user = await User({
     status: "PEND",
@@ -102,8 +83,12 @@ const registerUser = async (req, res) => {
     sportsOfInterest,
     salt,
     phoneNumber,
-    profileImage: profileImageUrl,
   }).save();
+
+  if (req.file && req.file.path) {
+    fs.renameSync(req.file.path, req.file.path.replace(req.file.filename, 
+      `${user._id}.jpeg`));
+  }
 
   try {
     if (user) {
