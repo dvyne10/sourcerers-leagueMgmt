@@ -18,7 +18,6 @@ function TeamDetails() {
     const navigateUpdateTeam = () => { navigate(`/updateteam/${routeParams.teamid}`) }
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
     const [leagueInvitedTo, handleInviteLeague] = useState("");
     const [teamJoinedTo, handleJoinTeam] = useState("");
     const [inviteMsg, handleInviteMsg] = useState("");
@@ -27,9 +26,7 @@ function TeamDetails() {
     const handleCloseInvite = () => setShowInvite(false);
     const token = `Bearer ${getToken()}`
     const {isSignedIn} = useAuth();
-    const [join, setJoin] = useState(true);
     const [errorMessage, setErrorMessage] = useState([]);
-    const [responseMessage, setResponseMessage] = useState("");
     const [teamInfo, setTeamInfo] = useState({teamName:"", players:[],
     matches:[],
     details:{},
@@ -290,6 +287,7 @@ function TeamDetails() {
       <Col lg="2" className="mt-2" >
 
         <>
+        
                       {isSignedIn && teamInfo.displayInviteToLeagueButton && 
                     (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleInvite}>Invite</Button>)
                       }
