@@ -67,21 +67,6 @@ const AuthContextProvider = ({ children }) => {
     }
   }
 
-  // async function signIn(userType) {
-  //   setSignedIn(true);
-  //   if (userType === "ADMIN") {
-  //     setAdmin(true);
-  //     const adminObject = {
-  //       name: "ADMIN",
-  //       admin: true,
-  //     };
-  //     await localStorage.setItem("login", JSON.stringify(adminObject)); // temporarily persisting the user when loged in
-  //   } else {
-  //     setAdmin(false);
-  //     await localStorage.setItem("login", JSON.stringify("user"));
-  //   }
-  // }
-
   async function login(input, navigate) {
     const { username: email, password } = input;
     try {
@@ -102,8 +87,6 @@ const AuthContextProvider = ({ children }) => {
             await localStorage.setItem("login", JSON.stringify(user));
           } else if (user.userType === "ADMIN") {
             setAdmin(true);
-
-            //temporal one
             const adminObject = {
               name: "ADMIN",
               admin: true,
@@ -125,7 +108,6 @@ const AuthContextProvider = ({ children }) => {
   }
 
   async function registerUser(currentValues, navigate) {
-    console.log(currentValues)
     try {
       const response = await loginService.registerUser(currentValues);
       if (response) {
@@ -232,7 +214,6 @@ const AuthContextProvider = ({ children }) => {
       const data = await localStorage.getItem("otp");
 
       const { email, otp } = JSON.parse(data);
-      console.log(data);
       const res = await loginService.resetPassword(
         newPassword,
         confirmNewPassword,
@@ -254,19 +235,6 @@ const AuthContextProvider = ({ children }) => {
     }
   }
 
-  // async function uploadProfilePhoto(file) {
-  //   try {
-  //     const formData = new FormData();
-
-  //     formData.append("photo", file);
-
-  //     const response = await loginService.uploadProfilePloto(formData)
-
-  //     console.log(response)
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
 };
 
 AuthContext.ProviderWrapper = AuthContextProvider;
