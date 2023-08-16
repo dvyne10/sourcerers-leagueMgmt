@@ -156,14 +156,42 @@ function TeamDetails() {
 
 
   const handleJoin = () => {
-      
-      handleShow()
-    
+      handleJoinTeam(teamInfo.teamId)
+      setShow(true)
   }
   
-  const handleUnjoin = () => {
-    if (teamInfo.pendingJoinRequestId !== "") {
-      if (confirm("Please confirm if you want to proceed with invite cancellation.")) {
+
+  const handleUnjoin = () =>{
+    if (confirm(`Please confirm if you want to leave the team ${teamInfo.details.teamName}.`)) {
+    let data = {teamId: teamInfo.teamId, msg: joinMsg}
+    fetch(`${backend}/unjointeam/${routeParams.teamid}`, {
+      method: "POST",
+      credentials: 'include',
+      body: JSON.stringify(data),
+      headers: {
+          "Content-Type": "Application/JSON",
+          "Authorization": token
+      }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      if (data.requestStatus === 'RJCT') {
+          setErrorMessage([data.errMsg])
+      } else {
+        if(teamInfo.buttons.displayTurnOnLookingForPlayers){
+          setTeamInfo({...teamInfo, displayJoinButton : true, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: data.pendingJoinRequestId})
+        }
+        else{
+          setTeamInfo({...teamInfo, displayJoinButton : false, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: data.pendingJoinRequestId})
+      }}
+    })
+  }
+
+  }
+  
+  const handleCancelRequest = () => {
+    
+      if (confirm(`Please confirm if you want to proceed with cancelling your request`)) {
         fetch(`${backend}/cancelrequest/${teamInfo.pendingJoinRequestId}`, {
             method: "POST",
             credentials: 'include',
@@ -177,13 +205,13 @@ function TeamDetails() {
             if (data.requestStatus === 'RJCT') {
                 setErrorMessage([data.errMsg])
             } else {
-              setTeamInfo({...teamInfo, displayJoinButton : true, displayUnjoinButton: false, pendingInviteRequestId: ""})
+              setTeamInfo({...teamInfo, displayJoinButton : true, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: ""})
             }
         }).catch((error) => {
             console.log(error)
         })
       }
-    }
+    
   }
   
 
@@ -207,7 +235,7 @@ function TeamDetails() {
       if (data.requestStatus === 'RJCT') {
           setErrorMessage([data.errMsg])
       } else {
-        setTeamInfo({...teamInfo, displayJoinButton : false, displayUnjoinButton: true, pendingJoinRequestId: data.pendingJoinRequestId})
+        setTeamInfo({...teamInfo, displayJoinButton : false, displayUnjoinButton: false, displayCancelReqButton:true, pendingJoinRequestId: data.pendingJoinRequestId})
       }
     })
     setShow(false)
@@ -231,7 +259,7 @@ function TeamDetails() {
         {/* Here is the team header, with background and info */}
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white" 
    style={{"backgroundImage": `url(${backend}/teambanners/${teamInfo.details._id}.jpeg)`}} >
-        <Container>
+        <Container style={{background:'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg'}}>
       <Row>
         <Col lg="2" className='text-center'>
         <p><strong>{teamInfo.details.location}</strong></p> 
@@ -273,10 +301,10 @@ function TeamDetails() {
                     (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleJoin}>Join</Button>)
                       }
                     {isSignedIn && teamInfo.displayUnjoinButton && 
-                      (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleUnjoin}>Unjoin</Button>)
+                      (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleUnjoin} >Unjoin</Button>)
                     }
-                    {isSignedIn && teamInfo.pendingJoinRequestId && 
-                      (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleUnjoin}>Cancel Request</Button>)
+                    {isSignedIn && teamInfo.displayCancelReqButton && 
+                      (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleCancelRequest}>Cancel Request</Button>)
                     }
                     </>
         </Col>
@@ -433,7 +461,7 @@ function TeamDetails() {
           </Button>
          
           <Button variant="success" onClick={sendJoin}>
-            Confirm Request
+            Send Request
           </Button>
           
           
