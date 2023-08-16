@@ -48,7 +48,7 @@ const MatchDetails = () => {
   const handleClickTeam2 = () => {
     setDisplayedTeam(2);
   };
-  
+   
   const fetchMatchDetails = async () => {
     setIsLoading(false); 
     try {
@@ -63,6 +63,7 @@ const MatchDetails = () => {
 
       const data = await response.json(); 
       if (data.requestStatus === "ACTC") {
+        console.log(data.details);
         setMatchDetails(data.details); 
         setIsLoading(false); 
       } else {
@@ -105,16 +106,16 @@ const MatchDetails = () => {
   
   
   <div style={{marginLeft: '95%',  transform: 'translateY(15px)'}}>
-  {isSignedIn && matchDetails && matchDetails.enableUpdateButton && (
-    <Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success">
+  {isSignedIn && matchDetails.displayUpdateButton && (
+    <Button onClick={navigateUpdateMatch} style={{color: 'black', borderColor: 'black'}}variant='transparent' className="btn btn-outline-success">
       <BsGearFill className="m-auto" />
     </Button>
   )}
-  {isSignedIn && matchDetails && matchDetails.displayUpdateButton &&  (
-    <Button onClick={navigateUpdateMatch} variant='transparent' className="btn btn-outline-success disabled">
-      <BsGearFill className="m-auto" />
-    </Button>
-  )}
+{isSignedIn && matchDetails.enableUpdateButton && (
+  <Button disabled style={{ color: 'black', borderColor: 'black' }} variant='transparent' className="btn btn-outline-success">
+    <BsGearFill className="m-auto" />
+  </Button>
+)}
 
     </div>
   
@@ -137,8 +138,8 @@ const MatchDetails = () => {
           </div>
 
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#D1E8E2', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
-              <div className="team-names" >
-                <span>{matchDetails.team1.teamName} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <div className="team-names" style={{marginRight: '3%'}}>
+                <span>{matchDetails.team1.teamName} &nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span style={{ color: '#3b3c4c' }}>{matchDetails.team1.finalScore}&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;{matchDetails.team2.finalScore}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span>{matchDetails.team2.teamName}</span> <br/>
               </div>
@@ -204,7 +205,7 @@ const MatchDetails = () => {
             <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
               <div style={{ backgroundImage: `url(${matchDetails.sportsName === 'Soccer' ? soccerField : basketballField})`, backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
               <div style={{ display: 'flex', justifyContent: 'center'}}>
-            <div style={{ paddingTop: '5%', paddingRight: '30%'}}>
+            <div style={{ paddingTop: '24%', paddingLeft: '5%'}}>
             {matchDetails.team1.players.map((player, index) => (
             <div
               key={index}
@@ -243,7 +244,7 @@ const MatchDetails = () => {
           ))}
 
             </div>
-            <div style={{ paddingLeft: '5%', paddingTop: '5%'}}>
+            <div style={{ paddingRight: '8%', paddingTop: '24%'}}>
             {matchDetails.team2.players.map((player, index) => (
             <div
               key={index}
@@ -312,11 +313,12 @@ const MatchDetails = () => {
           
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', height: '80vh', paddingTop: '1%', color: 'white' }}>
-            <div style={{ backgroundColor: '#116466', width: '80%', height: '50%', borderRadius: '10px' }}>
-              <h2 style={{ paddingTop: '1%' }}>Previous Matches</h2>
+          <div style={{ backgroundColor: '#116466', width: '80%', height: '50%', borderRadius: '10px' }}>
+            <h2 style={{ paddingTop: '1%' }}>Previous Matches</h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', marginTop: '20px' }}>
               {matchDetails.pastMatches.map((match, index) => (
-                <div key={index} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', marginRight: '20%' }}>
+                <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '10px 100px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
                     <a href={`/team/${match.team1.teamId}`}>
                       <Image src={`${backend}/teamlogos/${match.team1.teamId}.jpeg`} className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' roundedCircle fluid style={{ width: "7em", height: "7em"}}/>
                     </a>
@@ -332,6 +334,9 @@ const MatchDetails = () => {
               ))}
             </div>
           </div>
+</div>
+
+
 
       </>
       )}

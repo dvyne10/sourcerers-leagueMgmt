@@ -52,6 +52,7 @@ const Player = () => {
       })
       .then(response => response.json())
       .then(data=>{
+          console.log(data);
           if (data.requestStatus === 'RJCT') {
               setErrorMessage([data.errMsg])
               if (data.errField !== "") {
