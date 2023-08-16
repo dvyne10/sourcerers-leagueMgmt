@@ -35,7 +35,6 @@ const userSchema = Schema(
       },
     ],
     teamsCreated: [teamschema],
-    profileImage: { type: String },
     requestsSent: [requestsSentSchema],
     notifications: [notificationsSchema],
     successfulLoginDetails: [

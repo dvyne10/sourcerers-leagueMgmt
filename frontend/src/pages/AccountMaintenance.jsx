@@ -298,12 +298,19 @@ const AccountMaintenance = () => {
       } else {
         setIsLoading(true);
         let data = { ...currValues };
+        const formData = new FormData();
+        Object.keys(data).forEach((key) => {
+          Array.isArray(data[key])
+          ? data[key].forEach(value => formData.append(key + '[]', value))
+          : formData.append(key, data[key]) ;
+        });
         fetch(`${backend}/updateaccount`, {
           method: "POST",
           credentials: "include",
-          body: JSON.stringify(data),
+          body: formData,
           headers: {
-            "Content-Type": "Application/JSON",
+            "Accept": "application/json",
+            "Content-Type": "multipart/form-data",
             Authorization: token,
           },
         })

@@ -24,8 +24,11 @@ async function login(email, password) {
 
 async function registerUser(data) {
   const formData = new FormData();
-  Object.keys(data).forEach((key) => formData.append(key, data[key]));
-  // console.log(Object.fromEntries(formData))
+  Object.keys(data).forEach((key) => {
+    Array.isArray(data[key])
+        ? data[key].forEach(value => formData.append(key + '[]', value))
+        : formData.append(key, data[key]) ;
+  });
   const configMultiForm = {
     headers: {
       "Accept": "application/json",
@@ -40,7 +43,6 @@ async function registerUser(data) {
       formData,
       configMultiForm
     );
-
     return response;
   } catch (error) {
     return error;

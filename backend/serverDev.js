@@ -7,6 +7,7 @@ import connectDB from "./config/db.js";
 import cron from "node-cron"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import { authenticate, getTokenFromCookies, adminAuthenticate } from "./middlewares/authMiddleware.js";
+import { updateProfilePic } from "./middlewares/fileUploadMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
@@ -320,7 +321,7 @@ app.post("/getaccountdetailsupdate", authenticate, (req, res) => {
   );
 });
 
-app.post("/updateaccount", authenticate, (req, res) => {
+app.post("/updateaccount", authenticate, updateProfilePic, (req, res) => {
   updateAccount(req.user._id.toString(), req.body)
   .then((data) => {
       res.json(data);
