@@ -62,6 +62,10 @@ const Notification = () => {
     fetchNotifications();
   }, []);
 
+  useEffect(() => {
+    console.log(JSON.stringify(envelopeOpen))
+  }, [envelopeOpen]);
+
   const notificationsPerPage = 5;
 
   const toggleEnvelope = async (index) => {
@@ -95,7 +99,7 @@ const Notification = () => {
   const totalPages = Math.ceil(notifications.length / notificationsPerPage);
 
   const handleApproveClick = (notification, index) => {
-    const confirmed = window.confirm('Are you sure to approve?');
+    const confirmed = window.confirm('Please confirm that you want to approve request.');
     if (confirmed) {
       try {
         fetch(`${backend}/approverequest/${notification.notifId}`, {
@@ -130,7 +134,7 @@ const Notification = () => {
 
   const handleRejectClick = (notification, index) => {
 
-    const confirmed = window.confirm('Are you sure to reject?');
+    const confirmed = window.confirm('Please confirm that you want to reject request.');
     
     if (confirmed) {
       try {
@@ -196,14 +200,9 @@ const Notification = () => {
                         {envelopeOpen[index] ? <BiEnvelope size={25} /> : <BiEnvelopeOpen size={25} />}
                       </button>
                     </div>
-                    <div className="notification-list_detail">
-                      <p className={`notification-sender ${notification.read  ? '' : 'bold'}`}>
-                        {notification.read || envelopeOpen[index] ? notification.sender : <b>{notification.sender}</b>}
-                      </p>
-                    </div>
                     <div className="text-muted">
-                      <p className={`notification-message ${notification.read  ? '' : 'bold'}`}>
-                        {notification.read || envelopeOpen[index] ? notification.message : <b>{notification.message}</b>}
+                      <p className={`notification-message ${notification.readStatus  ? '' : 'bold'}`}>
+                        {notification.readStatus ? notification.message : <b>{notification.message}</b>}
                       </p>
                     </div>
                   </div>

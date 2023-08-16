@@ -129,12 +129,14 @@ const AccountMaintenance = () => {
               return { label: sportsOptions[index].label, value: sport };
             });
             setSportsSelected(sportsInDb);
+            let imageFound = false
             fetch(`${backend}/profilepictures/${data.details._id}.jpeg`).then(
               (res) => {
                 if (res.ok) {
                   setImageURL(
                     `${backend}/profilepictures/${data.details._id}.jpeg`
                   );
+                  imageFound = true
                   setSelectedImage("x");
                 }
               }
@@ -150,7 +152,7 @@ const AccountMaintenance = () => {
               city: data.details.city,
               province: data.details.province,
               sports: sportsSelectedValues,
-              image: "x",
+              image: imageFound ? "x" : null,
             });
           }
           setIsLoading(false);
@@ -309,13 +311,14 @@ const AccountMaintenance = () => {
           credentials: "include",
           body: formData,
           headers: {
-            "Accept": "application/json",
-            "Content-Type": "multipart/form-data",
+            // "Accept": "application/json",
+            // "Content-Type": "multipart/form-data",
             Authorization: token,
           },
         })
           .then((response) => response.json())
           .then((data) => {
+            console.log("321 " + JSON.stringify(data))
             if (data.requestStatus === "RJCT") {
               setFormError(true);
               setFormErrorArray(data.errMsg);
