@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BiEnvelopeOpen, BiEnvelope, BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
+import useNotification from "../hooks/notification";
 import { useNavigate } from 'react-router-dom';
 import '../App.css'
 
@@ -9,6 +10,7 @@ const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000'
 const Notification = () => {
   const navigate = useNavigate(); 
   const {isSignedIn} = useAuth();
+  const {setNotificationCount} = useNotification();
   const token = `Bearer ${getToken()}`;
   const checkIfUserIsSignedIn = () => {
     let user = checkIfSignedIn()
@@ -66,19 +68,18 @@ const Notification = () => {
     const updatedEnvelopeStates = [...envelopeOpen];
     updatedEnvelopeStates[index] = !updatedEnvelopeStates[index];
     setEnvelopeOpen(updatedEnvelopeStates);
-
+    let unreadCount = updatedEnvelopeStates.reduce((count,notif) => count+(notif===false), 0)
+    setNotificationCount(unreadCount)
+    
     const updatedSelectedStates = [...selectedStates];
     updatedSelectedStates[index] = updatedEnvelopeStates[index];
     setSelectedStates(updatedSelectedStates);
 
-    if (envelopeOpen[index]) {
-      const updatedNotifications = notifications.map((notification, i) => ({
-        ...notification,
-        read: updatedSelectedStates[i] || notification.read,
-      }));
-      setNotifications(updatedNotifications);
+    let updatedNotifications = [...notifications]
+    updatedNotifications[index].readStatus = !updatedNotifications[index].readStatus
+    setNotifications(updatedNotifications);
       try {
-        const response = await fetch(`${backend}/notificationsread/${notifications[index].notifId}`, {
+        await fetch(`${backend}/notificationsread/${notifications[index].notifId}`, {
           method: 'PUT',
           credentials: 'include',
           headers: {
@@ -86,26 +87,9 @@ const Notification = () => {
             "Authorization": token
           },
         });
-        
-       
       } catch (error) {
         console.error('Error marking notification as read:', error);
       }
-    } else {
-      try {
-        const response = await fetch(`${backend}/notificationsread/${notifications[index].notifId}`, {
-          method: 'PUT',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            "Authorization": token
-          },
-        });
-
-      } catch (error) {
-        console.error('Error marking notification as read:', error);
-      }
-    }
   };
 
   const totalPages = Math.ceil(notifications.length / notificationsPerPage);

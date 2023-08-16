@@ -67,21 +67,6 @@ const AuthContextProvider = ({ children }) => {
     }
   }
 
-  // async function signIn(userType) {
-  //   setSignedIn(true);
-  //   if (userType === "ADMIN") {
-  //     setAdmin(true);
-  //     const adminObject = {
-  //       name: "ADMIN",
-  //       admin: true,
-  //     };
-  //     await localStorage.setItem("login", JSON.stringify(adminObject)); // temporarily persisting the user when loged in
-  //   } else {
-  //     setAdmin(false);
-  //     await localStorage.setItem("login", JSON.stringify("user"));
-  //   }
-  // }
-
   async function login(input, navigate) {
     const { username: email, password } = input;
     try {
@@ -102,8 +87,6 @@ const AuthContextProvider = ({ children }) => {
             await localStorage.setItem("login", JSON.stringify(user));
           } else if (user.userType === "ADMIN") {
             setAdmin(true);
-
-            //temporal one
             const adminObject = {
               name: "ADMIN",
               admin: true,
@@ -158,7 +141,7 @@ const AuthContextProvider = ({ children }) => {
           setSignedIn(true);
           navigate("/");
         } else if (requestStatus === "ACTC" && nextPage === "/resetpassword") {
-          let store = {email, otp}
+          let store = { email, otp };
           localStorage.setItem("otp", JSON.stringify(store));
           navigate("/resetpassword");
         } else {
@@ -200,20 +183,22 @@ const AuthContextProvider = ({ children }) => {
   async function forgotPassword(email, navigate) {
     if (email === "") {
       setForgotPasswordError("Email address is required");
-      navigate("/forgotpassword")
+      navigate("/forgotpassword");
     } else {
       try {
-        let store = {email}
+        let store = { email };
         await localStorage.setItem("otp", JSON.stringify(store));
         const res = await loginService.forgotPassword(email);
         if (res.data) {
-          await navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
+          await navigate("/inputotp", {
+            state: { fromPage: "ForgotPassword" },
+          });
         }
         if (res) {
           const { requestStatus } = res.data;
           if (requestStatus === "RJCT") {
             setForgotPasswordError(res.data.errMsg);
-            navigate("/forgotpassword")
+            navigate("/forgotpassword");
           } else {
             navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
           }
@@ -228,8 +213,7 @@ const AuthContextProvider = ({ children }) => {
     try {
       const data = await localStorage.getItem("otp");
 
-      const {email, otp} = JSON.parse(data);
-      console.log(data);
+      const { email, otp } = JSON.parse(data);
       const res = await loginService.resetPassword(
         newPassword,
         confirmNewPassword,
@@ -240,7 +224,7 @@ const AuthContextProvider = ({ children }) => {
         const { requestStatus } = res.data;
         if (requestStatus === "RJCT") {
           setResetPasswordError(res.data.errMsg);
-          navigate("/resetpassword")
+          navigate("/resetpassword");
         } else {
           await localStorage.removeItem("otp");
           navigate("/signin");
@@ -250,6 +234,7 @@ const AuthContextProvider = ({ children }) => {
       console.log(error);
     }
   }
+
 };
 
 AuthContext.ProviderWrapper = AuthContextProvider;

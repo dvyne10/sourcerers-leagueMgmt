@@ -7,6 +7,7 @@ import connectDB from "./config/db.js";
 import cron from "node-cron"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import { authenticate, getTokenFromCookies, adminAuthenticate } from "./middlewares/authMiddleware.js";
+import { updateProfilePic } from "./middlewares/fileUploadMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
@@ -26,6 +27,8 @@ import { adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, a
   adminGetLeagues, adminGetLeagueDetails, adminCreateLeague, adminUpdateLeague, adminDeleteLeague,
   adminGetParms, adminGetParmDetails, adminCreateParm, adminUpdateParm, adminDeleteParm,
   } from "./utils/adminModule.js";
+
+import mongoose from "mongoose";
 
 dotenv.config();
 connectDB();
@@ -267,7 +270,7 @@ app.put("/rejectrequest/:notifid", authenticate, (req, res) => {
   );
 });
 
-app.put("/myprofile", authenticate, (req, res) => {
+app.post("/myprofile", authenticate, (req, res) => {
   getMyProfile(req.user._id.toString())
   .then((data) => {
       res.json(data);
@@ -318,7 +321,7 @@ app.post("/getaccountdetailsupdate", authenticate, (req, res) => {
   );
 });
 
-app.post("/updateaccount", authenticate, (req, res) => {
+app.post("/updateaccount", authenticate, updateProfilePic, (req, res) => {
   updateAccount(req.user._id.toString(), req.body)
   .then((data) => {
       res.json(data);
@@ -327,21 +330,7 @@ app.post("/updateaccount", authenticate, (req, res) => {
 });
 
 app.get("/testing", (req, res) => { 
-  // let notifMsg = "64d161a3d85ccc4a7c984824" + "            "
-  // let parm1 = "00"
-  // let parm2 = "2323"
-  // console.log(notifMsg.substring(0,30) + parm1.substring(0,5) + parm2.substring(0,5))
-  // return
-  //getUserNotifications("648e7e34db2a68344fda38fb") //dLynch
-  //rejectRequest("648e7e34db2a68344fda38fb", "64d175a36aab57428ef2de72")
-  //approveRequest("648e7e34db2a68344fda38fb", "64d176944afc97fe0aef2368")
-  //getUserNotifications("648e7e34db2a68344fda3906") //tRobles
-  //getTeamDetailsAndButtons("648e5a24db2a68344fda38e1", "648e224f91a1a82229a6c11f")
-  //getTeamMajorDetails("648ba154251b78d7946df344")
-  getUnreadNotifsCount("648e7e34db2a68344fda38fa")
-  .then((data) => {
-    res.json(data);
-  });
+  mongoose.connection.close()
 });
 
 app.post("/admin", authenticate, (req, res) => {

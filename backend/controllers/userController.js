@@ -17,6 +17,7 @@ import {
   sendEmail,
 } from "../utils/auth.utils.js";
 import handlebars from "handlebars";
+import fs from "fs";
 
 const registerUser = async (req, res) => {
   const {
@@ -55,7 +56,7 @@ const registerUser = async (req, res) => {
     });
     return;
   }
-
+  
   let passwordCheck = await isValidPassword(password);
   if (!passwordCheck.valid) {
     res.status(200).send({
@@ -66,7 +67,6 @@ const registerUser = async (req, res) => {
   }
 
   const salt = genSalt();
-
   const hashedPassword = await genHash(password, salt);
 
   const user = await User({
@@ -85,6 +85,11 @@ const registerUser = async (req, res) => {
     phoneNumber,
   }).save();
 
+  if (req.file && req.file.path) {
+    fs.renameSync(req.file.path, req.file.path.replace(req.file.filename, 
+      `${user._id}.jpeg`));
+  }
+
   try {
     if (user) {
       // generating otp
@@ -98,7 +103,7 @@ const registerUser = async (req, res) => {
       await user.save();
 
       // generating email
-      let emailName = `${firstName} ${lastName}`
+      let emailName = `${firstName} ${lastName}`;
       const html = generateOTPEmail(otp, emailName, email);
 
       // sending the otp through the provided email for verification
@@ -173,7 +178,10 @@ export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const otp = generateOTP();
   const otpDate = new Date();
-  const user = await User.findOne({email: new RegExp(`^${email}$`, "i"), status: 'ACTV'})
+  const user = await User.findOne({
+    email: new RegExp(`^${email}$`, "i"),
+    status: "ACTV",
+  });
 
   // check if the provided email exists before saving otp to the user object
   if (!user) {
@@ -191,7 +199,7 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // generating email
-    let emailName = `${user.firstName} ${user.lastName}`
+    let emailName = `${user.firstName} ${user.lastName}`;
     const html = generateOTPEmail(otp, emailName, email);
 
     await sendEmail({
@@ -221,7 +229,8 @@ export const resetPassword = async (req, res) => {
   }
 
   const existingUser = await User.findOne({
-    email: new RegExp(`^${email}$`, "i"), status: 'ACTV'
+    email: new RegExp(`^${email}$`, "i"),
+    status: "ACTV",
   });
 
   if (!existingUser) {
@@ -256,7 +265,7 @@ export const resetPassword = async (req, res) => {
       $set: {
         password: hashedPassword,
         salt: salt,
-        detailsOTP: null
+        detailsOTP: null,
       },
     },
     { new: true }
