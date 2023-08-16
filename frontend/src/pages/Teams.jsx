@@ -110,7 +110,7 @@ export default function Teams() {
 
                     <div className="mt-2 mb-2 w-50 h-100 justify-self-center text-center mx-auto rounded-pill" style={{"backgroundColor":"#116466"}}>
                     <p className="user-select-none">{
-                      !team.lookingForPlayers ? <a className="text-white text-decoration-none" href={"mailto:"+team.teamContactEmail}>Open</a> : ""
+                      team.lookingForPlayers ? <a className="text-white text-decoration-none" href={"mailto:"+team.teamContactEmail}>Open</a> : ""
                     }
                       {team.sportsName == "Basketball" ? (
                         <img

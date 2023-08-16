@@ -120,6 +120,7 @@ export default function Leagues() {
               status={league.status}
               totalTeams={league.teams.length}
               teamsJoined={league.numberOfTeams}
+              lookingForTeams={league.lookingForTeams}
               startDate={league.startDate}
               endDate={league.endDate}
               expanded={index === 0}
