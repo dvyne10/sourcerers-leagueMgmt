@@ -198,18 +198,13 @@ function TeamDetails() {
 
 
   const handleJoin = () => {
-    if(teamInfo.playerCurrentTeamName!==""){
-      if (confirm(`Please confirm if you want to leave the team ${teamInfo.playerCurrentTeamName} and join ${teamInfo.details.teamName}.`)){
         handleJoinTeam(teamInfo.teamId)
         setShow(true)
-      }
-    }
-    else{
-      handleJoinTeam(teamInfo.teamId)
-        setShow(true)
-    }
       
-  }
+    }
+
+      
+  
   
 
   const handleUnjoin = () =>{
@@ -309,15 +304,19 @@ function TeamDetails() {
         
         {/* Here is the team header, with background and info */}
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white" 
-   style={{"backgroundImage": `url(${backend}/teambanners/${teamInfo.details._id}.jpeg)`}} >
-        <Container style={{background:'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg'}}>
+   style={{"backgroundImage": `url(${backend}/teambanners/${teamInfo.details._id}.jpeg), url(${backend}/teambanners/default.jpg)`, "backgroundRepeat":"no-repeat", backgroundSize:"cover" }} >
+         <Container style={{"background-color":"rgba(0, 0, 0, 0.25)"}} className='rounded'>
       <Row>
         <Col lg="2" className='text-center'>
         <p><strong>{teamInfo.details.location}</strong></p> 
-        <Image src={`${backend}/teamlogos/${teamInfo.details._id}.jpeg`}  className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
+        <Image src={`${backend}/teamlogos/${teamInfo.details._id}.jpeg`} onError={({ currentTarget }) => {
+    currentTarget.onerror = null; // prevents looping
+    currentTarget.src=`${backend}/teamlogos/default-image.jpeg`;
+  }}
+className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
         {teamInfo.details.sportsName == "Basketball" ? (
                         <img
-                          src="https://i.imgur.com/w14EKbv.png"
+                          src="https://i.imgur.com/w14EKbv.png" 
                           style={{ width: "2em", backgroundColor:"white", borderRadius:"50%"}}
                           className="text-center opacity-75 mt-2 position-relative"
                         />
@@ -341,7 +340,6 @@ function TeamDetails() {
       <Col lg="2" className="mt-2" >
 
         <>
-        
                       {isSignedIn && teamInfo.displayInviteToLeagueButton && 
                     (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleInvite}>Invite</Button>)
                       }
@@ -353,16 +351,16 @@ function TeamDetails() {
                     (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleJoin}>Join</Button>)
                       }
                     {isSignedIn && teamInfo.displayUnjoinButton && 
-                      (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleUnjoin} >Unjoin</Button>)
+                      (<Button className='mt-2 mb-2 btn-danger rounded-pill' onClick={handleUnjoin} >Unjoin</Button>)
                     }
                     {isSignedIn && teamInfo.displayCancelReqButton && 
-                      (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleCancelRequest}>Cancel Request</Button>)
+                      (<Button className='mt-2 mb-2 btn-danger rounded-pill' onClick={handleCancelRequest}>Cancel Request</Button>)
                     }
                     {isSignedIn && teamInfo.displayTurnOnLookingForPlayers && 
-                      (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleTurnOnLookingForPlayers}>Turn on looking for players</Button>)
+                      (<Button className='' onClick={handleTurnOnLookingForPlayers}>Turn on looking for players</Button>)
                     }
                                         {isSignedIn && teamInfo.displayTurnOffLookingForPlayers && 
-                      (<Button className='mt-2 mb-2 btn-danger rounded-pill' onClick={handleTurnOffLookingForPlayers}>Turn off looking for players</Button>)
+                      (<Button className='mt-2 mb-2 btn btn-outline-dark rounded-pill' onClick={handleTurnOffLookingForPlayers}>Turn off looking for players</Button>)
                     }
                     </>
         </Col>
@@ -507,8 +505,12 @@ function TeamDetails() {
             <Form.Group
               className="mb-3"
               controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label>Explain shortly why you want to join this team.</Form.Label>
+            >{teamInfo.playerCurrentTeamId!=="" || teamInfo.playerCurrentTeamId!==undefined &&
+              <h4 style={{color:"red"}}>{`If you join this team, you will be removed from your current team ${teamInfo.playerCurrentTeamName}. Please confirm if you want to proceed.`}</h4>
+            }
+              <Form.Label>Explain shortly why you want to join this team.
+                
+              </Form.Label>
               <Form.Control as="textarea" rows={3} name="joinMsg" value={joinMsg} onChange={handleJoinTeamMsg}/>
             </Form.Group>
           </Form>

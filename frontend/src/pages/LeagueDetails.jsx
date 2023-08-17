@@ -18,7 +18,7 @@ const LeagueDetails = () => {
   const [show, setShow] = useState(false);
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
-  const [leagueJoinedTo, handleJoinLeague] = useState("");
+  const [teamJoinedWith, handleJoinLeague] = useState("");
   const [joinMsg, handleJoinMsg] = useState("");
   const [errorMessage, setErrorMessage] = useState([]);
   let [orderedDates, setOrderedDates] = useState([]);
@@ -28,10 +28,10 @@ const LeagueDetails = () => {
     teams: [], matches: [],
     displayUpdateButton:null, displayTurnOnLookingForTeams: null,
     displayTurnOffLookingForTeams:null, displayUnjoinButton: null, 
-    displayJoinButton: null, teamsCreated : null, displayCancelReqButton: null,
+    displayJoinButton: null, teamsCreated : [], displayCancelReqButton: null,
     pendingRequestId: null, displayStartLeagueButton: null, displayPendingStartLeagueInd: null,
     pendingStartLeagueRequestId :null,
-    startDate:"", endDate:""
+    startDate:"", endDate:"", minApprovals: 999
   })
 
 
@@ -66,7 +66,7 @@ const LeagueDetails = () => {
               displayTurnOffLookingForTeams:data.buttons.displayTurnOffLookingForTeams, displayUnjoinButton: data.buttons.displayUnjoinButton, 
               displayJoinButton: data.buttons.displayJoinButton, teamsCreated : data.buttons.teamsCreated, displayCancelReqButton: data.buttons.displayCancelReqButton,
               pendingRequestId: data.buttons.pendingRequestId, displayStartLeagueButton: data.buttons.displayStartLeagueButton, displayPendingStartLeagueInd: data.buttons.displayPendingStartLeagueInd,
-              pendingStartLeagueRequestId :data.buttons.pendingStartLeagueRequestId
+              pendingStartLeagueRequestId :data.buttons.pendingStartLeagueRequestId, minApprovals: data.buttons.minApprovals
             })
           setLoading(false)
         }
@@ -129,10 +129,10 @@ const handleTurnOffLookingForTeams = () => {
 
 }
 
-const handleUnjoin = () => {
-  if (leagueInfo.pendingInviteRequestId !== "") {
-    if (confirm("Please confirm if you want to proceed with invite cancellation.")) {
-      fetch(`${backend}/cancelrequest/${leagueInfo.pendingInviteRequestId}`, {
+const handleCancelJoin = () => {
+  if (leagueInfo.pendingRequestId !== "") {
+    if (confirm("Please confirm if you want to proceed with join request cancellation.")) {
+      fetch(`${backend}/cancelrequest/${leagueInfo.pendingRequestId}`, {
           method: "POST",
           credentials: 'include',
           headers: {
@@ -145,12 +145,42 @@ const handleUnjoin = () => {
           if (data.requestStatus === 'RJCT') {
               setErrorMessage([data.errMsg])
           } else {
-            setLeagueInfo({...leagueInfo, displayJoinButton : true, displayUnjoinButton: false, pendingRequestId: ""})
+            setLeagueInfo({...leagueInfo, displayJoinButton : true, displayUnjoinButton: false, displayCancelReqButton:false, pendingRequestId: ""})
           }
       }).catch((error) => {
           console.log(error)
       })
     }
+  }
+}
+
+const handleUnjoin = () => {
+    if (confirm(`Please confirm to leave the league${leagueInfo.leagueName}.`)) {
+      fetch(`${backend}/unjoinleague/${routeParams.leagueid}`, {
+          method: "POST",
+          credentials: 'include',
+          headers: {
+              "Content-Type": "Application/JSON",
+              "Authorization": token
+          }
+      })
+      .then(response => response.json())
+      .then(data=>{
+          if (data.requestStatus === 'RJCT') {
+              setErrorMessage([data.errMsg])
+          } else {
+            if(leagueInfo.lookingForTeams){
+              setLeagueInfo({...leagueInfo, displayJoinButton : true, displayUnjoinButton: false, displayCancelReqButton:false, pendingRequestId: "", displayTurnOffLookingForTeams: false, displayTurnOnLookingForTeams:false})
+            }
+            else{
+              setLeagueInfo({...leagueInfo, displayJoinButton : false, displayUnjoinButton: false, displayCancelReqButton:false, pendingRequestId: "", displayTurnOffLookingForTeams: false, displayTurnOnLookingForTeams:false})
+            
+            }
+            }
+      }).catch((error) => {
+          console.log(error)
+      })
+    
   }
 }
 
@@ -162,7 +192,7 @@ const handleJoinLeagueMsg = (e) => {
 }
 
 const sendJoin = () => {
-  let data = {leagueId: leagueJoinedTo, msg: joinMsg}
+  let data = {teamId: teamJoinedWith, msg: joinMsg}
   fetch(`${backend}/joinleague/${routeParams.leagueid}`, {
     method: "POST",
     credentials: 'include',
@@ -177,11 +207,47 @@ const sendJoin = () => {
     if (data.requestStatus === 'RJCT') {
         setErrorMessage([data.errMsg])
     } else {
-      setLeagueInfo({...leagueInfo, displayJoinButton : false, displayUnjoinButton: true, pendingRequestId: data.pendingRequestId})
+      setLeagueInfo({...leagueInfo, displayJoinButton : false, displayCancelReqButton:true, displayUnjoinButton: false, pendingRequestId: data.pendingRequestId})
     }
   })
   setShow(false)
 }
+
+const handleStartLeague = () =>{
+  if(leagueInfo.teams.length<3){
+    alert("You cannot start the league with less than 3 teams.")
+  }
+  else{
+    sendStartLeague();
+  }
+}
+
+const sendStartLeague = () =>{
+  if(confirm(`You are going to need ${leagueInfo.minApprovals} approvals to start the league. Please confirm if you want to proceed.`)){
+    fetch(`${backend}/startleague/${routeParams.leagueid}`, {
+      method: "POST",
+      credentials: 'include',
+      headers: {
+          "Content-Type": "Application/JSON",
+          "Authorization": token
+      }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      console.log(JSON.stringify(data))
+      if (data.requestStatus === 'RJCT') {
+          setErrorMessage([data.errMsg])
+      } else {
+        setLeagueInfo({...leagueInfo, displayPendingStartLeagueInd : true, displayStartLeagueButton: false})
+      }
+    })
+    setShow(false)
+  }
+}
+
+
+
+
 
 
 
@@ -215,25 +281,45 @@ const sendJoin = () => {
   style={{"backgroundImage": `url(${backend}/leaguebanners/${leagueInfo.leagueId}.jpeg), url(${backend}/leaguebanners/default.jpg)`, backgroundPosition:"center", backgroundSize:"cover"}} >
         <Container style={{"background-color":"rgba(0, 0, 0, 0.25)"}} className='rounded'>
       <Row className='text-center ms-5'>
-      <Image src={`${backend}/leaguelogos/${leagueInfo.leagueId}.jpeg`}  className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
+      <Image src={`${backend}/leaguelogos/${leagueInfo.leagueId}.jpeg`} 
+      onError={({ currentTarget }) => {
+    currentTarget.onerror = null; // prevents looping
+    currentTarget.src=`${backend}/teamlogos/default-image.jpeg`;
+  }}
+      className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
         <Col><h1 className='header-text-info'>{leagueInfo.leagueName}</h1>
         <p className='information-text'>{leagueInfo.location==="" ? "TBD" : leagueInfo.location}</p>
         <p className='mt-3 information-text'>{leagueInfo.description}</p>
         
 
                     <>
-                      {isSignedIn && leagueInfo.displayJoinButton && leagueInfo.lookingForTeams &&
-                    (<Button onClick={handleJoin}>Join</Button>)
+                      {isSignedIn && leagueInfo.displayJoinButton &&
+                    (<div><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleJoin}>Join</Button></div>)
                       }
-                    {isSignedIn && leagueInfo.displayUnjoinButton && 
-                      (<Button onClick={handleUnjoin}>Cancel Request</Button>)
+                    {isSignedIn && leagueInfo.displayCancelReqButton && 
+                      (<div><Button className='mt-2 mb-2 btn-danger rounded-pill' onClick={handleCancelJoin}>Cancel Request</Button></div>)
                     }
+
+                    {isSignedIn && leagueInfo.displayUnjoinButton && 
+                      (<div className='mt-1'><Button className='mt-2 mb-2 btn-danger rounded-pill' onClick={handleUnjoin}>Unjoin</Button></div>)
+                    }
+
+                    {isSignedIn && leagueInfo.displayStartLeagueButton && 
+                      (<div className='mt-1'><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleStartLeague}>Start League</Button></div>)
+                    }
+
+                    {isSignedIn && leagueInfo.displayPendingStartLeagueInd && 
+                      (<div className='mt-1'><Button className='mt-2 mb-2 btn-success rounded-pill' disabled>Pending to start league...</Button></div>)
+                    }
+
                     {isSignedIn && leagueInfo.displayTurnOnLookingForTeams && 
-                      (<Button onClick={handleTurnOnLookingForTeams}>Turn on looking for Teams</Button>)
+                      (<div className='mt-1'><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleTurnOnLookingForTeams}>Turn on looking for Teams</Button></div>)
                     }
                     {isSignedIn && leagueInfo.displayTurnOffLookingForTeams && 
-                      (<Button onClick={handleTurnOffLookingForTeams}>Turn off looking for Teams</Button>)
+                      (<div className='mt-1'><Button className='mt-2 mb-2 btn btn-dark rounded-pill' onClick={handleTurnOffLookingForTeams}>Turn off looking for Teams</Button></div>)
                     }
+
+          
                     </>
                   
                   
@@ -246,7 +332,20 @@ const sendJoin = () => {
       </Row>
       <Row className='text-start ms-5 mt-2'>
         
-        <Col>
+        <Col >
+        {leagueInfo.sports == "Basketball" ? (
+                       <Row> <p className='ms-5'><img
+                          src="https://i.imgur.com/w14EKbv.png"
+                          style={{ width: "2em", backgroundColor:"white", borderRadius:"50%"}}
+                          className="text-center opacity-75 mt-2 position-relative"
+                        /></p></Row>
+                      ) : (
+                        <Row><p className='ms-5'><img
+                          src="https://i.imgur.com/7Qa798a.png"
+                          style={{ width: "2em", backgroundColor:"white", borderRadius:"50%"}}
+                          className="text-center opacity-75 mt-2 position-relative"
+                        /></p></Row>
+                      )}
         <Row><p className='information-text'>Division : {leagueInfo.division}</p></Row>
         
         <Row><p className='information-text'>Age Group : {leagueInfo.ageGroup}</p></Row>
@@ -272,7 +371,8 @@ const sendJoin = () => {
           <h2 className='center-header gap-divider'>Teams</h2>
          <Row className='mb-5 mx-5'>
           
-          {leagueInfo.teams.map((team)=>(
+          {leagueInfo.teams.length<1 ? <h4 className='center-header'>No teams yet.</h4>:
+          leagueInfo.teams.map((team)=>(
             <Col className='league-details-team-listing text-break ms-5 mt-5' md={1} key={team.teamId} >
             
             <a href={`/team/${team.teamId}`} className='general-link-no-dec'><Image src={`${backend}/teamlogos/${team.teamId}.jpeg`}  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
@@ -446,17 +546,23 @@ const sendJoin = () => {
 
 {/* Modal opening up after clicking Join */}
 <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
+      <Modal.Header closeButton>
           <Modal.Title>Message</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            
+            <Form.Label>Choose a team to join this league with</Form.Label>
+            <select id="teamJoinedWith" name="teamJoinedWith" className="form-control" value={teamJoinedWith} onChange={handleLeagueJoinChange}>
+                {leagueInfo.teamsCreated.map((option) => (
+                    <option value={option.teamId} key={option.teamId}>{option.teamName}</option>
+                ))}
+            </select>
+            <br/><br/>
             <Form.Group
               className="mb-3"
               controlId="exampleForm.ControlTextarea1"
             >
-              <Form.Label>Explain shortly why you want to this league.</Form.Label>
+              <Form.Label>Explain shortly why you want to join your team to this league.</Form.Label>
               <Form.Control as="textarea" rows={3} name="inviteMsg" value={joinMsg} onChange={handleJoinLeagueMsg}/>
             </Form.Group>
           </Form>
@@ -465,8 +571,8 @@ const sendJoin = () => {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button  onClick={sendJoin}> 
-          Join
+          <Button variant="success" onClick={sendJoin}>
+            Confirm Request
           </Button>
         </Modal.Footer>
       </Modal>
