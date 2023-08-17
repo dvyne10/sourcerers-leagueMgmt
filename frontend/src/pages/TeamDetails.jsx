@@ -20,6 +20,7 @@ function TeamDetails() {
     const handleClose = () => setShow(false);
     const [leagueInvitedTo, handleInviteLeague] = useState("");
     const [teamJoinedTo, handleJoinTeam] = useState("");
+    const [lookingForPlayers, setLookingForPlayers] = useState("")
     const [inviteMsg, handleInviteMsg] = useState("");
     const [joinMsg, handleJoinMsg] = useState("");
     const [showInvite, setShowInvite] = useState(false);
@@ -151,10 +152,63 @@ function TeamDetails() {
     setShowInvite(false)
   }
 
+  const handleTurnOnLookingForPlayers = () => {
+    if(confirm(`Please confirm if you want to turn on looking for players.`)){
+      fetch(`${backend}/lookingforplayerson/${routeParams.teamid}`, {
+        method: "PUT",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "Application/JSON",
+            "Authorization": token
+        }
+      })
+      .then(response => response.json())
+      .then(data=>{
+        if (data.requestStatus === 'RJCT') {
+            setErrorMessage([data.errMsg])
+        } else {
+          setTeamInfo({...teamInfo, displayTurnOnLookingForPlayers : false, displayTurnOffLookingForPlayers: true})
+        }
+      })
+    }
+  }
+
+  const handleTurnOffLookingForPlayers = () => {
+    if(confirm(`Please confirm if you want to turn on looking for players.`)){
+      fetch(`${backend}/lookingforplayersoff/${routeParams.teamid}`, {
+        method: "PUT",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "Application/JSON",
+            "Authorization": token
+        }
+      })
+      .then(response => response.json())
+      .then(data=>{
+        if (data.requestStatus === 'RJCT') {
+            setErrorMessage([data.errMsg])
+        } else {
+          setTeamInfo({...teamInfo, displayTurnOnLookingForPlayers : true, displayTurnOffLookingForPlayers: false})
+        }
+      })
+    }
+
+
+  }
+
 
   const handleJoin = () => {
+    if(teamInfo.playerCurrentTeamName!==""){
+      if (confirm(`Please confirm if you want to leave the team ${teamInfo.playerCurrentTeamName} and join ${teamInfo.details.teamName}.`)){
+        handleJoinTeam(teamInfo.teamId)
+        setShow(true)
+      }
+    }
+    else{
       handleJoinTeam(teamInfo.teamId)
-      setShow(true)
+        setShow(true)
+    }
+      
   }
   
 
@@ -176,10 +230,10 @@ function TeamDetails() {
           setErrorMessage([data.errMsg])
       } else {
         if(teamInfo.buttons.displayTurnOnLookingForPlayers){
-          setTeamInfo({...teamInfo, displayJoinButton : true, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: data.pendingJoinRequestId})
+          setTeamInfo({...teamInfo, displayJoinButton : true, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: "", playerCurrentTeamName:""})
         }
         else{
-          setTeamInfo({...teamInfo, displayJoinButton : false, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: data.pendingJoinRequestId})
+          setTeamInfo({...teamInfo, displayJoinButton : false, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: "", playerCurrentTeamName:""})
       }}
     })
   }
@@ -303,6 +357,12 @@ function TeamDetails() {
                     }
                     {isSignedIn && teamInfo.displayCancelReqButton && 
                       (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleCancelRequest}>Cancel Request</Button>)
+                    }
+                    {isSignedIn && teamInfo.displayTurnOnLookingForPlayers && 
+                      (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleTurnOnLookingForPlayers}>Turn on looking for players</Button>)
+                    }
+                                        {isSignedIn && teamInfo.displayTurnOffLookingForPlayers && 
+                      (<Button className='mt-2 mb-2 btn-danger rounded-pill' onClick={handleTurnOffLookingForPlayers}>Turn off looking for players</Button>)
                     }
                     </>
         </Col>

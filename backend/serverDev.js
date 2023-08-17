@@ -157,7 +157,7 @@ app.put("/lookingforplayerson/:teamid", authenticate, (req, res) => {
   });
 });
 
-app.put("/lookingforteamsoff/:teamid", authenticate, (req, res) => {
+app.put("/lookingforplayersoff/:teamid", authenticate, (req, res) => {
   updateLookingForPlayers(req.user._id.toString(), req.params.teamid, false)
   .then((data) => {
     res.json(data);
