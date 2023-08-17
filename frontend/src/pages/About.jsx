@@ -83,12 +83,12 @@ const About = () => {
         <Card>
           <Card.Img
             variant="top"
-            src="/images/aboutus/baris.jpeg"
+            src="/images/aboutus/divine.jpeg"
           />
           <Card.Body>
-            <Card.Title>Card Title</Card.Title>
+            <Card.Title>Divine</Card.Title>
             <Card.Text className="text-dark">
-            I'm Jem, and I'm from the Philippines. I have a degree in Applied Mathematics, but I fell in love with programming the moment I first tried it. Coding makes me feel alive, so I never regretted this path since.</Card.Text>
+            I'm a code maestro with a knack for both frontend and backend wizardry, sprinkled with a dash of DevOps sorcery. When I'm not waging war against those feisty red squiggly lines in VS Code, I transform into a Blender virtuoso.</Card.Text>
             
           </Card.Body>
         </Card>
