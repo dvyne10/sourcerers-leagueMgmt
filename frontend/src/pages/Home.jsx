@@ -26,13 +26,25 @@ const Home = () => {
       const response = await fetch(`${backend}`);
       const data = await response.json();
       const allAnnouncements = [...data.details.adminAnnouncements, ...data.details.announcements];
-
-      setTopLeagues(data.details.topLeagues);
-      setAnnouncements(allAnnouncements);
+  
+      const leagueImagesLoaded = await Promise.all(
+        data.details.topLeagues.map(async (league) => {
+          const imageUrl = doesImageExist(`${backend}/leaguelogos/${league.leagueId}.jpeg`)
+            ? `${backend}/leaguelogos/${league.leagueId}.jpeg`
+            : `${backend}/leaguelogos/default-image-for-league.jpeg`;
+          return doesImageExist(imageUrl);
+        })
+      );
+  
+      if (leagueImagesLoaded.every((loaded) => loaded)) {
+        setTopLeagues(data.details.topLeagues);
+        setAnnouncements(allAnnouncements);
+      }
     } catch (error) {
       console.error('Error fetching top leagues data:', error);
     }
   };
+  
 
   const sliderSettings = {
     dots: false,

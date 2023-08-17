@@ -139,7 +139,7 @@ const MatchDetails = () => {
 
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#D1E8E2', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
               <div className="team-names" style={{marginRight: '3%'}}>
-                <span>{matchDetails.team1.teamName} &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                &nbsp;&nbsp;<span>{matchDetails.team1.teamName} &nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span style={{ color: '#3b3c4c' }}>{matchDetails.team1.finalScore}&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;{matchDetails.team2.finalScore}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span>{matchDetails.team2.teamName}</span> <br/>
               </div>
