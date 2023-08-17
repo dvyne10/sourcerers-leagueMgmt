@@ -5,6 +5,7 @@ import SysParmModel from "../models/systemParameter.model.js";
 import { getSportsList, getPosnAndStatBySport } from "./sysParmModule.js";
 import { getUserFullname } from "./usersModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
+import fs from "fs";
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -31,7 +32,7 @@ export const getTeams = async function() {
     let promises1 = teamsCreated.map(async function(user) {
         let promises2 = user.teamsCreated.map(async function(team) {
             sportIndex = sportsList.findIndex((i) => i.sportsId.equals(team.sportsTypeId))
-            sportsName = sportIndex === -1 ? "" : sportsList[sportIndex].sportsName
+            let sportsName = sportIndex === -1 ? "" : sportsList[sportIndex].sportsName
             numberOfwins = await getTeamWinsCount(team._id.toString())
             teamsWithWins.push({teamId: team._id, teamName: team.teamName, location: team.location, division: team.division,
                 teamContactEmail: team. teamContactEmail, description: team.description, sportsTypeId: team.sportsTypeId, 
@@ -553,7 +554,8 @@ export const getOpenTeams = async function() {
     return openTeams
 }
 
-export const createTeam = async function(userId, data) {
+export const createTeam = async function(userId, data, files) {
+
     let response = {requestStatus: "", errField: "", errMsg: ""}
 
     let validate = await teamValidation(data, "NEW", userId)
@@ -580,6 +582,16 @@ export const createTeam = async function(userId, data) {
 
         let newTeamObject = await UserModel.findOne({ _id : new ObjectId(userId) }, { teamsCreated: 1, _id: 0 })
         let index = newTeamObject.teamsCreated.length -1
+
+        if (files && files.banner) {
+            fs.renameSync(files.banner[0].path, files.banner[0].path.replace(files.banner[0].filename, 
+                `${newTeamObject.teamsCreated[index]._id}.jpeg`));
+        }
+        if (files && files.logo) {
+            fs.renameSync(files.logo[0].path, files.logo[0].path.replace(files.logo[0].filename, 
+                `${newTeamObject.teamsCreated[index]._id}.jpeg`));
+        }
+
         response.requestStatus = "ACTC"
         response.team = newTeamObject.teamsCreated[index]
     }
@@ -631,7 +643,6 @@ export const getTeamDetailsForUpdate = async function(userId, teamId) {
 
 export const updateTeam = async function(userId, teamId, data){
     let response = {requestStatus: "", errField: "", errMsg: ""}
-
     data.teamId = teamId
     let validate = await teamValidation(data, "CHG", userId)
 
@@ -645,7 +656,7 @@ export const updateTeam = async function(userId, teamId, data){
                     "teamsCreated.$[n1].location": data.location,
                     "teamsCreated.$[n1].division": data.division,
                     "teamsCreated.$[n1].teamContactEmail": data.teamContactEmail,
-                    "teamsCreated.$[n1].players": data.players,
+                    // "teamsCreated.$[n1].players": data.players,
             }
             }, {arrayFilters: [ { "n1._id": new ObjectId(teamId) }] })
 

@@ -311,14 +311,11 @@ const AccountMaintenance = () => {
           credentials: "include",
           body: formData,
           headers: {
-            // "Accept": "application/json",
-            // "Content-Type": "multipart/form-data",
             Authorization: token,
           },
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log("321 " + JSON.stringify(data))
             if (data.requestStatus === "RJCT") {
               setFormError(true);
               setFormErrorArray(data.errMsg);

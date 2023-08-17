@@ -6,6 +6,7 @@ import { getUserFullname } from "./usersModule.js";
 import { getManyTeamNames, getTeamsCreated, getTeamAdmin } from "./teamsModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
 import { getSportsList, getSportName } from "./sysParmModule.js";
+import fs from "fs";
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -265,7 +266,7 @@ export const canUserCreateNewLeague = async function(userId) {
     }    
 }
 
-export const createLeague = async function(userId, data) {
+export const createLeague = async function(userId, data, files) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
 
     let validate = await leagueValidation(data, "NEW", userId)
@@ -290,6 +291,15 @@ export const createLeague = async function(userId, data) {
         })
         await newLeague.save()
         .then(() => {
+            if (files && files.banner) {
+                fs.renameSync(files.banner[0].path, files.banner[0].path.replace(files.banner[0].filename, 
+                    `${newLeague._id}.jpeg`));
+            }
+            if (files && files.logo) {
+                fs.renameSync(files.logo[0].path, files.logo[0].path.replace(files.logo[0].filename, 
+                    `${newLeague._id}.jpeg`));
+            }
+
             response.requestStatus = "ACTC"
             response.league = newLeague
         })
