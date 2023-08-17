@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500&display=swap');
+@import url('https://db.onlinewebfonts.com/c/be9a43357e0fe07642191e4b32995385?family=Avenir+Next+LT+W02+Regular');
 
 :root{
   --black: #2C3531;
@@ -98,6 +99,20 @@
   
 }
 
+
+.header-text-info{
+  font-family:"Saira Extra Condensed";
+  font-weight: bold;
+  font-size: 4rem;
+}
+
+.information-text{
+  font-family:"Avenir Next LT W02 Regular";
+  font-weight: bold;
+  color: #f1f1f1;
+    text-shadow: 1px 1px black;
+}
+
 .team-jersey-list-number{
   font-family:"Saira Extra Condensed";
   color:white;
@@ -156,21 +171,7 @@ aside#sidebar .team-btw-match ul li.vs span {
   background-color: rgba(255,255,255,.30);
   color: black;
 }
-.player-info-container {
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 1%;
-  border-radius: 5px;
-  width: 100px;
-  text-align: center;
-  opacity: 0; /* Initially hidden */
-  transform: translateY(20px); /* Initially moved down */
-  transition: opacity 0.3s, transform 0.3s;
-}
 
-.player-info-container.active {
-  opacity: 1;
-  transform: translateY(0);
-}
 .link-over-to-left:hover::before {
   transform-origin: 0% 100%;
   transform: scaleX(1);

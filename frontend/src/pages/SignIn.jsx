@@ -6,8 +6,15 @@ import useAuth from "../hooks/auth";
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const { signIn, isSignedIn, login, loginError, isLoginError, isLoading } =
-    useAuth();
+  const {
+    signIn,
+    isSignedIn,
+    login,
+    loginError,
+    isLoginError,
+    isLoading,
+    setIsUserRemembered,
+  } = useAuth();
   const [inputError, setInputError] = useState(false);
 
   const [input, setInput] = useState({
@@ -61,11 +68,7 @@ const SignIn = () => {
   return (
     <div className="card-wrapper">
       <Card style={{ width: "25rem", padding: 20 }}>
-        { isSignedIn && (
-            <div>
-                {navigate('/')}
-            </div>
-        )}
+        {isSignedIn && <div>{navigate("/")}</div>}
         {isLoginError && (
           <div className="alert alert-danger mb-3 p-1">
             <p className="mb-0">{loginError}</p>
@@ -103,12 +106,15 @@ const SignIn = () => {
             />
             {error.password && <span className="err">{error.password}</span>}
           </div>
-          {/* <Form.Check
+          <Form.Check
             type={"checkbox"}
             id={`default-checkbox`}
             label={`Remember me`}
             className="mb-4 "
-          /> */}
+            onChange={(event) => {
+              setIsUserRemembered(event.target.checked);
+            }}
+          />
           <div className="d-flex justify-content-evenly width:100% mb-4">
             <button
               className="btn btn-primary sign-in-btn"

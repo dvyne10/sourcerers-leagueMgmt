@@ -18,7 +18,7 @@ const LiveCard = ({ match, onClickTeamIcon }) => {
   };
   
   return (
-    <div className="card card-body m-2">
+    <div className="card card-body m-2" >
       <div className="d-flex justify-content-between">
         <div
           style={{ width: 80, height: 80, borderRadius: 40, marginRight: 20 }}
@@ -66,11 +66,11 @@ const LiveCard = ({ match, onClickTeamIcon }) => {
         <hr />
       </div>
       <div className="d-flex p-0 m-0 justify-content-center">
-        <p className="p-0 m-0">{formattedMatchDate}</p>
+        <p className="p-0 m-0" style={{width: '100px'}}>{formattedMatchDate}</p>
         <div
           style={{
             width: 1,
-            marginInline: 5,
+            marginRight:'55px',
             backgroundColor: "#666869",
           }}
         ></div>

@@ -108,6 +108,7 @@ const TeamMaintenance = () => {
     const handleLogoChange = event => {
         if (event.target.files.length > 0) {
             setSelectedLogo(event.target.files[0])
+            setCurrentValues({ ...currValues, logo: event.target.files[0] })
             setLogoURL(URL.createObjectURL(event.target.files[0]))
             setLogoChanged(true)
         }
@@ -116,6 +117,7 @@ const TeamMaintenance = () => {
     const handleBannerChange = event => {
         if (event.target.files.length > 0) {
             setSelectedBanner(event.target.files[0])
+            setCurrentValues({ ...currValues, banner: event.target.files[0] })
             setBannerURL(URL.createObjectURL(event.target.files[0]))
             setBannerChanged(true)
         }
@@ -202,21 +204,32 @@ const TeamMaintenance = () => {
         error = validateInput()
         if (!error) {
         setIsLoading(true)
+        data = {...currValues}
+        if (action.type === "Update") {
+            data.players = playersList.map(player => {
+                return {playerId: player.playerId, position: player.position, jerseyNumber: player.jerseyNumber, joinedTimestamp: player.joinedTimestamp}
+            })
+        }
+        const formData = new FormData();
+        Object.keys(data).forEach((key) => {
+            Array.isArray(data[key]) 
+            //? ( key === "players"
+                ? data[key].forEach(value => formData.append(key + '[]', value))
+            //    : data[key].forEach(value => formData.append(key + '[]', value)) )
+            : formData.append(key, data[key]) ;
+        });
         if (action.type === "Creation") {
-            data = {...currValues}
-                //data.logo = selectedLogo
-                //data.banner = selectedBanner
                 fetch(`${backend}/createteam`, {
                     method: "POST",
                     credentials: 'include',
-                    body: JSON.stringify(data),
+                    body: formData,
                     headers: {
-                        "Content-Type": "Application/JSON",
                         "Authorization": token
                     }
                 })
                 .then(response => response.json())
                 .then(data=>{
+                    console.log(JSON.stringify(data))
                     if (data.requestStatus === 'RJCT') {
                         setErrorMessage([data.errMsg])
                         if (data.errField !== "") {
@@ -243,18 +256,11 @@ const TeamMaintenance = () => {
             ) {
                 alert("NO CHANGES FOUND!")
             } else {
-                data = {...currValues}
-                data.players = playersList.map(player => {
-                    return {playerId: player.playerId, position: player.position, jerseyNumber: player.jerseyNumber, joinedTimestamp: player.joinedTimestamp}
-                })
-                //data.logo = selectedLogo
-                //data.banner = selectedBanner
                 fetch(`${backend}/updateteam/${routeParams.teamid}`, {
                     method: "POST",
                     credentials: 'include',
-                    body: JSON.stringify(data),
+                    body: formData,
                     headers: {
-                        "Content-Type": "Application/JSON",
                         "Authorization": token
                     }
                 })

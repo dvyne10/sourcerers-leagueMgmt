@@ -7,7 +7,7 @@ import connectDB from "./config/db.js";
 import cron from "node-cron"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import { authenticate, getTokenFromCookies, adminAuthenticate } from "./middlewares/authMiddleware.js";
-import { updateProfilePic } from "./middlewares/fileUploadMiddleware.js";
+import { updateProfilePic, createTeamLogoAndBanner, updateTeamLogoAndBanner, createLeagueLogoAndBanner, updateLeagueLogoAndBanner } from "./middlewares/fileUploadMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
@@ -157,7 +157,7 @@ app.put("/lookingforplayerson/:teamid", authenticate, (req, res) => {
   });
 });
 
-app.put("/lookingforteamsoff/:teamid", authenticate, (req, res) => {
+app.put("/lookingforplayersoff/:teamid", authenticate, (req, res) => {
   updateLookingForPlayers(req.user._id.toString(), req.params.teamid, false)
   .then((data) => {
     res.json(data);
@@ -347,8 +347,8 @@ app.post("/admin", authenticate, (req, res) => {
   }
 });
 
-app.post("/createteam", authenticate, (req, res) => {
-  createTeam(req.user._id.toString(), req.body).then((data) => {
+app.post("/createteam", authenticate, createTeamLogoAndBanner, (req, res) => {
+  createTeam(req.user._id.toString(), req.body, req.files).then((data) => {
     res.json(data);
   });
 });
@@ -361,7 +361,7 @@ app.post("/getteamdetailsupdate/:teamid", authenticate, (req, res) => {
   );
 });
 
-app.post("/updateteam/:teamid", authenticate, (req, res) => {
+app.post("/updateteam/:teamid", authenticate, updateTeamLogoAndBanner, (req, res) => {
   updateTeam(req.user._id.toString(), req.params.teamid, req.body).then(
     (data) => {
       res.json(data);
@@ -385,8 +385,8 @@ app.post("/removeplayer/:teamid/:playerid", authenticate, (req, res) => {
   );
 });
 
-app.post("/createleague", authenticate, (req, res) => {
-  createLeague(req.user._id.toString(), req.body).then((data) => {
+app.post("/createleague", authenticate, createLeagueLogoAndBanner, (req, res) => {
+  createLeague(req.user._id.toString(), req.body, req.files).then((data) => {
     res.json(data);
   });
 });
@@ -399,7 +399,7 @@ app.post("/getleaguedetailsupdate/:leagueid", authenticate, (req, res) => {
   );
 });
 
-app.post("/updateleague/:leagueid", authenticate, (req, res) => {
+app.post("/updateleague/:leagueid", authenticate, updateLeagueLogoAndBanner, (req, res) => {
   updateLeague(req.user._id.toString(), req.params.leagueid, req.body).then(
     (data) => {
       res.json(data);

@@ -4,64 +4,19 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
-
 import connectDB from "./config/db.js";
 import cron from "node-cron"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
-import {
-  authenticate,
-  getTokenFromCookies,
-  adminAuthenticate,
-} from "./middlewares/authMiddleware.js";
+import { authenticate, getTokenFromCookies, adminAuthenticate } from "./middlewares/authMiddleware.js";
+import { updateProfilePic, createTeamLogoAndBanner, updateTeamLogoAndBanner, createLeagueLogoAndBanner, updateLeagueLogoAndBanner } from "./middlewares/fileUploadMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
-import {
-  getPlayers,
-  getPlayerDetailsAndButtons,
-  getMyProfile,
-  getAccountDetailsUpdate,
-  updateAccount,
-  getUserFullname,
-  changePassword,
-} from "./utils/usersModule.js";
-import {
-  getTeams,
-  getTeamDetailsAndButtons,
-  createTeam,
-  isTeamAdmin,
-  getTeamDetailsForUpdate,
-  updateTeam,
-  deleteTeam,
-  removePlayerFromTeam,
-  updateLookingForPlayers,
-} from "./utils/teamsModule.js";
-import {
-  getLeagues,
-  createLeague,
-  isLeagueAdmin,
-  getLeagueDetailsForUpdate,
-  updateLeague,
-  deleteLeague,
-  canUserCreateNewLeague,
-  getLeagueDetailsAndButtons,
-  updateLookingForTeams,
-} from "./utils/leaguesModule.js";
-import {
-  getMatchDetails,
-  getMatchDetailsUpdate,
-  updateMatch,
-} from "./utils/matchModule.js";
-import {
-  joinLeague,
-  unjoinLeague,
-  startLeague,
-  cancelRequest,
-  inviteToTeam,
-  joinTeam,
-  unjoinTeam,
-  inviteToLeague,
-} from "./utils/requestsModule.js";
+import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, changePassword } from "./utils/usersModule.js";
+import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam, removePlayerFromTeam, updateLookingForPlayers } from "./utils/teamsModule.js";
+import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, updateLeague, deleteLeague, canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams } from "./utils/leaguesModule.js";
+import { getMatchDetails, getMatchDetailsUpdate, updateMatch } from "./utils/matchModule.js";
+import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joinTeam, unjoinTeam, inviteToLeague } from "./utils/requestsModule.js";
 import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, 
   changePassword, unlockAccounts, deletePendingAccounts } from "./utils/usersModule.js";
 import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam,
@@ -73,29 +28,9 @@ import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joi
 import { getSportsList } from "./utils/sysParmModule.js";
 import { getUnreadNotifsCount, getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs, housekeepNotifications } from "./utils/notificationsModule.js";
 import { getSearchResults } from "./utils/searchModule.js";
-import {
-  adminGetUsers,
-  adminGetUserDetails,
-  adminCreateUser,
-  adminUpdateUser,
-  adminDeleteUser,
-  adminGetMatches,
-  adminGetTeams,
-  adminGetTeamDetails,
-  adminCreateTeam,
-  adminUpdateTeam,
-  adminDeleteTeam,
-  adminGetLeagues,
-  adminGetLeagueDetails,
-  adminCreateLeague,
-  adminUpdateLeague,
-  adminDeleteLeague,
-  adminGetParms,
-  adminGetParmDetails,
-  adminCreateParm,
-  adminUpdateParm,
-  adminDeleteParm,
-} from "./utils/adminModule.js";
+import { adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches, adminGetTeams, adminGetTeamDetails, 
+  adminCreateTeam, adminUpdateTeam, adminDeleteTeam, adminGetLeagues, adminGetLeagueDetails, adminCreateLeague, adminUpdateLeague,
+  adminDeleteLeague, adminGetParms, adminGetParmDetails, adminCreateParm, adminUpdateParm, adminDeleteParm } from "./utils/adminModule.js";
 
 dotenv.config();
 connectDB();
@@ -119,7 +54,6 @@ app.use(
       "XSRF-TOKEN",
     ],
     origin: "https://playpal.netlify.app",
-    // preflightContinue: true,
     exposedHeaders: ["*", "Authorization"],
     optionsSuccessStatus: 200,
   })
@@ -414,7 +348,7 @@ app.post("/getaccountdetailsupdate", authenticate, (req, res) => {
   });
 });
 
-app.post("/updateaccount", authenticate, (req, res) => {
+app.post("/updateaccount", authenticate, updateProfilePic, (req, res) => {
   updateAccount(req.user._id.toString(), req.body).then((data) => {
     res.json(data);
   });
@@ -434,8 +368,8 @@ app.post("/admin", authenticate, (req, res) => {
   }
 });
 
-app.post("/createteam", authenticate, (req, res) => {
-  createTeam(req.user._id.toString(), req.body).then((data) => {
+app.post("/createteam", authenticate, createTeamLogoAndBanner, (req, res) => {
+  createTeam(req.user._id.toString(), req.body, req.files).then((data) => {
     res.json(data);
   });
 });
@@ -448,7 +382,7 @@ app.post("/getteamdetailsupdate/:teamid", authenticate, (req, res) => {
   );
 });
 
-app.post("/updateteam/:teamid", authenticate, (req, res) => {
+app.post("/updateteam/:teamid", authenticate, updateTeamLogoAndBanner, (req, res) => {
   updateTeam(req.user._id.toString(), req.params.teamid, req.body).then(
     (data) => {
       res.json(data);
@@ -472,8 +406,8 @@ app.post("/removeplayer/:teamid/:playerid", authenticate, (req, res) => {
   });
 });
 
-app.post("/createleague", authenticate, (req, res) => {
-  createLeague(req.user._id.toString(), req.body).then((data) => {
+app.post("/createleague", authenticate, createLeagueLogoAndBanner, (req, res) => {
+  createLeague(req.user._id.toString(), req.body, req.files).then((data) => {
     res.json(data);
   });
 });
@@ -486,7 +420,7 @@ app.post("/getleaguedetailsupdate/:leagueid", authenticate, (req, res) => {
   );
 });
 
-app.post("/updateleague/:leagueid", authenticate, (req, res) => {
+app.post("/updateleague/:leagueid", authenticate, updateLeagueLogoAndBanner, (req, res) => {
   updateLeague(req.user._id.toString(), req.params.leagueid, req.body).then(
     (data) => {
       res.json(data);
