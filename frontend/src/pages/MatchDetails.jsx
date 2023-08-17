@@ -139,7 +139,7 @@ const MatchDetails = () => {
 
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#D1E8E2', width: '60%', fontSize: '40px', flexDirection: 'column'}}>
               <div className="team-names" style={{marginRight: '3%'}}>
-                <span>{matchDetails.team1.teamName} &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                &nbsp;&nbsp;<span>{matchDetails.team1.teamName} &nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span style={{ color: '#3b3c4c' }}>{matchDetails.team1.finalScore}&nbsp;&nbsp;<span style={{ color: '#9faec1' }}>-</span>&nbsp;&nbsp;{matchDetails.team2.finalScore}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span>{matchDetails.team2.teamName}</span> <br/>
               </div>
@@ -205,7 +205,7 @@ const MatchDetails = () => {
             <div style={{ backgroundColor: '#d5dcde', width: '60%', height: '60vh' }}>
               <div style={{ backgroundImage: `url(${matchDetails.sportsName === 'Soccer' ? soccerField : basketballField})`, backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', width: '100%', height: '100%' }}>
               <div style={{ display: 'flex', justifyContent: 'center'}}>
-            <div style={{ paddingTop: '24%', paddingLeft: '5%'}}>
+            <div style={{ paddingTop: '5%', paddingLeft: '5%'}}>
             {matchDetails.team1.players.map((player, index) => (
             <div
               key={index}
@@ -215,13 +215,13 @@ const MatchDetails = () => {
                 alignItems: 'center'
               }}
             >
+            <div className="animation-stats">
               <Image
                 src={`${backend}/profilepictures/${player.playerId}.jpeg`}
                 onClick={() => handleClickPlayerLeft(player)}
                 className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
-                roundedCircle 
                 fluid 
-                style={{ width: "5em", height: "5em" }}
+                style={{ width: "10em", height: "10em", borderRadius: "8px" }} 
               />
               {selectedPlayerData && selectedPlayerData.playerName === player.playerName && (
                 <div
@@ -229,7 +229,8 @@ const MatchDetails = () => {
                     backgroundColor: 'rgba(255, 255, 255, 0.8)',
                     padding: '1%',
                     borderRadius: '5px',
-                    width: '100px', 
+                    marginTop: '10px',
+                    width: '160px', 
                     textAlign: 'center',
                   }}
                 >
@@ -240,11 +241,12 @@ const MatchDetails = () => {
                           ))}
                 </div>
               )}
+              </div>
             </div>
           ))}
 
             </div>
-            <div style={{ paddingRight: '8%', paddingTop: '24%'}}>
+            <div style={{ paddingRight: '8%', paddingTop: '5%'}}>
             {matchDetails.team2.players.map((player, index) => (
             <div
               key={index}
@@ -254,34 +256,36 @@ const MatchDetails = () => {
                 alignItems: 'center'
               }}
             >
+              <div className="animation-stats">
               <Image
                 src={`${backend}/profilepictures/${player.playerId}.jpeg`}
                 onClick={() => handleClickPlayerLeft(player)}
                 className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
-                roundedCircle 
+                style={{ width: "10em", height: "10em", borderRadius: "8px" }} // Adjust width, height, and border-radius values
                 fluid 
-                style={{ width: "5em", height: "5em" }}
               />
-              {selectedPlayerData && selectedPlayerData.playerName === player.playerName && (
-                <div
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    padding: '1%',
-                    borderRadius: '5px',
-                    width: '100px',
-                    textAlign: 'center',
-                  }}
-                >
-                          {player.statistics.map((stat, index) => (
-                            <p key={index}>
-                              {stat.statShortDesc}: {stat.value}
-                            </p>
-                          ))}
-                </div>
-              )}
+
+                {selectedPlayerData && selectedPlayerData.playerName === player.playerName && (
+                  <div
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      marginTop: '10px',
+                      borderRadius: '5px',
+                      width: '160px',
+                      textAlign: 'center',
+                    }}
+                  >
+                            {player.statistics.map((stat, index) => (
+                              <p key={index}>
+                                {stat.statShortDesc}: {stat.value}
+                              </p>
+                            ))}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
-
+          
             </div>
           </div>
 

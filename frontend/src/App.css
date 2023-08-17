@@ -754,6 +754,22 @@ body {
 
 
 /* Match details css */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animation-stats {
+  animation: fade-in 1.5s ease-out forwards;
+  /* Add your existing styles here */
+}
+
 @media (max-width: 1300px) {
   .team-names {
     font-size: 35px; /* Adjust the font size as per your preference */

@@ -18,6 +18,7 @@ const AuthContextProvider = ({ children }) => {
   const [otpErrorMessage, setOTPErrorMessage] = useState("");
   const [responseToken, setResponseToken] = useState("");
   const [isUserRemembered, setIsUserRemembered] = useState(false);
+  const [istrue, setItrue] = useState(false);
 
   // this useeffect runs each time the value of isSignedIn changes
   useEffect(() => {
@@ -25,21 +26,31 @@ const AuthContextProvider = ({ children }) => {
   }, [isSignedIn]);
 
   useEffect(() => {
-    if (isUserRemembered) {
-      sessionStorage.setItem("rememberuser", true);
-    } else {
-      sessionStorage.setItem("rememberuser", false);
-    }
-  }, [isSignedIn]);
+    setItrue(false);
+  }, []);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", () => {
+    const data = localStorage.getItem("rememberuser");
+    if (isSignedIn && data === true) {
+      sessionStorage.setItem("rememberuser", true);
+      localStorage.setItem("rememberuser", true);
+    } else {
+      localStorage.removeItem("rememberuser");
+      sessionStorage.setItem("rememberuser", false);
+    }
+
+    // }
+  }, [sessionStorage]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", async () => {
       if (sessionStorage.getItem("rememberuser") != null) {
         console.log("page was reloaded");
       } else {
-        const rememberUser = sessionStorage.getItem("rememberuser");
-        if (!rememberUser) {
-          signOut();
+        const rememberUser = await localStorage.getItem("rememberuser");
+
+        if (rememberUser === null) {
+          await signOut();
         }
       }
     });
@@ -94,6 +105,7 @@ const AuthContextProvider = ({ children }) => {
     const { username: email, password } = input;
     try {
       setIsLoading(true);
+      setItrue(true);
       const resp = await loginService.login(email, password);
       if (resp.data) {
         setIsLoading(false);
@@ -104,6 +116,9 @@ const AuthContextProvider = ({ children }) => {
           await localStorage.setItem("token", JSON.stringify(token));
           const { user } = resp.data;
           setSignedIn(true);
+          if (isUserRemembered) {
+            localStorage.setItem("rememberuser", true);
+          }
           if (user.userType === "USER") {
             navigate("/myprofile");
             setAdmin(false);
