@@ -17,11 +17,33 @@ const AuthContextProvider = ({ children }) => {
   const [otpError, setOTPError] = useState(false);
   const [otpErrorMessage, setOTPErrorMessage] = useState("");
   const [responseToken, setResponseToken] = useState("");
+  const [isUserRemembered, setIsUserRemembered] = useState(false);
 
   // this useeffect runs each time the value of isSignedIn changes
   useEffect(() => {
     getUserFromLocalStorage();
   }, [isSignedIn]);
+
+  useEffect(() => {
+    if (isUserRemembered) {
+      sessionStorage.setItem("rememberuser", true);
+    } else {
+      sessionStorage.setItem("rememberuser", false);
+    }
+  }, [isSignedIn]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", () => {
+      if (sessionStorage.getItem("rememberuser") != null) {
+        console.log("page was reloaded");
+      } else {
+        const rememberUser = sessionStorage.getItem("rememberuser");
+        if (!rememberUser) {
+          signOut();
+        }
+      }
+    });
+  });
 
   const tokenCheck =
     responseToken === "" ||
@@ -54,6 +76,7 @@ const AuthContextProvider = ({ children }) => {
         responseToken,
         resetPassword,
         resetPasswordError,
+        setIsUserRemembered,
       }}
     >
       {children}
@@ -178,6 +201,7 @@ const AuthContextProvider = ({ children }) => {
     setAdmin(false);
     delete axios.defaults.headers.common["Authorization"];
     await localStorage.clear();
+    await sessionStorage.clear();
   }
 
   async function forgotPassword(email, navigate) {
@@ -234,7 +258,6 @@ const AuthContextProvider = ({ children }) => {
       console.log(error);
     }
   }
-
 };
 
 AuthContext.ProviderWrapper = AuthContextProvider;
