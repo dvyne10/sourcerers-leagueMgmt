@@ -98,6 +98,20 @@
   
 }
 
+
+.header-text-info{
+  font-family:"Saira Extra Condensed";
+  font-weight: bold;
+  font-size: 4rem;
+}
+
+.information-text{
+  font-family:"Avenir Next LT W02 Regular";
+  font-weight: bold;
+  color: #f1f1f1;
+    text-shadow: 1px 1px black;
+}
+
 .team-jersey-list-number{
   font-family:"Saira Extra Condensed";
   color:white;

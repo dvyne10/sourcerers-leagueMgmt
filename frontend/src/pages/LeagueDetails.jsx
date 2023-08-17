@@ -85,6 +85,50 @@ const handleJoin = () => {
   }
 }
 
+const handleTurnOnLookingForTeams = () => {
+  if(confirm(`Please confirm if you want to turn on looking for teams for this league.`)){
+    fetch(`${backend}/lookingforteamson/${routeParams.leagueid}`, {
+      method: "PUT",
+      credentials: 'include',
+      headers: {
+          "Content-Type": "Application/JSON",
+          "Authorization": token
+      }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      if (data.requestStatus === 'RJCT') {
+          setErrorMessage([data.errMsg])
+      } else {
+        setLeagueInfo({...leagueInfo, displayTurnOnLookingForTeams : false, displayTurnOffLookingForTeams: true})
+      }
+    })
+  }
+}
+
+const handleTurnOffLookingForTeams = () => {
+  if(confirm(`Please confirm if you want to turn off looking for teams.`)){
+    fetch(`${backend}/lookingforteamsoff/${routeParams.leagueid}`, {
+      method: "PUT",
+      credentials: 'include',
+      headers: {
+          "Content-Type": "Application/JSON",
+          "Authorization": token
+      }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      if (data.requestStatus === 'RJCT') {
+          setErrorMessage([data.errMsg])
+      } else {
+        setLeagueInfo({...leagueInfo, displayTurnOnLookingForTeams : true, displayTurnOffLookingForTeams: false})
+      }
+    })
+  }
+
+
+}
+
 const handleUnjoin = () => {
   if (leagueInfo.pendingInviteRequestId !== "") {
     if (confirm("Please confirm if you want to proceed with invite cancellation.")) {
@@ -168,20 +212,26 @@ const sendJoin = () => {
         {/* Here is the team header, with background and info */}
         
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white"
-  style={{"backgroundImage": `url(${backend}/leaguebanners/${leagueInfo.leagueId}.jpeg)`, backgroundPosition:"center", backgroundSize:"cover"}} >
-        <Container>
+  style={{"backgroundImage": `url(${backend}/leaguebanners/${leagueInfo.leagueId}.jpeg), url(${backend}/leaguebanners/default.jpg)`, backgroundPosition:"center", backgroundSize:"cover"}} >
+        <Container style={{"background-color":"rgba(0, 0, 0, 0.25)"}} className='rounded'>
       <Row className='text-center ms-5'>
-        <Col><h1>{leagueInfo.leagueName}</h1>
-        <p>{leagueInfo.location==="" ? "TBD" : leagueInfo.location}</p>
-        <p className='mt-3'>{leagueInfo.description}</p>
+        <Col><h1 className='header-text-info'>{leagueInfo.leagueName}</h1>
+        <p className='information-text'>{leagueInfo.location==="" ? "TBD" : leagueInfo.location}</p>
+        <p className='mt-3 information-text'>{leagueInfo.description}</p>
         
 
                     <>
-                      {isSignedIn && leagueInfo.displayJoinButton && 
+                      {isSignedIn && leagueInfo.displayJoinButton && leagueInfo.lookingForTeams &&
                     (<Button onClick={handleJoin}>Join</Button>)
                       }
                     {isSignedIn && leagueInfo.displayUnjoinButton && 
                       (<Button onClick={handleUnjoin}>Cancel Request</Button>)
+                    }
+                    {isSignedIn && leagueInfo.displayTurnOnLookingForTeams && 
+                      (<Button onClick={handleTurnOnLookingForTeams}>Turn on looking for Teams</Button>)
+                    }
+                    {isSignedIn && leagueInfo.displayTurnOffLookingForTeams && 
+                      (<Button onClick={handleTurnOffLookingForTeams}>Turn off looking for Teams</Button>)
                     }
                     </>
                   
@@ -196,15 +246,15 @@ const sendJoin = () => {
       <Row className='text-start ms-3'>
         
         <Col>
-        <Row><p>Division : {leagueInfo.division}</p></Row>
+        <Row><p className='information-text'>Division : {leagueInfo.division}</p></Row>
         
-        <Row><p>Age Group : {leagueInfo.ageGroup}</p></Row>
+        <Row><p className='information-text'>Age Group : {leagueInfo.ageGroup}</p></Row>
         </Col>
         <Col className='text-end me-3'>
-        <Row><p>Start Date : {leagueInfo.startDate==="" ? "TBD" : new Date(leagueInfo.startDate).toLocaleDateString('en-US')}</p></Row>
-        <Row><p>End Date : {leagueInfo.endDate==="" ? "" : new Date(leagueInfo.endDate).toLocaleDateString('en-US')}</p></Row>
-        <Row><p>Rounds : {leagueInfo.numberOfRounds}</p></Row>
-        <Row><p>Teams : {leagueInfo.numberOfTeams }</p></Row>
+        <Row><p className='information-text'>Start Date : {leagueInfo.startDate==="" ? "TBD" : new Date(leagueInfo.startDate).toLocaleDateString('en-US')}</p></Row>
+        <Row><p className='information-text'>End Date : {leagueInfo.endDate==="" ? "" : new Date(leagueInfo.endDate).toLocaleDateString('en-US')}</p></Row>
+        <Row><p className='information-text'>Rounds : {leagueInfo.numberOfRounds}</p></Row>
+        <Row><p className='information-text'>Teams : {leagueInfo.numberOfTeams }</p></Row>
       </Col>
       </Row>
 

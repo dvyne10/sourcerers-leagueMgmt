@@ -112,7 +112,7 @@ export default function Teams() {
                     <p className="user-select-none">{
                       team.lookingForPlayers ? <a className="text-white text-decoration-none" href={"mailto:"+team.teamContactEmail}>Open</a> : ""
                     }
-                      {team.sportsName == "Basketball" ? (
+                      {team.sportsName === "Basketball" ? (
                         <img
                           src="https://i.imgur.com/w14EKbv.png"
                           style={{ width: "2em", }}
