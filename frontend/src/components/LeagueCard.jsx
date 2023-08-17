@@ -108,7 +108,7 @@ const LeagueCard = ({
           <div className="card-body d-flex flex-row overflow-auto">
           <div className="league-details px-5">
             <div className="fs-6 fw-light">
-              <p className="p-0 m-0">League Start Date</p>
+              <p className="p-0 m-0" style={{marginTop: '10%',width: '150px'}}>League Start Date</p>
               <p>{formattedStartDate}</p>
             </div>
             <div className="fs-6 fw-light">
@@ -120,7 +120,7 @@ const LeagueCard = ({
               <p>{leagueAdmin}</p>
             </div>
           </div>
-          <div className="d-flex">
+          <div className="d-flex" >
           {pastMatches.length === 0 ? (
             <div style={{display: 'flex', justifyContent: 'center', alignItems:'center'}}>
                 {teams.map((team) => (
