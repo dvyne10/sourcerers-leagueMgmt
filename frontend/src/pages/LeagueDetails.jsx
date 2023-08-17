@@ -215,6 +215,7 @@ const sendJoin = () => {
   style={{"backgroundImage": `url(${backend}/leaguebanners/${leagueInfo.leagueId}.jpeg), url(${backend}/leaguebanners/default.jpg)`, backgroundPosition:"center", backgroundSize:"cover"}} >
         <Container style={{"background-color":"rgba(0, 0, 0, 0.25)"}} className='rounded'>
       <Row className='text-center ms-5'>
+      <Image src={`${backend}/leaguelogos/${leagueInfo.leagueId}.jpeg`}  className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
         <Col><h1 className='header-text-info'>{leagueInfo.leagueName}</h1>
         <p className='information-text'>{leagueInfo.location==="" ? "TBD" : leagueInfo.location}</p>
         <p className='mt-3 information-text'>{leagueInfo.description}</p>
@@ -243,7 +244,7 @@ const sendJoin = () => {
       
       
       </Row>
-      <Row className='text-start ms-3'>
+      <Row className='text-start ms-5 mt-2'>
         
         <Col>
         <Row><p className='information-text'>Division : {leagueInfo.division}</p></Row>
