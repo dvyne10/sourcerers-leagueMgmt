@@ -1,6 +1,5 @@
 import express from "express";
 import multerS3 from "multer-s3";
-import path from "path";
 import multer from "multer";
 
 import {

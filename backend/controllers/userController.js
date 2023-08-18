@@ -7,7 +7,6 @@
  */
 
 import User from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
 import { getSysParmByParmId } from "../utils/sysParmModule.js";
 import { generateOTPEmail } from "../templates/otpEmail.js";
 import {
@@ -16,8 +15,6 @@ import {
   generateOTP,
   sendEmail,
 } from "../utils/auth.utils.js";
-import handlebars from "handlebars";
-import fs from "fs";
 import { s3 } from "../config/s3-bucket.js";
 
 const registerUser = async (req, res) => {

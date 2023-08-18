@@ -1,5 +1,4 @@
 import UserModel from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
 import {
   genHash,
   generateToken,
