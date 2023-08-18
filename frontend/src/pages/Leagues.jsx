@@ -7,6 +7,7 @@ const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000'
 
 export default function Leagues() {
   const [leagues, setLeagues] = useState(null); 
+  const [isLoadingLeagues, setIsLoadingLeagues] = useState(true);
   const navigate = useNavigate();
   const { isSignedIn  } = useAuth()
   const navigateCreateLeague = () => {
@@ -21,6 +22,8 @@ export default function Leagues() {
       console.log(data.details);
     } catch (error) {
       console.error('Error fetching top leagues data:', error);
+    } finally {
+      setIsLoadingLeagues(false);
     }
   };
 
@@ -29,6 +32,13 @@ export default function Leagues() {
   }, []);
   return (
     <>
+    {isLoadingLeagues ? (
+        <div className="loading-overlay">
+        <div>Loading leagues...</div>
+        <div className="loading-spinner"></div>
+      </div>
+      ) : (
+        <>
       <div
         style={{
           display: "flex",
@@ -134,5 +144,7 @@ export default function Leagues() {
       </div>
       </div>
     </>
+              )}
+              </>
   );
 }
