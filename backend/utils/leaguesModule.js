@@ -94,6 +94,7 @@ export const getLeagues = async function() {
 }
 
 export const getLeagueDetailsAndButtons = async function(userId, leagueId) {
+    console.log(userId + leagueId)
     let league = getLeagueDetails(leagueId)
     let leagueButtons = getLeagueButtons(userId, leagueId)
     let [leagueDetails, leagueButtonsInd] = await Promise.all([league, leagueButtons])
