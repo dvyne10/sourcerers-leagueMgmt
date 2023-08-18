@@ -268,7 +268,7 @@ const userValidation = function(details) {
         response.errMsg = "Email is required"
         return response
     }
-    if (!details.sportsOfInterest || details.sportsOfInterest.length === 0 && details.userType === "ADMIN") {
+    if ((!details.sportsOfInterest || details.sportsOfInterest.length === 0) && details.userType !== "ADMIN") {
         response.requestStatus = "RJCT"
         response.errMsg = "Sports of interest is required for regular users"
         return response
@@ -283,17 +283,17 @@ const userValidation = function(details) {
         response.errMsg = "Last name is required"
         return response
     }
-    if (!details.country || details.country === "" && details.userType === "ADMIN") {
+    if ((!details.country || details.country === "") && details.userType !== "ADMIN") {
         response.requestStatus = "RJCT"
         response.errMsg = "Country is required for regular users"
         return response
     }
-    if (!details.province || details.province === "" && details.userType === "ADMIN") {
+    if ((!details.province || details.province === "") && details.userType !== "ADMIN") {
         response.requestStatus = "RJCT"
         response.errMsg = "Province is required for regular users"
         return response
     }
-    if (!details.city || details.city === "" && details.userType === "ADMIN") {
+    if ((!details.city || details.city === "") && details.userType !== "ADMIN") {
         response.requestStatus = "RJCT"
         response.errMsg = "City is required for regular users"
         return response
