@@ -9,6 +9,7 @@ const backend =
   import.meta.env.MODE === "development"
     ? "http://localhost:8000"
     : "https://panicky-robe-mite.cyclic.app";
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 const AccountMaintenance = () => {
   //hooks
@@ -130,11 +131,11 @@ const AccountMaintenance = () => {
             });
             setSportsSelected(sportsInDb);
             let imageFound = false
-            fetch(`${backend}/profilepictures/${data.details._id}.jpeg`).then(
+            fetch(`${backendPhotos}/profilepictures/${data.details._id}.jpeg`).then(
               (res) => {
                 if (res.ok) {
                   setImageURL(
-                    `${backend}/profilepictures/${data.details._id}.jpeg`
+                    `${backendPhotos}/profilepictures/${data.details._id}.jpeg`
                   );
                   imageFound = true
                   setSelectedImage("x");

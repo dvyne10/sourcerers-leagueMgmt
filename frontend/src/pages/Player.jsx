@@ -17,7 +17,7 @@ import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
  
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
-
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
  
 
 const Player = () => {
@@ -368,7 +368,7 @@ const sendInvite = () => {
 
                 <img
 
-                  src={`${backend}/profilepictures/${playerInfo.playerId}.jpeg`}
+                  src={`${backendPhotos}/profilepictures/${playerInfo.playerId}.jpeg`}
 
                   className="rounded-circle"
 
@@ -570,7 +570,7 @@ const sendInvite = () => {
 
                 {playerInfo.activeLeagues.length===0 ? <h6 className="center-header">No active leagues.</h6> :playerInfo.activeLeagues.map(league=>(
 
-                  <FlippableCard imageUrl={`${backend}/leaguelogos/${league.leagueId}.jpeg`} cardText={league.leagueName} teams={league.teams}  leagueId={league.leagueId}key={league.leagueId}/>
+                  <FlippableCard imageUrl={`${backendPhotos}/leaguelogos/${league.leagueId}.jpeg`} cardText={league.leagueName} teams={league.teams}  leagueId={league.leagueId}key={league.leagueId}/>
 
                 ))}
 

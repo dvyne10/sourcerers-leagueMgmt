@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import {format} from 'date-fns'; 
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 const LiveCard = ({ match, onClickTeamIcon }) => {
   const formattedMatchDate = match.dateOfMatch
@@ -26,9 +27,9 @@ const LiveCard = ({ match, onClickTeamIcon }) => {
         >
           <img
             src={
-              doesImageExist(`${backend}/teamlogos/${match.team1.teamId}.jpeg`)
-                ? `${backend}/teamlogos/${match.team1.teamId}.jpeg`
-                : `${backend}/teamlogos/default-image.jpeg`
+              doesImageExist(`${backendPhotos}/teamlogos/${match.team1.teamId}.jpeg`)
+                ? `${backendPhotos}/teamlogos/${match.team1.teamId}.jpeg`
+                : `${backendPhotos}/teamlogos/default-image.jpeg`
             }
             style={{ objectFit: "cover", width: "100%", height: "100%" }}
             alt=""
@@ -48,9 +49,9 @@ const LiveCard = ({ match, onClickTeamIcon }) => {
         >
           <img
             src={
-              doesImageExist(`${backend}/teamlogos/${match.team2.teamId}.jpeg`)
-                ? `${backend}/teamlogos/${match.team2.teamId}.jpeg`
-                : `${backend}/teamlogos/default-image.jpeg`
+              doesImageExist(`${backendPhotos}/teamlogos/${match.team2.teamId}.jpeg`)
+                ? `${backendPhotos}/teamlogos/${match.team2.teamId}.jpeg`
+                : `${backendPhotos}/teamlogos/default-image.jpeg`
             }
             style={{
               objectFit: "cover",

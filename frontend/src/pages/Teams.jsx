@@ -15,6 +15,7 @@ export default function Teams() {
     navigate("/createTeam");
   };
   const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
+  const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
   
   useEffect(()=>{
   fetch(`${backend}/teams`)
@@ -94,7 +95,7 @@ export default function Teams() {
               className="mt-2 text-center shadow-1-strong rounded text-white border border-danger"
               style={{
                 
-                backgroundImage: `url(${backend}/teambanners/${team.teamId}.jpeg`,
+                backgroundImage: `url(${backendPhotos}/teambanners/${team.teamId}.jpeg`,
                 backgroundColor: "rgba(0,0,0,0.25)",
                 backgroundPosition: "center",
               }}
@@ -147,7 +148,7 @@ export default function Teams() {
                     <a href={"/team/" + `${team.teamId}`}>
                       {" "}
                       <Image
-                        src={`${backend}/teamlogos/${team.teamId}.jpeg`}
+                        src={`${backendPhotos}/teamlogos/${team.teamId}.jpeg`}
                         className="border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style"
                         roundedCircle
                         fluid

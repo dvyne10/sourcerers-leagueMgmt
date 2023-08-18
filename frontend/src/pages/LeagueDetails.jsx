@@ -36,7 +36,7 @@ const LeagueDetails = () => {
 
 
   const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
-
+  const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 
 
@@ -278,13 +278,13 @@ const sendStartLeague = () =>{
         {/* Here is the team header, with background and info */}
         
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white"
-  style={{"backgroundImage": `url(${backend}/leaguebanners/${leagueInfo.leagueId}.jpeg), url(${backend}/leaguebanners/default.jpg)`, backgroundPosition:"center", backgroundSize:"cover"}} >
+  style={{"backgroundImage": `url(${backendPhotos}/leaguebanners/${leagueInfo.leagueId}.jpeg), url(${backendPhotos}/leaguebanners/default.jpg)`, backgroundPosition:"center", backgroundSize:"cover"}} >
         <Container style={{"background-color":"rgba(0, 0, 0, 0.25)"}} className='rounded'>
       <Row className='text-center ms-5'>
-      <Image src={`${backend}/leaguelogos/${leagueInfo.leagueId}.jpeg`} 
+      <Image src={`${backendPhotos}/leaguelogos/${leagueInfo.leagueId}.jpeg`} 
       onError={({ currentTarget }) => {
     currentTarget.onerror = null; // prevents looping
-    currentTarget.src=`${backend}/teamlogos/default-image.jpeg`;
+    currentTarget.src=`${backendPhotos}/teamlogos/default-image.jpeg`;
   }}
       className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
         <Col><h1 className='header-text-info'>{leagueInfo.leagueName}</h1>
@@ -375,7 +375,7 @@ const sendStartLeague = () =>{
           leagueInfo.teams.map((team)=>(
             <Col className='league-details-team-listing text-break ms-5 mt-5' md={1} key={team.teamId} >
             
-            <a href={`/team/${team.teamId}`} className='general-link-no-dec'><Image src={`${backend}/teamlogos/${team.teamId}.jpeg`}  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
+            <a href={`/team/${team.teamId}`} className='general-link-no-dec'><Image src={`${backendPhotos}/teamlogos/${team.teamId}.jpeg`}  className='object-fit-cover ml-auto' roundedCircle fluid style={{ width: "5em", height: "5em", minHeight:"3em", minWidth:"3em"}}/>
             {team.teamName}</a>
             
             </Col>
@@ -422,14 +422,14 @@ const sendStartLeague = () =>{
               <Col md={6}>
               <strong>{match.team1.finalScore===null ? "" : match.team1.finalScore+ " "}</strong>
               <Image
-                          src={`${backend}/teamlogos/${match.team1.teamId}.jpeg`}
+                          src={`${backendPhotos}/teamlogos/${match.team1.teamId}.jpeg`}
                           className="shadow object-fit-cover border"
                           rounded
                           style={{  width: "2em", height: "2em" }}
                         />
                         -
                         <Image
-                          src={`${backend}/teamlogos/${match.team2.teamId}.jpeg`}
+                          src={`${backendPhotos}/teamlogos/${match.team2.teamId}.jpeg`}
                           className="shadow object-fit-cover border"
                           rounded
                           style={{  width: "2em", height: "2em" }}
@@ -481,7 +481,7 @@ const sendStartLeague = () =>{
                   <Col md={2}>{index+1}</Col>
               <Col>
               <Image
-                          src={`${backend}/teamlogos/${team.teamId}.jpeg`}
+                          src={`${backendPhotos}/teamlogos/${team.teamId}.jpeg`}
                           className="shadow object-fit-cover border"
                           rounded
                           style={{  width: "2em", height: "2em" }}

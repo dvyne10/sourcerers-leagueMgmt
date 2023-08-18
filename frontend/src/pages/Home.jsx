@@ -8,12 +8,15 @@ import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import '../App.css';
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 const Home = () => {
   const [topLeagues, setTopLeagues] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [opacity, setOpacity] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingLeagues, setIsLoadingLeagues] = useState(true);
+  const [leagueCount, setLeagueCount] = useState(0); 
   const announcementsPerPage = 5;
 
   useEffect(() => {
@@ -22,17 +25,21 @@ const Home = () => {
   }, []);
 
   const fetchTopLeagues = async () => {
-    try {
-      const response = await fetch(`${backend}`);
-      const data = await response.json();
-      const allAnnouncements = [...data.details.adminAnnouncements, ...data.details.announcements];
+  try {
+    setIsLoadingLeagues(true);
+    const response = await fetch(`${backend}`);
+    const data = await response.json();
+    const allAnnouncements = [...data.details.adminAnnouncements, ...data.details.announcements];
 
-      setTopLeagues(data.details.topLeagues);
-      setAnnouncements(allAnnouncements);
-    } catch (error) {
-      console.error('Error fetching top leagues data:', error);
-    }
-  };
+    setTopLeagues(data.details.topLeagues);
+    setAnnouncements(allAnnouncements);
+  } catch (error) {
+    console.error('Error fetching top leagues data:', error);
+  } finally {
+    setIsLoadingLeagues(false);
+  }
+};
+
 
   const sliderSettings = {
     dots: false,
@@ -70,11 +77,23 @@ const Home = () => {
     if (window.innerWidth >= 1398) {
       setSliderSettingsToUse(sliderSettings);
     } else if (window.innerWidth >= 1126) {
-      setSliderSettingsToUse(sliderSettingsFourCards);
+      if (topLeagues.length > 3) {
+        setSliderSettingsToUse(sliderSettingsFourCards);
+      } else {
+        setSliderSettingsToUse(sliderSettings);
+      }
     } else if (window.innerWidth >= 837) {
-      setSliderSettingsToUse(sliderSettingsThreeCards);
+      if (topLeagues.length > 2) {
+        setSliderSettingsToUse(sliderSettingsThreeCards);
+      } else {
+        setSliderSettingsToUse(sliderSettings);
+      }
     } else if (window.innerWidth >= 560) {
-      setSliderSettingsToUse(sliderSettingsTwoCards);
+      if (topLeagues.length > 1) {
+        setSliderSettingsToUse(sliderSettingsTwoCards);
+      } else {
+        setSliderSettingsToUse(sliderSettings);
+      }
     } else {
       setSliderSettingsToUse(sliderSettingsOneCard);
     }
@@ -105,6 +124,14 @@ const Home = () => {
 
   return (
     <>
+      {isLoadingLeagues ? (
+        <div className="loading-overlay">
+        <div>Loading top leagues...</div>
+        <div className="loading-spinner"></div>
+      </div>
+      ) : (
+        <>
+
       <div className="App" style={{ textAlign: 'center' }}>
         <div style={{ backgroundImage: "url('/images/mainPage/basketball_galaxy.png')", backgroundSize: 'cover', width: '100%', height: '1000px' }}>
           <h1 className="animated-text" style={{ color: 'white', opacity: opacity, transition: 'opacity 5s', paddingLeft: '40%', paddingTop: '15%', fontSize: '5vw' }}>
@@ -116,15 +143,15 @@ const Home = () => {
           <h6 style={{ paddingTop: '5%' }}>Top 10 ongoing</h6>
           <h1>LEAGUES 🔥</h1>
 
-          <div className="slider-wrapper" style={{ paddingLeft: '5%', paddingRight: '5%' }}>
+          <div className="slider-wrapper" style={{  paddingLeft: '13%', paddingRight: '5%' }}>
             <Slider key={sliderSettingsToUse.slidesToShow} {...sliderSettingsToUse}>
               {topLeagues.map((league, index) => (
                 <div key={index}>
                   <FlippableCard
                     imageUrl={
-                      doesImageExist(`${backend}/leaguelogos/${league.leagueId}.jpeg`)
-                        ? `${backend}/leaguelogos/${league.leagueId}.jpeg`
-                        : `${backend}/leaguelogos/default-image-for-league.jpeg`
+                      doesImageExist(`${backendPhotos}/leaguelogos/${league.leagueId}.jpeg`)
+                        ? `${backendPhotos}/leaguelogos/${league.leagueId}.jpeg`
+                        : `${backendPhotos}/leaguelogos/default-image-for-league.jpeg`
                     }
                     cardText={league.leagueName}
                     teams={league.teams}
@@ -166,10 +193,10 @@ const Home = () => {
                   <Link to={`/league/${announcement.leagueId}`} className="notification-list notification-list--unread">
                     <div className="notification-list_content">
                       <div className="notification-list_img">
-                      {doesImageExist(`${backend}/leaguelogos/${announcement.leagueId}.jpeg`) ? (
-                        <img src={`${backend}/leaguelogos/${announcement.leagueId}.jpeg`} alt="user" />
+                      {doesImageExist(`${backendPhotos}/leaguelogos/${announcement.leagueId}.jpeg`) ? (
+                        <img src={`${backendPhotos}/leaguelogos/${announcement.leagueId}.jpeg`} alt="user" />
                       ) : (
-                        <img src={`${backend}/leaguelogos/default-image.jpeg`} alt="user" />
+                        <img src={`${backendPhotos}/leaguelogos/default-image.jpeg`} alt="user" />
                       )}
                       </div>
                       <div className="notification-list_detail">
@@ -186,10 +213,10 @@ const Home = () => {
                   <Link to={`/team/${announcement.teamId}`} className="notification-list notification-list--unread">
                     <div className="notification-list_content">
                       <div className="notification-list_img">
-                      {doesImageExist(`${backend}/teamlogos/${announcement.teamId}.jpeg`) ? (
-                        <img src={`${backend}/teamlogos/${announcement.teamId}.jpeg`} alt="user" />
+                      {doesImageExist(`${backendPhotos}/teamlogos/${announcement.teamId}.jpeg`) ? (
+                        <img src={`${backendPhotos}/teamlogos/${announcement.teamId}.jpeg`} alt="user" />
                       ) : (
-                        <img src={`${backend}/teamlogos/default-image.jpeg`} alt="user" />
+                        <img src={`${backendPhotos}/teamlogos/default-image.jpeg`} alt="user" />
                       )}
                       </div>
                       <div className="notification-list_detail">
@@ -226,6 +253,8 @@ const Home = () => {
         </div>
       </section>
     </>
+          )}
+          </>
   );
 };
 

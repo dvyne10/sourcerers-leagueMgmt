@@ -72,7 +72,7 @@ export const getAdminAnnouncements = async function() {
         }
     ])
 
-    if (announcements.length > 1) {
+    if (announcements.length > 0) {
         let newList = []
         for (let i=0; i < announcements.length; i++) {
             for (let j=0; j < announcements[i].show.length; j++) {

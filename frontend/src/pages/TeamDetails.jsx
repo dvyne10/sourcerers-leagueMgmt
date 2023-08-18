@@ -9,7 +9,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
-
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 
 function TeamDetails() {
@@ -304,14 +304,14 @@ function TeamDetails() {
         
         {/* Here is the team header, with background and info */}
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white" 
-   style={{"backgroundImage": `url(${backend}/teambanners/${teamInfo.details._id}.jpeg), url(${backend}/teambanners/default.jpg)`, "backgroundRepeat":"no-repeat", backgroundSize:"cover" }} >
+   style={{"backgroundImage": `url(${backendPhotos}/teambanners/${teamInfo.details._id}.jpeg), url(${backendPhotos}/teambanners/default.jpg)`, "backgroundRepeat":"no-repeat", backgroundSize:"cover" }} >
          <Container style={{"background-color":"rgba(0, 0, 0, 0.25)"}} className='rounded'>
       <Row>
         <Col lg="2" className='text-center'>
         <p><strong>{teamInfo.details.location}</strong></p> 
-        <Image src={`${backend}/teamlogos/${teamInfo.details._id}.jpeg`} onError={({ currentTarget }) => {
+        <Image src={`${backendPhotos}/teamlogos/${teamInfo.details._id}.jpeg`} onError={({ currentTarget }) => {
     currentTarget.onerror = null; // prevents looping
-    currentTarget.src=`${backend}/teamlogos/default-image.jpeg`;
+    currentTarget.src=`${backendPhotos}/teamlogos/default-image.jpeg`;
   }}
 className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
         {teamInfo.details.sportsName == "Basketball" ? (
@@ -393,7 +393,7 @@ className='border border-info shadow object-fit-cover ' roundedCircle fluid styl
       <Col sm={3} href="www.google.com" className='text-center rounded-start '    style={{backgroundColor:"#C7DDCC"}}>
       <a href={`/player/${player.playerId}`} className='team-jersey-list-number' >
       <Image
-                          src={`${backend}/profilepictures/${player.playerId}.jpeg`}
+                          src={`${backendPhotos}/profilepictures/${player.playerId}.jpeg`}
                           className="mt-2 mb-2 shadow object-fit-cover border"
                           rounded
                           fluid
