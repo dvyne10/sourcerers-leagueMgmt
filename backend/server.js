@@ -1,8 +1,6 @@
 import express from "express";
-import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
 
 import connectDB from "./config/db.js";
 import cron from "node-cron"
@@ -12,11 +10,6 @@ import { updateProfilePic, createTeamLogoAndBanner, updateTeamLogoAndBanner, cre
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
-// import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, changePassword } from "./utils/usersModule.js";
-// import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam, removePlayerFromTeam, updateLookingForPlayers } from "./utils/teamsModule.js";
-// import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, updateLeague, deleteLeague, canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams } from "./utils/leaguesModule.js";
-// import { getMatchDetails, getMatchDetailsUpdate, updateMatch } from "./utils/matchModule.js";
-// import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joinTeam, unjoinTeam, inviteToLeague } from "./utils/requestsModule.js";
 import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, 
   changePassword, unlockAccounts, deletePendingAccounts } from "./utils/usersModule.js";
 import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam,
@@ -65,7 +58,6 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", true);
-app.use(cookieParser());
 app.use(express.static("images"));
 
 app.use("/api/users", userRoutes);
