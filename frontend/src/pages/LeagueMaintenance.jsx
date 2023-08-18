@@ -95,7 +95,7 @@ const LeagueMaintenance = () => {
                     setOldValues({ leagueName: data.details.leagueName, sportsTypeId: data.details.sportsTypeId, description: data.details.description, location: data.details.location,
                         division: data.details.division, startDate: dateFormat(data.details.startDate, "ISO"), endDate: dateFormat(data.details.endDate, "ISO"), 
                         ageGroup: data.details.ageGroup, numberOfTeams: data.details.numberOfTeams, numberOfRounds: data.details.numberOfRounds, 
-                        logo: oldLogo, banner: oldBanner })
+                        logo: oldLogo === "x" ? "x" : null, banner: oldBanner === "x" ? "x" : null })
                 }
                 setIsLoading(false)
             }).catch((error) => {
@@ -108,6 +108,7 @@ const LeagueMaintenance = () => {
     const handleLogoChange = event => {
         if (event.target.files.length > 0) {
             setSelectedLogo(event.target.files[0])
+            setCurrentValues({ ...currValues, logo: event.target.files[0] })
             setLogoURL(URL.createObjectURL(event.target.files[0]))
         }
     };
@@ -115,6 +116,7 @@ const LeagueMaintenance = () => {
     const handleBannerChange = event => {
         if (event.target.files.length > 0) {
             setSelectedBanner(event.target.files[0])
+            setCurrentValues({ ...currValues, banner: event.target.files[0] })
             setBannerURL(URL.createObjectURL(event.target.files[0]))
         }
     };
@@ -167,21 +169,23 @@ const LeagueMaintenance = () => {
     }
     
     const navigateLeagueDetails = () => {
-        let data = {}
         let error = false
         error = validateInput()
         if (!error) {
+            let data = {...currValues}
+            const formData = new FormData();
+            Object.keys(data).forEach((key) => {
+            Array.isArray(data[key]) 
+                ? data[key].forEach(value => formData.append(key + '[]', value))
+                : formData.append(key, data[key]) ;
+            });
             if (action.type === "Creation") {
                 setIsLoading(true)
-                data = {...currValues}
-                //data.logo = selectedLogo
-                //data.banner = selectedBanner
                 fetch(`${backend}/createleague`, {
                     method: "POST",
                     credentials: 'include',
-                    body: JSON.stringify(data),
+                    body: formData,
                     headers: {
-                        "Content-Type": "Application/JSON",
                         "Authorization": token
                     }
                 })
@@ -217,15 +221,11 @@ const LeagueMaintenance = () => {
                     alert("NO CHANGES FOUND!")
                 } else {
                     setIsLoading(true)
-                    data = {...currValues}
-                    //data.logo = selectedLogo
-                    //data.banner = selectedBanner
                     fetch(`${backend}/updateleague/${routeParams.leagueid}`, {
                         method: "POST",
                         credentials: 'include',
-                        body: JSON.stringify(data),
+                        body: formData,
                         headers: {
-                            "Content-Type": "Application/JSON",
                             "Authorization": token
                         }
                     })

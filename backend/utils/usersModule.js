@@ -569,7 +569,8 @@ export const getUsersTeamsAndLeagues = async function(userId) {
     if (!mongoose.isValidObjectId(userId.trim())) {
         return { activeTeams, activeLeagues }
     }
-    let teams = await UserModel.find({"teamsCreated.players.playerId"  : new ObjectId(userId)}, { _id: 0, teamsCreated : 1})
+    let teams = await UserModel.find({$or : [{"teamsCreated.players.playerId"  : new ObjectId(userId)}, {_id  : new ObjectId(userId), teamsCreated : { $ne : null}}]},
+             { _id: 1, teamsCreated : 1})
     if (teams !== null && teams.length > 0) {
         for (let i=0; i < teams.length; i++) {
             for (let j=0; j < teams[i].teamsCreated.length; j++) {
@@ -586,6 +587,14 @@ export const getUsersTeamsAndLeagues = async function(userId) {
                             activeLeagues.push({...league, sportsName})
                         })
                     }
+                }
+                if (teams[i]._id.equals(new ObjectId(userId))) {
+                    let resp1 = getSportName(teams[i].teamsCreated[j].sportsTypeId.toString())
+                    let resp2 = getTeamActiveLeagues(teams[i].teamsCreated[j]._id.toString())
+                    let [sportsName, activeLeaguesOfTeam] = await Promise.all([resp1, resp2])
+                    activeLeaguesOfTeam.map(league => {
+                        activeLeagues.push({...league, sportsName})
+                    })
                 }
             }
         }

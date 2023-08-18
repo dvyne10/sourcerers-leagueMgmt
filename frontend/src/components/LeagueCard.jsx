@@ -7,12 +7,14 @@ import { format } from 'date-fns';
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
+
 const LeagueCard = ({
   name,
   teams,
   status,
   totalTeams,
   teamsJoined,
+  lookingForTeams,
   expanded,
   onClick,
   startDate,
@@ -21,7 +23,7 @@ const LeagueCard = ({
   pastMatches
 }) => {
   const active =
-    status === "ST" || status === "EN" ? "disabled" : "";
+    lookingForTeams === false ? "disabled" : "";
   const backgroundColor =
     status === "ST"
       ? "#00ad43"
@@ -51,6 +53,12 @@ const LeagueCard = ({
   const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(endDate), 'yyyy-MM-dd');
 
+  const doesImageExist = (url) => {
+    const img = new Image();
+    img.src = url;
+    return img.complete || (img.width + img.height) > 0;
+  };
+
   const navigate = useNavigate();
   return (
     <div>
@@ -70,7 +78,7 @@ const LeagueCard = ({
             className={`${active} btn btn-secondary`}
             style={{
               borderRadius: 50,
-              backgroundColor: status === "open" ? "#00ad43" : "",
+              backgroundColor: lookingForTeams === true ? "#00ad43" : "grey",
             }}
             onClick={onClick}
           >
@@ -100,7 +108,7 @@ const LeagueCard = ({
           <div className="card-body d-flex flex-row overflow-auto">
           <div className="league-details px-5">
             <div className="fs-6 fw-light">
-              <p className="p-0 m-0">League Start Date</p>
+              <p className="p-0 m-0" style={{marginTop: '10%',width: '150px'}}>League Start Date</p>
               <p>{formattedStartDate}</p>
             </div>
             <div className="fs-6 fw-light">
@@ -112,12 +120,18 @@ const LeagueCard = ({
               <p>{leagueAdmin}</p>
             </div>
           </div>
-          <div className="d-flex">
+          <div className="d-flex" >
           {pastMatches.length === 0 ? (
-            <div>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems:'center'}}>
                 {teams.map((team) => (
                   <div key={team.teamId}>
-                    <img src={`${backend}/teamlogos/${team.teamId}.jpeg`} alt={`Team ${team.teamName}`} />
+                    <img  src={
+                            doesImageExist(`${backend}/teamlogos/${team.teamId}.jpeg`)
+                              ? `${backend}/teamlogos/${team.teamId}.jpeg`
+                              : `${backend}/teamlogos/default-image.jpeg`
+                          } 
+                  alt={`Team ${team.teamName}`} 
+                  style={{width: '100px', height:'100px'}}/>
                   </div>
                 ))}
             </div>
@@ -155,6 +169,7 @@ LeagueCard.propTypes = {
   ),
   status: PropTypes.string,
   teamsJoined: PropTypes.number,
+  lookingForTeams: PropTypes.bool,
   totalTeams: PropTypes.number,
   expanded: PropTypes.bool,
   onClick: PropTypes.func,

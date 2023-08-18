@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500&display=swap');
+@import url('https://db.onlinewebfonts.com/c/be9a43357e0fe07642191e4b32995385?family=Avenir+Next+LT+W02+Regular');
 
 :root{
   --black: #2C3531;
@@ -96,6 +97,20 @@
     border-radius: 20%;
   }
   
+}
+
+
+.header-text-info{
+  font-family:"Saira Extra Condensed";
+  font-weight: bold;
+  font-size: 4rem;
+}
+
+.information-text{
+  font-family:"Avenir Next LT W02 Regular";
+  font-weight: bold;
+  color: #f1f1f1;
+    text-shadow: 1px 1px black;
 }
 
 .team-jersey-list-number{
@@ -739,6 +754,22 @@ body {
 
 
 /* Match details css */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animation-stats {
+  animation: fade-in 1.5s ease-out forwards;
+  /* Add your existing styles here */
+}
+
 @media (max-width: 1300px) {
   .team-names {
     font-size: 35px; /* Adjust the font size as per your preference */

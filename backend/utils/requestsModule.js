@@ -3,8 +3,8 @@ import LeagueModel from "../models/league.model.js";
 import UserModel from "../models/user.model.js";
 import { getPlayerButtons } from "./usersModule.js";
 import { getTeamDetails, getTeamsCreated, getUsersTeams, isTeamMember, getTeamMajorDetails, getTeamButtons, 
-    getTeamAdmin, removePlayerFromTeam } from "./teamsModule.js";
-import { getLeagueDetails, isLeagueAdmin, getLeagueButtons, getLeagueAdmins, getNSLeaguesUserIsAdmin } from "./leaguesModule.js";
+    getTeamAdmin, removePlayerFromTeam, getTeamName } from "./teamsModule.js";
+import { getLeagueDetails, isLeagueAdmin, getLeagueButtons, getLeagueAdmins, getNSLeaguesUserIsAdmin, getTeamActiveLeagues } from "./leaguesModule.js";
 import { getNotifParmByNotifId, getSysParmByParmId, getSysParmList } from "./sysParmModule.js"
 import { genNotifMsg } from "./notificationsModule.js"
 
@@ -296,7 +296,15 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                     return response
                 }
                 let teamSport = team.details.sportsTypeId
-                let nsLeaguesUserIsAdmin = await usersLeagues.filter(league => league.sportsTypeId.equals(teamSport))
+                let nsLeaguesUserIsAdminBySport = await usersLeagues.filter(league => league.sportsTypeId.equals(teamSport))
+                let teamActiveLeagues = await getTeamActiveLeagues(teamId)
+                let nsLeaguesUserIsAdmin = []
+                nsLeaguesUserIsAdminBySport.map(league => {
+                    let indexFound = teamActiveLeagues.findIndex(member => member.leagueId.equals(league.leagueId))
+                    if (indexFound === -1) {
+                        nsLeaguesUserIsAdmin.push({...league})
+                    }
+                })
                 if (aplgi === null || aplgi.length === 0 || aplgi[0].requestsSent.length === 0) {
                     response.requestStatus = "ACTC"
                     response.hasPending = false
@@ -440,7 +448,7 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
         }
 
         if (notifId === "APLGS") {      // approval to start league
-            if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(userId.trim())) {
+            if (!mongoose.isValidObjectId(userId.trim()) || !mongoose.isValidObjectId(leagueId.trim())) {
                 response.requestStatus = "RJCT"
                 response.errMsg = "Entry parameters are required"
                 return response
@@ -472,7 +480,8 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                             }
                         }
                     }
-                ]).limit(1)
+                ])
+                aplgs = aplgs.filter(record => record.requestsSent.length > 0)
                 if (aplgs === null || aplgs.length === 0 || aplgs[0].requestsSent.length === 0) {
                     response.hasPending = false
                     let league = await getLeagueDetails(leagueId)
@@ -662,6 +671,7 @@ export const startLeague = async function(userId, leagueId) {
     if (startLeagueExp.requestStatus === "ACTC") {
         exp = startLeagueExp.data.maxParms.startLeagueApprovalExp
     }
+
     await UserModel.updateOne({ _id : new ObjectId(userId) }, { 
         $push: { requestsSent : {
           requestType: notif.data._id,

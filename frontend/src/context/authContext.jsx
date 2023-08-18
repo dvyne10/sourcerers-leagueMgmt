@@ -17,11 +17,44 @@ const AuthContextProvider = ({ children }) => {
   const [otpError, setOTPError] = useState(false);
   const [otpErrorMessage, setOTPErrorMessage] = useState("");
   const [responseToken, setResponseToken] = useState("");
+  const [isUserRemembered, setIsUserRemembered] = useState(false);
+  const [istrue, setItrue] = useState(false);
 
   // this useeffect runs each time the value of isSignedIn changes
   useEffect(() => {
     getUserFromLocalStorage();
   }, [isSignedIn]);
+
+  useEffect(() => {
+    setItrue(false);
+  }, []);
+
+  useEffect(() => {
+    const data = localStorage.getItem("rememberuser");
+    if (isSignedIn && data === true) {
+      sessionStorage.setItem("rememberuser", true);
+      localStorage.setItem("rememberuser", true);
+    } else {
+      localStorage.removeItem("rememberuser");
+      sessionStorage.setItem("rememberuser", false);
+    }
+
+    // }
+  }, [sessionStorage]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", async () => {
+      if (sessionStorage.getItem("rememberuser") != null) {
+        console.log("page was reloaded");
+      } else {
+        const rememberUser = await localStorage.getItem("rememberuser");
+
+        if (rememberUser === null) {
+          await signOut();
+        }
+      }
+    });
+  });
 
   const tokenCheck =
     responseToken === "" ||
@@ -54,6 +87,7 @@ const AuthContextProvider = ({ children }) => {
         responseToken,
         resetPassword,
         resetPasswordError,
+        setIsUserRemembered,
       }}
     >
       {children}
@@ -67,25 +101,11 @@ const AuthContextProvider = ({ children }) => {
     }
   }
 
-  // async function signIn(userType) {
-  //   setSignedIn(true);
-  //   if (userType === "ADMIN") {
-  //     setAdmin(true);
-  //     const adminObject = {
-  //       name: "ADMIN",
-  //       admin: true,
-  //     };
-  //     await localStorage.setItem("login", JSON.stringify(adminObject)); // temporarily persisting the user when loged in
-  //   } else {
-  //     setAdmin(false);
-  //     await localStorage.setItem("login", JSON.stringify("user"));
-  //   }
-  // }
-
   async function login(input, navigate) {
     const { username: email, password } = input;
     try {
       setIsLoading(true);
+      setItrue(true);
       const resp = await loginService.login(email, password);
       if (resp.data) {
         setIsLoading(false);
@@ -96,14 +116,15 @@ const AuthContextProvider = ({ children }) => {
           await localStorage.setItem("token", JSON.stringify(token));
           const { user } = resp.data;
           setSignedIn(true);
+          if (isUserRemembered) {
+            localStorage.setItem("rememberuser", true);
+          }
           if (user.userType === "USER") {
             navigate("/myprofile");
             setAdmin(false);
             await localStorage.setItem("login", JSON.stringify(user));
           } else if (user.userType === "ADMIN") {
             setAdmin(true);
-
-            //temporal one
             const adminObject = {
               name: "ADMIN",
               admin: true,
@@ -158,7 +179,7 @@ const AuthContextProvider = ({ children }) => {
           setSignedIn(true);
           navigate("/");
         } else if (requestStatus === "ACTC" && nextPage === "/resetpassword") {
-          let store = {email, otp}
+          let store = { email, otp };
           localStorage.setItem("otp", JSON.stringify(store));
           navigate("/resetpassword");
         } else {
@@ -195,25 +216,28 @@ const AuthContextProvider = ({ children }) => {
     setAdmin(false);
     delete axios.defaults.headers.common["Authorization"];
     await localStorage.clear();
+    await sessionStorage.clear();
   }
 
   async function forgotPassword(email, navigate) {
     if (email === "") {
       setForgotPasswordError("Email address is required");
-      navigate("/forgotpassword")
+      navigate("/forgotpassword");
     } else {
       try {
-        let store = {email}
+        let store = { email };
         await localStorage.setItem("otp", JSON.stringify(store));
         const res = await loginService.forgotPassword(email);
         if (res.data) {
-          await navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
+          await navigate("/inputotp", {
+            state: { fromPage: "ForgotPassword" },
+          });
         }
         if (res) {
           const { requestStatus } = res.data;
           if (requestStatus === "RJCT") {
             setForgotPasswordError(res.data.errMsg);
-            navigate("/forgotpassword")
+            navigate("/forgotpassword");
           } else {
             navigate("/inputotp", { state: { fromPage: "ForgotPassword" } });
           }
@@ -228,8 +252,7 @@ const AuthContextProvider = ({ children }) => {
     try {
       const data = await localStorage.getItem("otp");
 
-      const {email, otp} = JSON.parse(data);
-      console.log(data);
+      const { email, otp } = JSON.parse(data);
       const res = await loginService.resetPassword(
         newPassword,
         confirmNewPassword,
@@ -240,7 +263,7 @@ const AuthContextProvider = ({ children }) => {
         const { requestStatus } = res.data;
         if (requestStatus === "RJCT") {
           setResetPasswordError(res.data.errMsg);
-          navigate("/resetpassword")
+          navigate("/resetpassword");
         } else {
           await localStorage.removeItem("otp");
           navigate("/signin");

@@ -6,6 +6,7 @@ import { getUserFullname } from "./usersModule.js";
 import { getManyTeamNames, getTeamsCreated, getTeamAdmin } from "./teamsModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
 import { getSportsList, getSportName } from "./sysParmModule.js";
+import fs from "fs";
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -93,6 +94,7 @@ export const getLeagues = async function() {
 }
 
 export const getLeagueDetailsAndButtons = async function(userId, leagueId) {
+    console.log(userId + leagueId)
     let league = getLeagueDetails(leagueId)
     let leagueButtons = getLeagueButtons(userId, leagueId)
     let [leagueDetails, leagueButtonsInd] = await Promise.all([league, leagueButtons])
@@ -265,7 +267,7 @@ export const canUserCreateNewLeague = async function(userId) {
     }    
 }
 
-export const createLeague = async function(userId, data) {
+export const createLeague = async function(userId, data, files) {
     let response = {requestStatus: "", errField: "", errMsg: ""}
 
     let validate = await leagueValidation(data, "NEW", userId)
@@ -290,6 +292,15 @@ export const createLeague = async function(userId, data) {
         })
         await newLeague.save()
         .then(() => {
+            if (files && files.banner) {
+                fs.renameSync(files.banner[0].path, files.banner[0].path.replace(files.banner[0].filename, 
+                    `${newLeague._id}.jpeg`));
+            }
+            if (files && files.logo) {
+                fs.renameSync(files.logo[0].path, files.logo[0].path.replace(files.logo[0].filename, 
+                    `${newLeague._id}.jpeg`));
+            }
+
             response.requestStatus = "ACTC"
             response.league = newLeague
         })
@@ -742,7 +753,7 @@ export const getLeagueAdmins = async function(leagueId) {
 export const getLeaguesCreated = async function(userId) {
     let leaguesCreated = await LeagueModel.aggregate([
         { $match : {createdBy : new ObjectId(userId) } }, 
-        { $project: { _id: 0, leagueId: "$_id", leagueName : 1, sportsTypeId : 1, status : 1 } }
+        { $project: { _id: 0, leagueId: "$_id", leagueName : 1, sportsTypeId : 1, status : 1, startDate: 1, endDate: 1, location: 1 } }
     ])
     if (leaguesCreated === null || leaguesCreated.length === 0) {
         return []

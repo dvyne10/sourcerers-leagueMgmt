@@ -32,6 +32,7 @@ useEffect(() => {
 })
     .then(response => response.json())
     .then(data=>{
+        
         if (data.requestStatus === 'RJCT') {
             setErrorMessage([data.errMsg])
             if (data.errField !== "") {

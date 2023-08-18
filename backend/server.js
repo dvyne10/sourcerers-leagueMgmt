@@ -3,13 +3,20 @@ import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+
 import connectDB from "./config/db.js";
 import cron from "node-cron"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import { authenticate, getTokenFromCookies, adminAuthenticate } from "./middlewares/authMiddleware.js";
+import { updateProfilePic, createTeamLogoAndBanner, updateTeamLogoAndBanner, createLeagueLogoAndBanner, updateLeagueLogoAndBanner } from "./middlewares/fileUploadMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 
 import { getHomeDetails } from "./utils/homePageModule.js";
+import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, changePassword } from "./utils/usersModule.js";
+import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam, removePlayerFromTeam, updateLookingForPlayers } from "./utils/teamsModule.js";
+import { getLeagues, createLeague, isLeagueAdmin, getLeagueDetailsForUpdate, updateLeague, deleteLeague, canUserCreateNewLeague, getLeagueDetailsAndButtons, updateLookingForTeams } from "./utils/leaguesModule.js";
+import { getMatchDetails, getMatchDetailsUpdate, updateMatch } from "./utils/matchModule.js";
+import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joinTeam, unjoinTeam, inviteToLeague } from "./utils/requestsModule.js";
 import { getPlayers, getPlayerDetailsAndButtons, getMyProfile, getAccountDetailsUpdate, updateAccount, getUserFullname, 
   changePassword, unlockAccounts, deletePendingAccounts } from "./utils/usersModule.js";
 import { getTeams, getTeamDetailsAndButtons, createTeam, isTeamAdmin, getTeamDetailsForUpdate, updateTeam, deleteTeam,
@@ -21,11 +28,9 @@ import { joinLeague, unjoinLeague, startLeague, cancelRequest, inviteToTeam, joi
 import { getSportsList } from "./utils/sysParmModule.js";
 import { getUnreadNotifsCount, getUserNotifications, readUnreadNotif, approveRequest, rejectRequest, processContactUsMsgs, housekeepNotifications } from "./utils/notificationsModule.js";
 import { getSearchResults } from "./utils/searchModule.js";
-import { adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches,
-  adminGetTeams, adminGetTeamDetails, adminCreateTeam, adminUpdateTeam, adminDeleteTeam,
-  adminGetLeagues, adminGetLeagueDetails, adminCreateLeague, adminUpdateLeague, adminDeleteLeague,
-  adminGetParms, adminGetParmDetails, adminCreateParm, adminUpdateParm, adminDeleteParm,
-  } from "./utils/adminModule.js";
+import { adminGetUsers, adminGetUserDetails, adminCreateUser, adminUpdateUser, adminDeleteUser, adminGetMatches, adminGetTeams, adminGetTeamDetails, 
+  adminCreateTeam, adminUpdateTeam, adminDeleteTeam, adminGetLeagues, adminGetLeagueDetails, adminCreateLeague, adminUpdateLeague,
+  adminDeleteLeague, adminGetParms, adminGetParmDetails, adminCreateParm, adminUpdateParm, adminDeleteParm } from "./utils/adminModule.js";
 
 dotenv.config();
 connectDB();
@@ -37,11 +42,20 @@ app.use(
   cors({
     credentials: true,
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token", "Origin", "X-Api-Key", "X-Requested-With", "Accept", "X-XSRF-TOKEN", "XSRF-TOKEN"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-csrf-token",
+      "Origin",
+      "X-Api-Key",
+      "X-Requested-With",
+      "Accept",
+      "X-XSRF-TOKEN",
+      "XSRF-TOKEN",
+    ],
     origin: "https://playpal.netlify.app",
-    // preflightContinue: true,
     exposedHeaders: ["*", "Authorization"],
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
   })
 );
 
@@ -93,31 +107,37 @@ app.post("/league/:leagueid", getTokenFromCookies, (req, res) => {
 });
 
 app.put("/lookingforteamson/:leagueid", authenticate, (req, res) => {
-  updateLookingForTeams(req.user._id.toString(), req.params.leagueid, true)
-  .then((data) => {
+  updateLookingForTeams(
+    req.user._id.toString(),
+    req.params.leagueid,
+    true
+  ).then((data) => {
     res.json(data);
   });
 });
 
 app.put("/lookingforteamsoff/:leagueid", authenticate, (req, res) => {
-  updateLookingForTeams(req.user._id.toString(), req.params.leagueid, false)
-  .then((data) => {
+  updateLookingForTeams(
+    req.user._id.toString(),
+    req.params.leagueid,
+    false
+  ).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/joinleague/:leagueid", authenticate, (req, res) => {
-  let teamId = req.body.teamId
-  let msg = req.body.msg
-  joinLeague(req.user._id.toString(), teamId, req.params.leagueid, msg)
-  .then((data) => {
+  let teamId = req.body.teamId;
+  let msg = req.body.msg;
+  joinLeague(req.user._id.toString(), teamId, req.params.leagueid, msg).then(
+    (data) => {
       res.json(data);
-  });
+    }
+  );
 });
 
 app.post("/unjoinleague/:leagueid", authenticate, (req, res) => {
-  unjoinLeague(req.user._id.toString(), req.params.leagueid)
-  .then((data) => {
+  unjoinLeague(req.user._id.toString(), req.params.leagueid).then((data) => {
     res.json(data);
   });
 });
@@ -143,40 +163,48 @@ app.post("/team/:teamid", getTokenFromCookies, (req, res) => {
 });
 
 app.put("/lookingforplayerson/:teamid", authenticate, (req, res) => {
-  updateLookingForPlayers(req.user._id.toString(), req.params.teamid, true)
-  .then((data) => {
+  updateLookingForPlayers(
+    req.user._id.toString(),
+    req.params.teamid,
+    true
+  ).then((data) => {
     res.json(data);
   });
 });
 
-app.put("/lookingforteamsoff/:teamid", authenticate, (req, res) => {
-  updateLookingForPlayers(req.user._id.toString(), req.params.teamid, false)
-  .then((data) => {
+app.put("/lookingforplayersoff/:teamid", authenticate, (req, res) => {
+  updateLookingForPlayers(
+    req.user._id.toString(),
+    req.params.teamid,
+    false
+  ).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/jointeam/:teamid", authenticate, (req, res) => {
-  let msg = req.body.msg
-  joinTeam(req.user._id.toString(), req.params.teamid, msg)
-  .then((data) => {
-      res.json(data);
+  let msg = req.body.msg;
+  joinTeam(req.user._id.toString(), req.params.teamid, msg).then((data) => {
+    res.json(data);
   });
 });
 
 app.post("/unjointeam/:teamid", authenticate, (req, res) => {
-  unjoinTeam(req.user._id.toString(), req.params.teamid)
-  .then((data) => {
+  unjoinTeam(req.user._id.toString(), req.params.teamid).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/invitetoleague/:teamid", authenticate, (req, res) => {
-  let leagueId = req.body.leagueId
-  let msg = req.body.msg
-  inviteToLeague(req.user._id.toString(), leagueId, req.params.teamid, msg)
-  .then((data) => {
-      res.json(data);
+  let leagueId = req.body.leagueid;
+  let msg = req.body.msg;
+  inviteToLeague(
+    req.user._id.toString(),
+    leagueId,
+    req.params.teamid,
+    msg
+  ).then((data) => {
+    res.json(data);
   });
 });
 
@@ -187,12 +215,13 @@ app.post("/player/:playerid", getTokenFromCookies, (req, res) => {
 });
 
 app.post("/invitetoteam/:playerid", authenticate, (req, res) => {
-  let teamId = req.body.teamId
-  let msg = req.body.msg
-  inviteToTeam(req.user._id.toString(), teamId, req.params.playerid, msg)
-  .then((data) => {
+  let teamId = req.body.teamId;
+  let msg = req.body.msg;
+  inviteToTeam(req.user._id.toString(), teamId, req.params.playerid, msg).then(
+    (data) => {
       res.json(data);
-  });
+    }
+  );
 });
 
 app.post("/match/:matchid", getTokenFromCookies, (req, res) => {
@@ -202,66 +231,63 @@ app.post("/match/:matchid", getTokenFromCookies, (req, res) => {
 });
 
 app.post("/getmatchdetailsupdate/:matchid", authenticate, (req, res) => {
-  getMatchDetailsUpdate(req.user._id.toString(), req.params.matchid, "USER")
-  .then((data) => {
+  getMatchDetailsUpdate(
+    req.user._id.toString(),
+    req.params.matchid,
+    "USER"
+  ).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/updatematch/:matchid", authenticate, (req, res) => {
-  updateMatch(req.user._id.toString(), req.params.matchid, req.body, "USER")
-  .then((data) => {
+  updateMatch(
+    req.user._id.toString(),
+    req.params.matchid,
+    req.body,
+    "USER"
+  ).then((data) => {
     res.json(data);
   });
 });
 
 app.get("/finduser/:username", (req, res) => {
-  getUserFullname("", req.params.username)
-  .then((data) => {
+  getUserFullname("", req.params.username).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/notifunreadcount", authenticate, (req, res) => {
-  getUnreadNotifsCount(req.user._id.toString())
-  .then((data) => {
-      res.json(data);
-    });
+  getUnreadNotifsCount(req.user._id.toString()).then((data) => {
+    res.json(data);
+  });
 });
 
 app.post("/notifications", authenticate, (req, res) => {
-  getUserNotifications(req.user._id.toString())
-  .then((data) => {
-      res.json(data);
-    }
-  );
+  getUserNotifications(req.user._id.toString()).then((data) => {
+    res.json(data);
+  });
 });
 
 app.put("/notificationsread/:notifid", authenticate, (req, res) => {
-  readUnreadNotif(req.user._id.toString(), req.params.notifid)
-  .then((data) => {
-      res.json(data);
-    }
-  );
+  readUnreadNotif(req.user._id.toString(), req.params.notifid).then((data) => {
+    res.json(data);
+  });
 });
 
 app.put("/approverequest/:notifid", authenticate, (req, res) => {
-  approveRequest(req.user._id.toString(), req.params.notifid)
-  .then((data) => {
-      res.json(data);
-    }
-  );
+  approveRequest(req.user._id.toString(), req.params.notifid).then((data) => {
+    res.json(data);
+  });
 });
 
 app.put("/rejectrequest/:notifid", authenticate, (req, res) => {
-  rejectRequest(req.user._id.toString(), req.params.notifid)
-  .then((data) => {
-      res.json(data);
-    }
-  );
+  rejectRequest(req.user._id.toString(), req.params.notifid).then((data) => {
+    res.json(data);
+  });
 });
 
-app.put("/myprofile", authenticate, (req, res) => {
+app.post("/myprofile", authenticate, (req, res) => {
   getMyProfile(req.user._id.toString())
   .then((data) => {
       res.json(data);
@@ -270,54 +296,62 @@ app.put("/myprofile", authenticate, (req, res) => {
 });
 
 app.get("/search", (req, res) => {
-  let findText = req.query.findtext
+  let findText = req.query.findtext;
   if (!findText) {
-    findText = ""
+    findText = "";
   }
-  let location = req.query.location
+  let location = req.query.location;
   if (!location) {
-    location = ""
+    location = "";
   }
-  let playerFilter = false
-  if (req.query.playerfilter && req.query.playerfilter.toLocaleLowerCase() === "true") {
-      playerFilter = true
+  let playerFilter = false;
+  if (
+    req.query.playerfilter &&
+    req.query.playerfilter.toLocaleLowerCase() === "true"
+  ) {
+    playerFilter = true;
   }
-  let teamFilter = false
-  if (req.query.teamfilter && req.query.teamfilter.toLocaleLowerCase() === "true") {
-      teamFilter = true
+  let teamFilter = false;
+  if (
+    req.query.teamfilter &&
+    req.query.teamfilter.toLocaleLowerCase() === "true"
+  ) {
+    teamFilter = true;
   }
-  let leagueFilter = false
-  if (req.query.leaguefilter && req.query.leaguefilter.toLocaleLowerCase() === "true") {
-      leagueFilter = true
+  let leagueFilter = false;
+  if (
+    req.query.leaguefilter &&
+    req.query.leaguefilter.toLocaleLowerCase() === "true"
+  ) {
+    leagueFilter = true;
   }
-  getSearchResults(findText, location, playerFilter, teamFilter, leagueFilter)
-  .then((data) => {
-      res.json(data);
-    }
-  );
+  getSearchResults(
+    findText,
+    location,
+    playerFilter,
+    teamFilter,
+    leagueFilter
+  ).then((data) => {
+    res.json(data);
+  });
 });
 
 app.get("/getsportslist", (req, res) => {
-  getSportsList()
-  .then((data) => {
+  getSportsList().then((data) => {
     res.json(data);
   });
 });
 
 app.post("/getaccountdetailsupdate", authenticate, (req, res) => {
-  getAccountDetailsUpdate(req.user._id.toString())
-  .then((data) => {
-      res.json(data);
-    }
-  );
+  getAccountDetailsUpdate(req.user._id.toString()).then((data) => {
+    res.json(data);
+  });
 });
 
-app.post("/updateaccount", authenticate, (req, res) => {
-  updateAccount(req.user._id.toString(), req.body)
-  .then((data) => {
-      res.json(data);
-    }
-  );
+app.post("/updateaccount", authenticate, updateProfilePic, (req, res) => {
+  updateAccount(req.user._id.toString(), req.body).then((data) => {
+    res.json(data);
+  });
 });
 
 app.post("/admin", authenticate, (req, res) => {
@@ -334,8 +368,8 @@ app.post("/admin", authenticate, (req, res) => {
   }
 });
 
-app.post("/createteam", authenticate, (req, res) => {
-  createTeam(req.user._id.toString(), req.body).then((data) => {
+app.post("/createteam", authenticate, createTeamLogoAndBanner, (req, res) => {
+  createTeam(req.user._id.toString(), req.body, req.files).then((data) => {
     res.json(data);
   });
 });
@@ -348,7 +382,7 @@ app.post("/getteamdetailsupdate/:teamid", authenticate, (req, res) => {
   );
 });
 
-app.post("/updateteam/:teamid", authenticate, (req, res) => {
+app.post("/updateteam/:teamid", authenticate, updateTeamLogoAndBanner, (req, res) => {
   updateTeam(req.user._id.toString(), req.params.teamid, req.body).then(
     (data) => {
       res.json(data);
@@ -357,23 +391,23 @@ app.post("/updateteam/:teamid", authenticate, (req, res) => {
 });
 
 app.delete("/deleteteam/:teamid", authenticate, (req, res) => {
-  deleteTeam(req.user._id.toString(), req.params.teamid).then(
-    (data) => {
-      res.json(data);
-    }
-  );
+  deleteTeam(req.user._id.toString(), req.params.teamid).then((data) => {
+    res.json(data);
+  });
 });
 
 app.post("/removeplayer/:teamid/:playerid", authenticate, (req, res) => {
-  removePlayerFromTeam(req.user._id.toString(), req.params.teamid, req.params.playerid).then(
-    (data) => {
-      res.json(data);
-    }
-  );
+  removePlayerFromTeam(
+    req.user._id.toString(),
+    req.params.teamid,
+    req.params.playerid
+  ).then((data) => {
+    res.json(data);
+  });
 });
 
-app.post("/createleague", authenticate, (req, res) => {
-  createLeague(req.user._id.toString(), req.body).then((data) => {
+app.post("/createleague", authenticate, createLeagueLogoAndBanner, (req, res) => {
+  createLeague(req.user._id.toString(), req.body, req.files).then((data) => {
     res.json(data);
   });
 });
@@ -386,7 +420,7 @@ app.post("/getleaguedetailsupdate/:leagueid", authenticate, (req, res) => {
   );
 });
 
-app.post("/updateleague/:leagueid", authenticate, (req, res) => {
+app.post("/updateleague/:leagueid", authenticate, updateLeagueLogoAndBanner, (req, res) => {
   updateLeague(req.user._id.toString(), req.params.leagueid, req.body).then(
     (data) => {
       res.json(data);
@@ -395,183 +429,170 @@ app.post("/updateleague/:leagueid", authenticate, (req, res) => {
 });
 
 app.delete("/deleteleague/:leagueid", authenticate, (req, res) => {
-  deleteLeague(req.user._id.toString(), req.params.leagueid)
-  .then((data) => {
-      res.json(data);
+  deleteLeague(req.user._id.toString(), req.params.leagueid).then((data) => {
+    res.json(data);
   });
 });
 
 app.post("/changepassword", authenticate, (req, res) => {
-  changePassword(req.user._id.toString(), req.body)
-  .then((data) => {
-      res.json(data);
+  changePassword(req.user._id.toString(), req.body).then((data) => {
+    res.json(data);
   });
 });
 
 app.post("/contactus", (req, res) => {
-  processContactUsMsgs(req.body)
-  .then((data) => {
-      res.json(data);
-    });
+  processContactUsMsgs(req.body).then((data) => {
+    res.json(data);
+  });
 });
 
 app.post("/admingetusers", adminAuthenticate, (req, res) => {
-  adminGetUsers()
-  .then((data) => {
+  adminGetUsers().then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admingetuser/:userid", adminAuthenticate, (req, res) => {
-  adminGetUserDetails(req.params.userid)
-  .then((data) => {
+  adminGetUserDetails(req.params.userid).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admincreateuser", adminAuthenticate, (req, res) => {
-  adminCreateUser(req.body)
-  .then((data) => {
+  adminCreateUser(req.body).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/adminupdateuser/:userid", adminAuthenticate, (req, res) => {
-  adminUpdateUser(req.params.userid, req.body)
-  .then((data) => {
+  adminUpdateUser(req.params.userid, req.body).then((data) => {
     res.json(data);
   });
 });
 
 app.delete("/admindeleteuser/:userid", adminAuthenticate, (req, res) => {
-  adminDeleteUser(req.params.userid)
-  .then((data) => {
+  adminDeleteUser(req.params.userid).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admingetteams", adminAuthenticate, (req, res) => {
-  adminGetTeams()
-  .then((data) => {
+  adminGetTeams().then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admingetteamdetails/:teamid", adminAuthenticate, (req, res) => {
-  adminGetTeamDetails(req.params.teamid)
-  .then((data) => {
+  adminGetTeamDetails(req.params.teamid).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admincreateteam", adminAuthenticate, (req, res) => {
-  adminCreateTeam(req.body)
-  .then((data) => {
+  adminCreateTeam(req.body).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/adminupdateteam/:teamid", adminAuthenticate, (req, res) => {
-  adminUpdateTeam(req.params.teamid, req.body)
-  .then((data) => {
+  adminUpdateTeam(req.params.teamid, req.body).then((data) => {
     res.json(data);
   });
 });
 
 app.delete("/admindeleteteam/:teamid", adminAuthenticate, (req, res) => {
-  adminDeleteTeam(req.params.teamid)
-  .then((data) => {
+  adminDeleteTeam(req.params.teamid).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admingetleagues", adminAuthenticate, (req, res) => {
-  adminGetLeagues()
-  .then((data) => {
+  adminGetLeagues().then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admingetleaguedetails/:leagueid", adminAuthenticate, (req, res) => {
-  adminGetLeagueDetails(req.params.leagueid)
-  .then((data) => {
+  adminGetLeagueDetails(req.params.leagueid).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admincreateleague", adminAuthenticate, (req, res) => {
-  adminCreateLeague(req.body)
-  .then((data) => {
+  adminCreateLeague(req.body).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/adminupdateleague/:leagueid", adminAuthenticate, (req, res) => {
-  adminUpdateLeague(req.params.leagueid, req.body)
-  .then((data) => {
+  adminUpdateLeague(req.params.leagueid, req.body).then((data) => {
     res.json(data);
   });
 });
 
 app.delete("/admindeleteleague/:leagueid", adminAuthenticate, (req, res) => {
-  adminDeleteLeague(req.params.leagueid)
-  .then((data) => {
+  adminDeleteLeague(req.params.leagueid).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admingetmatches", adminAuthenticate, (req, res) => {
-  adminGetMatches()
-  .then((data) => {
+  adminGetMatches().then((data) => {
     res.json(data);
   });
 });
 
-app.post("/admingetmatchdetailsupdate/:matchid", adminAuthenticate, (req, res) => {
-  getMatchDetailsUpdate(req.user._id.toString(), req.params.matchid, "ADMIN")
-  .then((data) => {
-    res.json(data);
-  });
-});
+app.post(
+  "/admingetmatchdetailsupdate/:matchid",
+  adminAuthenticate,
+  (req, res) => {
+    getMatchDetailsUpdate(
+      req.user._id.toString(),
+      req.params.matchid,
+      "ADMIN"
+    ).then((data) => {
+      res.json(data);
+    });
+  }
+);
 
 app.post("/adminupdatematch/:matchid", adminAuthenticate, (req, res) => {
-  updateMatch(req.user._id.toString(), req.params.matchid, req.body, "ADMIN")
-  .then((data) => {
+  updateMatch(
+    req.user._id.toString(),
+    req.params.matchid,
+    req.body,
+    "ADMIN"
+  ).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admingetparms", adminAuthenticate, (req, res) => {
-  adminGetParms()
-  .then((data) => {
+  adminGetParms().then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admingetparmdetails/:parmid", adminAuthenticate, (req, res) => {
-  adminGetParmDetails(req.params.parmid)
-  .then((data) => {
+  adminGetParmDetails(req.params.parmid).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/admincreateparm", adminAuthenticate, (req, res) => {
-  adminCreateParm(req.body)
-  .then((data) => {
+  adminCreateParm(req.body).then((data) => {
     res.json(data);
   });
 });
 
 app.post("/adminupdateparm/:parmid", adminAuthenticate, (req, res) => {
-  adminUpdateParm(req.params.parmid, req.body)
-  .then((data) => {
+  adminUpdateParm(req.params.parmid, req.body).then((data) => {
     res.json(data);
   });
 });
 
 app.delete("/admindeleteparm/:parmid", adminAuthenticate, (req, res) => {
-  adminDeleteParm(req.params.parmid)
-  .then((data) => {
+  adminDeleteParm(req.params.parmid).then((data) => {
     res.json(data);
   });
 });

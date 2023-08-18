@@ -4,17 +4,32 @@ import {format} from 'date-fns';
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
 
 const LiveCard = ({ match, onClickTeamIcon }) => {
-  const formattedMatchDate = format(new Date(match.dateOfMatch), 'yyyy-MM-dd');
-  const timeOfMatch = format(new Date(match.dateOfMatch), 'HH:mm'); 
+  const formattedMatchDate = match.dateOfMatch
+    ? format(new Date(match.dateOfMatch), 'yyyy-MM-dd')
+    : 'TBD';
+  const timeOfMatch = match.dateOfMatch
+    ? format(new Date(match.dateOfMatch), 'HH:mm')
+    : '';
+  
+  const doesImageExist = (url) => {
+    const img = new Image();
+    img.src = url;
+    return img.complete || (img.width + img.height) > 0;
+  };
+  
   return (
-    <div className="card card-body m-2">
+    <div className="card card-body m-2" >
       <div className="d-flex justify-content-between">
         <div
           style={{ width: 80, height: 80, borderRadius: 40, marginRight: 20 }}
           onClick={onClickTeamIcon}
         >
           <img
-            src={`${backend}/teamlogos/${match.team1.teamId}.jpeg`}
+            src={
+              doesImageExist(`${backend}/teamlogos/${match.team1.teamId}.jpeg`)
+                ? `${backend}/teamlogos/${match.team1.teamId}.jpeg`
+                : `${backend}/teamlogos/default-image.jpeg`
+            }
             style={{ objectFit: "cover", width: "100%", height: "100%" }}
             alt=""
           />
@@ -32,7 +47,11 @@ const LiveCard = ({ match, onClickTeamIcon }) => {
           onClick={onClickTeamIcon}
         >
           <img
-            src={`${backend}/teamlogos/${match.team2.teamId}.jpeg`}
+            src={
+              doesImageExist(`${backend}/teamlogos/${match.team2.teamId}.jpeg`)
+                ? `${backend}/teamlogos/${match.team2.teamId}.jpeg`
+                : `${backend}/teamlogos/default-image.jpeg`
+            }
             style={{
               objectFit: "cover",
               width: "100%",
@@ -47,11 +66,11 @@ const LiveCard = ({ match, onClickTeamIcon }) => {
         <hr />
       </div>
       <div className="d-flex p-0 m-0 justify-content-center">
-        <p className="p-0 m-0">{formattedMatchDate}</p>
+        <p className="p-0 m-0" style={{width: '100px'}}>{formattedMatchDate}</p>
         <div
           style={{
             width: 1,
-            marginInline: 5,
+            marginRight:'55px',
             backgroundColor: "#666869",
           }}
         ></div>

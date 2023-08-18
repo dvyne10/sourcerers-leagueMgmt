@@ -8,7 +8,7 @@ import './teamdetails.css'
 import ListGroup from 'react-bootstrap/ListGroup';
 import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
-const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app/";
+const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
 
 
 
@@ -18,27 +18,40 @@ function TeamDetails() {
     const navigateUpdateTeam = () => { navigate(`/updateteam/${routeParams.teamid}`) }
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const [leagueInvitedTo, handleInviteLeague] = useState("");
+    const [teamJoinedTo, handleJoinTeam] = useState("");
+    const [lookingForPlayers, setLookingForPlayers] = useState("")
+    const [inviteMsg, handleInviteMsg] = useState("");
+    const [joinMsg, handleJoinMsg] = useState("");
     const [showInvite, setShowInvite] = useState(false);
     const handleCloseInvite = () => setShowInvite(false);
-    const handleShowInvite = () => setShowInvite(true);
     const token = `Bearer ${getToken()}`
     const {isSignedIn} = useAuth();
-    const [buttonRes, setButtonRes] = useState("BR");
-    const [join, setJoin] = useState(true);
     const [errorMessage, setErrorMessage] = useState([]);
     const [teamInfo, setTeamInfo] = useState({teamName:"", players:[],
     matches:[],
     details:{},
     sportsName:"",
   lookingForPlayers:null,
-  buttons:{}});
-    const [invite, setInvite] = useState(false);
+   displayUpdateButton: null,
+  displayTurnOnLookingForPlayers: null,
+  displayTurnOffLookingForPlayers: null,
+  displayUnjoinButton: null,
+  displayInviteToLeagueButton: null,
+  nsLeaguesUserIsAdmin: [],
+  displayUninviteToLeagueButton: null,
+  pendingInviteRequestId: "",
+  displayJoinButton: null,
+  playerCurrentTeamName: "",
+  playerCurrentTeamId: "",
+  displayCancelReqButton: null,
+  pendingJoinRequestId: ""});
 
     
 
 // Array of team members here
     useEffect(()=>{
+      
       fetch(`${backend}/team/${routeParams.teamid}`, {
         method: "POST",
         credentials: 'include',
@@ -56,7 +69,20 @@ function TeamDetails() {
                 document.getElementById(data.errField).focus()
             }
         } else {
-                setTeamInfo({teamName : data.teamName, details: data.details,players :data.details.players, buttons:data.buttons, matches: data.details.matches})
+                setTeamInfo({teamName : data.teamName, details: data.details,players :data.details.players, matches: data.details.matches,
+                  displayUpdateButton: data.buttons.displayUpdateButton,
+                  displayTurnOnLookingForPlayers: data.buttons.displayTurnOnLookingForPlayers,
+                  displayTurnOffLookingForPlayers: data.buttons.displayTurnOffLookingForPlayers,
+                  displayUnjoinButton: data.buttons.displayUnjoinButton,
+                  displayInviteToLeagueButton: data.buttons.displayInviteToLeagueButton,
+                  nsLeaguesUserIsAdmin: data.buttons.nsLeaguesUserIsAdmin,
+                  displayUninviteToLeagueButton: data.buttons.displayUninviteToLeagueButton,
+                  pendingInviteRequestId: data.buttons.pendingInviteRequestId,
+                  displayJoinButton: data.buttons.displayJoinButton,
+                  playerCurrentTeamName: data.buttons.playerCurrentTeamName,
+                  playerCurrentTeamId: data.buttons.playerCurrentTeamId,
+                  displayCancelReqButton: data.buttons.displayCancelReqButton,
+                  pendingJoinRequestId: data.buttons.pendingJoinRequestId})
     }
 })
 .catch((error) => {
@@ -65,16 +91,211 @@ function TeamDetails() {
       
   },[])
 
+  const handleInvite = () => {
+    if (teamInfo.nsLeaguesUserIsAdmin.length > 0) {
+      handleInviteLeague(teamInfo.nsLeaguesUserIsAdmin[0].leagueId)
+      setShowInvite(true)
+    }
+  }
+  
+  const handleUninvite = () => {
+    if (teamInfo.pendingInviteRequestId !== "") {
+      if (confirm("Please confirm if you want to proceed with invite cancellation.")) {
+        fetch(`${backend}/cancelrequest/${teamInfo.pendingInviteRequestId}`, {
+            method: "POST",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "Application/JSON",
+                "Authorization": token
+            }
+        })
+        .then(response => response.json())
+        .then(data=>{
+            if (data.requestStatus === 'RJCT') {
+                setErrorMessage([data.errMsg])
+            } else {
+              setTeamInfo({...teamInfo, displayInviteToLeagueButton : true, displayUninviteToLeagueButton: false, pendingInviteRequestId: ""})
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+      }
+    }
+  }
+  
+  const handleLeagueInviteChange = (e) => {
+    handleInviteLeague(e.target.value)
+  }
+  const handleLeagueInviteMsg = (e) => {
+    handleInviteMsg(e.target.value)
+  }
+  
+  const sendInvite = () => {
+    let data = {leagueId: leagueInvitedTo, msg: inviteMsg}
+    fetch(`${backend}/invitetoleague/${routeParams.teamid}`, {
+      method: "POST",
+      credentials: 'include',
+      body: JSON.stringify(data),
+      headers: {
+          "Content-Type": "Application/JSON",
+          "Authorization": token
+      }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      if (data.requestStatus === 'RJCT') {
+          setErrorMessage([data.errMsg])
+      } else {
+        setTeamInfo({...teamInfo, displayInviteToLeagueButton : false, displayUninviteToLeagueButton: true, pendingInviteRequestId: data.pendingInviteRequestId})
+      }
+    })
+    setShowInvite(false)
+  }
+
+  const handleTurnOnLookingForPlayers = () => {
+    if(confirm(`Please confirm if you want to turn on looking for players.`)){
+      fetch(`${backend}/lookingforplayerson/${routeParams.teamid}`, {
+        method: "PUT",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "Application/JSON",
+            "Authorization": token
+        }
+      })
+      .then(response => response.json())
+      .then(data=>{
+        if (data.requestStatus === 'RJCT') {
+            setErrorMessage([data.errMsg])
+        } else {
+          setTeamInfo({...teamInfo, displayTurnOnLookingForPlayers : false, displayTurnOffLookingForPlayers: true})
+        }
+      })
+    }
+  }
+
+  const handleTurnOffLookingForPlayers = () => {
+    if(confirm(`Please confirm if you want to turn on looking for players.`)){
+      fetch(`${backend}/lookingforplayersoff/${routeParams.teamid}`, {
+        method: "PUT",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "Application/JSON",
+            "Authorization": token
+        }
+      })
+      .then(response => response.json())
+      .then(data=>{
+        if (data.requestStatus === 'RJCT') {
+            setErrorMessage([data.errMsg])
+        } else {
+          setTeamInfo({...teamInfo, displayTurnOnLookingForPlayers : true, displayTurnOffLookingForPlayers: false})
+        }
+      })
+    }
+
+
+  }
+
+
+  const handleJoin = () => {
+        handleJoinTeam(teamInfo.teamId)
+        setShow(true)
+      
+    }
+
+      
+  
+  
+
+  const handleUnjoin = () =>{
+    if (confirm(`Please confirm if you want to leave the team ${teamInfo.details.teamName}.`)) {
+    let data = {teamId: teamInfo.teamId, msg: joinMsg}
+    fetch(`${backend}/unjointeam/${routeParams.teamid}`, {
+      method: "POST",
+      credentials: 'include',
+      body: JSON.stringify(data),
+      headers: {
+          "Content-Type": "Application/JSON",
+          "Authorization": token
+      }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      if (data.requestStatus === 'RJCT') {
+          setErrorMessage([data.errMsg])
+      } else {
+        if(teamInfo.buttons.displayTurnOnLookingForPlayers){
+          setTeamInfo({...teamInfo, displayJoinButton : true, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: "", playerCurrentTeamName:""})
+        }
+        else{
+          setTeamInfo({...teamInfo, displayJoinButton : false, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: "", playerCurrentTeamName:""})
+      }}
+    })
+  }
+
+  }
+  
+  const handleCancelRequest = () => {
+    
+      if (confirm(`Please confirm if you want to proceed with cancelling your request`)) {
+        fetch(`${backend}/cancelrequest/${teamInfo.pendingJoinRequestId}`, {
+            method: "POST",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "Application/JSON",
+                "Authorization": token
+            }
+        })
+        .then(response => response.json())
+        .then(data=>{
+            if (data.requestStatus === 'RJCT') {
+                setErrorMessage([data.errMsg])
+            } else {
+              setTeamInfo({...teamInfo, displayJoinButton : true, displayUnjoinButton: false, displayCancelReqButton: false, pendingJoinRequestId: ""})
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+      }
+    
+  }
+  
+
+  const handleJoinTeamMsg = (e) => {
+    handleJoinMsg(e.target.value)
+  }
+  
+  const sendJoin = () => {
+    let data = {teamId: teamJoinedTo, msg: inviteMsg}
+    fetch(`${backend}/jointeam/${routeParams.teamid}`, {
+      method: "POST",
+      credentials: 'include',
+      body: JSON.stringify(data),
+      headers: {
+          "Content-Type": "Application/JSON",
+          "Authorization": token
+      }
+    })
+    .then(response => response.json())
+    .then(data=>{
+      if (data.requestStatus === 'RJCT') {
+          setErrorMessage([data.errMsg])
+      } else {
+        setTeamInfo({...teamInfo, displayJoinButton : false, displayUnjoinButton: false, displayCancelReqButton:true, pendingJoinRequestId: data.pendingJoinRequestId})
+      }
+    })
+    setShow(false)
+  }
+
  
  
 
 
 
     return (
-      
-      
+
         <div key={teamInfo.teamName}> 
-      {teamInfo.buttons.displayUpdateButton && 
+      {teamInfo.displayUpdateButton && 
          <div className='d-flex w-100 position-absolute justify-content-end p-4'><Button variant='transparent'  onClick={navigateUpdateTeam} className="btn btn-outline-success"><BsGearFill className="m-auto" /></Button></div>
          }
         <div className='bg-light container justify-content-center text-center'>
@@ -83,15 +304,19 @@ function TeamDetails() {
         
         {/* Here is the team header, with background and info */}
         <div className="bg-image mt-2 d-flex p-5 text-center shadow-1-strong rounded mb-3 text-white" 
-   style={{"backgroundImage": `url(${backend}/teambanners/${teamInfo.details._id}.jpeg)`}} >
-        <Container style={{background:'https://i.p1inimg.com/600x315/0f/4c/91/0f4c91bfaa06b9e5907fca20e3e37d0d.jpg'}}>
+   style={{"backgroundImage": `url(${backend}/teambanners/${teamInfo.details._id}.jpeg), url(${backend}/teambanners/default.jpg)`, "backgroundRepeat":"no-repeat", backgroundSize:"cover" }} >
+         <Container style={{"background-color":"rgba(0, 0, 0, 0.25)"}} className='rounded'>
       <Row>
         <Col lg="2" className='text-center'>
-         
-        <Image src={`${backend}/teamlogos/${teamInfo.details._id}.jpeg`}  className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
+        <p><strong>{teamInfo.details.location}</strong></p> 
+        <Image src={`${backend}/teamlogos/${teamInfo.details._id}.jpeg`} onError={({ currentTarget }) => {
+    currentTarget.onerror = null; // prevents looping
+    currentTarget.src=`${backend}/teamlogos/default-image.jpeg`;
+  }}
+className='border border-info shadow object-fit-cover ' roundedCircle fluid style={{ width: "10em", height: "10em"}}/>
         {teamInfo.details.sportsName == "Basketball" ? (
                         <img
-                          src="https://i.imgur.com/w14EKbv.png"
+                          src="https://i.imgur.com/w14EKbv.png" 
                           style={{ width: "2em", backgroundColor:"white", borderRadius:"50%"}}
                           className="text-center opacity-75 mt-2 position-relative"
                         />
@@ -102,18 +327,42 @@ function TeamDetails() {
                           className="text-center opacity-75 mt-2 position-relative"
                         />
                       )}
+                     
         </Col>
         <Col><h1>{teamInfo.details.teamName}</h1>
         <p className='mt-2'><strong>Description</strong> : {teamInfo.details.description}</p>
-        <p className='mt-1'><strong>Started</strong> : {new Date(teamInfo.details.createdAt).toLocaleDateString('en-US')}</p>
         <h3 className='mt-5'>Contact</h3>
         <p><a href={`mailto:${teamInfo.details.teamContactEmail}`} className='general-link-no-dec text-white text-decoration-underline'>{teamInfo.details.teamContactEmail}</a></p>
         
         </Col>
       </Row>
       <Row>
-        <Col lg="2" className="mt-2" ><Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleShow}>{join===false ? "Join" : "Unjoin"}</Button>
-        {teamInfo.buttons.displayJoinButton &&<Button className='mt-2 ms-2 mb-2 btn-success rounded-pill' onClick={handleShowInvite}>{invite===false ? "Invite to League" : "Uninvite to League"}</Button>}
+      <Col lg="2" className="mt-2" >
+
+        <>
+                      {isSignedIn && teamInfo.displayInviteToLeagueButton && 
+                    (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleInvite}>Invite</Button>)
+                      }
+          
+                    {isSignedIn && teamInfo.displayUninviteToLeagueButton && 
+                      (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleUninvite}>Cancel Invitation</Button>)
+                    }
+                    {isSignedIn && teamInfo.displayJoinButton && 
+                    (<Button className='mt-2 mb-2 btn-success rounded-pill' onClick={handleJoin}>Join</Button>)
+                      }
+                    {isSignedIn && teamInfo.displayUnjoinButton && 
+                      (<Button className='mt-2 mb-2 btn-danger rounded-pill' onClick={handleUnjoin} >Unjoin</Button>)
+                    }
+                    {isSignedIn && teamInfo.displayCancelReqButton && 
+                      (<Button className='mt-2 mb-2 btn-danger rounded-pill' onClick={handleCancelRequest}>Cancel Request</Button>)
+                    }
+                    {isSignedIn && teamInfo.displayTurnOnLookingForPlayers && 
+                      (<Button className='' onClick={handleTurnOnLookingForPlayers}>Turn on looking for players</Button>)
+                    }
+                                        {isSignedIn && teamInfo.displayTurnOffLookingForPlayers && 
+                      (<Button className='mt-2 mb-2 btn btn-outline-dark rounded-pill' onClick={handleTurnOffLookingForPlayers}>Turn off looking for players</Button>)
+                    }
+                    </>
         </Col>
         
         
@@ -180,16 +429,19 @@ function TeamDetails() {
         <div className='team-past-matches'>
           <h2 className='center-header gap-divider'>Past Matches</h2>
           <Row className='text-center mx-1'>
-              <Col md={3}>
+              <Col md={2}>
               <h6 className='border-bottom border-secondary'>Date</h6>
               </Col>
               <Col md={3}>
               <h6 className='border-bottom border-secondary'>Team 1</h6>
               </Col>
+              <Col md={2}>
+              <h6 className='border-bottom border-secondary'>Score</h6>
+              </Col>
               <Col md={3}>
               <h6 className='border-bottom border-secondary'>Team 2</h6>
               </Col>
-              <Col md={3}>
+              <Col md={2}>
               <h6 className='border-bottom border-secondary'>Location</h6>
               </Col>
               </Row>
@@ -202,11 +454,14 @@ function TeamDetails() {
               <Col md={2}>
               {new Date(match.dateOfMatch).toLocaleDateString('en-US')}
               </Col>
-              <Col md={4}>
-              {match.team1.teamName + " " + match.team1.finalScore}
+              <Col md={3}>
+              {match.team1.teamName}
               </Col>
-              <Col md={4}>
-              {match.team2.finalScore + " " + match.team2.teamName}
+              <Col md={2}>
+              {match.team1.finalScore + " - " + match.team2.finalScore}
+              </Col>
+              <Col md={3}>
+              {match.team2.teamName}
               </Col>
               <Col md={2}>
               {match.locationOfMatch}
@@ -229,40 +484,6 @@ function TeamDetails() {
         </Col>
         <Col sm={3} className='container ' style={{"minWidth":"20rem"}}>
 
-          {/* This is the timeline for upcoming matches on the right side of the page*/}
-        {/* <div className="team-upcoming-matches w-100">
-          <h4 className='center-header'>Upcoming Matches</h4><hr />
-    <ul>
-      <li className='active-game-hover'>
-      <a href='/match/1' className='general-link-no-dec'>
-        <span className='active-game'>21st June 2023</span>
-        <div className="content">
-        
-          <h3>Arsenal</h3>
-        </div>
-        </a>
-      </li>
-      
-      <li className='past-game-hover'>
-      <a href='/match/3' className='general-link-no-dec'>
-        <span className='past-game'>15th April 2023</span>
-        <div className="content">
-          <h3>Barcelona</h3>
-        </div>
-        </a>
-      </li>
-      
-      <li className='past-game-hover'>
-      <a href='/match/2' className='general-link-no-dec'>
-        <span className='past-game'>22nd March 2023</span>
-        <div className="content">
-          <h3>Real Madrid</h3>
-        </div>
-        </a>
-      </li>
-    </ul>
-  </div> */}
-
         </Col>
         
       </Row>
@@ -280,14 +501,17 @@ function TeamDetails() {
           <Modal.Title>Message</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form action='POST'>
-            
+          <Form>
             <Form.Group
               className="mb-3"
               controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label>Explain shortly why you want to {teamInfo.displayJoinButton===false ? "join to" : "unjoin from"} this league.</Form.Label>
-              <Form.Control as="textarea" rows={3} />
+            >{teamInfo.playerCurrentTeamId!=="" || teamInfo.playerCurrentTeamId!==undefined &&
+              <h4 style={{color:"red"}}>{`If you join this team, you will be removed from your current team ${teamInfo.playerCurrentTeamName}. Please confirm if you want to proceed.`}</h4>
+            }
+              <Form.Label>Explain shortly why you want to join this team.
+                
+              </Form.Label>
+              <Form.Control as="textarea" rows={3} name="joinMsg" value={joinMsg} onChange={handleJoinTeamMsg}/>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -295,44 +519,49 @@ function TeamDetails() {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          {teamInfo.displayJoinButton ? <Button type='submit' variant="danger" >Join</Button>
-          :
-          <Button variant="danger">Unjoin</Button>
+         
+          <Button variant="success" onClick={sendJoin}>
+            Send Request
+          </Button>
           
-}
-<p>{buttonRes}</p>
+          
+          
+
         </Modal.Footer>
       </Modal>
 
     {/* Modal opening up after clicking Invite */}
     <Modal show={showInvite} onHide={handleCloseInvite}>
-    <Modal.Header closeButton>
-        <Modal.Title>Message</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
-          
-          <Form.Group
-            className="mb-3"
-            controlId="exampleForm.ControlTextarea1"
-          >
-            <Form.Label>Explain shortly why you want to {invite===false ? "invite" : "uninvite"} this league.</Form.Label>
-            <Form.Control as="textarea" rows={3} />
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleCloseInvite}>
-          Cancel
-        </Button>
-        
-         
-         
-        <Button variant={invite===false ? "success" : "danger"} >
-        {invite===false ? "Invite Team" : "Uninvite Team"}
-        </Button>
-      </Modal.Footer>
-    </Modal>
+      <Modal.Header closeButton>
+          <Modal.Title>Message</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Label>Choose league to invite player to</Form.Label>
+            <select id="teamInvitedTo" name="teamInvitedTo" className="form-control" value={leagueInvitedTo} onChange={handleLeagueInviteChange}>
+                {teamInfo.nsLeaguesUserIsAdmin.map((option) => (
+                    <option value={option.leagueId} key={option.leagueId}>{option.leagueName}</option>
+                ))}
+            </select>
+            <br/><br/>
+            <Form.Group
+              className="mb-3"
+              controlId="exampleForm.ControlTextarea1"
+            >
+              <Form.Label>Explain shortly why you want to invite this team to your league.</Form.Label>
+              <Form.Control as="textarea" rows={3} name="inviteMsg" value={inviteMsg} onChange={handleLeagueInviteMsg}/>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseInvite}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={sendInvite}>
+            Confirm Invite
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
   </div>
 
