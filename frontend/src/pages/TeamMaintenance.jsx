@@ -5,6 +5,7 @@ import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 import {Form} from 'react-bootstrap/';
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 const TeamMaintenance = () => {
     const [validated, setValidated] = useState(false);
@@ -73,19 +74,19 @@ const TeamMaintenance = () => {
                         location: data.details.location, division: data.details.division, teamContactEmail: data.details.teamContactEmail, 
                     })
                     setPlayersList(data.details.players)
-                    fetch(`${backend}/teamlogos/${routeParams.teamid}.jpeg`)
+                    fetch(`${backendPhotos}/teamlogos/${routeParams.teamid}.jpeg`)
                     .then(res=>{
                         if (res.ok) {
-                            setLogoURL(`${backend}/teamlogos/${routeParams.teamid}.jpeg`) 
+                            setLogoURL(`${backendPhotos}/teamlogos/${routeParams.teamid}.jpeg`) 
                             setSelectedLogo("x")
                         }
                     })
                     let protectSport = data.details.players.length > 0 ? true : false
                     handleAction({type: "Update", title: "Update Team", protectSport})
-                    fetch(`${backend}/teambanners/${routeParams.teamid}.jpeg`)
+                    fetch(`${backendPhotos}/teambanners/${routeParams.teamid}.jpeg`)
                     .then(res=>{
                         if (res.ok) {
-                            setBannerURL(`${backend}/teambanners/${routeParams.teamid}.jpeg`)
+                            setBannerURL(`${backendPhotos}/teambanners/${routeParams.teamid}.jpeg`)
                             setSelectedBanner("x")
                         }
                     })

@@ -4,6 +4,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import useAuth, {checkIfSignedIn, getToken} from "../hooks/auth";
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 const LeagueMaintenance = () => {
   
@@ -71,10 +72,10 @@ const LeagueMaintenance = () => {
                     setTeamsList(data.details.teams)
                     let oldLogo = ""
                     let oldBanner = ""
-                    fetch(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`)
+                    fetch(`${backendPhotos}/leaguelogos/${routeParams.leagueid}.jpeg`)
                     .then(res=>{
                         if (res.ok) {
-                            setLogoURL(`${backend}/leaguelogos/${routeParams.leagueid}.jpeg`)
+                            setLogoURL(`${backendPhotos}/leaguelogos/${routeParams.leagueid}.jpeg`)
                             setSelectedLogo("x")
                             oldLogo = "x"
                         }
@@ -82,10 +83,10 @@ const LeagueMaintenance = () => {
                     let protectSport = data.details.teams.length > 0 ? true : false
                     let protectRounds = data.details.status !== "NS" ? true : false
                     handleAction({type: "Update", title: "Update League", protectSport, protectRounds})
-                    fetch(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
+                    fetch(`${backendPhotos}/leaguebanners/${routeParams.leagueid}.jpeg`)
                     .then(res=>{
                         if (res.ok) {
-                            setBannerURL(`${backend}/leaguebanners/${routeParams.leagueid}.jpeg`)
+                            setBannerURL(`${backendPhotos}/leaguebanners/${routeParams.leagueid}.jpeg`)
                             setSelectedBanner("x")
                             oldBanner = "x"
                         }

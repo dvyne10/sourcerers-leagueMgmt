@@ -13,6 +13,7 @@ import useAuth from "../hooks/auth";
 import {getToken} from "../hooks/auth"; 
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 const MatchDetails = () => {
   
@@ -130,7 +131,7 @@ const MatchDetails = () => {
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      background: `#D1E8E2 url(${backend}/teamlogos/${matchDetails.team1.teamId}.jpeg) center center no-repeat`,
+                      background: `#D1E8E2 url(${backendPhotos}/teamlogos/${matchDetails.team1.teamId}.jpeg) center center no-repeat`,
                       backgroundSize: 'contain',
                       borderTopLeftRadius: '10px',
                       borderBottomLeftRadius: '10px',                    
@@ -159,7 +160,7 @@ const MatchDetails = () => {
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      background: `#D1E8E2 url(${backend}/teamlogos/${matchDetails.team2.teamId}.jpeg) center center no-repeat`,
+                      background: `#D1E8E2 url(${backendPhotos}/teamlogos/${matchDetails.team2.teamId}.jpeg) center center no-repeat`,
                       backgroundSize: 'contain',
                       borderTopRightRadius: '10px',
                       borderBottomRightRadius: '10px',
@@ -217,7 +218,7 @@ const MatchDetails = () => {
             >
             <div className="animation-stats">
               <Image
-                src={`${backend}/profilepictures/${player.playerId}.jpeg`}
+                src={`${backendPhotos}/profilepictures/${player.playerId}.jpeg`}
                 onClick={() => handleClickPlayerLeft(player)}
                 className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
                 fluid 
@@ -258,7 +259,7 @@ const MatchDetails = () => {
             >
               <div className="animation-stats">
               <Image
-                src={`${backend}/profilepictures/${player.playerId}.jpeg`}
+                src={`${backendPhotos}/profilepictures/${player.playerId}.jpeg`}
                 onClick={() => handleClickPlayerLeft(player)}
                 className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' 
                 style={{ width: "10em", height: "10em", borderRadius: "8px" }} // Adjust width, height, and border-radius values
@@ -324,11 +325,11 @@ const MatchDetails = () => {
                 <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '10px 100px' }}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <a href={`/team/${match.team1.teamId}`}>
-                      <Image src={`${backend}/teamlogos/${match.team1.teamId}.jpeg`} className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' roundedCircle fluid style={{ width: "7em", height: "7em"}}/>
+                      <Image src={`${backendPhotos}/teamlogos/${match.team1.teamId}.jpeg`} className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' roundedCircle fluid style={{ width: "7em", height: "7em"}}/>
                     </a>
                     <span style={{ fontSize: '40px', margin: '0 10px' }}>{match.team1.finalScore} - {match.team2.finalScore}</span>
                     <a href={`/team/${match.team2.teamId}`}>
-                      <Image src={`${backend}/teamlogos/${match.team2.teamId}.jpeg`} className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' roundedCircle fluid style={{ width: "7em", height: "7em"}}/>
+                      <Image src={`${backendPhotos}/teamlogos/${match.team2.teamId}.jpeg`} className='border border-info shadow object-fit-cover align-self-end ml-auto zoom-in-style' roundedCircle fluid style={{ width: "7em", height: "7em"}}/>
                     </a>
                   </div>
                   <div style={{ fontSize: '24px', marginTop: '1%' }}>

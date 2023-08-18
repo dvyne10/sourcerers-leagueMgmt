@@ -5,6 +5,7 @@ import './flipCard.css';
 import './flipTransition.css';
 
 const backend = import.meta.env.MODE === "development" ? "http://localhost:8000" : "https://panicky-robe-mite.cyclic.app";
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 const FlipCard = ({ onClick, imageUrl, cardText, teams, leagueId }) => {
   const handleImageError = (event) => {
@@ -24,7 +25,7 @@ const FlipCard = ({ onClick, imageUrl, cardText, teams, leagueId }) => {
                   <td className="logo-container">
                     <img
                       className="team-logo"
-                      src={`${backend}/teamlogos/${team.teamId}.jpeg`}
+                      src={`${backendPhotos}/teamlogos/${team.teamId}.jpeg`}
                       alt={team.teamName}
                       onError={handleImageError}
                     />
