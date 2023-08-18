@@ -44,7 +44,7 @@ const Home = () => {
     dots: false,
     infinite: true,
     speed: 1000,
-    slidesToShow: 3,
+    slidesToShow: 5,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
@@ -142,7 +142,7 @@ const Home = () => {
           <h6 style={{ paddingTop: '5%' }}>Top 10 ongoing</h6>
           <h1>LEAGUES 🔥</h1>
 
-          <div className="slider-wrapper" style={{  paddingLeft: '13%', paddingRight: '5%' }}>
+          <div className="slider-wrapper" style={{  paddingLeft: '5%', paddingRight: '5%' }}>
             <Slider key={sliderSettingsToUse.slidesToShow} {...sliderSettingsToUse}>
               {topLeagues.map((league, index) => (
                 <div key={index}>
