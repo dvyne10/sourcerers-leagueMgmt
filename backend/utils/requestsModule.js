@@ -459,15 +459,10 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                     response.errMsg = "Invalid notification type"
                     return response
                 }
-                console.log(parm.data._id + " " + leagueId + " ")
-                // let aplgs = await UserModel.find({"requestsSent.receiverLeagueId" : new ObjectId(leagueId), 
-                //     "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : parm.data._id
-                // })
                 let aplgs = await UserModel.aggregate([ 
                     { 
                         $match: { "requestsSent.receiverLeagueId" : new ObjectId(leagueId),
-                            // "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : parm.data._id
-                            "requestsSent.requestType" : parm.data._id
+                            "requestsSent.requestStatus" : "PEND", "requestsSent.requestType" : parm.data._id
                         } 
                     }, 
                     { 
@@ -478,15 +473,15 @@ export const hasPendingRequest = async function(notifId, userId, playerId, teamI
                                     as: "req",
                                     cond: { $and : [
                                         { $eq: [ "$$req.receiverLeagueId", new ObjectId(leagueId) ] },
-                                        // { $eq: [ "$$req.requestStatus", "PEND" ] },
+                                        { $eq: [ "$$req.requestStatus", "PEND" ] },
                                         { $eq: [ "$$req.requestType", parm.data._id ] },
                                     ]}
                                 }
                             }
                         }
                     }
-                ]).limit(1)
-                console.log(JSON.stringify(aplgs))
+                ])
+                aplgs = aplgs.filter(record => record.requestsSent.length > 0)
                 if (aplgs === null || aplgs.length === 0 || aplgs[0].requestsSent.length === 0) {
                     response.hasPending = false
                     let league = await getLeagueDetails(leagueId)
@@ -676,8 +671,8 @@ export const startLeague = async function(userId, leagueId) {
     if (startLeagueExp.requestStatus === "ACTC") {
         exp = startLeagueExp.data.maxParms.startLeagueApprovalExp
     }
-    console.log(userId + " " + notif.data._id)
-    let reqAdded = await UserModel.updateOne({ _id : new ObjectId(userId) }, { 
+
+    await UserModel.updateOne({ _id : new ObjectId(userId) }, { 
         $push: { requestsSent : {
           requestType: notif.data._id,
           requestStatus: "PEND",
@@ -687,7 +682,6 @@ export const startLeague = async function(userId, leagueId) {
           receiverLeagueId: new ObjectId(leagueId),
         } } 
     })
-    console.log(JSON.stringify(reqAdded))
 
     //Send notifications to league admins
     let reqDetails = await hasPendingRequest(notifId, userId, "", "", leagueId)

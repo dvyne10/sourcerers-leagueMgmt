@@ -455,40 +455,7 @@ const sendStartLeague = () =>{
           </div>
         </Col>
         <Col sm={4} className='container '>
-
-          {/* This is the timeline for upcoming matches on the right side of the page*/}
-        {/* <div className="team-upcoming-matches w-100">
-          <h4 className='center-header'>Recent Matches</h4><hr />
-    <ul>
-      <li className='active-game-hover'>
-      <a href='/matchdetailsoccer/1' className='general-link-no-dec'>
-        <span className='active-game'>21st June 2023</span>
-        <div className="content">
-        
-          <h3>Arsenal</h3>
-        </div>
-        </a>
-      </li>
-      
-      <li className='past-game-hover'>
-      <a href='/matchdetailsoccer/2' className='general-link-no-dec'>
-        <span className='past-game'>15th April 2023</span>
-        <div className="content">
-          <h3>Barcelona</h3>
-        </div>
-        </a>
-      </li>
-      
-      <li className='past-game-hover'>
-      <a href='/matchdetailsoccer/3' className='general-link-no-dec'>
-        <span className='past-game'>22nd March 2023</span>
-        <div className="content">
-          <h3>Real Madrid</h3>
-        </div>
-        </a>
-      </li>
-    </ul>
-  </div> */}
+        {leagueInfo.matches.length > 0 &&
         <Col sm={12} className='border'>
         <div className='team-past-matches overflow-y-scroll' style={{maxHeight:"50em", "overflow-x": "hidden"}}>
           <h2 className='center-header gap-divider mt-5 mb-4  '>Leaderboard</h2>
@@ -503,6 +470,7 @@ const sendStartLeague = () =>{
               <h6 className='border-bottom border-secondary'>Points</h6>
               </Col>
               </Row>
+              
       <Row>
         <Col sm={12} >
           <ListGroup >
@@ -533,12 +501,12 @@ const sendStartLeague = () =>{
           
         </Col>
       </Row>
-
+ 
           </div>
         </Col>
-
+      }
         </Col>
-        
+      
       </Row>
       </div>
     </div>
