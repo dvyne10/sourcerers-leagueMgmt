@@ -5,7 +5,7 @@ import SysParmModel from "../models/systemParameter.model.js";
 import { getSportsList, getPosnAndStatBySport } from "./sysParmModule.js";
 import { getUserFullname } from "./usersModule.js";
 import { hasPendingRequest } from "./requestsModule.js";
-import fs from "fs";
+import { s3 } from "../config/s3-bucket.js";
 
 let ObjectId = mongoose.Types.ObjectId;
 
@@ -584,12 +584,54 @@ export const createTeam = async function(userId, data, files) {
         let index = newTeamObject.teamsCreated.length -1
 
         if (files && files.banner) {
-            fs.renameSync(files.banner[0].path, files.banner[0].path.replace(files.banner[0].filename, 
-                `${newTeamObject.teamsCreated[index]._id}.jpeg`));
+            let copyParams = {
+                Bucket: 'playpal-images',
+                CopySource: `playpal-images/${files.banner[0].key}`,
+                Key: `images/teambanners/${newTeamObject.teamsCreated[index]._id}.jpeg`
+            };
+            s3.copyObject(copyParams, function(err, data) {
+                if (err) {
+                    console.log("Error occurred while copying banner object.", err);
+                } else {
+                    console.log("Successfully copied banner object to new key.");
+                }
+            });
+            let deleteParams = {
+                Bucket: 'playpal-images',
+                Key: files.banner[0].key
+            };
+            s3.deleteObject(deleteParams, function(err, data) {
+                if (err) {
+                    console.log("Error occurred while deleting original object.", err);
+                } else {
+                    console.log("Successfully deleted original object.");
+                }
+            });
         }
         if (files && files.logo) {
-            fs.renameSync(files.logo[0].path, files.logo[0].path.replace(files.logo[0].filename, 
-                `${newTeamObject.teamsCreated[index]._id}.jpeg`));
+            let copyParams = {
+                Bucket: 'playpal-images',
+                CopySource: `playpal-images/${files.logo[0].key}`,
+                Key: `images/teamlogos/${newTeamObject.teamsCreated[index]._id}.jpeg`
+            };
+            s3.copyObject(copyParams, function(err, data) {
+                if (err) {
+                    console.log("Error occurred while copying logo object.", err);
+                } else {
+                    console.log("Successfully copied logo object to new key.");
+                }
+            });
+            let deleteParams = {
+                Bucket: 'playpal-images',
+                Key: files.logo[0].key
+            };
+            s3.deleteObject(deleteParams, function(err, data) {
+                if (err) {
+                    console.log("Error occurred while deleting original object.", err);
+                } else {
+                    console.log("Successfully deleted original object.");
+                }
+            });
         }
 
         response.requestStatus = "ACTC"

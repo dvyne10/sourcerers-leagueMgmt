@@ -6,7 +6,7 @@ import Collapse from "react-bootstrap/Collapse";
 import { format } from 'date-fns';
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
-
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 const LeagueCard = ({
   name,
@@ -126,9 +126,9 @@ const LeagueCard = ({
                 {teams.map((team) => (
                   <div key={team.teamId}>
                     <img  src={
-                            doesImageExist(`${backend}/teamlogos/${team.teamId}.jpeg`)
-                              ? `${backend}/teamlogos/${team.teamId}.jpeg`
-                              : `${backend}/teamlogos/default-image.jpeg`
+                            doesImageExist(`${backendPhotos}/teamlogos/${team.teamId}.jpeg`)
+                              ? `${backendPhotos}/teamlogos/${team.teamId}.jpeg`
+                              : `${backendPhotos}/teamlogos/default-image.jpeg`
                           } 
                   alt={`Team ${team.teamName}`} 
                   style={{width: '100px', height:'100px'}}/>

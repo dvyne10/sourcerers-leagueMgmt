@@ -1,8 +1,6 @@
 import express from "express";
-import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import cron from "node-cron"
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
@@ -59,7 +57,6 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", true);
-app.use(cookieParser());
 app.use(express.static("images"));
 
 app.use("/api/users", userRoutes);

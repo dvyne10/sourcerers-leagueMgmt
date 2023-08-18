@@ -8,6 +8,7 @@ import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import '../App.css';
 
 const backend = import.meta.env.MODE === 'development' ? 'http://localhost:8000' : 'https://panicky-robe-mite.cyclic.app';
+const backendPhotos = 'https://playpal-images.s3.amazonaws.com/images';
 
 const Home = () => {
   const [topLeagues, setTopLeagues] = useState([]);
@@ -148,9 +149,9 @@ const Home = () => {
                 <div key={index}>
                   <FlippableCard
                     imageUrl={
-                      doesImageExist(`${backend}/leaguelogos/${league.leagueId}.jpeg`)
-                        ? `${backend}/leaguelogos/${league.leagueId}.jpeg`
-                        : `${backend}/leaguelogos/default-image-for-league.jpeg`
+                      doesImageExist(`${backendPhotos}/leaguelogos/${league.leagueId}.jpeg`)
+                        ? `${backendPhotos}/leaguelogos/${league.leagueId}.jpeg`
+                        : `${backendPhotos}/leaguelogos/default-image-for-league.jpeg`
                     }
                     cardText={league.leagueName}
                     teams={league.teams}
@@ -192,10 +193,10 @@ const Home = () => {
                   <Link to={`/league/${announcement.leagueId}`} className="notification-list notification-list--unread">
                     <div className="notification-list_content">
                       <div className="notification-list_img">
-                      {doesImageExist(`${backend}/leaguelogos/${announcement.leagueId}.jpeg`) ? (
-                        <img src={`${backend}/leaguelogos/${announcement.leagueId}.jpeg`} alt="user" />
+                      {doesImageExist(`${backendPhotos}/leaguelogos/${announcement.leagueId}.jpeg`) ? (
+                        <img src={`${backendPhotos}/leaguelogos/${announcement.leagueId}.jpeg`} alt="user" />
                       ) : (
-                        <img src={`${backend}/leaguelogos/default-image.jpeg`} alt="user" />
+                        <img src={`${backendPhotos}/leaguelogos/default-image.jpeg`} alt="user" />
                       )}
                       </div>
                       <div className="notification-list_detail">
@@ -212,10 +213,10 @@ const Home = () => {
                   <Link to={`/team/${announcement.teamId}`} className="notification-list notification-list--unread">
                     <div className="notification-list_content">
                       <div className="notification-list_img">
-                      {doesImageExist(`${backend}/teamlogos/${announcement.teamId}.jpeg`) ? (
-                        <img src={`${backend}/teamlogos/${announcement.teamId}.jpeg`} alt="user" />
+                      {doesImageExist(`${backendPhotos}/teamlogos/${announcement.teamId}.jpeg`) ? (
+                        <img src={`${backendPhotos}/teamlogos/${announcement.teamId}.jpeg`} alt="user" />
                       ) : (
-                        <img src={`${backend}/teamlogos/default-image.jpeg`} alt="user" />
+                        <img src={`${backendPhotos}/teamlogos/default-image.jpeg`} alt="user" />
                       )}
                       </div>
                       <div className="notification-list_detail">

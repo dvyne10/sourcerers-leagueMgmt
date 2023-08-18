@@ -7,7 +7,6 @@
  */
 
 import User from "../models/user.model.js";
-import SysParmModel from "../models/systemParameter.model.js";
 import { getSysParmByParmId } from "../utils/sysParmModule.js";
 import { generateOTPEmail } from "../templates/otpEmail.js";
 import {
@@ -16,8 +15,7 @@ import {
   generateOTP,
   sendEmail,
 } from "../utils/auth.utils.js";
-import handlebars from "handlebars";
-import fs from "fs";
+import { s3 } from "../config/s3-bucket.js";
 
 const registerUser = async (req, res) => {
   const {
@@ -85,10 +83,35 @@ const registerUser = async (req, res) => {
     phoneNumber,
   }).save();
 
-  if (req.file && req.file.path) {
-    fs.renameSync(req.file.path, req.file.path.replace(req.file.filename, 
-      `${user._id}.jpeg`));
+  if (req.file && req.file.key) {
+    // fs.renameSync(req.file.path, req.file.path.replace(req.file.filename, 
+    //   `${user._id}.jpeg`));
+
+      let copyParams = {
+        Bucket: 'playpal-images',
+        CopySource: `playpal-images/${req.file.key}`,
+        Key: `images/profilepictures/${user._id}.jpeg`
+    };
+    s3.copyObject(copyParams, function(err, data) {
+        if (err) {
+            console.log("Error occurred while copying profile object.", err);
+        } else {
+            console.log("Successfully copied profile object to new key.");
+        }
+    });
+    let deleteParams = {
+        Bucket: 'playpal-images',
+        Key: req.file.key
+    };
+    s3.deleteObject(deleteParams, function(err, data) {
+        if (err) {
+            console.log("Error occurred while deleting original object.", err);
+        } else {
+            console.log("Successfully deleted original object.");
+        }
+    });
   }
+  
 
   try {
     if (user) {
