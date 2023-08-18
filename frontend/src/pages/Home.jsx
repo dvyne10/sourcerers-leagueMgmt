@@ -143,7 +143,7 @@ const Home = () => {
           <h6 style={{ paddingTop: '5%' }}>Top 10 ongoing</h6>
           <h1>LEAGUES 🔥</h1>
 
-          <div className="slider-wrapper" style={{  paddingLeft: '13%', paddingRight: '5%' }}>
+          <div className="slider-wrapper" style={{  paddingLeft: '5%', paddingRight: '5%' }}>
             <Slider key={sliderSettingsToUse.slidesToShow} {...sliderSettingsToUse}>
               {topLeagues.map((league, index) => (
                 <div key={index}>
