@@ -15,7 +15,7 @@ const Home = () => {
   const [opacity, setOpacity] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingLeagues, setIsLoadingLeagues] = useState(true);
-
+  const [leagueCount, setLeagueCount] = useState(0); 
   const announcementsPerPage = 5;
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const Home = () => {
     dots: false,
     infinite: true,
     speed: 1000,
-    slidesToShow: topLeagues.length,
+    slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
