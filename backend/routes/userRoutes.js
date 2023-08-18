@@ -20,7 +20,7 @@ const storage = multerS3({
   bucket: "playpal-images",
   // acl: "public-read",
   key: (req, file, cb) => {
-    // console.log(file,s3Storage)
+    console.log("23 " + file)
     const fileName = `images/profilepictures/${Date.now() + "-" + file.originalname}`;
     cb(null, fileName);
   },
