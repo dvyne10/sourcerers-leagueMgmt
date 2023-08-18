@@ -44,7 +44,7 @@ const Home = () => {
     dots: false,
     infinite: true,
     speed: 1000,
-    slidesToShow: 5,
+    slidesToShow: topLeagues.length,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
@@ -76,11 +76,23 @@ const Home = () => {
     if (window.innerWidth >= 1398) {
       setSliderSettingsToUse(sliderSettings);
     } else if (window.innerWidth >= 1126) {
-      setSliderSettingsToUse(sliderSettingsFourCards);
+      if (topLeagues.length > 3) {
+        setSliderSettingsToUse(sliderSettingsFourCards);
+      } else {
+        setSliderSettingsToUse(sliderSettings);
+      }
     } else if (window.innerWidth >= 837) {
-      setSliderSettingsToUse(sliderSettingsThreeCards);
+      if (topLeagues.length > 2) {
+        setSliderSettingsToUse(sliderSettingsThreeCards);
+      } else {
+        setSliderSettingsToUse(sliderSettings);
+      }
     } else if (window.innerWidth >= 560) {
-      setSliderSettingsToUse(sliderSettingsTwoCards);
+      if (topLeagues.length > 1) {
+        setSliderSettingsToUse(sliderSettingsTwoCards);
+      } else {
+        setSliderSettingsToUse(sliderSettings);
+      }
     } else {
       setSliderSettingsToUse(sliderSettingsOneCard);
     }
@@ -130,7 +142,7 @@ const Home = () => {
           <h6 style={{ paddingTop: '5%' }}>Top 10 ongoing</h6>
           <h1>LEAGUES 🔥</h1>
 
-          <div className="slider-wrapper" style={{ paddingLeft: '5%', paddingRight: '5%' }}>
+          <div className="slider-wrapper" style={{  paddingLeft: '13%', paddingRight: '5%' }}>
             <Slider key={sliderSettingsToUse.slidesToShow} {...sliderSettingsToUse}>
               {topLeagues.map((league, index) => (
                 <div key={index}>
