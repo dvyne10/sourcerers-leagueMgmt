@@ -188,7 +188,7 @@ app.post("/unjointeam/:teamid", authenticate, (req, res) => {
 });
 
 app.post("/invitetoleague/:teamid", authenticate, (req, res) => {
-  let leagueId = req.body.leagueid;
+  let leagueId = req.body.leagueId;
   let msg = req.body.msg;
   inviteToLeague(
     req.user._id.toString(),
