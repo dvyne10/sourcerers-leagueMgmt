@@ -14,6 +14,8 @@ const Home = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [opacity, setOpacity] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingLeagues, setIsLoadingLeagues] = useState(true);
+
   const announcementsPerPage = 5;
 
   useEffect(() => {
@@ -22,17 +24,21 @@ const Home = () => {
   }, []);
 
   const fetchTopLeagues = async () => {
-    try {
-      const response = await fetch(`${backend}`);
-      const data = await response.json();
-      const allAnnouncements = [...data.details.adminAnnouncements, ...data.details.announcements];
+  try {
+    setIsLoadingLeagues(true);
+    const response = await fetch(`${backend}`);
+    const data = await response.json();
+    const allAnnouncements = [...data.details.adminAnnouncements, ...data.details.announcements];
 
-      setTopLeagues(data.details.topLeagues);
-      setAnnouncements(allAnnouncements);
-    } catch (error) {
-      console.error('Error fetching top leagues data:', error);
-    }
-  };
+    setTopLeagues(data.details.topLeagues);
+    setAnnouncements(allAnnouncements);
+  } catch (error) {
+    console.error('Error fetching top leagues data:', error);
+  } finally {
+    setIsLoadingLeagues(false);
+  }
+};
+
 
   const sliderSettings = {
     dots: false,
@@ -105,6 +111,14 @@ const Home = () => {
 
   return (
     <>
+      {isLoadingLeagues ? (
+        <div className="loading-overlay">
+        <div>Loading top leagues...</div>
+        <div className="loading-spinner"></div>
+      </div>
+      ) : (
+        <>
+
       <div className="App" style={{ textAlign: 'center' }}>
         <div style={{ backgroundImage: "url('/images/mainPage/basketball_galaxy.png')", backgroundSize: 'cover', width: '100%', height: '1000px' }}>
           <h1 className="animated-text" style={{ color: 'white', opacity: opacity, transition: 'opacity 5s', paddingLeft: '40%', paddingTop: '15%', fontSize: '5vw' }}>
@@ -226,6 +240,8 @@ const Home = () => {
         </div>
       </section>
     </>
+          )}
+          </>
   );
 };
 
